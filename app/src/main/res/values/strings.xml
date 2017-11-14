@@ -1,0 +1,22 @@
+<!--
+  ~  Copyright 2017 Idealnaya rabota LLC
+  ~  Licensed under Multy.io license.
+  ~  See LICENSE for details
+  -->
+
+<resources>
+    <string name="app_name">multy</string>
+    <string name="wallets">wallets</string>
+    <string name="feed">activity</string>
+    <string name="contacts">contacts</string>
+    <string name="settings">settings</string>
+
+    <string name="receive_btc">Receive BTC</string>
+    <string name="send">Send</string>
+    <string name="receive">Receive</string>
+    <string name="exchange">Exchange</string>
+
+    <string name="sha">SHA</string>
+    <string name="sha_256">SHA-256</string>
+
+</resources>
