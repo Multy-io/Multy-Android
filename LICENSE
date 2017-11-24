@@ -16,5 +16,6 @@ Butterknife - Apache 2.0 - https://github.com/JakeWharton/butterknife/blob/maste
 Timber - Apache 2.0 - https://github.com/JakeWharton/timber/blob/master/LICENSE.txt
 gson - Apache 2.0 - https://github.com/google/gson/blob/master/LICENSE
 Retrofit - Apache 2.0 - https://github.com/square/retrofit/blob/master/LICENSE.txt
+OnePrefs - Apache 2.0 - https://github.com/swolfand/OnePrefs/blob/master/license.txt
 
 Dependencies not listed here have their own licenses, which can be found in corresponding source files.

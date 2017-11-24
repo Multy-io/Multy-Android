@@ -21,4 +21,6 @@ public class NativeDataHelper {
 
     public static native String makeAccountId(byte[] seed);
 
+    public static native int runTest();
+
 }

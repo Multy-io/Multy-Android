@@ -7,28 +7,118 @@
 package io.multy.ui.fragments;
 
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 
 import io.multy.R;
+import io.multy.ui.adapters.BricksAdapter;
+import io.multy.util.BrickView;
+import io.multy.util.RandomSpanWidthLookup;
 
 
 public class BaseSeedFragment extends Fragment {
 
-    public void subscribeSeedLiveData() {
+    public static final int BRICK_BLUE = 0;
+    public static final int BRICK_RED = 1;
+    public static final int BRICK_GREEN = 2;
 
+    private int redrawPosition = 0;
+    private GridLayoutManager layoutManager;
+    protected BricksAdapter adapter;
+
+    protected void initBricks(RecyclerView recyclerView) {
+        final int spanCount = 16 * 8; //total cell count * span per item
+        layoutManager = new GridLayoutManager(getActivity(), spanCount);
+        layoutManager.setSpanSizeLookup(new RandomSpanWidthLookup(spanCount));
+        adapter = new BricksAdapter();
+
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setHasFixedSize(true);
     }
 
-    public void showNext(Fragment fragment) {
-        getActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .add(R.id.container, fragment)
-                .commit();
+    protected void setBrickColor(int color) {
+        switch (color) {
+            case BRICK_BLUE:
+                adapter.setBrickBackgroundResId(R.drawable.brick_blue);
+                break;
+            case BRICK_RED:
+                adapter.setBrickBackgroundResId(R.drawable.brick_red);
+                break;
+            case BRICK_GREEN:
+                adapter.setBrickBackgroundResId(R.drawable.brick_green);
+                break;
+            default:
+                adapter.setBrickBackgroundResId(-1);
+        }
+        adapter.notifyDataSetChanged();
+    }
+
+    protected void setRedrawPosition(int redrawPosition) {
+        this.redrawPosition = redrawPosition;
+    }
+
+    /**
+     * make three bricks (triplet) to pending (bordered) or full (fully colored)
+     *
+     * @param isPending pending or full
+     */
+    protected void redrawTriplet(boolean isPending) {
+        BrickView brickView;
+        for (int i = 0; i < 3; i++) {
+            brickView = (BrickView) layoutManager.getChildAt(redrawPosition);
+
+            if (isPending) {
+                brickView.makePending();
+            } else {
+                brickView.makeFull();
+            }
+            redrawPosition++;
+        }
+
+        if (isPending) {
+            redrawPosition -= 3;
+        }
+    }
+
+    protected void redrawOne(boolean isPending) {
+        BrickView brickView = (BrickView) layoutManager.getChildAt(redrawPosition);
+
+        if (isPending) {
+            brickView.makePending();
+        } else {
+            brickView.makeFull();
+        }
+        redrawPosition++;
+
+        if (isPending) {
+            redrawPosition -= 1;
+        }
     }
 
     public void repeat() {
-
+        getActivity().getSupportFragmentManager()
+                .popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
     }
 
-    public void cancel() {
+    public void showNext(Fragment fragment) {
+        showFragment(fragment, "");
+    }
 
+    public void showNext(Fragment fragment, String tag) {
+        showFragment(fragment, tag);
+    }
+
+    private void showFragment(Fragment fragment, String tag) {
+        getActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container, fragment)
+                .addToBackStack(tag)
+                .commit();
+    }
+
+    public void close() {
+        getActivity().finish();
     }
 }

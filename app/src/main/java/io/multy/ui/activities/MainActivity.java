@@ -7,6 +7,7 @@
 package io.multy.ui.activities;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.design.widget.TabLayout;
@@ -20,7 +21,7 @@ import io.multy.ui.fragments.main.AssetsFragment;
 import io.multy.ui.fragments.main.ContactsFragment;
 import io.multy.ui.fragments.main.FeedFragment;
 import io.multy.ui.fragments.main.SettingsFragment;
-import io.multy.util.Constant;
+import io.multy.util.Constants;
 
 
 public class MainActivity extends BaseActivity implements TabLayout.OnTabSelectedListener {
@@ -39,6 +40,8 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
 
         setupFooter();
         setFragment(R.id.inner_container, AssetsFragment.newInstance());
+
+        startActivity(new Intent(this, SeedActivity.class));
     }
 
     private void setFragment(@IdRes int container, Fragment fragment) {
@@ -62,17 +65,17 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
 
     @Override
     public void onTabSelected(TabLayout.Tab tab) {
-        switch(tab.getPosition()){
-            case Constant.POSITION_ASSETS:
+        switch (tab.getPosition()) {
+            case Constants.POSITION_ASSETS:
                 setFragment(R.id.full_container, AssetsFragment.newInstance());
                 break;
-            case Constant.POSITION_FEED:
+            case Constants.POSITION_FEED:
                 setFragment(R.id.full_container, FeedFragment.newInstance());
                 break;
-            case Constant.POSITION_CONTACTS:
+            case Constants.POSITION_CONTACTS:
                 setFragment(R.id.full_container, ContactsFragment.newInstance());
                 break;
-            case Constant.POSITION_SETTINGS:
+            case Constants.POSITION_SETTINGS:
                 setFragment(R.id.full_container, SettingsFragment.newInstance());
                 break;
         }
@@ -95,7 +98,9 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         tabLayout.addTab(tabLayout.newTab().setCustomView(R.layout.footer_contacts));
         tabLayout.addTab(tabLayout.newTab().setCustomView(R.layout.footer_settings));
         tabLayout.addOnTabSelectedListener(this);
-    };
+    }
+
+    ;
 
     private void unCheckAllTabs() {
         tabLayout.getTabAt(0).getCustomView().setSelected(false);

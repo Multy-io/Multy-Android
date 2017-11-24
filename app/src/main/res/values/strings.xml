@@ -18,5 +18,22 @@
 
     <string name="sha">SHA</string>
     <string name="sha_256">SHA-256</string>
+    <string name="seed_continue">Continue</string>
+    <string name="control_phrase">Control phrase</string>
+    <string name="phrase_description">In order to be safe, we will show one word at a time. Write these words on paper and safely save the resulting phrase.</string>
+    <string name="seed_tip_screenshot">Do not take screenshots</string>
+    <string name="seed_tip_camera">Step away from the window and from the cameras</string>
+    <string name="seed_tip_spy">Check that no one is behind you</string>
+    <string name="seed_validation_hint">Type word here</string>
+    <string name="seed_congrats">Congratulations!\nYour wallet is secure!</string>
+    <string name="great">Great!</string>
+    <string name="try_again">Try again</string>
+    <string name="seed_result_fail">Wrong seed phrase!</string>
+    <string name="seed_writing">Seed phrase validation</string>
+    <string name="next_word">Next word</string>
+    <string name="next">Next</string>
+    <string name="seed_missing_write">I did not write down the seed phrase</string>
+    <string name="seed_validate">On the next screen you will need to enter all the words in the right order for accessing to wallet.</string>
+    <string name="seed_transferred_words">All words from the seed phrase are transferred to you.</string>
 
 </resources>
