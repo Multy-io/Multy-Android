@@ -1,12 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~  Copyright 2017 Idealnaya rabota LLC
   ~  Licensed under Multy.io license.
   ~  See LICENSE for details
   -->
 
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorPrimary">#FF00B2FF</color>
+    <color name="colorPrimaryDark">#FF007AFF</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="gray">#FF516874</color>
+    <color name="gray_light">#EFEFF4</color>
+    <color name="green">#5FCC7D</color>
+    <color name="red">#F44336</color>
 </resources>

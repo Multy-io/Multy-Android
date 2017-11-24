@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.multy.R;
 import io.multy.ui.fragments.BaseSeedFragment;
 
@@ -27,7 +28,8 @@ public class HelloSeedFragment extends BaseSeedFragment {
         return convertView;
     }
 
-    public void onClickNext(){
-        showNext(new SeedFragment());
+    @OnClick(R.id.button_next)
+    public void onClickNext() {
+        showNext(new SeedFragment(), SeedFragment.class.getSimpleName());
     }
 }

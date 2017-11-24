@@ -7,22 +7,38 @@
 package io.multy.ui.activities;
 
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
+import android.view.WindowManager;
 
 import butterknife.ButterKnife;
 import io.multy.R;
+import io.multy.ui.fragments.seed.HelloSeedFragment;
+import io.multy.ui.fragments.seed.SeedFragment;
 
-/**
- * Created by andre on 13.11.2017.
- */
-
-public class SeedActivity extends BaseActivity {
+public class SeedActivity extends AppCompatActivity {
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
-        super.onCreate(savedInstanceState, persistentState);
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
         setContentView(R.layout.activity_seed);
         ButterKnife.bind(this);
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.container, new HelloSeedFragment(), HelloSeedFragment.class.getSimpleName())
+                .commit();
+    }
+
+    @Override
+    public void onBackPressed() {
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(SeedFragment.class.getSimpleName());
+        if (fragment != null) {
+            ((SeedFragment) fragment).onBackPressed();
+        } else {
+            super.onBackPressed();
+        }
     }
 }

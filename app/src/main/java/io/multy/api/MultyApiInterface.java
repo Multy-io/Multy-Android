@@ -1,12 +1,19 @@
-/*
- *  Copyright 2017 Idealnaya rabota LLC
- *  Licensed under Multy.io license.
- *  See LICENSE for details
- */
-
 package io.multy.api;
 
-
 public interface MultyApiInterface {
-    //implement api methods here
+
+    void auth(String userId, String deviceId, String password);
+
+    void getTickets(String firstCurrency, String secondCurrency);
+
+    void getAssetsInfo();
+
+    void getBalance(String address);
+
+    void addWallet(String wallet);
+
+    void getExchangePrice(String firstCurrency, String secondCurrency);
+
+    void getTransactionInfo(String transactionId);
+
 }
