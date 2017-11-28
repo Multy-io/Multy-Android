@@ -35,5 +35,11 @@
     <string name="seed_missing_write">I did not write down the seed phrase</string>
     <string name="seed_validate">On the next screen you will need to enter all the words in the right order for accessing to wallet.</string>
     <string name="seed_transferred_words">All words from the seed phrase are transferred to you.</string>
+    <string name="cancel">Cancel</string>
+    <string name="cancel_message">Are you really want to cancel?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="repeat">Repeat</string>
+    <string name="repeat_message">Restart the seed validation process?</string>
 
 </resources>

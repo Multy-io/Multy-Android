@@ -16,11 +16,13 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnEditorAction;
 import io.multy.R;
 import io.multy.ui.fragments.BaseSeedFragment;
 import io.multy.util.BrickView;
@@ -59,6 +61,7 @@ public class SeedValidationFragment extends BaseSeedFragment {
         buttonNext.setText(R.string.next_word);
         setRedrawPosition(0);
         recyclerView.post(() -> redrawOne(true));
+        inputWord.setImeOptions(EditorInfo.IME_ACTION_NEXT);
         return convertView;
     }
 
@@ -66,8 +69,22 @@ public class SeedValidationFragment extends BaseSeedFragment {
         textViewCounter.setText(count + " of " + maxCount);
     }
 
+    @OnEditorAction(R.id.input_word)
+    public boolean onEditorAction(int actionId) {
+        if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_NEXT) {
+            proceedNext();
+            return true;
+        }
+
+        return false;
+    }
+
     @OnClick(R.id.button_next)
     public void onClickNext() {
+        proceedNext();
+    }
+
+    private void proceedNext() {
         if (inputWord.getText().toString().equals("")) {
             return;
         }
@@ -77,12 +94,13 @@ public class SeedValidationFragment extends BaseSeedFragment {
         refreshCounter();
         buttonNext.setEnabled(false);
         if (count == maxCount) {
-            boolean result = phrase.toString().equals(TextUtils.join("", seedModel.phrase.getValue()));
+            boolean result = phrase.toString().equals(TextUtils.join(" ", seedModel.phrase.getValue()).replace("\n", " "));
             seedModel.failed.setValue(!result);
             showNext(new SeedResultFragment());
         } else if (count != maxCount - 1) {
             redrawOne(true);
         }
+        phrase.append(" ");
         count++;
         handler.postDelayed(() -> buttonNext.setEnabled(true), BrickView.ANIMATION_DURATION);
     }

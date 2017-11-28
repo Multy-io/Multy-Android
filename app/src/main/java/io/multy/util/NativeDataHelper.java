@@ -23,4 +23,6 @@ public class NativeDataHelper {
 
     public static native int runTest();
 
+    public static native void makeTransaction(byte[] seed);
+
 }

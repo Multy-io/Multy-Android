@@ -27,7 +27,7 @@ public class SeedViewModel extends ViewModel {
     public MutableLiveData<ArrayList<String>> phrase = new MutableLiveData<>();
     public MutableLiveData<Integer> position = new MutableLiveData<>();
     public MutableLiveData<Boolean> failed = new MutableLiveData<>();
-    private MutableLiveData<byte[]> binarySeed = new MutableLiveData<>();
+    public MutableLiveData<byte[]> binarySeed = new MutableLiveData<>();
 
     public void initData() {
         final int wordsPerOnce = 3;

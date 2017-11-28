@@ -7,7 +7,6 @@
 package io.multy.ui.fragments.seed;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -21,7 +20,6 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -63,7 +61,7 @@ public class SeedFragment extends BaseSeedFragment {
     private void initViewModel() {
         seedModel = ViewModelProviders.of(getActivity()).get(SeedViewModel.class);
         seedModel.initData();
-        Toast.makeText(getActivity(), "" + seedModel.phrase.getValue().size(), Toast.LENGTH_LONG).show();
+//        Toast.makeText(getActivity(), "" + seedModel.phrase.getValue().size(), Toast.LENGTH_LONG).show();
     }
 
     private void subscribeViewModel() {
@@ -80,17 +78,14 @@ public class SeedFragment extends BaseSeedFragment {
     }
 
     private TextView generateTextView() {
-        final float spacing = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16.0f, getResources().getDisplayMetrics());
+        final float spacing = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 24.0f, getResources().getDisplayMetrics());
+        final float textSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 20.0f, getResources().getDisplayMetrics());
         TextView textView = new TextView(getActivity());
         textView.setGravity(Gravity.CENTER);
-        textView.setTextSize(48);
+        textView.setTextSize(textSize);
         textView.setLineSpacing(spacing, 1.0f);
-        textView.setTextColor(Color.BLACK);
+        textView.setTextColor(getResources().getColor(R.color.gray_dark));
         return textView;
-    }
-
-    public void onBackPressed() {
-        //TODO HANDLE BACK PRESS
     }
 
     @OnClick(R.id.button_next)

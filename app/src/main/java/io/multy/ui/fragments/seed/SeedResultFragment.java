@@ -37,6 +37,9 @@ public class SeedResultFragment extends BaseSeedFragment {
     @BindView(R.id.text_title)
     TextView textViewTitle;
 
+    @BindView(R.id.button_cancel)
+    View buttonCancel;
+
     private SeedViewModel seedModel;
 
     @Nullable
@@ -59,6 +62,7 @@ public class SeedResultFragment extends BaseSeedFragment {
             textViewTitle.setText(R.string.seed_result_fail);
         } else {
             setBrickColor(BRICK_GREEN);
+            buttonCancel.setVisibility(View.GONE);
             buttonNext.setText(R.string.great);
         }
     }

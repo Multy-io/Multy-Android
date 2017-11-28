@@ -13,26 +13,15 @@ public class BaseFragment extends Fragment {
     public void showLocalError() {
     }
 
-
     public void showPinDialog() {
     }
-
 
     public boolean isDeviceRooted() {
         return false;
     }
 
-
     public boolean isDeviceEmulator() {
         return false;
-    }
-
-
-    public void onSuccessValidation() {
-    }
-
-
-    public void onFailedValidation() {
     }
 
 }
