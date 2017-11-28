@@ -11,6 +11,13 @@
     android:layout_height="match_parent">
 
     <TextView
+        android:id="@+id/button_cancel"
+        style="@style/ButtonCancel"
+        android:text="@string/cancel"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
         android:id="@+id/text_title"
         style="@style/SeedTitleText"
         android:text="@string/seed_writing"
@@ -30,6 +37,7 @@
         android:id="@+id/container_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -43,8 +51,12 @@
             android:digits="abcdefghijklmnopqrstuvwxyz"
             android:gravity="center"
             android:hint="@string/seed_validation_hint"
+            android:imeOptions="actionDone"
             android:inputType="text"
-            android:minWidth="160dp" />
+            android:maxLines="1"
+            android:minWidth="160dp"
+            android:singleLine="true"
+            android:textSize="26sp" />
     </android.support.design.widget.TextInputLayout>
 
     <TextView

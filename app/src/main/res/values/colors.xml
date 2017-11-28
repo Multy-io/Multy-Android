@@ -7,8 +7,9 @@
 <resources>
     <color name="colorPrimary">#FF00B2FF</color>
     <color name="colorPrimaryDark">#FF007AFF</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorAccent">#FF516874</color>
     <color name="gray">#FF516874</color>
+    <color name="gray_dark">#363636</color>
     <color name="gray_light">#EFEFF4</color>
     <color name="green">#5FCC7D</color>
     <color name="red">#F44336</color>
