@@ -8,13 +8,13 @@ package io.multy.ui.fragments;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.ui.adapters.BricksAdapter;
+import io.multy.ui.fragments.dialogs.SeedDialogFragment;
 import io.multy.util.BrickView;
 import io.multy.util.RandomSpanWidthLookup;
 
@@ -126,11 +126,16 @@ public class BaseSeedFragment extends Fragment {
 
     @OnClick(R.id.button_cancel)
     public void onCancelClick() {
-        new AlertDialog.Builder(getActivity())
-                .setTitle(R.string.cancel)
-                .setMessage(R.string.cancel_message)
-                .setPositiveButton(R.string.yes, (dialogInterface, i) -> close())
-                .setNegativeButton(R.string.no, (dialogInterface, i) -> dialogInterface.dismiss())
-                .show();
+        SeedDialogFragment.newInstance(
+                R.string.cancel,
+                R.string.cancel_message,
+                view -> close()).show(getFragmentManager(), "");
+
+//        new AlertDialog.Builder(getActivity())
+//                .setTitle(R.string.cancel)
+//                .setMessage(R.string.cancel_message)
+//                .setPositiveButton(R.string.yes, (dialogInterface, i) -> close())
+//                .setNegativeButton(R.string.no, (dialogInterface, i) -> dialogInterface.dismiss())
+//                .show();
     }
 }
