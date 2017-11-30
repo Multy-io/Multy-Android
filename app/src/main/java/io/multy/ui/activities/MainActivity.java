@@ -42,6 +42,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         setFragment(R.id.inner_container, AssetsFragment.newInstance());
 
         startActivity(new Intent(this, SeedActivity.class));
+//        NativeDataHelper.makeTransaction();
     }
 
     private void setFragment(@IdRes int container, Fragment fragment) {

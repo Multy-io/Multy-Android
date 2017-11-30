@@ -13,4 +13,5 @@
     <color name="gray_light">#EFEFF4</color>
     <color name="green">#5FCC7D</color>
     <color name="red">#F44336</color>
+    <color name="blue_transparent">#b3007aff</color>
 </resources>

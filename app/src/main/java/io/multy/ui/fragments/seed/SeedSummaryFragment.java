@@ -8,7 +8,6 @@ package io.multy.ui.fragments.seed;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +18,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.ui.fragments.BaseSeedFragment;
+import io.multy.ui.fragments.dialogs.SeedDialogFragment;
 
 /**
  * Created by andre on 08.11.2017.
@@ -46,11 +46,9 @@ public class SeedSummaryFragment extends BaseSeedFragment {
 
     @OnClick(R.id.button_repeat)
     public void onClickRepeat() {
-        new AlertDialog.Builder(getActivity())
-                .setTitle(R.string.repeat)
-                .setMessage(R.string.repeat_message)
-                .setPositiveButton(R.string.yes, (dialogInterface, i) -> repeat())
-                .setNegativeButton(R.string.no, (dialogInterface, i) -> dialogInterface.dismiss())
-                .show();
+        SeedDialogFragment.newInstance(
+                R.string.repeat,
+                R.string.repeat_message,
+                view -> repeat()).show(getFragmentManager(), "");
     }
 }

@@ -21,7 +21,7 @@ public class Constants {
     public static final String SPAN_DIVIDER = ",";
 
     public static final String PREF_SPAN = "span";
-    public static final String PREF_FIRST_START = "first_start";
+    public static final String PREF_FIRST_SUCCESSFUL_START = "first_start";
     public static final String PREF_AUTH = "pref_auth";
 
 }

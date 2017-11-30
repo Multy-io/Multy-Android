@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/blue_transparent">
+
+    <RelativeLayout
+        android:layout_width="280dp"
+        android:layout_height="160dp"
+        android:background="@drawable/shape_white_rounded"
+        android:elevation="12dp"
+        android:paddingBottom="8dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="8dp"
+        android:paddingTop="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/text_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            tools:text="Cancel"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/text_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/text_title"
+            tools:text="Are you really want to cancel?"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/button_positive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:background="?selectableItemBackground"
+            android:minHeight="0dp"
+            android:minWidth="0dp"
+            android:padding="8dp"
+            android:text="@string/yes"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/button_negative"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="8dp"
+            android:layout_toStartOf="@id/button_positive"
+            android:background="?selectableItemBackground"
+            android:minHeight="0dp"
+            android:minWidth="0dp"
+            android:padding="8dp"
+            android:text="@string/no"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="14sp" />
+
+    </RelativeLayout>
+
+</android.support.constraint.ConstraintLayout>

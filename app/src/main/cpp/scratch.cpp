@@ -74,6 +74,14 @@ static void *thread_func(void *) {
     return 0;
 }
 
+void throw_java_exception(JNIEnv *env, const Error &error) {
+    jclass c = env->FindClass("io/multy/util/JniException");
+//    __android_log_print(ANDROID_LOG_INFO, "log message", "Error: %s", error->message);
+    env->ThrowNew(c, error.message);
+}
+
+#define E(statement, value) do { ErrorPtr error(statement); if (error) {throw_java_exception(env, *error); return (value);} } while(false)
+
 JNIEXPORT jint JNICALL
 Java_io_multy_util_NativeDataHelper_runTest(JNIEnv *jenv, jclass jcls) {
     jint jresult = 0;
@@ -90,7 +98,6 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *pjvm, void *reserved) {
 
     gJvm = pjvm;  // cache the JavaVM pointer
     auto env = getEnv();
-    //replace with one of your classes in the line below
     auto randomClass = env->FindClass("io/multy/util/EntropyProvider");
     jclass classClass = env->GetObjectClass(randomClass);
     auto classLoaderClass = env->FindClass("java/lang/ClassLoader");
@@ -111,24 +118,17 @@ jclass findClass(const char *name) {
 JNIEXPORT jbyteArray JNICALL
 Java_io_multy_util_NativeDataHelper_makeSeed(JNIEnv *env, jobject obj, jstring string) {
     using namespace wallet_core::internal;
-
     const char *mnemonic = env->GetStringUTFChars(string, JNI_FALSE);
 
     BinaryDataPtr data;
     ErrorPtr error;
-    error.reset(make_seed(mnemonic, "", reset_sp(data)));
 
+    E(make_seed(mnemonic, "", reset_sp(data)), jbyteArray());
     env->ReleaseStringUTFChars(string, mnemonic);
 
-    if (error) {
-        __android_log_print(ANDROID_LOG_INFO, "makeSeed", "Error: %s", error->message);
-        return NULL;
-    } else {
-        jbyteArray array = env->NewByteArray(data.get()->len);
-        env->SetByteArrayRegion(array, 0, data.get()->len,
-                                reinterpret_cast<const jbyte *>(data->data));
-        return array;
-    }
+    jbyteArray array = env->NewByteArray(data.get()->len);
+    env->SetByteArrayRegion(array, 0, data.get()->len, reinterpret_cast<const jbyte *>(data->data));
+    return array;
 }
 
 JNIEXPORT jstring JNICALL
@@ -145,7 +145,6 @@ Java_io_multy_util_NativeDataHelper_makeMnemonic(JNIEnv *jniEnv, jobject obj) {
     typedef std::vector<unsigned char> bytes;
     int len = env->GetArrayLength(result);
     bytes buf(len, 0);
-    //unsigned char* buf = new unsigned char[len];
     env->GetByteArrayRegion(result, 0, len, reinterpret_cast<jbyte *>(buf.data()));
 
     auto fill_entropy = [](void *data, ::size_t size, void *dest) -> ::size_t {
@@ -155,17 +154,11 @@ Java_io_multy_util_NativeDataHelper_makeMnemonic(JNIEnv *jniEnv, jobject obj) {
         return result_size;
     };
     auto entropy_source = EntropySource{(void *) &buf, fill_entropy};
-    ConstCharPtr mnemonic_str;
-    ErrorPtr error;
-    error.reset(make_mnemonic(entropy_source, reset_sp(mnemonic_str)));
 
-    if (error) {
-        __android_log_print(ANDROID_LOG_INFO, "makeMnemonic", "Error: %s", error->message);
-        return jniEnv->NewStringUTF(error->message);
-    } else {
-        __android_log_print(ANDROID_LOG_INFO, "makeMnemonic", "SUCCESS: %s", mnemonic_str.get());
-        return jniEnv->NewStringUTF(mnemonic_str.get());
-    }
+    ConstCharPtr mnemonic_str;
+
+    E(make_mnemonic(entropy_source, reset_sp(mnemonic_str)), jstring());
+    return jniEnv->NewStringUTF(mnemonic_str.get());
 }
 
 JNIEXPORT jstring JNICALL
@@ -177,23 +170,15 @@ Java_io_multy_util_NativeDataHelper_makeAccountId(JNIEnv *env, jobject obj, jbyt
     unsigned char *buf = new unsigned char[len];
     env->GetByteArrayRegion(array, 0, len, reinterpret_cast<jbyte *>(buf));
 
-    ErrorPtr error;
     ExtendedKeyPtr rootKey;
 
     BinaryData seed{buf, len};
-    error.reset(make_master_key(&seed, reset_sp(rootKey)));
+    E(make_master_key(&seed, reset_sp(rootKey)), jstring());
 
     const char *id = nullptr;
+    E(make_key_id(rootKey.get(), &id), jstring());
 
-    error.reset(make_key_id(rootKey.get(), &id));
-
-    if (error) {
-        __android_log_print(ANDROID_LOG_INFO, "makeAccountId", "Error: %s", error->message);
-        return env->NewStringUTF(error->message);
-    } else {
-        __android_log_print(ANDROID_LOG_INFO, "makeAccountId", "SUCCESS: %s", id);
-        return env->NewStringUTF(id);
-    }
+    return env->NewStringUTF(id);
 }
 
 JNIEXPORT jstring JNICALL
@@ -205,39 +190,22 @@ Java_io_multy_util_NativeDataHelper_makeAccountAddress(JNIEnv *env, jobject obj,
     unsigned char *buf = new unsigned char[len];
     env->GetByteArrayRegion(array, 0, len, reinterpret_cast<jbyte *>(buf));
 
-    ErrorPtr error;
     ExtendedKeyPtr rootKey;
 
     BinaryData seed{buf, len};
-    error.reset(make_master_key(&seed, reset_sp(rootKey)));
+    E(make_master_key(&seed, reset_sp(rootKey)), jstring());
 
     HDAccountPtr hdAccount;
-    error.reset(make_hd_account(rootKey.get(), CURRENCY_BITCOIN, 0, reset_sp(hdAccount)));
+    E(make_hd_account(rootKey.get(), CURRENCY_BITCOIN, 0, reset_sp(hdAccount)), jstring());
 
     AccountPtr account;
-    error.reset(make_hd_leaf_account(hdAccount.get(), ADDRESS_EXTERNAL, 0, reset_sp(account)));
+    E(make_hd_leaf_account(hdAccount.get(), ADDRESS_EXTERNAL, 0, reset_sp(account)), jstring());
 
     ConstCharPtr address;
-    error.reset(get_account_address_string(account.get(), reset_sp(address)));
+    E(get_account_address_string(account.get(), reset_sp(address)), jstring());
 
-    if (error) {
-        __android_log_print(ANDROID_LOG_INFO, "accountAddress", "Error: %s", error->message);
-        return env->NewStringUTF(error->message);
-    } else {
-        __android_log_print(ANDROID_LOG_INFO, "accountAddress", "SUCCESS: %s", address.get());
-        return env->NewStringUTF(address.get());
-    }
+    return env->NewStringUTF(address.get());
 }
-
-void throw_java_exception(Error *error) {
-    auto env = getEnv();
-    auto randomClass = env->FindClass("io/multy/util/JniException");
-
-    jmethodID mid = env->GetStaticMethodID(randomClass, "throwJniException", "(I)[B");
-    env->CallStaticObjectMethod(randomClass, mid, "exception from jni");
-}
-
-#define E(statement, value) do { ErrorPtr error(statement); if (error) {throw_java_exception(env, error.get()); return (value);} } while(false)
 
 JNIEXPORT jstring JNICALL
 Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *env, jobject obj, jbyteArray array) {
@@ -263,7 +231,11 @@ Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *env, jobject obj, jb
 //
 //    TransactionPtr transaction;
 //
-//    E(make_transaction(account, reset_sp(transaction)), jstring());
+//    E(make_transaction(account.get(), reset_sp(transaction)), jstring());
+
+    jstring errorString = env->NewStringUTF("nice story broh");
+
+    return errorString;
 }
 
 //void foo()
@@ -314,9 +286,6 @@ Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *env, jobject obj, jb
 MULTY_CORE_API Error *make_seed(
         const char *mnemonic, const char *password, BinaryData **seed);
 MULTY_CORE_API Error *seed_to_string(const BinaryData *seed, const char **str);
-
-/** Frees mnemonic, can take null */
-MULTY_CORE_API void free_mnemonic(const char *mnemonic);
 
 
 #ifdef __cplusplus

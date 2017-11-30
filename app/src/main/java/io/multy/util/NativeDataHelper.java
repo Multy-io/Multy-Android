@@ -7,22 +7,26 @@
 package io.multy.util;
 
 
+/**
+ * Every method should throw JniException.
+ * Also jni exception should be considered while typing new method inside JNI
+ */
 public class NativeDataHelper {
 
     static {
         System.loadLibrary("core_jnid");
     }
 
-    public static native String makeMnemonic();
+    public static native String makeMnemonic() throws JniException;
 
-    public static native byte[] makeSeed(String mnemonic);
+    public static native byte[] makeSeed(String mnemonic) throws JniException;
 
-    public static native byte[] makeAccountAddress();
+    public static native byte[] makeAccountAddress() throws JniException;
 
-    public static native String makeAccountId(byte[] seed);
+    public static native String makeAccountId(byte[] seed) throws JniException;
 
     public static native int runTest();
 
-    public static native void makeTransaction(byte[] seed);
+    public static native String makeTransaction() throws JniException;
 
 }
