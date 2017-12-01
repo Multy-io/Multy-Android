@@ -1,10 +1,10 @@
 /*
- *  Copyright 2017 Idealnaya rabota LLC
- *  Licensed under Multy.io license.
- *  See LICENSE for details
+ * Copyright 2017 Idealnaya rabota LLC
+ * Licensed under Multy.io license.
+ * See LICENSE for details
  */
 
-package io.multy.ui.fragments.create;
+package io.multy.ui.fragments.asset;
 
 import android.content.Intent;
 import android.graphics.Color;

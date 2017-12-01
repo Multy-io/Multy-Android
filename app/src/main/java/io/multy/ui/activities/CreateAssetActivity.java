@@ -10,7 +10,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
 import io.multy.R;
-import io.multy.ui.fragments.create.CreateAssetFragment;
+import io.multy.ui.fragments.asset.CreateAssetFragment;
 
 /**
  * Created by anschutz1927@gmail.com on 23.11.17.

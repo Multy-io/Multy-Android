@@ -27,8 +27,7 @@ android {
         }
         externalNativeBuild {
             cmake {
-                path "/Users/appscrunch/Downloads/Multy-Core-master/CMakeLists.txt"
-//                path "C:\\workspace\\Multy-Core\\CMakeLists.txt"
+                path "C:\\workspace\\Multy-Core\\CMakeLists.txt"
             }
         }
     }
@@ -71,4 +70,5 @@ dependencies {
     implementation 'com.google.zxing:javase:3.3.0'
 
     implementation 'me.dm7.barcodescanner:zbar:1.9.4'
+    implementation 'com.scottyab:rootbeer-lib:0.0.6'
 }

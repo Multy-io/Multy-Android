@@ -93,5 +93,8 @@
     <string name="send_formatted" formatted="false">Send %s</string>
     <string name="transaction_speed">Transaction speed</string>
     <string name="ready_to_send">Ready to send</string>
+    <string name="root_message">Sorry, rooted devices is not supported yet according to our safety policy. Please use our app on authorized device.</string>
+    <string name="root_title">Root detected</string>
+    <string name="ok">Okay</string>
 
 </resources>
