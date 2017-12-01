@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~  Copyright 2017 Idealnaya rabota LLC
+  ~  Licensed under Multy.io license.
+  ~  See LICENSE for details
+  -->
+
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="io.multy">
 
@@ -22,8 +28,16 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".ui.activities.AssetActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".ui.activities.CreateAssetActivity"></activity>
+        <activity
             android:name=".ui.activities.SeedActivity"
             android:screenOrientation="portrait" />
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
         <activity
             android:name=".ui.activities.AssetRequestActivity"
             android:label="@string/receive"

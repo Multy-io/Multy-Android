@@ -5,52 +5,89 @@
   ~  See LICENSE for details
   -->
 
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraint_parent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimary"
     tools:showIn="io.multy.android.MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:text="WalletFragment"
-        />
+    <FrameLayout
+        android:id="@+id/frame_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/receive"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
+    <ImageView
         android:id="@+id/send"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:text="@string/send"
-        />
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="48dp"
+        android:scaleType="centerInside"
+        android:tint="#87A1C5"
+        app:layout_constraintBottom_toTopOf="@+id/text_send"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/ic_send" />
 
-    <Button
+    <ImageView
         android:id="@+id/receive"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toRightOf="@+id/send"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:scaleType="centerInside"
+        android:tint="#87A1C5"
+        app:layout_constraintBottom_toTopOf="@+id/text_receive"
+        app:layout_constraintEnd_toEndOf="@+id/text_receive"
         app:layout_constraintRight_toLeftOf="@+id/exchange"
-        android:text="@string/receive"
-        />
+        app:layout_constraintStart_toStartOf="@+id/text_receive"
+        app:srcCompat="@drawable/ic_recieve" />
 
-    <Button
+    <ImageView
         android:id="@+id/exchange"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="48dp"
+        app:layout_constraintBottom_toTopOf="@+id/text_exchange"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_exchange" />
+
+    <TextView
+        android:id="@+id/text_send"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:text="Send"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/send"
+        app:layout_constraintStart_toStartOf="@+id/send" />
+
+    <TextView
+        android:id="@+id/text_receive"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="Receive"
+        android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:text="@string/exchange"
-        />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/text_exchange"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="Exchange"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/exchange"
+        app:layout_constraintStart_toStartOf="@+id/exchange" />
 
 
 </android.support.constraint.ConstraintLayout>

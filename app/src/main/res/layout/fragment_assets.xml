@@ -24,5 +24,9 @@
         android:text="WalletsFragment"
         />
 
+    <include layout="@layout/view_assets">
+
+    </include>
+
 
 </android.support.constraint.ConstraintLayout>

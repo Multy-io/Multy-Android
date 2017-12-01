@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/relative_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#b3007aff">
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/constraint_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="#fafafa">
+
+        <TextView
+            android:id="@+id/text_title"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:fontFamily="@font/montserrat"
+            android:gravity="left|center_vertical|start"
+            android:paddingLeft="16dp"
+            android:paddingStart="16dp"
+            android:text="Create or Import New Wallet"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toTopOf="@+id/text_create"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/text_create"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:drawableLeft="@drawable/ic_wallet_create_new"
+            android:drawablePadding="32dp"
+            android:fontFamily="@font/montserrat"
+            android:gravity="center_vertical"
+            android:paddingLeft="16dp"
+            android:paddingStart="16dp"
+            android:text="Create New"
+            android:textColor="#de000000"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/text_import"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/text_import"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:drawableLeft="@drawable/ic_wallet_import"
+            android:drawablePadding="32dp"
+            android:fontFamily="@font/montserrat"
+            android:gravity="center_vertical"
+            android:paddingLeft="16dp"
+            android:paddingStart="16dp"
+            android:text="Import Wallet"
+            android:textColor="#de000000"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/text_cancel"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/text_cancel"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginBottom="8dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:drawableLeft="@drawable/ic_cancel_blue"
+            android:drawablePadding="32dp"
+            android:fontFamily="@font/montserrat"
+            android:gravity="center_vertical"
+            android:paddingLeft="16dp"
+            android:paddingStart="16dp"
+            android:text="Cancel"
+            android:textColor="#de000000"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+
+</RelativeLayout>

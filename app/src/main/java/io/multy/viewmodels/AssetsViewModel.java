@@ -9,4 +9,5 @@ package io.multy.viewmodels;
 import android.arch.lifecycle.ViewModel;
 
 public class AssetsViewModel extends ViewModel {
+
 }

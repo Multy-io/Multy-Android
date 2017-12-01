@@ -9,8 +9,8 @@ import com.samwolfand.oneprefs.Prefs;
 import io.multy.util.Constants;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
-import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 import io.realm.Realm;
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 public class Multy extends Application {
 

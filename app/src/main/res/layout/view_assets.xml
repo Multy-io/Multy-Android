@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~  Copyright 2017 Idealnaya rabota LLC
+  ~  Licensed under Multy.io license.
+  ~  See LICENSE for details
+  -->
+
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scroll_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:showIn="io.multy.android.MainActivity">
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/constraint_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#f9faff">
+
+        <TextView
+            android:id="@+id/text_main"
+            android:layout_width="222dp"
+            android:layout_height="22dp"
+            android:layout_marginTop="16dp"
+            android:focusable="auto"
+            android:focusableInTouchMode="true"
+            android:focusedByDefault="true"
+            android:text="Main"
+            android:textAlignment="center"
+            android:textColor="#FF000000"
+            android:textSize="17sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/pager_portfolios"
+            android:layout_width="0dp"
+            android:layout_height="186dp"
+            android:layout_marginTop="22dp"
+            android:clipToPadding="false"
+            android:paddingEnd="16dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingStart="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_main"
+            tools:listitem="@layout/view_portfolios_item" />
+
+        <View
+            android:id="@+id/devider_gray"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="39dp"
+            android:background="#FF87A1C5"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/pager_portfolios" />
+
+        <TextView
+            android:id="@+id/text_wallets"
+            android:layout_width="wrap_content"
+            android:layout_height="41dp"
+            android:layout_marginEnd="221dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/montserrat"
+            android:gravity="center_vertical"
+            android:text="My Wallets"
+            android:textColor="#87a1c5"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/devider_gray" />
+
+        <ImageView
+            android:id="@+id/image_plus"
+            android:layout_width="28dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="16dp"
+            android:padding="8dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="@+id/text_wallets"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/text_wallets"
+            app:layout_constraintTop_toTopOf="@+id/text_wallets"
+            app:srcCompat="@drawable/ic_add_new_wallet" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_wallets"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="6dp"
+            android:focusableInTouchMode="false"
+            android:focusedByDefault="false"
+            android:touchscreenBlocksFocus="false"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_wallets"
+            tools:listitem="@layout/view_asset_item" />
+
+    </android.support.constraint.ConstraintLayout>
+
+
+</android.support.v4.widget.NestedScrollView>

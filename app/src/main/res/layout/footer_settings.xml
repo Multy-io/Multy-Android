@@ -6,6 +6,7 @@
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_weight="0.2"
@@ -19,16 +20,11 @@
         android:layout_height="wrap_content"
         android:background="@null"
         android:clickable="false"
-        android:src="@android:drawable/ic_menu_info_details" />
+        app:srcCompat="@drawable/ic_settings_tab" />
 
     <TextView
         android:id="@+id/title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="false"
-        android:text="@string/settings"
-        android:textColor="@color/colorPrimary"
-        android:textSize="11sp"
-        />
+        android:text="Settings"
+        style="@style/TabInactiveText" />
 
 </LinearLayout>

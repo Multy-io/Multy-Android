@@ -8,7 +8,6 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -91,6 +90,31 @@
         <item name="android:textSize">16sp</item>
     </style>
 
+    <style name="FullScreenTheme" parent="AppTheme">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
+    <style name="NoTitleTheme" parent="AppTheme">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
+    <style name="BlackMediumText">
+        <item name="android:textColor">@color/common_google_signin_btn_text_dark_focused</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="TabInactiveText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:clickable">false</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+        <item name="android:textColor">#87a1c5</item>
+        <item name="android:textSize">10sp</item>
+    </style>
+
     <style name="ArrowSmall">
         <item name="android:layout_width">@dimen/arrow_size</item>
         <item name="android:layout_height">@dimen/arrow_size</item>
@@ -121,6 +145,13 @@
         <item name="android:elevation">@dimen/elevation_6dp</item>
         <item name="android:gravity">center_horizontal</item>
         <item name="android:textColor">@color/text_grey</item>
+    </style>
+
+    <style name="TransactionTextBlue">
+        <item name="android:fontFamily">@font/montserrat</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColor">#87a1c5</item>
+        <item name="android:textSize">12sp</item>
     </style>
 
 </resources>

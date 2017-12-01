@@ -13,6 +13,8 @@
     <color name="gray_light">#EFEFF4</color>
     <color name="green">#5FCC7D</color>
     <color name="red">#F44336</color>
+    <color name="tab_inactive">#87a1c5</color>
+    <color name="tab_active">#007aff</color>
 
     <color name="grey_divider">#afafaf</color>
 
