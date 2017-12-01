@@ -18,7 +18,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.ui.fragments.BaseSeedFragment;
-import io.multy.ui.fragments.dialogs.SeedDialogFragment;
+import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
 
 /**
  * Created by andre on 08.11.2017.
@@ -46,7 +46,7 @@ public class SeedSummaryFragment extends BaseSeedFragment {
 
     @OnClick(R.id.button_repeat)
     public void onClickRepeat() {
-        SeedDialogFragment.newInstance(
+        SimpleDialogFragment.newInstance(
                 R.string.repeat,
                 R.string.repeat_message,
                 view -> repeat()).show(getFragmentManager(), "");

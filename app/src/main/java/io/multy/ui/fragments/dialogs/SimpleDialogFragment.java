@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.TextView;
 
 import butterknife.BindView;
@@ -16,11 +17,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 
-public class SeedDialogFragment extends DialogFragment {
-
-    private int titleResId;
-    private int messageResId;
-    private View.OnClickListener listener;
+public class SimpleDialogFragment extends DialogFragment {
 
     @BindView(R.id.text_title)
     TextView textViewTitle;
@@ -28,12 +25,40 @@ public class SeedDialogFragment extends DialogFragment {
     @BindView(R.id.text_message)
     TextView textViewMessage;
 
-    public static SeedDialogFragment newInstance(int titleResId, int messageResId, View.OnClickListener positiveListener) {
-        SeedDialogFragment seedDialogFragment = new SeedDialogFragment();
-        seedDialogFragment.setTitleResId(titleResId);
-        seedDialogFragment.setMessageResId(messageResId);
-        seedDialogFragment.setListener(positiveListener);
-        return seedDialogFragment;
+    @BindView(R.id.button_positive)
+    Button buttonPositive;
+
+    @BindView(R.id.button_negative)
+    Button buttonNegative;
+
+    private int titleResId;
+    private int messageResId;
+    private View.OnClickListener listener;
+    private boolean isNegative = false;
+
+
+    public static SimpleDialogFragment newInstance(int titleResId, int messageResId, View.OnClickListener positiveListener) {
+        SimpleDialogFragment simpleDialogFragment = new SimpleDialogFragment();
+        simpleDialogFragment.setTitleResId(titleResId);
+        simpleDialogFragment.setMessageResId(messageResId);
+        simpleDialogFragment.setListener(positiveListener);
+        return simpleDialogFragment;
+    }
+
+    /**
+     * Creates fragment with only one option enabled
+     *
+     * @param titleResId
+     * @param messageResId
+     * @param negativeListener
+     * @return
+     */
+    public static SimpleDialogFragment newInstanceNegative(int titleResId, int messageResId, View.OnClickListener negativeListener) {
+        SimpleDialogFragment simpleDialogFragment = new SimpleDialogFragment();
+        simpleDialogFragment.setTitleResId(titleResId);
+        simpleDialogFragment.setMessageResId(messageResId);
+        simpleDialogFragment.setListenerNegative(negativeListener);
+        return simpleDialogFragment;
     }
 
     @Override
@@ -59,6 +84,10 @@ public class SeedDialogFragment extends DialogFragment {
         ButterKnife.bind(this, view);
         textViewMessage.setText(messageResId);
         textViewTitle.setText(titleResId);
+        if (isNegative) {
+            buttonNegative.setVisibility(View.GONE);
+            buttonPositive.setText(R.string.ok);
+        }
         return view;
     }
 
@@ -73,16 +102,8 @@ public class SeedDialogFragment extends DialogFragment {
         dismiss();
     }
 
-    public int getTitleResId() {
-        return titleResId;
-    }
-
     public void setTitleResId(int titleResId) {
         this.titleResId = titleResId;
-    }
-
-    public int getMessageResId() {
-        return messageResId;
     }
 
     public void setMessageResId(int messageResId) {
@@ -95,5 +116,10 @@ public class SeedDialogFragment extends DialogFragment {
 
     public void setListener(View.OnClickListener listener) {
         this.listener = listener;
+    }
+
+    public void setListenerNegative(View.OnClickListener listener) {
+        this.listener = listener;
+        this.isNegative = true;
     }
 }

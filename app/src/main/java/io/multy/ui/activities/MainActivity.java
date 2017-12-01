@@ -20,10 +20,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.scottyab.rootbeer.RootBeer;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
+import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
 import io.multy.ui.fragments.main.AssetsFragment;
 import io.multy.ui.fragments.main.ContactsFragment;
 import io.multy.ui.fragments.main.FeedFragment;
@@ -45,12 +48,18 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         isFirstFragmentCreation = true;
-
         setupFooter();
         setFragment(R.id.container_frame, AssetsFragment.newInstance());
 
-//        startActivity(new Intent(this, SeedActivity.class));
-//        NativeDataHelper.runTest();
+        preventRootIfDetected();
+    }
+
+    private void preventRootIfDetected() {
+        RootBeer rootBeer = new RootBeer(this);
+        if (rootBeer.isRootedWithoutBusyBoxCheck()) {
+            SimpleDialogFragment.newInstanceNegative(R.string.root_title, R.string.root_message, view -> finish())
+                    .show(getSupportFragmentManager(), "");
+        }
     }
 
     private void setFragment(@IdRes int container, Fragment fragment) {
@@ -125,7 +134,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
      * Set parameter @mustEnable true to set icon and text to "enable" color.
      * Set parameter @mustEnable false to set icon and text to "disable" color.
      *
-     * @param position element position that must change color
+     * @param position   element position that must change color
      * @param mustEnable true to set icon and text to "enable" color
      */
     private void changeStateLastTab(int position, boolean mustEnable) {
@@ -142,8 +151,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         int filterColor;
         if (mustEnable) {
             filterColor = ContextCompat.getColor(this, R.color.tab_active);
-        }
-        else {
+        } else {
             filterColor = ContextCompat.getColor(this, R.color.tab_inactive);
         }
         title.setTextColor(filterColor);
