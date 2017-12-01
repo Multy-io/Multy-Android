@@ -13,7 +13,7 @@
     android:orientation="vertical">
 
     <ImageButton
-        android:id="@+id/image"
+        android:id="@+id/image_logo"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </FrameLayout>

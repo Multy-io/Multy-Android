@@ -1,0 +1,30 @@
+<!--
+  ~ Copyright 2017 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+        android:width="44dp"
+        android:height="44dp"
+        android:viewportWidth="44.0"
+        android:viewportHeight="44.0">
+    <path
+        android:pathData="M8.14,33a16,16 0,1 1,27.71 0l-4.33,-2.5a11,11 0,1 0,-19.05 0L8.14,33z"
+        android:fillType="evenOdd"
+        android:fillColor="#D8D8D8"/>
+    <path
+        android:strokeWidth="1"
+        android:pathData="M8.33,32.31L11.8,30.31a11.5,11.5 0,1 1,20.4 0l3.47,2A15.5,15.5 0,0 0,8.58 17.25a15.5,15.5 0,0 0,-0.24 15.06z"
+        android:fillType="evenOdd"
+        android:strokeColor="#FFF"
+        android:fillColor="#00000000"/>
+    <path
+        android:pathData="M20.54,23.16c-0.15,0.12 -0.33,0.28 -0.46,0.44l-6.46,6.4 8.8,-2.22c0.19,-0.03 0.38,-0.07 0.56,-0.14l0.02,-0a2.57,2.57 0,0 0,1.22 -0.99c0.78,-1.2 0.51,-2.84 -0.68,-3.62 -0.93,-0.6 -2.04,-0.55 -2.85,0.04l-0,-0 -0.14,0.1z"
+        android:fillType="evenOdd"
+        android:fillColor="#606060"/>
+    <path
+        android:pathData="M8.14,33a15.99,15.99 0,0 1,-1.9 -5.22l4.92,-0.87c0.22,1.25 0.66,2.46 1.31,3.59L8.14,33z"
+        android:fillType="evenOdd"
+        android:fillColor="#4CD964"/>
+</vector>

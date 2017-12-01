@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2017 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:showIn="io.multy.android.AssetRequestActivity">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        tools:showIn="io.multy.android.AssetRequestActivity">
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/container_receiver"
+            android:layout_width="@dimen/dp0"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:background="@drawable/shape_squircle_white"
+            android:elevation="@dimen/elevation_4dp"
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/image_qr"
+                android:layout_width="@dimen/qr_size"
+                android:layout_height="@dimen/qr_size"
+                android:elevation="@dimen/elevation_4dp"
+                android:scaleType="fitCenter"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="ContentDescription" />
+
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="@+id/image_qr"
+                app:layout_constraintEnd_toEndOf="@+id/image_qr"
+                app:layout_constraintStart_toStartOf="@+id/image_qr"
+                app:layout_constraintTop_toTopOf="@+id/image_qr" />
+
+            <TextView
+                android:id="@+id/text_address"
+                android:layout_width="@dimen/dp0"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_30dp"
+                android:layout_marginRight="@dimen/margin_30dp"
+                android:gravity="center"
+                android:textColor="@color/text_main_dark"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/image_qr"
+                tools:text="1GLY7sDe7a6xsewDdUNA6F8CEoAxQsHV37"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
+
+            <ImageView
+                style="@style/ArrowSmall"
+                app:layout_constraintBottom_toBottomOf="@+id/text_address"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/text_address"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:id="@+id/button_generate_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:background="@drawable/shape_squircle_blue"
+                android:padding="5dp"
+                android:paddingEnd="@dimen/dimen_20dp"
+                android:paddingStart="@dimen/dimen_20dp"
+                android:text="@string/generate_new_address"
+                android:textColor="@color/colorPrimaryDark"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_address"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+
+            <View
+                android:id="@+id/divider_qr"
+                android:layout_width="@dimen/dp0"
+                android:layout_height="@dimen/divider_height_medium"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:background="@color/grey_divider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/button_generate_address" />
+
+            <TextView
+                android:id="@+id/button_request_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/divider_margin_top"
+                android:text="@string/request_summ"
+                android:textColor="@color/text_grey"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/divider_qr"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+
+            <TextView
+                android:id="@+id/text_balance_original_send"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_main"
+                android:textSize="32sp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toTopOf="@+id/text_balance_currency_send"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/divider_qr"
+                app:layout_constraintVertical_bias="0.20999998"
+                app:layout_constraintVertical_chainStyle="packed"
+                tools:text="23 BTC"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/text_balance_currency_send"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_grey"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/divider_summ"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_balance_original_send"
+                tools:text="583980 USD"
+                tools:visibility="visible"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"/>
+
+            <ImageView
+                style="@style/ArrowSmall"
+                app:layout_constraintBottom_toBottomOf="@+id/divider_summ"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/divider_qr"
+                tools:ignore="ContentDescription" />
+
+            <View
+                android:id="@+id/divider_summ"
+                android:layout_width="@dimen/dp0"
+                android:layout_height="@dimen/divider_height_medium"
+                android:layout_marginTop="@dimen/divider_margin_top"
+                android:background="@color/grey_divider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/button_request_amount" />
+
+            <TextView
+                android:id="@+id/text_wallet_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_10dp"
+                android:textColor="@color/orange"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/divider_summ"
+                tools:text="BTC Personal"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"/>
+
+            <TextView
+                android:id="@+id/text_balance_original"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_grey"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_wallet_name"
+                tools:text="23 BTC"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+
+            <ImageView
+                style="@style/ArrowSmall"
+                android:layout_marginTop="@dimen/margin_10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/divider_summ"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:id="@+id/text_balance_currency"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_grey"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_balance_original"
+                tools:text="583980 USD"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+
+        </android.support.constraint.ConstraintLayout>
+
+        <View
+            android:layout_width="@dimen/dp0"
+            android:layout_height="@dimen/divider_height_medium"
+            android:layout_marginEnd="@dimen/activity_horizontal_margin"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="@dimen/margin_4dp"
+            android:background="@color/text_grey_transparent_50"
+            app:layout_constraintBottom_toBottomOf="@+id/text_send_via"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/text_send_via" />
+
+        <TextView
+            android:id="@+id/text_send_via"
+            android:layout_width="wrap_content"
+            android:layout_height="17dp"
+            android:layout_marginTop="@dimen/margin_30dp"
+            android:background="@color/background_main"
+            android:paddingEnd="@dimen/activity_horizontal_margin"
+            android:paddingStart="@dimen/activity_horizontal_margin"
+            android:text="@string/send_via"
+            android:textColor="@color/text_main"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/container_receiver"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+
+        <TextView
+            android:id="@+id/button_address"
+            style="@style/ShareButton"
+            android:drawablePadding="@dimen/margin_12dp"
+            android:drawableTop="@drawable/ic_address_book2"
+            android:paddingTop="@dimen/margin_12dp"
+            android:layout_marginTop="@dimen/margin_10dp"
+            android:text="@string/address_book"
+            app:layout_constraintHorizontal_chainStyle="spread"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/button_scan_wireless"
+            app:layout_constraintTop_toBottomOf="@id/text_send_via" />
+
+        <TextView
+            android:id="@+id/button_scan_wireless"
+            style="@style/ShareButton"
+            android:drawablePadding="@dimen/margin_9dp"
+            android:drawableTop="@drawable/ic_nfc"
+            android:paddingTop="@dimen/margin_10dp"
+            android:layout_marginTop="@dimen/margin_11dp"
+            android:text="@string/wireless_scan"
+            app:layout_constraintLeft_toRightOf="@+id/button_address"
+            app:layout_constraintRight_toLeftOf="@+id/btn_options"
+            app:layout_constraintTop_toBottomOf="@id/text_send_via" />
+
+        <TextView
+            android:id="@+id/btn_options"
+            style="@style/ShareButton"
+            android:drawablePadding="@dimen/margin_7dp"
+            android:drawableTop="@drawable/ic_options"
+            android:paddingTop="@dimen/margin_10dp"
+            android:layout_marginTop="@dimen/margin_11dp"
+            android:text="@string/more_options"
+            app:layout_constraintLeft_toRightOf="@+id/button_scan_wireless"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_send_via" />
+
+    </android.support.constraint.ConstraintLayout>
+
+</ScrollView>

@@ -52,7 +52,7 @@ public class MasterKeyGenerator {
 //        return null;
 //    }
 
-    public static String generateKey(Context context){
+    public static byte[] generateKey(Context context){
         ByteArrayOutputStream outputStream = null;
         try {
             outputStream = new ByteArrayOutputStream();
@@ -61,7 +61,7 @@ public class MasterKeyGenerator {
             outputStream.write(getSecureID(context));
             MessageDigest md = MessageDigest.getInstance(context.getString(R.string.sha_256));
             md.update(outputStream.toByteArray());
-            return new String(md.digest());
+            return md.digest();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

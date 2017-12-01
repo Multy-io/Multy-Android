@@ -10,12 +10,15 @@ import io.multy.util.Constants;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
+import io.realm.Realm;
 
 public class Multy extends Application {
 
     @Override
     public void onCreate() {
         super.onCreate();
+
+        Realm.init(this);
 
         new Prefs.Builder()
                 .setContext(this)

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2017 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize">
+
+    <TextView
+        android:id="@+id/button_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|center_horizontal"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:background="?attr/selectableItemBackground"
+        android:padding="@dimen/margin_2dp"
+        android:text="@string/cancel"
+        android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+        android:textColor="@color/text_main" />
+
+</android.support.v7.widget.Toolbar>

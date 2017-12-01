@@ -17,5 +17,10 @@ Timber - Apache 2.0 - https://github.com/JakeWharton/timber/blob/master/LICENSE.
 gson - Apache 2.0 - https://github.com/google/gson/blob/master/LICENSE
 Retrofit - Apache 2.0 - https://github.com/square/retrofit/blob/master/LICENSE.txt
 OnePrefs - Apache 2.0 - https://github.com/swolfand/OnePrefs/blob/master/license.txt
+Zxing - Apache 2.0 - https://github.com/zxing/zxing/blob/master/LICENSE
+Barcodescanner Zbar - Apache 2.0 - https://github.com/dm77/barcodescanner/blob/master/LICENSE
+Calligraphy - Apache 2.0 -https://github.com/chrisjenx/Calligraphy/blob/master/LICENSE
+
+
 
 Dependencies not listed here have their own licenses, which can be found in corresponding source files.

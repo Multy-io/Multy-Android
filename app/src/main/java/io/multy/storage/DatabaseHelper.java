@@ -1,23 +1,19 @@
 /*
- *  Copyright 2017 Idealnaya rabota LLC
- *  Licensed under Multy.io license.
- *  See LICENSE for details
+ * Copyright 2017 Idealnaya rabota LLC
+ * Licensed under Multy.io license.
+ * See LICENSE for details
  */
 
 package io.multy.storage;
 
 import android.content.Context;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
-import io.multy.encryption.MasterKeyGenerator;
+import io.multy.model.entities.Wallet;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
-
-/**
- * Created by Ihar Paliashchuk on 10.11.2017.
- * ihar.paliashchuk@gmail.com
- */
 
 public class DatabaseHelper {
 
@@ -28,10 +24,13 @@ public class DatabaseHelper {
     }
 
     private RealmConfiguration getRealmConfiguration(Context context){
-        return new RealmConfiguration.Builder()
-                .encryptionKey(Arrays.copyOfRange(MasterKeyGenerator.generateKey(context).getBytes(),
-                        0 , MasterKeyGenerator.generateKey(context).getBytes().length - 1))
-                .build();
+//        if (MasterKeyGenerator.generateKey(context) != null) {
+//            return new RealmConfiguration.Builder()
+//                    .encryptionKey(MasterKeyGenerator.generateKey(context))
+//                    .build();
+//        } else {
+            return new RealmConfiguration.Builder().build();
+//        }
     }
 
     public void saveWallets(){
@@ -41,6 +40,11 @@ public class DatabaseHelper {
 //                realm.insertOrUpdate();
             }
         });
+    }
+
+    public List<Wallet> getWallets(){
+//        return realm.where(Wallet.class).findAll();
+        return new ArrayList<>();
     }
 
 //    public void saveTransactions();

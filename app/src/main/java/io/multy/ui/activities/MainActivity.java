@@ -41,8 +41,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         setupFooter();
         setFragment(R.id.inner_container, AssetsFragment.newInstance());
 
-        startActivity(new Intent(this, SeedActivity.class));
-//        NativeDataHelper.makeTransaction();
+//        startActivity(new Intent(this, SeedActivity.class));
     }
 
     private void setFragment(@IdRes int container, Fragment fragment) {
@@ -68,16 +67,19 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
     public void onTabSelected(TabLayout.Tab tab) {
         switch (tab.getPosition()) {
             case Constants.POSITION_ASSETS:
-                setFragment(R.id.full_container, AssetsFragment.newInstance());
+//                setFragment(R.id.full_container, AssetsFragment.newInstance());
+                startActivity(new Intent(this, AssetSendActivity.class));
                 break;
             case Constants.POSITION_FEED:
-                setFragment(R.id.full_container, FeedFragment.newInstance());
+//                setFragment(R.id.full_container, FeedFragment.newInstance());
+                startActivity(new Intent(this, AssetRequestActivity.class));
                 break;
             case Constants.POSITION_CONTACTS:
-                setFragment(R.id.full_container, ContactsFragment.newInstance());
+//                setFragment(R.id.full_container, ContactsFragment.newInstance());
+                startActivity(new Intent(this, AssetSendActivity.class));
                 break;
             case Constants.POSITION_SETTINGS:
-                setFragment(R.id.full_container, SettingsFragment.newInstance());
+//                setFragment(R.id.full_container, SettingsFragment.newInstance());
                 break;
         }
     }
@@ -99,9 +101,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         tabLayout.addTab(tabLayout.newTab().setCustomView(R.layout.footer_contacts));
         tabLayout.addTab(tabLayout.newTab().setCustomView(R.layout.footer_settings));
         tabLayout.addOnTabSelectedListener(this);
-    }
-
-    ;
+    };
 
     private void unCheckAllTabs() {
         tabLayout.getTabAt(0).getCustomView().setSelected(false);

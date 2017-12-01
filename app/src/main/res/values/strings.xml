@@ -42,4 +42,56 @@
     <string name="repeat">Repeat</string>
     <string name="repeat_message">Restart the seed validation process?</string>
 
+    <string name="to">TO</string>
+    <string name="fee_description">A donation is a gift given by physical or legal persons, typically for charitable purposes and/or to benefit a cause. A donation may take various forms, including cash offering, services</string>
+    <string name="select_wallet">Select Wallet:</string>
+    <string name="donation_summ">Donation Summ</string>
+    <string name="allow_donation_for_multy">Allow Donation For Multy</string>
+    <string name="donation_for_multy">Donation For Multy</string>
+    <string name="select_speed">Select Speed</string>
+    <string name="generate_new_address">Generate New Address</string>
+    <string name="request_summ">Request Summ</string>
+    <string name="send_via">Send via:</string>
+    <string name="address_book">Address \nBook</string>
+    <string name="wireless_scan">Wireless \nScan</string>
+    <string name="more_options">More \nOptions</string>
+    <string name="slide_to_send">Slide to Send</string>
+    <string name="transaction_speed_and_fee">Transaction speed and Fee</string>
+    <string name="sending_from">Sending From</string>
+    <string name="hint_add_note">+ Add Note</string>
+    <string name="recent_addresses">Recent Addresses</string>
+    <string name="scan_qr">Scan \nQR</string>
+    <string name="hint_search_or_enter_address">Search or Enter Address Here</string>
+    <string name="btc">BТС</string>
+    <string name="pay_for_commission">Pay for commission</string>
+    <string name="spendable">Spendable:</string>
+    <string name="max">MAX</string>
+    <string name="close">Close</string>
+    <string name="choose_amount">Please, choose amount</string>
+    <string name="usd">USD</string>
+
+
+    <string-array name="fees">
+        <item>Very Fast • 10 min</item>
+        <item>Fast • 6 hour</item>
+        <item>Medium • 5 days</item>
+        <item>Slow • 1 week</item>
+        <item>Very Slow • 2 weeks</item>
+        <item>Custom</item>
+    </string-array>
+    <string-array name="blocks">
+        <item>6 blocks</item>
+        <item>10 blocks</item>
+        <item>20 blocks</item>
+        <item>50 blocks</item>
+        <item>70 blocks</item>
+        <item> </item>
+    </string-array>
+
+    <string name="send_to">Send to</string>
+    <string name="send_from">Send from</string>
+    <string name="send_formatted" formatted="false">Send %s</string>
+    <string name="transaction_speed">Transaction speed</string>
+    <string name="ready_to_send">Ready to send</string>
+
 </resources>

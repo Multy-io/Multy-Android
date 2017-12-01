@@ -10,4 +10,78 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="brick_radius">5dp</dimen>
     <dimen name="brick_margin">2dp</dimen>
+
+    <dimen name="dp0">0dp</dimen>
+
+    <!-- spacing around recycler view list item -->
+    <dimen name="wallet_item_margin_height">5dp</dimen>
+    <dimen name="wallet_item_margin_width">2dp</dimen>
+
+    <!-- list item spacing -->
+    <dimen name="list_item_height">92dp</dimen>
+    <dimen name="list_item_image">40dp</dimen>
+    <dimen name="fee_image_size">44dp</dimen>
+    <dimen name="checkmark_size">24dp</dimen>
+    <dimen name="fee_height">72dp</dimen>
+
+    <dimen name="divider_height_small">0.5dp</dimen>
+    <dimen name="divider_height_medium">1dp</dimen>
+
+    <dimen name="btn_height">64dp</dimen>
+
+    <dimen name="elevation_2dp">2dp</dimen>
+    <dimen name="elevation_3dp">3dp</dimen>
+    <dimen name="elevation_4dp">4dp</dimen>
+    <dimen name="elevation_6dp">6dp</dimen>
+    <dimen name="elevation_10dp">10dp</dimen>
+    <dimen name="elevation_12dp">12dp</dimen>
+
+    <dimen name="dimen_60dp">60dp</dimen>
+    <dimen name="qr_size">130dp</dimen>
+    <dimen name="dimen_150dp">150dp</dimen>
+    <dimen name="input_address_height">70dp</dimen>
+    <dimen name="donation_height">60dp</dimen>
+    <dimen name="donation_summ_height">80dp</dimen>
+
+    <dimen name="margin_2dp">2dp</dimen>
+    <dimen name="margin_4dp">4dp</dimen>
+    <dimen name="margin_5dp">5dp</dimen>
+    <dimen name="margin_7dp">7dp</dimen>
+    <dimen name="margin_8dp">8dp</dimen>
+    <dimen name="margin_10dp">10dp</dimen>
+    <dimen name="margin_11dp">11dp</dimen>
+    <dimen name="margin_12dp">12dp</dimen>
+    <dimen name="margin_13dp">13dp</dimen>
+    <dimen name="margin_14dp">14dp</dimen>
+    <dimen name="margin_18dp">18dp</dimen>
+    <dimen name="margin_24dp">24dp</dimen>
+    <dimen name="margin_30dp">30dp</dimen>
+    <dimen name="margin_35dp">35dp</dimen>
+    <dimen name="margin_45dp">45dp</dimen>
+    <dimen name="dimen_20dp">20dp</dimen>
+    <dimen name="dimen_40dp">40dp</dimen>
+    <dimen name="dimen_70dp">70dp</dimen>
+
+    <dimen name="arrow_size">24dp</dimen>
+    <dimen name="divider_margin_top">25dp</dimen>
+
+    <dimen name="share_btn_width">90dp</dimen>
+    <dimen name="share_btn_height">85dp</dimen>
+
+    <dimen name="send_btn_height">106dp</dimen>
+
+    <dimen name="summary_logo_size">70dp</dimen>
+    <dimen name="spendable_height">40dp</dimen>
+    <dimen name="exchange_arrow_size">24dp</dimen>
+    <dimen name="input_min_width">50dp</dimen>
+
+    <dimen name="sending_animation_size">80dp</dimen>
+    <dimen name="margin_22dp">22dp</dimen>
+    <dimen name="margin_19dp">19dp</dimen>
+    <dimen name="margin_9dp">9dp</dimen>
+    <dimen name="margin_21dp">21dp</dimen>
+    <dimen name="donation_margin_top">47dp</dimen>
+
+    <dimen name="amount_size_medium">16sp</dimen>
+    <dimen name="amount_size_huge">42sp</dimen>
 </resources>
