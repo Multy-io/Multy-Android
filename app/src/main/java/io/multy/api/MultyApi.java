@@ -75,8 +75,7 @@ public enum MultyApi implements MultyApiInterface {
 
         @Override
         public Call<AuthResponse> auth(String userId, String deviceId, String password) {
-            Call<AuthResponse> responseCall = api.auth(new AuthEntity(userId, deviceId, password));
-            return responseCall;
+            return api.auth(new AuthEntity(userId, deviceId, password));
         }
 
         @Override

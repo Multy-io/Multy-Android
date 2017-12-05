@@ -29,4 +29,8 @@ public class AuthResponse {
     public String getToken() {
         return token;
     }
+
+    public String getExpireDateString() {
+        return expireDate;
+    }
 }

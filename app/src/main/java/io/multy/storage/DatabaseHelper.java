@@ -11,7 +11,12 @@ import android.content.Context;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.multy.model.entities.Wallet;
+import io.multy.model.entities.ByteSeed;
+import io.multy.model.entities.RootKey;
+import io.multy.model.entities.Token;
+import io.multy.model.entities.UserId;
+import io.multy.model.entities.wallet.Wallet;
+import io.multy.model.entities.wallet.WalletRealmObject;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
@@ -47,20 +52,44 @@ public class DatabaseHelper {
         return new ArrayList<>();
     }
 
-    public void saveRootKey() {
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-            }
-        });
+    public void saveWallet(WalletRealmObject wallet){
+        realm.executeTransaction(realm -> realm.insertOrUpdate(wallet));
     }
 
-    public void saveToken() {
-
+    public WalletRealmObject getWallet(){
+        return realm.where(WalletRealmObject.class).findFirst();
     }
 
-    public void getToken() {
+    public void saveRootKey(RootKey key) {
+        realm.executeTransaction(realm -> realm.insertOrUpdate(key));
+    }
 
+    public RootKey getRootKey() {
+        return realm.where(RootKey.class).findFirst();
+    }
+
+    public void saveToken(Token token) {
+        realm.executeTransaction(realm -> realm.insertOrUpdate(token));
+    }
+
+    public Token getToken() {
+        return realm.where(Token.class).findFirst();
+    }
+
+    public void saveUserId(UserId userId) {
+        realm.executeTransaction(realm -> realm.insertOrUpdate(userId));
+    }
+
+    public UserId getUserId() {
+        return realm.where(UserId.class).findFirst();
+    }
+
+    public void saveSeed(ByteSeed seed) {
+        realm.executeTransaction(realm -> realm.insertOrUpdate(seed));
+    }
+
+    public ByteSeed getSeed() {
+        return realm.where(ByteSeed.class).findFirst();
     }
 
 

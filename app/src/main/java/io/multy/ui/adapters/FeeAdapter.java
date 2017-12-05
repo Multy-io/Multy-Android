@@ -23,8 +23,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.multy.R;
-import io.multy.model.entities.BitcoinWallet;
-import io.multy.model.entities.Wallet;
+import io.multy.model.entities.wallet.BitcoinWallet;
+import io.multy.model.entities.wallet.Wallet;
 
 public class FeeAdapter extends RecyclerView.Adapter<FeeAdapter.FeeHolder> {
 

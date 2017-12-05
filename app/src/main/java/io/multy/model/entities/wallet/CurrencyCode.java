@@ -4,7 +4,7 @@
  * See LICENSE for details
  */
 
-package io.multy.model.entities;
+package io.multy.model.entities.wallet;
 
 public enum CurrencyCode {
 

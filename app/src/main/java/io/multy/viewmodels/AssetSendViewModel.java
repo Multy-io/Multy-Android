@@ -12,8 +12,8 @@ import android.content.Context;
 import java.util.List;
 
 import io.multy.model.DataManager;
-import io.multy.model.entities.CurrencyCode;
-import io.multy.model.entities.Wallet;
+import io.multy.model.entities.wallet.CurrencyCode;
+import io.multy.model.entities.wallet.Wallet;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 

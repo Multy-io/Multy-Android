@@ -17,7 +17,7 @@ import android.view.ViewGroup;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.multy.R;
-import io.multy.model.entities.Wallet;
+import io.multy.model.entities.wallet.Wallet;
 import io.multy.ui.activities.AssetRequestActivity;
 import io.multy.ui.adapters.WalletAdapter;
 import io.multy.ui.fragments.BaseFragment;

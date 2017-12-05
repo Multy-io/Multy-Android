@@ -1,6 +1,13 @@
 apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
 
+def versionMajor = 0
+def versionMinor = 0
+def versionPatch = 1
+
+def version_code = versionMajor * 100 + versionMinor * 10 + versionPatch
+def version_name = "${versionMajor}.${versionMinor}.${versionPatch}"
+
 
 android {
     compileSdkVersion 26
@@ -8,8 +15,8 @@ android {
         applicationId "io.multy"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 1
-        versionName "1.0"
+        versionCode version_code
+        versionName version_name
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
@@ -20,6 +27,7 @@ android {
         ndk {
             abiFilters 'x86', 'armeabi', 'armeabi-v7a', 'arm64-v8a'
         }
+
     }
     buildTypes {
         release {

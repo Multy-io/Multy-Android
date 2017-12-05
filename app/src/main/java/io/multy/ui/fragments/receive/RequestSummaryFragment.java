@@ -77,7 +77,7 @@ public class RequestSummaryFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
 
-        textAddress.setText(viewModel.getWallet().getAddress());
+        textAddress.setText(viewModel.getWallet().getCreationAddress());
         textWalletName.setText(viewModel.getWallet().getName());
         textBalanceOriginal.setText(viewModel.getWallet().getBalanceWithCode());
         textBalanceCurrency.setText(String.valueOf(viewModel.getWallet().getBalance()));
