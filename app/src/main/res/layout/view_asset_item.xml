@@ -26,11 +26,11 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="11dp"
+            android:layout_marginTop="4dp"
             android:fontFamily="@font/montserrat"
             android:text="BTC ∙ Personal"
             android:textColor="#FFFF9500"
-            android:textSize="16sp"
+            android:textSize="12sp"
             app:layout_constraintEnd_toStartOf="@+id/image_chevron"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/badge_background"
@@ -38,14 +38,14 @@
 
         <ImageView
             android:id="@+id/badge_background"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_marginBottom="8dp"
             android:layout_marginStart="7dp"
+            android:src="@drawable/ic_btc_huge"
             app:layout_constraintBottom_toBottomOf="@+id/text_equals"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/text_name"
-            app:srcCompat="@drawable/ic_btc" />
+            app:layout_constraintTop_toTopOf="@+id/text_name" />
 
         <TextView
             android:id="@+id/text_amount"
@@ -57,7 +57,7 @@
             android:fontFamily="@font/montserrat"
             android:text="0.1234"
             android:textColor="#FF363636"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@+id/text_currency"
             app:layout_constraintHorizontal_bias="0.0"
@@ -74,7 +74,7 @@
             android:fontFamily="@font/montserrat"
             android:text="BTC"
             android:textColor="#87a1c5"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@+id/text_amount"
             app:layout_constraintEnd_toStartOf="@+id/image_chevron"
@@ -85,12 +85,12 @@
             android:id="@+id/text_equals"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="11dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginTop="4dp"
             android:fontFamily="@font/montserrat"
             android:text="1 233 $"
             android:textColor="#87a1c5"
-            android:textSize="16sp"
+            android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/image_chevron"
             app:layout_constraintHorizontal_bias="0.0"
@@ -109,5 +109,4 @@
             app:srcCompat="@drawable/ic_chevron" />
 
     </android.support.constraint.ConstraintLayout>
-
 </android.support.v7.widget.CardView>

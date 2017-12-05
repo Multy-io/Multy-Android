@@ -17,16 +17,25 @@ public class NativeDataHelper {
         System.loadLibrary("core_jnid");
     }
 
+    public enum Currency {
+        BITCOIN, ETHEREUM
+    }
+
+    public enum AddressType {
+        ADDRESS_EXTERNAL,
+        ADDRESS_INTERNAL
+    }
+
     public static native String makeMnemonic() throws JniException;
 
     public static native byte[] makeSeed(String mnemonic) throws JniException;
 
-    public static native byte[] makeAccountAddress() throws JniException;
+    public static native byte[] makeAccountAddress(int index, int currency) throws JniException;
 
     public static native String makeAccountId(byte[] seed) throws JniException;
 
-    public static native int runTest();
-
     public static native String makeTransaction() throws JniException;
+
+    public static native int runTest();
 
 }

@@ -96,5 +96,7 @@
     <string name="root_message">Sorry, rooted devices is not supported yet according to our safety policy. Please use our app on authorized device.</string>
     <string name="root_title">Root detected</string>
     <string name="ok">Okay</string>
+    <string name="main">Main</string>
+    <string name="my_wallets">My Wallets</string>
 
 </resources>

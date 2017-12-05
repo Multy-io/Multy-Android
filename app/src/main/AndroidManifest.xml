@@ -30,7 +30,7 @@
         <activity
             android:name=".ui.activities.AssetActivity"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".ui.activities.CreateAssetActivity"></activity>
+        <activity android:name=".ui.activities.CreateAssetActivity"/>
         <activity
             android:name=".ui.activities.SeedActivity"
             android:screenOrientation="portrait" />
@@ -52,6 +52,8 @@
             android:label="@string/exchange"
             android:screenOrientation="portrait"/>
         <activity android:name=".ui.activities.ScanActivity" />
-    </application>
 
+        <meta-data android:name="firebase_analytics_collection_deactivated" android:value="true" />
+
+    </application>
 </manifest>

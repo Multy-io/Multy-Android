@@ -60,7 +60,6 @@ public class AssetsFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-//        return DataBindingUtil.inflate(inflater, R.layout.fragment_wallet, container, false).getRoot();
         View view = inflater.inflate(R.layout.fragment_assets, container, false);
         subscribeViewModel();
         ButterKnife.bind(this, view);
@@ -146,7 +145,7 @@ public class AssetsFragment extends BaseFragment {
         pagerPortfolios.setVisibility(visibility);
     }
 
-    @OnClick(R.id.image_plus)
+    @OnClick(R.id.button_add)
     void onPlusClick() {
         showAddWalletActions();
     }
