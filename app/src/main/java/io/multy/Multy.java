@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.ContextWrapper;
 import android.util.Base64;
 
+import com.crashlytics.android.Crashlytics;
 import com.samwolfand.oneprefs.Prefs;
 
 import io.multy.util.Constants;
@@ -34,13 +35,16 @@ public class Multy extends Application {
             try {
                 final String mnemonic = NativeDataHelper.makeMnemonic();
                 final byte[] seed = NativeDataHelper.makeSeed(mnemonic);
+                final String userId = NativeDataHelper.makeAccountId(seed);
 
                 Prefs.putString("seed", Base64.encodeToString(seed, Base64.DEFAULT));
                 Prefs.putString("mnemonic", mnemonic);
+                Prefs.putString("userId", userId);
 
                 Prefs.putBoolean(Constants.PREF_FIRST_SUCCESSFUL_START, false);
             } catch (JniException e) {
                 e.printStackTrace();
+                Crashlytics.logException(e);
                 //TODO show CRITICAL EXCEPTION HERE. Can the app work without seed?
             }
         }

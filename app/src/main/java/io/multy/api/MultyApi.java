@@ -7,17 +7,25 @@
 package io.multy.api;
 
 
+import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.samwolfand.oneprefs.Prefs;
 
+import java.io.IOException;
+
+import javax.annotation.Nullable;
+
 import io.multy.model.entities.AuthEntity;
 import io.multy.model.responses.AuthResponse;
 import io.multy.util.Constants;
+import okhttp3.Authenticator;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.ResponseBody;
+import okhttp3.Route;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -40,11 +48,24 @@ public enum MultyApi implements MultyApiInterface {
                         .addInterceptor(chain -> {
                             Request original = chain.request();
                             Request request = original.newBuilder()
-                                    //TODO check auth date and remove Bearer hardcode
                                     .header("Authorization", "Bearer " + Prefs.getString(Constants.PREF_AUTH, ""))
                                     .method(original.method(), original.body())
                                     .build();
                             return chain.proceed(request);
+                        })
+                        .authenticator(new Authenticator() {
+
+                            @Nullable
+                            @Override
+                            public Request authenticate(Route route, okhttp3.Response response) throws IOException {
+                                Call<AuthResponse> responseCall = api.auth(new AuthEntity("userId", Settings.Secure.ANDROID_ID, "admin"));
+                                AuthResponse body = responseCall.execute().body();
+                                Prefs.putString(Constants.PREF_AUTH, body.getToken());
+
+                                return response.request().newBuilder()
+                                        .header("Authorization", "Bearer " + Prefs.getString(Constants.PREF_AUTH, ""))
+                                        .build();
+                            }
                         })
                         .build())
                 .build().create(ApiServiceInterface.class);
@@ -67,6 +88,17 @@ public enum MultyApi implements MultyApiInterface {
         @Override
         public void getTickets(String firstCurrency, String secondCurrency) {
             Call<ResponseBody> responseCall = api.getTickets(firstCurrency, secondCurrency);
+            responseCall.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    Log.i("wise", "onResponse Tickets ");
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    Log.i("wise", "onFailure Tickets ");
+                }
+            });
         }
 
         @Override

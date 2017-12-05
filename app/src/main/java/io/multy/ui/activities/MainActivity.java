@@ -138,24 +138,28 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
      * @param mustEnable true to set icon and text to "enable" color
      */
     private void changeStateLastTab(int position, boolean mustEnable) {
-        TabLayout.Tab tab = tabLayout.getTabAt(position);
-        if (tab == null) {
-            return;
+        try {
+            TabLayout.Tab tab = tabLayout.getTabAt(position);
+            if (tab == null) {
+                return;
+            }
+            View view = tab.getCustomView();
+            if (view == null) {
+                return;
+            }
+            TextView title = view.findViewById(R.id.title);
+            ImageView image = view.findViewById(R.id.image_logo);
+            int filterColor;
+            if (mustEnable) {
+                filterColor = ContextCompat.getColor(this, R.color.tab_active);
+            } else {
+                filterColor = ContextCompat.getColor(this, R.color.tab_inactive);
+            }
+            title.setTextColor(filterColor);
+            image.setColorFilter(filterColor, PorterDuff.Mode.SRC_IN);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        View view = tab.getCustomView();
-        if (view == null) {
-            return;
-        }
-        TextView title = view.findViewById(R.id.title);
-        ImageView image = view.findViewById(R.id.image_logo);
-        int filterColor;
-        if (mustEnable) {
-            filterColor = ContextCompat.getColor(this, R.color.tab_active);
-        } else {
-            filterColor = ContextCompat.getColor(this, R.color.tab_inactive);
-        }
-        title.setTextColor(filterColor);
-        image.setColorFilter(filterColor, PorterDuff.Mode.SRC_IN);
     }
 
     private void unCheckAllTabs() {
@@ -167,6 +171,5 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
 
     @OnClick(R.id.fast_operations)
     void onFastOperationsClick() {
-
     }
 }

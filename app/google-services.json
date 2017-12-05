@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "1038404875796",
+    "firebase_url": "https://multy-io.firebaseio.com",
+    "project_id": "multy-io",
+    "storage_bucket": "multy-io.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1038404875796:android:3cc6273553a14902",
+        "android_client_info": {
+          "package_name": "io.multy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1038404875796-30urj8drsukaqcoq183v7o3hgbs915a0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfLM_vb8d2ncckoCZHDcwsO-RkF-ecJGM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

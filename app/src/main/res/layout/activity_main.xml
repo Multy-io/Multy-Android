@@ -22,7 +22,7 @@
         android:background="#f9faff"
         app:tabGravity="fill"
         app:tabIndicatorHeight="0dp"
-        app:tabMode="scrollable">
+        app:tabMode="fixed">
 
         <android.support.design.widget.TabItem
             android:id="@+id/tab_main"
