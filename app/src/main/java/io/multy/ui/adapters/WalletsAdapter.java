@@ -24,16 +24,14 @@ public class WalletsAdapter extends RecyclerView.Adapter<WalletsAdapter.Holder> 
 
     @Override
     public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.view_asset_item, parent, false);
-        return new Holder(v);
+        return new Holder(LayoutInflater.from(parent.getContext()).inflate(R.layout.view_asset_item, parent, false));
     }
 
     @Override
     public void onBindViewHolder(Holder holder, int position) {
         holder.itemView.setOnClickListener(view -> {
-            Context ctx = view.getContext();
-            ctx.startActivity(new Intent(ctx, AssetActivity.class));
+            Context context = view.getContext();
+            context.startActivity(new Intent(context, AssetActivity.class));
         });
     }
 

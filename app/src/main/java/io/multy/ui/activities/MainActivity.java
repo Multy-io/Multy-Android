@@ -66,7 +66,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         }
     }
 
-    
+
     @Override
     protected void onResume() {
         super.onResume();
