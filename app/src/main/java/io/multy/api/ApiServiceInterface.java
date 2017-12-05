@@ -9,6 +9,8 @@ package io.multy.api;
 
 import io.multy.model.entities.AuthEntity;
 import io.multy.model.responses.AuthResponse;
+import io.multy.model.responses.ExchangePriceResponse;
+import io.reactivex.Observable;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -35,8 +37,8 @@ public interface ApiServiceInterface {
     Call<ResponseBody> addWallet(@Path("wallet") String wallet);
 
     @GET("api/v1/getexchangeprice/{firstCurrency}/{secondCurrency}")
-    Call<ResponseBody> getExchangePrice(@Path("firstCurrency") String firstCurrency,
-                                        @Path("secondCurrency") String secondCurrency);
+    Observable<ExchangePriceResponse> getExchangePrice(@Path("firstCurrency") String firstCurrency,
+                                                       @Path("secondCurrency") String secondCurrency);
 
     @POST("api/v1/gettransactioninfo/{id}")
     Call<ResponseBody> getTransactionInfo(@Path("id") String transactionId);

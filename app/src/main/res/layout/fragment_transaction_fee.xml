@@ -123,9 +123,11 @@
             android:layout_height="@dimen/dimen_40dp"
             android:layout_marginEnd="16dp"
             android:elevation="@dimen/elevation_3dp"
-            android:hint="0.0001"
+            android:hint="@string/donation_default"
+            android:text="@string/donation_default"
             android:inputType="numberDecimal"
             android:maxWidth="@dimen/dimen_150dp"
+            android:maxLength="@integer/ten"
             android:textAppearance="@style/TextAppearance.AppCompat.Menu"
             android:textColor="@color/text_main"
             app:layout_constraintBottom_toTopOf="@+id/text_fee_currency"
@@ -173,7 +175,7 @@
             android:id="@+id/group_donation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:constraint_referenced_ids="fee_currency,donation_summ,input_donation" />
+            app:constraint_referenced_ids="text_fee_currency,text_donation_summ,input_donation" />
 
     </android.support.constraint.ConstraintLayout>
 

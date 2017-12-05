@@ -39,11 +39,11 @@ public class FeeAdapter extends RecyclerView.Adapter<FeeAdapter.FeeHolder> {
     public FeeAdapter(Context context, OnFeeClickListener listener) {
         this.listener = listener;
         wallets = new ArrayList<>();
-        iconIds = new int[]{R.drawable.ic_very_fast, R.drawable.ic_fast, R.drawable.ic_medium, R.drawable.ic_slow, R.drawable.ic_very_slow, R.drawable.ic_custom};
+        iconIds = new int[]{R.drawable.ic_very_fast, R.drawable.ic_fast, R.drawable.ic_medium, R.drawable.ic_slow, R.drawable.ic_very_slow};
         names = Arrays.asList(context.getResources().getStringArray(R.array.fees));
         blockIds = Arrays.asList(context.getResources().getStringArray(R.array.blocks));
-        for (int i = 0; i < 6; i++) { // TODO remove with real fees
-            wallets.add(new BitcoinWallet("Fast " + i + " hour", "", i));
+        for (double i = 0; i < 5; i++) { // TODO remove with real fees
+            wallets.add(new BitcoinWallet("Fast " + i + " hour", "", i / 100));
         }
         previousPosition = -1;
     }

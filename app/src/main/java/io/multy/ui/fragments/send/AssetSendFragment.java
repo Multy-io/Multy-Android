@@ -45,6 +45,8 @@ public class AssetSendFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_asset_send, container, false);
         ButterKnife.bind(this, view);
         viewModel = ViewModelProviders.of(getActivity()).get(AssetSendViewModel.class);
+        viewModel.setContext(getActivity());
+        viewModel.auth();
         viewModel.getReceiverAddress().observe(this, s -> inputAddress.setText(s));
         setupInputAddress();
         return view;

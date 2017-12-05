@@ -18,14 +18,51 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+
+        <meta-data
+            android:name="io.branch.sdk.auto_link_request_code"
+            android:value="@integer/AutoDeeplinkRequestCode" />
+
+        <!--TODO add live key for release-->
+        <!--<meta-data android:name="io.branch.sdk.BranchKey"-->
+            <!--android:value="key_live_ajEwFvEdpSlByRfcUR9KgfbgqCkJ0Eyl" />-->
+        <meta-data
+            android:name="io.branch.sdk.BranchKey.test"
+            android:value="key_test_deEyCxvdjNmAzVchTM8RnjoeDqdUZsss" />
+
+        <!--TODO remove in release-->
+        <!-- Branch testing (TestMode "true" to simulate fresh installs on dev environment) -->
+        <meta-data
+            android:name="io.branch.sdk.TestMode"
+            android:value="true" />
+
         <activity
             android:name=".ui.activities.MainActivity"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <!-- Branch URI scheme -->
+            <intent-filter>
+                <data android:scheme="multyrelease" android:host="open" />
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+            </intent-filter>
+
+            <!-- Branch App Links -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="zn0o.test-app.link" />
+            </intent-filter>
+
         </activity>
         <activity
             android:name=".ui.activities.AssetActivity"
@@ -46,14 +83,22 @@
             android:name=".ui.activities.AssetSendActivity"
             android:label="@string/send"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"/>
+            android:theme="@style/Send"/>
         <activity
             android:name=".ui.activities.ExchangingActivity"
             android:label="@string/exchange"
             android:screenOrientation="portrait"/>
         <activity android:name=".ui.activities.ScanActivity" />
 
-        <meta-data android:name="firebase_analytics_collection_deactivated" android:value="true" />
+        <!-- Branch install referrer tracking -->
+        <receiver
+            android:name="io.branch.referral.InstallListener"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.android.vending.INSTALL_REFERRER" />
+            </intent-filter>
+        </receiver>
 
+        <meta-data android:name="firebase_analytics_collection_deactivated" android:value="true" />
     </application>
 </manifest>

@@ -68,6 +68,7 @@
     <string name="max">MAX</string>
     <string name="close">Close</string>
     <string name="choose_amount">Please, choose amount</string>
+    <string name="choose_transaction_speed">Please, choose transaction speed</string>
     <string name="usd">USD</string>
 
 
@@ -77,7 +78,7 @@
         <item>Medium • 5 days</item>
         <item>Slow • 1 week</item>
         <item>Very Slow • 2 weeks</item>
-        <item>Custom</item>
+        <!--<item>Custom</item>-->
     </string-array>
     <string-array name="blocks">
         <item>6 blocks</item>
@@ -85,7 +86,7 @@
         <item>20 blocks</item>
         <item>50 blocks</item>
         <item>70 blocks</item>
-        <item> </item>
+        <!--<item> </item>-->
     </string-array>
 
     <string name="send_to">Send to</string>
@@ -93,6 +94,11 @@
     <string name="send_formatted" formatted="false">Send %s</string>
     <string name="transaction_speed">Transaction speed</string>
     <string name="ready_to_send">Ready to send</string>
+    <string name="donation_default">0.0001</string>
+    <string name="donation_format_pattern">##.##</string>
+    <string name="donation_format_pattern_bitcoin">##.####</string>
+    <string name="error_balance">Your entered amount bigger than balance</string>
+
     <string name="root_message">Sorry, rooted devices is not supported yet according to our safety policy. Please use our app on authorized device.</string>
     <string name="root_title">Root detected</string>
     <string name="ok">Okay</string>

@@ -1,8 +1,14 @@
 package io.multy.api;
 
+
+import io.multy.model.responses.AuthResponse;
+import io.multy.model.responses.ExchangePriceResponse;
+import io.reactivex.Observable;
+import retrofit2.Call;
+
 public interface MultyApiInterface {
 
-    void auth(String userId, String deviceId, String password);
+    Call<AuthResponse> auth(String userId, String deviceId, String password);
 
     void getTickets(String firstCurrency, String secondCurrency);
 
@@ -12,7 +18,7 @@ public interface MultyApiInterface {
 
     void addWallet(String wallet);
 
-    void getExchangePrice(String firstCurrency, String secondCurrency);
+    Observable<ExchangePriceResponse> getExchangePrice(String firstCurrency, String secondCurrency);
 
     void getTransactionInfo(String transactionId);
 

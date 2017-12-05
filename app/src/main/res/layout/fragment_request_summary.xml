@@ -251,11 +251,11 @@
             android:layout_marginTop="@dimen/margin_11dp"
             android:text="@string/wireless_scan"
             app:layout_constraintLeft_toRightOf="@+id/button_address"
-            app:layout_constraintRight_toLeftOf="@+id/btn_options"
+            app:layout_constraintRight_toLeftOf="@+id/button_options"
             app:layout_constraintTop_toBottomOf="@id/text_send_via" />
 
         <TextView
-            android:id="@+id/btn_options"
+            android:id="@+id/button_options"
             style="@style/ShareButton"
             android:drawablePadding="@dimen/margin_7dp"
             android:drawableTop="@drawable/ic_options"

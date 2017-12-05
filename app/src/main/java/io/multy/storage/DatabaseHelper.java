@@ -23,17 +23,17 @@ public class DatabaseHelper {
         realm = Realm.getInstance(getRealmConfiguration(context));
     }
 
-    private RealmConfiguration getRealmConfiguration(Context context) {
+    private RealmConfiguration getRealmConfiguration(Context context){
 //        if (MasterKeyGenerator.generateKey(context) != null) {
 //            return new RealmConfiguration.Builder()
 //                    .encryptionKey(MasterKeyGenerator.generateKey(context))
 //                    .build();
 //        } else {
-        return new RealmConfiguration.Builder().build();
+            return new RealmConfiguration.Builder().build();
 //        }
     }
 
-    public void saveWallets() {
+    public void saveWallets(){
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
@@ -42,7 +42,7 @@ public class DatabaseHelper {
         });
     }
 
-    public List<Wallet> getWallets() {
+    public List<Wallet> getWallets(){
 //        return realm.where(Wallet.class).findAll();
         return new ArrayList<>();
     }
@@ -62,4 +62,6 @@ public class DatabaseHelper {
     public void getToken() {
 
     }
+
+
 }

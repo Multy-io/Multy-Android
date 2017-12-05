@@ -7,8 +7,32 @@
 package io.multy.viewmodels;
 
 import android.arch.lifecycle.ViewModel;
+import android.support.annotation.CallSuper;
+import android.support.annotation.NonNull;
 
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 
 
 public class BaseViewModel extends ViewModel {
+
+    @NonNull
+    private final CompositeDisposable disposables = new CompositeDisposable();
+
+    public void destroy(){
+        dispose();
+    };
+
+    protected final void addDisposable(@NonNull Disposable disposable, @NonNull Disposable... disposables) {
+        this.disposables.add(disposable);
+
+        for (Disposable d : disposables) {
+            this.disposables.add(d);
+        }
+    }
+
+    @CallSuper
+    private void dispose() {
+        disposables.clear();
+    }
 }

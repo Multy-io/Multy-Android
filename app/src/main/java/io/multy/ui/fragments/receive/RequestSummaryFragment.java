@@ -10,12 +10,14 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.zxing.WriterException;
 
@@ -26,6 +28,7 @@ import butterknife.OnClick;
 import io.multy.R;
 import io.multy.ui.activities.AssetRequestActivity;
 import io.multy.ui.fragments.BaseFragment;
+import io.multy.util.DeepLinkShareHelper;
 import io.multy.viewmodels.AssetRequestViewModel;
 
 
@@ -115,5 +118,16 @@ public class RequestSummaryFragment extends BaseFragment {
     @OnClick(R.id.text_balance_currency)
     void onClickBalanceUsdAmount(){
         getFragmentManager().popBackStack();
+    }
+
+    @OnClick(R.id.text_wallet_name)
+    void onClickWalletName(){
+        Linkify.addLinks(textWalletName, Linkify.WEB_URLS);
+    }
+
+    @OnClick(R.id.button_options)
+    void onClickOptions(){
+        Toast.makeText(getActivity(), DeepLinkShareHelper.getDeepLink(getActivity(),
+                viewModel.getQr()), Toast.LENGTH_LONG ).show();
     }
 }

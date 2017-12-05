@@ -3,5 +3,11 @@
     <integer name="zero">0</integer>
     <integer name="one">1</integer>
     <integer name="two">2</integer>
+    <integer name="ten">10</integer>
+    <integer name="fifteen">15</integer>
+
+    <integer name="AutoDeeplinkRequestCode">7845</integer>
+
+    <item name="donation_default" type="integer" format="float">0.0001</item>
 
 </resources>

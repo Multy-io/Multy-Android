@@ -43,6 +43,7 @@ public class WalletChooserFragment extends BaseFragment implements WalletAdapter
         ButterKnife.bind(this, view);
         viewModel = ViewModelProviders.of(getActivity()).get(AssetSendViewModel.class);
         viewModel.setContext(getActivity());
+        viewModel.getApiExchangePrice();
 //        adapter = new WalletAdapter(viewModel.getWallets(), this) //TODO uncomment when real wallets will be added
         adapter = new WalletAdapter(this);
         recyclerView.setAdapter(adapter);

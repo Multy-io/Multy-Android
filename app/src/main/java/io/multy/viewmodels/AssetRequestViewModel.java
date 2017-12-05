@@ -89,4 +89,8 @@ public class AssetRequestViewModel extends BaseViewModel {
         return bitmap;
     }
 
+    public String getQr(){
+        return "bitcoin:" + "1GLY7sDe7a6xsewDdUNA6F8CEoAxQsHV37"  + (amount == 0 ? "" : "?amount=" + amount);
+    }
+
 }

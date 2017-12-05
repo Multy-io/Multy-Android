@@ -8,6 +8,6 @@ package io.multy.model.entities;
 
 public enum CurrencyCode {
 
-    BTC, ETH
+    BTC, ETH, USD, EUR, RUB
 
 }

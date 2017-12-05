@@ -7,10 +7,12 @@ import android.util.Base64;
 import com.crashlytics.android.Crashlytics;
 import com.samwolfand.oneprefs.Prefs;
 
+import io.branch.referral.Branch;
 import io.multy.util.Constants;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
 import io.realm.Realm;
+import timber.log.Timber;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 public class Multy extends Application {
@@ -20,6 +22,8 @@ public class Multy extends Application {
         super.onCreate();
 
         Realm.init(this);
+        Branch.getAutoInstance(this);
+        Timber.plant(new Timber.DebugTree());
 
         new Prefs.Builder()
                 .setContext(this)
