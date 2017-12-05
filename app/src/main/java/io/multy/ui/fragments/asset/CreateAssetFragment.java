@@ -59,9 +59,8 @@ public class CreateAssetFragment extends BaseFragment {
         View v = inflater.inflate(R.layout.view_assets_action_add, container, false);
         ButterKnife.bind(this, v);
         if (getActivity().getWindow() != null) {
-            getActivity().getWindow()
-                    .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE |
-                            WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+            getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE |
+                    WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         }
         initialize();
         return v;
@@ -87,18 +86,13 @@ public class CreateAssetFragment extends BaseFragment {
             @Override
             public void afterTextChanged(Editable editable) {
                 if (editable.length() > 0) {
-                    if (editTextWalletChain.getText().length() > 0 &&
-//                            editTextWalletOption.getText().length() > 0 &&
-                            editTextWalletCurrency.getText().length() > 0) {
+                    if (editTextWalletChain.getText().length() > 0 && editTextWalletCurrency.getText().length() > 0) {
                         textViewCreateWallet.setEnabled(true);
-                        textViewCreateWallet
-                                .setBackgroundColor(Color.parseColor("#FF459FF9"));
+                        textViewCreateWallet.setBackgroundColor(Color.parseColor("#FF459FF9"));
                     }
-                }
-                else {
+                } else {
                     textViewCreateWallet.setEnabled(false);
-                    textViewCreateWallet
-                            .setBackgroundColor(Color.parseColor("#BEC8D2"));
+                    textViewCreateWallet.setBackgroundColor(Color.parseColor("#BEC8D2"));
                 }
             }
         };
@@ -106,6 +100,7 @@ public class CreateAssetFragment extends BaseFragment {
 
     @OnClick(R.id.text_create)
     void onCreateClick() {
+        //TODO CREATE WALLET AND SAVE TO DB
         startActivity(new Intent(getContext(), AssetActivity.class));
         getActivity().finish();
     }

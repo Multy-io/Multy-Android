@@ -43,4 +43,10 @@ public interface ApiServiceInterface {
     @POST("api/v1/gettransactioninfo/{id}")
     Call<ResponseBody> getTransactionInfo(@Path("id") String transactionId);
 
+    @GET("api/v1/gettxspeed")
+    Call<ResponseBody> getTransactionSpeed();
+
+    @GET("api/v1/getspendableoutputs/{address}")
+    Call<ResponseBody> getSpendableOutputs(@Path("address") String address);
+
 }
