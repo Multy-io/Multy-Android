@@ -8,6 +8,7 @@ package io.multy.api;
 
 
 import io.multy.model.entities.AuthEntity;
+import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.model.responses.AuthResponse;
 import io.multy.model.responses.ExchangePriceResponse;
 import io.reactivex.Observable;
@@ -33,8 +34,8 @@ public interface ApiServiceInterface {
     @GET("api/v1/getaddressbalance/{address}")
     Call<ResponseBody> getBalance(@Path("address") String address);
 
-    @POST("api/v1/addwallet/{wallet}")
-    Call<ResponseBody> addWallet(@Path("wallet") String wallet);
+    @POST("api/v1/addwallet")
+    Call<ResponseBody> addWallet(@Body WalletRealmObject wallet);
 
     @GET("api/v1/getexchangeprice/{firstCurrency}/{secondCurrency}")
     Observable<ExchangePriceResponse> getExchangePrice(@Path("firstCurrency") String firstCurrency,
@@ -48,5 +49,8 @@ public interface ApiServiceInterface {
 
     @GET("api/v1/getspendableoutputs/{address}")
     Call<ResponseBody> getSpendableOutputs(@Path("address") String address);
+
+    @GET("api/v1/getalluserassets")
+    Call<ResponseBody> getUserAssets();
 
 }

@@ -8,9 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.multy.R;
+import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.ui.activities.AssetActivity;
 
 /**
@@ -19,7 +22,10 @@ import io.multy.ui.activities.AssetActivity;
 
 public class WalletsAdapter extends RecyclerView.Adapter<WalletsAdapter.Holder> {
 
-    public WalletsAdapter() {
+    private ArrayList<WalletRealmObject> data;
+
+    public WalletsAdapter(ArrayList<WalletRealmObject> data) {
+        this.data = data;
     }
 
     @Override
@@ -29,6 +35,7 @@ public class WalletsAdapter extends RecyclerView.Adapter<WalletsAdapter.Holder> 
 
     @Override
     public void onBindViewHolder(Holder holder, int position) {
+
         holder.itemView.setOnClickListener(view -> {
             Context context = view.getContext();
             context.startActivity(new Intent(context, AssetActivity.class));
@@ -37,7 +44,7 @@ public class WalletsAdapter extends RecyclerView.Adapter<WalletsAdapter.Holder> 
 
     @Override
     public int getItemCount() {
-        return 10;
+        return data.size();
     }
 
     class Holder extends RecyclerView.ViewHolder {

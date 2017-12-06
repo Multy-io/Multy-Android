@@ -13,6 +13,7 @@ import java.util.List;
 
 import io.multy.api.MultyApi;
 import io.multy.model.entities.ByteSeed;
+import io.multy.model.entities.Mnemonic;
 import io.multy.model.entities.RootKey;
 import io.multy.model.entities.Token;
 import io.multy.model.entities.UserId;
@@ -39,15 +40,15 @@ public class DataManager {
         this.database = new DatabaseHelper(context);
     }
 
-    public List<Wallet> getWallets(){
-       return database.getWallets();
+    public List<Wallet> getWallets() {
+        return database.getWallets();
     }
 
-    public void saveRequestWallet(Wallet wallet){
+    public void saveRequestWallet(Wallet wallet) {
 //        database.saveWallets();
     }
 
-    public void auth(String userId, String deviceId, String password){
+    public void auth(String userId, String deviceId, String password) {
         MultyApi.INSTANCE.auth(userId, deviceId, password).enqueue(new Callback<AuthResponse>() {
             @Override
             public void onResponse(@NonNull Call<AuthResponse> call, @NonNull Response<AuthResponse> response) {
@@ -57,10 +58,11 @@ public class DataManager {
             @Override
             public void onFailure(Call<AuthResponse> call, Throwable t) {
             }
-        });;
+        });
+        ;
     }
 
-    public Observable<ExchangePriceResponse> getExchangePrice(String originalCurrency, String currency){
+    public Observable<ExchangePriceResponse> getExchangePrice(String originalCurrency, String currency) {
         return MultyApi.INSTANCE.getExchangePrice(originalCurrency, currency);
     }
 
@@ -96,12 +98,20 @@ public class DataManager {
         return database.getSeed();
     }
 
-    public void saveWallet(WalletRealmObject wallet){
+    public void saveWallet(WalletRealmObject wallet) {
         database.saveWallet(wallet);
     }
 
-    public WalletRealmObject getWallet(){
+    public WalletRealmObject getWallet() {
         return database.getWallet();
+    }
+
+    public void setMnemonic(Mnemonic mnemonic) {
+        database.setMnemonic(mnemonic);
+    }
+
+    public Mnemonic getMnemonic() {
+        return database.getMnemonic();
     }
 
 }

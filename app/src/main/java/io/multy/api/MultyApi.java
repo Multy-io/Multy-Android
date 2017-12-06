@@ -7,8 +7,7 @@
 package io.multy.api;
 
 
-import android.provider.Settings;
-import android.support.annotation.NonNull;
+import android.content.Context;
 import android.util.Log;
 
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -18,7 +17,9 @@ import java.io.IOException;
 
 import javax.annotation.Nullable;
 
+import io.multy.model.DataManager;
 import io.multy.model.entities.AuthEntity;
+import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.model.responses.AuthResponse;
 import io.multy.model.responses.ExchangePriceResponse;
 import io.multy.util.Constants;
@@ -61,7 +62,7 @@ public enum MultyApi implements MultyApiInterface {
                             @Nullable
                             @Override
                             public Request authenticate(Route route, okhttp3.Response response) throws IOException {
-                                Call<AuthResponse> responseCall = api.auth(new AuthEntity("userId", Settings.Secure.ANDROID_ID, "admin"));
+                                Call<AuthResponse> responseCall = api.auth(new AuthEntity("userId", "androidId", "admin"));
                                 AuthResponse body = responseCall.execute().body();
                                 Prefs.putString(Constants.PREF_AUTH, body.getToken());
 
@@ -105,8 +106,21 @@ public enum MultyApi implements MultyApiInterface {
         }
 
         @Override
-        public void addWallet(String wallet) {
+        public void addWallet(Context context, WalletRealmObject wallet) {
             Call<ResponseBody> responseCall = api.addWallet(wallet);
+            responseCall.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    if (response.isSuccessful()) {
+                        new DataManager(context).saveWallet(wallet);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    t.printStackTrace();
+                }
+            });
         }
 
         @Override
@@ -127,6 +141,43 @@ public enum MultyApi implements MultyApiInterface {
         @Override
         public void getTransactionInfo(String transactionId) {
             Call<ResponseBody> responseCall = api.getTransactionInfo(transactionId);
+        }
+
+        @Override
+        public void getTransactionSpeed() {
+            Call<ResponseBody> speed = api.getTransactionSpeed();
+            speed.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    Log.i("wise", "onResponse");
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    Log.i("wise", "onFailure");
+                }
+            });
+        }
+
+        @Override
+        public void getSpendableOutputs() {
+
+        }
+
+        @Override
+        public void getUserAssets() {
+            Call<ResponseBody> responseBodyCall = api.getUserAssets();
+            responseBodyCall.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    Log.i("wise", "response ");
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    t.printStackTrace();
+                }
+            });
         }
     }
 }

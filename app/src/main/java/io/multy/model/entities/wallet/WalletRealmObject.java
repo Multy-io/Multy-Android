@@ -19,12 +19,13 @@ public class WalletRealmObject extends RealmObject {
     private String name;
     @SerializedName("address")
     private String creationAddress;
+    @SerializedName("addresses")
     private RealmList<WalletAddress> addresses;
     private double balance;
     @SerializedName("currency")
     private int currency;
     @SerializedName("addressID")
-    private String addressIndex;
+    private int addressIndex;
     @SerializedName("walletID")
     private String walletIndex;
 
@@ -38,7 +39,7 @@ public class WalletRealmObject extends RealmObject {
     }
 
     public WalletRealmObject(String name, String creationAddress, RealmList<WalletAddress> addresses,
-                             double balance, int currency, String addressIndex, String walletIndex) {
+                             double balance, int currency, int addressIndex, String walletIndex) {
         this.name = name;
         this.creationAddress = creationAddress;
         this.addresses = addresses;
@@ -92,11 +93,11 @@ public class WalletRealmObject extends RealmObject {
         this.currency = currency;
     }
 
-    public String getAddressIndex() {
+    public int getAddressIndex() {
         return addressIndex;
     }
 
-    public void setAddressIndex(String addressIndex) {
+    public void setAddressIndex(int addressIndex) {
         this.addressIndex = addressIndex;
     }
 

@@ -206,5 +206,20 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
 
     @OnClick(R.id.fast_operations)
     void onFastOperationsClick() {
+//        MultyApi.INSTANCE.getUserAssets();
+//        MultyApi.INSTANCE.getTransactionSpeed();
+//        try {
+////            Log.i("wise", "to " + (NativeDataHelper.makeAccountAddress(, 0, 0)));
+//
+//            byte[] seed = new DataManager(this).getSeed().getSeed();
+//            final String txHash = "6e26d2fb53983051172a2714838fab9c3241d5dcdb022926b834e254e7ae2034";
+//            final String pubKey = "76a9149543b205596749495eae1d6305434c2c8084b25a88ac";
+//            final String address = "mu8C5CGtmSn3eUhMFEmU2CvRse7rLKgYUN";
+//            byte[] hexTx = NativeDataHelper.makeTransaction(seed, txHash, pubKey, 0, "200000000","150000000", "1000000", "mzqiDnETWkunRDZxjUQ34JzN1LDevh5DpU", address);
+//            String hex = byteArrayToHex(hexTx);
+//            Log.i("multy", "raw transaction generated successfully " + hex);
+//        } catch (JniException e) {
+//            e.printStackTrace();
+//        }
     }
 }

@@ -9,13 +9,12 @@ package io.multy.viewmodels;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.text.TextUtils;
-import android.util.Base64;
-
-import com.samwolfand.oneprefs.Prefs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import io.multy.Multy;
+import io.multy.model.DataManager;
 import timber.log.Timber;
 
 /**
@@ -31,10 +30,11 @@ public class SeedViewModel extends ViewModel {
 
     public void initData() {
         final int wordsPerOnce = 3;
-        final String mnemonic = Prefs.getString("mnemonic", "");
+        DataManager dataManager = new DataManager(Multy.getContext());
+        final String mnemonic = dataManager.getMnemonic().getMnemonic();
         final ArrayList<String> phrase = new ArrayList<>(Arrays.asList(mnemonic.split(" ")));
         final ArrayList<String> phraseToShow = new ArrayList<>(phrase.size() / wordsPerOnce);
-        final byte[] seed = Base64.decode(Prefs.getString("seed", ""), Base64.DEFAULT);
+        final byte[] seed = dataManager.getSeed().getSeed();
 
         for (int i = 0; i < phrase.size(); i += wordsPerOnce) {
             Timber.i("words %s", TextUtils.join("\n", phrase.subList(i, i + 3)));

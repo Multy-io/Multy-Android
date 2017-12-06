@@ -17,6 +17,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -53,7 +55,7 @@ public class AssetsFragment extends BaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        walletsAdapter = new WalletsAdapter();
+        walletsAdapter = new WalletsAdapter(new ArrayList<>());
         portfoliosAdapter = new PortfoliosAdapter();
     }
 

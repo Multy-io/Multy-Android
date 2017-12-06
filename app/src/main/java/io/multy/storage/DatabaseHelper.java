@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.multy.model.entities.ByteSeed;
+import io.multy.model.entities.Mnemonic;
 import io.multy.model.entities.RootKey;
 import io.multy.model.entities.Token;
 import io.multy.model.entities.UserId;
@@ -28,17 +29,17 @@ public class DatabaseHelper {
         realm = Realm.getInstance(getRealmConfiguration(context));
     }
 
-    private RealmConfiguration getRealmConfiguration(Context context){
+    private RealmConfiguration getRealmConfiguration(Context context) {
 //        if (MasterKeyGenerator.generateKey(context) != null) {
 //            return new RealmConfiguration.Builder()
 //                    .encryptionKey(MasterKeyGenerator.generateKey(context))
 //                    .build();
 //        } else {
-            return new RealmConfiguration.Builder().build();
+        return new RealmConfiguration.Builder().build();
 //        }
     }
 
-    public void saveWallets(){
+    public void saveWallets() {
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
@@ -47,16 +48,16 @@ public class DatabaseHelper {
         });
     }
 
-    public List<Wallet> getWallets(){
+    public List<Wallet> getWallets() {
 //        return realm.where(Wallet.class).findAll();
         return new ArrayList<>();
     }
 
-    public void saveWallet(WalletRealmObject wallet){
+    public void saveWallet(WalletRealmObject wallet) {
         realm.executeTransaction(realm -> realm.insertOrUpdate(wallet));
     }
 
-    public WalletRealmObject getWallet(){
+    public WalletRealmObject getWallet() {
         return realm.where(WalletRealmObject.class).findFirst();
     }
 
@@ -92,5 +93,11 @@ public class DatabaseHelper {
         return realm.where(ByteSeed.class).findFirst();
     }
 
+    public void setMnemonic(Mnemonic mnemonic) {
+        realm.executeTransaction(realm -> realm.insertOrUpdate(mnemonic));
+    }
 
+    public Mnemonic getMnemonic() {
+        return realm.where(Mnemonic.class).findFirst();
+    }
 }

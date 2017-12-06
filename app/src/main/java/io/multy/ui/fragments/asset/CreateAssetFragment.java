@@ -23,8 +23,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
+import io.multy.api.MultyApi;
+import io.multy.model.DataManager;
+import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.ui.activities.AssetActivity;
 import io.multy.ui.fragments.BaseFragment;
+import io.multy.util.JniException;
+import io.multy.util.NativeDataHelper;
 
 /**
  * Created by anschutz1927@gmail.com on 23.11.17.
@@ -100,9 +105,22 @@ public class CreateAssetFragment extends BaseFragment {
 
     @OnClick(R.id.text_create)
     void onCreateClick() {
-        //TODO CREATE WALLET AND SAVE TO DB
         startActivity(new Intent(getContext(), AssetActivity.class));
         getActivity().finish();
+        String creationAddress;
+
+        try {
+            creationAddress = NativeDataHelper.makeAccountAddress(new DataManager(getActivity()).getSeed().getSeed(), 0, 0);
+            WalletRealmObject walletRealmObject = new WalletRealmObject();
+            walletRealmObject.setName(editTextWalletName.getText().toString());
+            walletRealmObject.setCurrency(0);
+            walletRealmObject.setAddressIndex(0);
+            walletRealmObject.setCreationAddress(creationAddress);
+
+            MultyApi.INSTANCE.addWallet(getActivity(), walletRealmObject);
+        } catch (JniException e) {
+            e.printStackTrace();
+        }
     }
 
     @OnClick(R.id.text_cancel)

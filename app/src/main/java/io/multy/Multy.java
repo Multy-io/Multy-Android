@@ -1,13 +1,17 @@
 package io.multy;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.ContextWrapper;
-import android.util.Base64;
 
 import com.crashlytics.android.Crashlytics;
 import com.samwolfand.oneprefs.Prefs;
 
 import io.branch.referral.Branch;
+import io.multy.model.DataManager;
+import io.multy.model.entities.ByteSeed;
+import io.multy.model.entities.Mnemonic;
+import io.multy.model.entities.UserId;
 import io.multy.util.Constants;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
@@ -16,6 +20,8 @@ import timber.log.Timber;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 public class Multy extends Application {
+
+    private static Context context;
 
     @Override
     public void onCreate() {
@@ -41,9 +47,10 @@ public class Multy extends Application {
                 final byte[] seed = NativeDataHelper.makeSeed(mnemonic);
                 final String userId = NativeDataHelper.makeAccountId(seed);
 
-                Prefs.putString("seed", Base64.encodeToString(seed, Base64.DEFAULT));
-                Prefs.putString("mnemonic", mnemonic);
-                Prefs.putString("userId", userId);
+                DataManager dataManager = new DataManager(this);
+                dataManager.saveSeed(new ByteSeed(seed));
+                dataManager.saveUserId(new UserId(userId));
+                dataManager.setMnemonic(new Mnemonic(mnemonic));
 
                 Prefs.putBoolean(Constants.PREF_FIRST_SUCCESSFUL_START, false);
             } catch (JniException e) {
@@ -57,5 +64,11 @@ public class Multy extends Application {
                 .setDefaultFontPath("montseratt_regular.ttf")
                 .setFontAttrId(R.attr.fontPath)
                 .build());
+
+        context = getApplicationContext();
+    }
+
+    public static Context getContext() {
+        return context;
     }
 }
