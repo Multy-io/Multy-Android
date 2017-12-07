@@ -1,5 +1,12 @@
 # Mylty-android
 
+Multi cryptocurrency and assets open-source wallet
+
+To conrtibute please check **Build instraction**
+
+[Multy](http://multy.io)
+
+
 
 ## Build instraction
 
