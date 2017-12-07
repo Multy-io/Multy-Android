@@ -69,8 +69,8 @@ public class SendSummaryFragment extends BaseFragment {
         textWalletName.setText(viewModel.getWallet().getName());
         textSenderBalanceOriginal.setText(viewModel.getWallet().getBalanceWithCode());
         textSenderBalanceCurrency.setText(viewModel.getWallet().getBalanceWithCode());
-        textFeeSpeed.setText(viewModel.getFee().getName());
-        textFeeAmount.setText(String.valueOf(viewModel.getFee().getBalance()));
+        textFeeSpeed.setText(viewModel.getFee().getTime());
+        textFeeAmount.setText(String.valueOf(viewModel.getFee().getCost()));
     }
 
 }

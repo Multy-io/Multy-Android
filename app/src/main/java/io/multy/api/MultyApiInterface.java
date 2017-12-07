@@ -6,6 +6,7 @@ import android.content.Context;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.model.responses.AuthResponse;
 import io.multy.model.responses.ExchangePriceResponse;
+import io.multy.model.responses.UserAssetsResponse;
 import io.reactivex.Observable;
 import retrofit2.Call;
 
@@ -29,5 +30,7 @@ public interface MultyApiInterface {
 
     void getSpendableOutputs();
 
-    void getUserAssets();
+    Observable<UserAssetsResponse> getUserAssets();
+
+    Observable<UserAssetsResponse> getWalletAddresses(int walletId);
 }

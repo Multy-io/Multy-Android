@@ -54,7 +54,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         setupFooter();
         setFragment(R.id.container_frame, AssetsFragment.newInstance());
 
-        preventRootIfDetected();
+//        preventRootIfDetected();
     }
 
     private void preventRootIfDetected() {

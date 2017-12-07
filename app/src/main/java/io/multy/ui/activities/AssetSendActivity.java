@@ -8,6 +8,7 @@ package io.multy.ui.activities;
 
 import android.Manifest;
 import android.app.Activity;
+import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -96,6 +97,12 @@ public class AssetSendActivity extends BaseActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        ViewModelProviders.of(this).get(AssetSendViewModel.class).destroy();
+        super.onDestroy();
+    }
+
     public void setFragment(@StringRes int title, @IdRes int container, Fragment fragment) {
         toolbar.setTitle(title);
 
@@ -109,6 +116,8 @@ public class AssetSendActivity extends BaseActivity {
 
         isFirstFragmentCreation = false;
         transaction.commit();
+
+        hideKeyboard(this);
     }
 
     @OnClick(R.id.button_cancel)

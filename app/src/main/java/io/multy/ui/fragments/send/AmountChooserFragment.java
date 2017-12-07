@@ -11,11 +11,13 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.Group;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.SwitchCompat;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -95,40 +97,36 @@ public class AmountChooserFragment extends BaseFragment {
         setupSwitcher();
         setupInputOriginal();
         setupInputCurrency();
+        setEmptyTotalWithFee();
         return view;
     }
 
     @OnClick(R.id.button_next)
     void onClickNext() {
-        if (!TextUtils.isEmpty(inputOriginal.getText())) {
+        if (!TextUtils.isEmpty(inputOriginal.getText())
+                && isParsable(inputOriginal.getText().toString())
+                && Double.valueOf(inputOriginal.getText().toString()) != zero) {
             if (!TextUtils.isEmpty(inputOriginal.getText()) &&
-                    (Double.parseDouble(inputOriginal.getText().toString()) > viewModel.getWallet().getBalance())) {
+                    (Double.parseDouble(inputOriginal.getText().toString())
+                            + viewModel.getFee().getAmount()
+                            + (viewModel.getDonationAmount() == null ? zero : Double.parseDouble(viewModel.getDonationAmount()))
+                            > viewModel.getWallet().getBalance())) {
                 Toast.makeText(getActivity(), R.string.error_balance, Toast.LENGTH_LONG).show();
             } else {
                 viewModel.setAmount(Double.valueOf(inputOriginal.getText().toString()));
                 ((AssetSendActivity) getActivity()).setFragment(R.string.ready_to_send, R.id.container, SendSummaryFragment.newInstance());
             }
         } else {
-            Toast.makeText(getActivity(), R.string.choose_transaction_speed, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), R.string.choose_amount, Toast.LENGTH_SHORT).show();
         }
-    }
-
-    @OnClick(R.id.input_balance_original)
-    void onClickBalanceOriginal() {
-        animateOriginalBalance();
-    }
-
-    @OnClick(R.id.input_balance_currency)
-    void onClickBalanceCurrency() {
-        animateCurrencyBalance();
     }
 
     @OnClick(R.id.image_swap)
     void onClickImageSwap() {
         if (isAmountSwapped) {
-            animateOriginalBalance();
+            inputOriginal.requestFocus();
         } else {
-            animateCurrencyBalance();
+            inputCurrency.requestFocus();
         }
     }
 
@@ -152,6 +150,8 @@ public class AmountChooserFragment extends BaseFragment {
         containerInputCurrency.animate().scaleY(1f).setInterpolator(new AccelerateInterpolator()).setDuration(300);
         containerInputCurrency.animate().scaleX(1f).setInterpolator(new AccelerateInterpolator()).setDuration(300);
         isAmountSwapped = false;
+        inputOriginal.setTextColor(ContextCompat.getColor(getActivity(), R.color.text_main));
+        inputCurrency.setTextColor(ContextCompat.getColor(getActivity(), R.color.text_grey));
     }
 
     private void animateCurrencyBalance() {
@@ -160,9 +160,20 @@ public class AmountChooserFragment extends BaseFragment {
         containerInputCurrency.animate().scaleY(1.5f).setInterpolator(new AccelerateDecelerateInterpolator()).setDuration(300);
         containerInputCurrency.animate().scaleX(1.5f).setInterpolator(new AccelerateDecelerateInterpolator()).setDuration(300);
         isAmountSwapped = true;
+        inputOriginal.setTextColor(ContextCompat.getColor(getActivity(), R.color.text_grey));
+        inputCurrency.setTextColor(ContextCompat.getColor(getActivity(), R.color.text_main));
     }
 
     private void setupInputOriginal() {
+        inputOriginal.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                animateOriginalBalance();
+                if (!TextUtils.isEmpty(inputOriginal.getText().toString())) {
+                    setTotalAmountForInput();
+                }
+            }
+        });
+
         inputOriginal.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -173,12 +184,16 @@ public class AmountChooserFragment extends BaseFragment {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if (!isAmountSwapped) { // if currency input is main
                     if (!TextUtils.isEmpty(charSequence)) {
-                        inputCurrency.setText(new DecimalFormat(formatPattern)
-                                .format(viewModel.getExchangePrice().getValue() * Double.parseDouble(charSequence.toString())));
-                        setTotalAmountForInput();
+                        if (isParsable(charSequence.toString())) {
+                            inputCurrency.setText(new DecimalFormat(formatPattern)
+                                    .format(viewModel.getExchangePrice().getValue() * Double.parseDouble(charSequence.toString())));
+                            setTotalAmountForInput();
+                        }
                     } else {
+                        setEmptyTotalWithFee();
                         inputCurrency.getText().clear();
-                        textTotal.getEditableText().clear();
+                        inputOriginal.getText().clear();
+//                        textTotal.getEditableText().clear();
                     }
                 }
             }
@@ -191,6 +206,15 @@ public class AmountChooserFragment extends BaseFragment {
     }
 
     private void setupInputCurrency() {
+        inputCurrency.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                animateCurrencyBalance();
+                if (!TextUtils.isEmpty(inputCurrency.getText().toString())) {
+                    setTotalAmountForInput();
+                }
+            }
+        });
+
         inputCurrency.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -201,12 +225,16 @@ public class AmountChooserFragment extends BaseFragment {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if (isAmountSwapped) {
                     if (!TextUtils.isEmpty(charSequence)) {
-                        inputOriginal.setText(new DecimalFormat(formatPatternBitcoin)
-                                .format(Double.parseDouble(charSequence.toString()) / viewModel.getExchangePrice().getValue()));
-                        setTotalAmountForInput();
+                        if (isParsable(charSequence.toString())) {
+                            inputOriginal.setText(new DecimalFormat(formatPatternBitcoin)
+                                    .format(Double.parseDouble(charSequence.toString()) / viewModel.getExchangePrice().getValue()));
+                            setTotalAmountForInput();
+                        }
                     } else {
+                        setEmptyTotalWithFee();
                         inputCurrency.getText().clear();
-                        textTotal.getEditableText().clear();
+                        inputOriginal.getText().clear();
+//                        textTotal.getEditableText().clear();
                     }
                 }
             }
@@ -222,7 +250,7 @@ public class AmountChooserFragment extends BaseFragment {
         switcher.setOnCheckedChangeListener((compoundButton, isChecked) -> {
 //            viewModel.setPayForCommission(isChecked);
             if (isChecked) {
-//                if (viewModel.getWallet().getBalance() > Double.parseDouble(inputOriginal.getText().toString())) {
+//                if (viewModel.getWalletLive().getBalance() > Double.parseDouble(inputOriginal.getText().toString())) {
 //
 //                }
             } else {
@@ -233,8 +261,8 @@ public class AmountChooserFragment extends BaseFragment {
     }
 
     /**
-     *  Sets total spending amount from wallet.
-     *  Checks if amount are set in original currency or usd, eur, etc.
+     * Sets total spending amount from wallet.
+     * Checks if amount are set in original currency or usd, eur, etc.
      */
     private void setTotalAmountWithWallet() {
         if (isAmountSwapped) {
@@ -252,30 +280,63 @@ public class AmountChooserFragment extends BaseFragment {
                 if (switcher.isChecked()) {                     // if pay for commission is checked we add fee and donation to total amount
                     textTotal.setText(new DecimalFormat(formatPatternBitcoin)
                             .format(Double.parseDouble(inputCurrency.getText().toString())
-                                    + (viewModel.getFee().getBalance()
-                                    + Double.parseDouble(viewModel.getDonationAmount()))
+                                    + (viewModel.getFee().getAmount()
+                                    + (viewModel.getDonationAmount() == null ? zero : Double.parseDouble(viewModel.getDonationAmount())))
                                     * viewModel.getExchangePrice().getValue()));
                 } else {                                        // if pay for commission is unchecked we add just value from input to total amount
                     textTotal.setText(new DecimalFormat(formatPatternBitcoin)
-                            .format(Double.parseDouble(inputCurrency.getText().toString())
-                                    * viewModel.getExchangePrice().getValue()));
+                            .format(Double.parseDouble(inputCurrency.getText().toString())));
                 }
                 textTotal.append(Constants.SPACE);
                 textTotal.append(CurrencyCode.USD.name());
+            } else {
+                setEmptyTotalWithFee();
             }
         } else {
             if (!TextUtils.isEmpty(inputOriginal.getText())) { // checks input for value to not parse null
                 if (switcher.isChecked()) {                    // if pay for commission is checked we add fee and donation to total amount
                     textTotal.setText(new DecimalFormat(formatPatternBitcoin)
                             .format(Double.parseDouble(inputOriginal.getText().toString())
-                                    + viewModel.getFee().getBalance()
-                                    + Double.parseDouble(viewModel.getDonationAmount())));
+                                    + viewModel.getFee().getAmount()
+                                    + (viewModel.getDonationAmount() == null ? zero : Double.parseDouble(viewModel.getDonationAmount()))));
                 } else {                                       // if pay for commission is unchecked we add just value from input to total amount
                     textTotal.setText(inputOriginal.getText());
                 }
                 textTotal.append(Constants.SPACE);
                 textTotal.append(CurrencyCode.BTC.name());
+            } else {
+                setEmptyTotalWithFee();
             }
+        }
+    }
+
+    private boolean isParsable(String input) {
+        try {
+            Double.parseDouble(input);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    private void setEmptyTotalWithFee() {
+        if (switcher.isChecked()) {
+            if (isAmountSwapped) {
+                textTotal.setText(new DecimalFormat(formatPatternBitcoin)
+                        .format((viewModel.getFee().getAmount()
+                                + (viewModel.getDonationAmount() == null ? zero : Double.parseDouble(viewModel.getDonationAmount())))
+                                * viewModel.getExchangePrice().getValue()));
+                textTotal.append(Constants.SPACE);
+                textTotal.append(CurrencyCode.USD.name());
+            } else {
+                textTotal.setText(new DecimalFormat(formatPatternBitcoin)
+                        .format(viewModel.getFee().getAmount()
+                                + (viewModel.getDonationAmount() == null ? zero : Double.parseDouble(viewModel.getDonationAmount()))));
+                textTotal.append(Constants.SPACE);
+                textTotal.append(CurrencyCode.BTC.name());
+            }
+        } else {
+            textTotal.getEditableText().clear();
         }
     }
 

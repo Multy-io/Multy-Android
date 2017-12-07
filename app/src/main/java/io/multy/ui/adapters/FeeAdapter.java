@@ -23,29 +23,32 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.multy.R;
-import io.multy.model.entities.wallet.BitcoinWallet;
-import io.multy.model.entities.wallet.Wallet;
+import io.multy.model.entities.Fee;
+import timber.log.Timber;
 
 public class FeeAdapter extends RecyclerView.Adapter<FeeAdapter.FeeHolder> {
 
     private int[] iconIds;
     private List<String> names;
     private List<String> blockIds;
-    private List<Wallet> wallets;
+    private List<Fee> wallets;
     private OnFeeClickListener listener;
     private int previousPosition;
-    private ImageView prevMark;
+    private Fee previousFee;
+    private Fee savedFee;
 
-    public FeeAdapter(Context context, OnFeeClickListener listener) {
+    public FeeAdapter(Context context, OnFeeClickListener listener, Fee fee) {
         this.listener = listener;
         wallets = new ArrayList<>();
         iconIds = new int[]{R.drawable.ic_very_fast, R.drawable.ic_fast, R.drawable.ic_medium, R.drawable.ic_slow, R.drawable.ic_very_slow};
         names = Arrays.asList(context.getResources().getStringArray(R.array.fees));
         blockIds = Arrays.asList(context.getResources().getStringArray(R.array.blocks));
-        for (double i = 0; i < 5; i++) { // TODO remove with real fees
-            wallets.add(new BitcoinWallet("Fast " + i + " hour", "", i / 100));
+        for (double i = 0; i < iconIds.length; i++) { // TODO remove with real fees
+            wallets.add(new Fee(names.get((int) i), "" + i/1000 + " BTC", i/1000, false));
         }
         previousPosition = -1;
+        Timber.e("savedFee %s", fee);
+        savedFee = fee;
     }
 
     @Override
@@ -88,37 +91,44 @@ public class FeeAdapter extends RecyclerView.Adapter<FeeAdapter.FeeHolder> {
             ButterKnife.bind(this, itemView);
         }
 
-        void bind(final Wallet wallet) {
+        void bind(final Fee fee) {
             textName.setText(names.get(getAdapterPosition()));
-            textBalanceOriginal.setText(wallet.getBalanceWithCode());
+            textBalanceOriginal.setText(fee.getCost());
             imageLogo.setImageResource(iconIds[getAdapterPosition()]);
             textBlocks.setText(blockIds.get(getAdapterPosition()));
             if (getAdapterPosition() == getItemCount() - 1){
                 divider.setVisibility(View.GONE);
-                textBalanceOriginal.setVisibility(View.GONE);
+//                textBalanceOriginal.setVisibility(View.GONE);
+            }
+            imageMark.setVisibility(fee.isSelected() ? View.VISIBLE : View.INVISIBLE);
+            if (savedFee != null && savedFee.getTime().equals(fee.getTime())) {
+                imageMark.setVisibility(View.VISIBLE);
+                savedFee = null;
             }
             root.setOnClickListener(view -> {
-                if (previousPosition != getAdapterPosition()) {
-                    imageMark.setVisibility(View.VISIBLE);
-                    if (prevMark != null){
-                        prevMark.setVisibility(View.GONE);
-                        notifyItemChanged(previousPosition);
-                    }
-                    notifyItemChanged(getAdapterPosition());
-                    prevMark = imageMark;
-                    previousPosition = getAdapterPosition();
-                } else {
-                    imageMark.setVisibility(View.GONE);
-                    previousPosition = -1;
-                    notifyItemChanged(getAdapterPosition());
-                    prevMark = null;
+                imageMark.setVisibility(fee.isSelected() ? View.VISIBLE : View.INVISIBLE);
+                fee.setSelected(imageMark.getVisibility() == View.INVISIBLE);
+
+                if (previousFee != null){
+                    previousFee.setSelected(false);
                 }
-                listener.onFeeClick(wallet);
+
+                if (previousPosition == getAdapterPosition()){
+                    previousFee = null;
+                    previousPosition = -1;
+                } else {
+                    previousFee = fee;
+                    previousPosition = getAdapterPosition();
+                }
+
+                notifyDataSetChanged();
+
+                listener.onFeeClick(fee);
             });
         }
     }
 
     public interface OnFeeClickListener {
-        void onFeeClick(Wallet wallet);
+        void onFeeClick(Fee fee);
     }
 }

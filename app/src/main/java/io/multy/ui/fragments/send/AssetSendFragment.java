@@ -48,6 +48,7 @@ public class AssetSendFragment extends BaseFragment {
         viewModel.setContext(getActivity());
         viewModel.auth();
         viewModel.getReceiverAddress().observe(this, s -> inputAddress.setText(s));
+        viewModel.getUserAssetsApi();
         setupInputAddress();
         return view;
     }

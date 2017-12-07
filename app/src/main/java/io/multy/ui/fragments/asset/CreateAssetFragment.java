@@ -8,6 +8,7 @@ package io.multy.ui.fragments.asset;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -30,6 +31,7 @@ import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.model.DataManager;
 import io.multy.model.entities.wallet.WalletRealmObject;
+import io.multy.ui.activities.AssetActivity;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
@@ -129,9 +131,6 @@ public class CreateAssetFragment extends BaseFragment {
 
     @OnClick(R.id.text_create)
     public void onClickCreate() {
-//        startActivity(new Intent(getContext(), AssetActivity.class));
-        getActivity().finish();
-
         try {
             List<WalletRealmObject> wallets = new DataManager(Multy.getContext()).getWallets();
             final int index = wallets != null && wallets.size() > 0 ? wallets.size() : 0;
@@ -144,9 +143,13 @@ public class CreateAssetFragment extends BaseFragment {
             walletRealmObject.setCreationAddress(creationAddress);
             walletRealmObject.setWalletIndex(index);
             MultyApi.INSTANCE.addWallet(getActivity(), walletRealmObject);
+            walletViewModel.setWallet(walletRealmObject);
         } catch (JniException e) {
             e.printStackTrace();
         }
+
+        startActivity(new Intent(getContext(), AssetActivity.class));
+        getActivity().finish();
     }
 
     @OnClick(R.id.text_cancel)

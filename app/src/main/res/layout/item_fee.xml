@@ -69,7 +69,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
         />
 
-    <android.support.v7.widget.AppCompatImageView
+    <ImageView
         android:id="@+id/image_mark"
         android:layout_width="@dimen/checkmark_size"
         android:layout_height="@dimen/checkmark_size"
@@ -78,9 +78,7 @@
         android:layout_marginTop="@dimen/margin_12dp"
         android:layout_marginBottom="@dimen/activity_vertical_margin"
         android:layout_marginEnd="@dimen/margin_14dp"
-        app:srcCompat="@drawable/ic_checkmark"
-        android:visibility="gone"
-        tools:visibility="visible"
+        android:src="@drawable/ic_checkmark"
         />
 
     <View

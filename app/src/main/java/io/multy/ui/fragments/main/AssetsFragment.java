@@ -71,7 +71,17 @@ public class AssetsFragment extends BaseFragment {
         subscribeViewModel();
         ButterKnife.bind(this, view);
         initialize();
+        viewModel = ViewModelProviders.of(getActivity()).get(AssetsViewModel.class);
+        viewModel.setContext(getActivity());
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        walletsAdapter.setData(viewModel.getWalletsFromDB());
+//        viewModel.getWalletsFlowable();
+//        viewModel.getWallets().observe(this, walletRealmObjects -> walletsAdapter.setData(walletRealmObjects));
     }
 
     @Override

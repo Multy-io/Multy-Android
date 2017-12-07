@@ -29,6 +29,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
+import io.multy.model.entities.Fee;
 import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.ui.activities.AssetSendActivity;
@@ -69,16 +70,26 @@ public class TransactionFeeFragment extends BaseFragment implements FeeAdapter.O
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_transaction_fee, container, false);
         ButterKnife.bind(this, view);
+        return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         viewModel = ViewModelProviders.of(getActivity()).get(AssetSendViewModel.class);
-        recyclerView.setAdapter(new FeeAdapter(getActivity(), this));
+        recyclerView.setAdapter(new FeeAdapter(getActivity(), this, viewModel.getFee()));
         setupSwitcher();
         setupInput();
-        return view;
     }
 
     @OnClick(R.id.button_next)
     void onClickNext(){
         if (viewModel.getFee() != null) {
+            if (switcher.isChecked()){
+                viewModel.setDonationAmount(inputDonation.getText().toString());
+            } else {
+                viewModel.setDonationAmount(null);
+            }
             ((AssetSendActivity) getActivity()).setFragment(R.string.send, R.id.container, AmountChooserFragment.newInstance());
         } else {
             Toast.makeText(getActivity(), R.string.choose_transaction_speed, Toast.LENGTH_SHORT).show();
@@ -86,11 +97,8 @@ public class TransactionFeeFragment extends BaseFragment implements FeeAdapter.O
     }
 
     @Override
-    public void onFeeClick(Wallet fee) {
+    public void onFeeClick(Fee fee) {
         viewModel.saveFee(fee);
-        if (switcher.isChecked()){
-            viewModel.setDonationAmount(inputDonation.getText().toString());
-        }
     }
 
     private void setupSwitcher(){

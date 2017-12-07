@@ -6,6 +6,7 @@
 
 package io.multy.ui.fragments.asset;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
@@ -22,11 +23,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
-import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.ui.activities.AssetActivity;
 import io.multy.ui.adapters.AssetTransactionsAdapter;
 import io.multy.ui.fragments.AddressesFragment;
 import io.multy.ui.fragments.BaseFragment;
+import io.multy.viewmodels.WalletViewModel;
 
 public class AssetInfoFragment extends BaseFragment {
 
@@ -38,21 +39,14 @@ public class AssetInfoFragment extends BaseFragment {
     RecyclerView recyclerView;
     @BindView(R.id.constraint_empty)
     ConstraintLayout emptyAsset;
-
     @BindView(R.id.text_value)
-    TextView textViewValue;
-
-    @BindView(R.id.text_coin)
-    TextView textViewCoin;
-
+    TextView textBalanceOriginal;
     @BindView(R.id.text_amount)
-    TextView textViewAmount;
+    TextView textBalanceFiat;
+    @BindView(R.id.text_address)
+    TextView textAddress;
 
-    @BindView(R.id.text_money)
-    TextView textViewFiat;
-
-    @BindView(R.id.text_name)
-    TextView textViewName;
+    private WalletViewModel viewModel;
 
     private AssetTransactionsAdapter transactionsAdapter;
 
@@ -69,24 +63,23 @@ public class AssetInfoFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+//        return DataBindingUtil.inflate(inflater, R.layout.fragment_wallet, container, false).getRoot();
         View view = inflater.inflate(R.layout.fragment_asset_info, container, false);
         ButterKnife.bind(this, view);
-        initialize();
-        fillViews();
-        return view;
-    }
 
-    private void fillViews() {
-        final WalletRealmObject wallet = ((AssetActivity) getActivity()).getWalletRealmObject();
-        if (wallet != null) {
-            textViewName.setText(wallet.getName());
-            textViewAmount.setText(String.valueOf(wallet.getBalance()));
-            if (wallet.getChain() == 0) {
-                textViewCoin.setText("BTC");
-            } else {
-                textViewCoin.setText("ETH");
-            }
-        }
+        viewModel = ViewModelProviders.of(getActivity()).get(WalletViewModel.class);
+//        viewModel.getWalletLive().observe(this, walletRealmObject -> {
+//            textAddress.setText(walletRealmObject.getAddresses().get(walletRealmObject.getAddresses().size() - 1).getAddress());
+//            textBalanceOriginal.setText(String.valueOf(walletRealmObject.getCurrency()));
+//            textBalanceFiat.setText(String.valueOf(walletRealmObject.getFiatCurrency()));
+//        });
+
+        textAddress.setText(viewModel.getWallet().getCreationAddress());
+        textBalanceOriginal.setText(String.valueOf(viewModel.getWallet().getBalance()));
+        textBalanceFiat.setText(String.valueOf(viewModel.getWallet().getFiatCurrency()));
+
+        initialize();
+        return view;
     }
 
     private void initialize() {
@@ -96,28 +89,38 @@ public class AssetInfoFragment extends BaseFragment {
             recyclerView.setVisibility(View.GONE);
             emptyAsset.setVisibility(View.VISIBLE);
             setToolbarScrollFlag(0);
-        } else {
+        }
+        else {
             emptyAsset.setVisibility(View.GONE);
             setToolbarScrollFlag(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL);
         }
     }
 
     private void setToolbarScrollFlag(int flag) {
-        AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) collapsingToolbarLayout.getLayoutParams();
+        AppBarLayout.LayoutParams params =
+                (AppBarLayout.LayoutParams) collapsingToolbarLayout.getLayoutParams();
         params.setScrollFlags(flag);
+    }
+
+    private void copyAddress() {
+
+    }
+
+    private void switchNfcPayment() {
+
+    }
+
+    private void subscribeViewModel() {
+
+    }
+
+    @OnClick(R.id.card_addresses)
+    void onClickAddress() {
+        ((AssetActivity) getActivity()).setFragment(R.id.container_full, AddressesFragment.newInstance());
     }
 
     @OnClick(R.id.close)
     void onCloseClick() {
         getActivity().finish();
-    }
-
-    @OnClick(R.id.card)
-    public void onClickAddresses() {
-        getActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.frame_container, new AddressesFragment(), AssetInfoFragment.TAG)
-                .addToBackStack("")
-                .commit();
     }
 }

@@ -9,6 +9,10 @@ package io.multy.model;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import com.samwolfand.oneprefs.Prefs;
+
+import java.util.List;
+
 import io.multy.api.MultyApi;
 import io.multy.model.entities.ByteSeed;
 import io.multy.model.entities.DeviceId;
@@ -19,7 +23,10 @@ import io.multy.model.entities.UserId;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.model.responses.AuthResponse;
 import io.multy.model.responses.ExchangePriceResponse;
+import io.multy.model.responses.UserAssetsResponse;
 import io.multy.storage.DatabaseHelper;
+import io.multy.util.Constants;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.realm.RealmResults;
 import retrofit2.Call;
@@ -39,10 +46,6 @@ public class DataManager {
         this.database = new DatabaseHelper(context);
     }
 
-    public RealmResults<WalletRealmObject> getWallets() {
-        return database.getWallets();
-    }
-
     public void auth(String userId, String deviceId, String password) {
         MultyApi.INSTANCE.auth(userId, deviceId, password).enqueue(new Callback<AuthResponse>() {
             @Override
@@ -59,6 +62,14 @@ public class DataManager {
 
     public Observable<ExchangePriceResponse> getExchangePrice(String originalCurrency, String currency) {
         return MultyApi.INSTANCE.getExchangePrice(originalCurrency, currency);
+    }
+
+    public Observable<UserAssetsResponse> getUserAssets(){
+        return MultyApi.INSTANCE.getUserAssets();
+    }
+
+    public Observable<UserAssetsResponse> getWalletAddresses(int walletId){
+        return MultyApi.INSTANCE.getWalletAddresses(walletId);
     }
 
     public void saveRootKey(RootKey key) {
@@ -98,6 +109,18 @@ public class DataManager {
     }
 
     public WalletRealmObject getWallet() {
+        return database.getWallet();
+    }
+
+    public Flowable<RealmResults<WalletRealmObject>> getWalletsFlowable() {
+        return database.getWallets().asFlowable();
+    }
+
+    public RealmResults<WalletRealmObject> getWallets() {
+        return database.getWallets();
+    }
+
+    public WalletRealmObject getWalletById(int walletId) {
         return database.getWallet();
     }
 
