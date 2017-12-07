@@ -7,9 +7,12 @@ import android.content.ContextWrapper;
 import com.crashlytics.android.Crashlytics;
 import com.samwolfand.oneprefs.Prefs;
 
+import java.util.UUID;
+
 import io.branch.referral.Branch;
 import io.multy.model.DataManager;
 import io.multy.model.entities.ByteSeed;
+import io.multy.model.entities.DeviceId;
 import io.multy.model.entities.Mnemonic;
 import io.multy.model.entities.UserId;
 import io.multy.util.Constants;
@@ -46,11 +49,13 @@ public class Multy extends Application {
                 final String mnemonic = NativeDataHelper.makeMnemonic();
                 final byte[] seed = NativeDataHelper.makeSeed(mnemonic);
                 final String userId = NativeDataHelper.makeAccountId(seed);
+                final String deviceId = UUID.randomUUID().toString();
 
                 DataManager dataManager = new DataManager(this);
                 dataManager.saveSeed(new ByteSeed(seed));
                 dataManager.saveUserId(new UserId(userId));
                 dataManager.setMnemonic(new Mnemonic(mnemonic));
+                dataManager.setDeviceId(new DeviceId(deviceId));
 
                 Prefs.putBoolean(Constants.PREF_FIRST_SUCCESSFUL_START, false);
             } catch (JniException e) {

@@ -65,7 +65,6 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         }
     }
 
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -186,9 +185,9 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
             ImageView image = view.findViewById(R.id.image_logo);
             int filterColor;
             if (mustEnable) {
-                filterColor = ContextCompat.getColor(this, R.color.tab_active);
+                filterColor = ContextCompat.getColor(this, R.color.blue);
             } else {
-                filterColor = ContextCompat.getColor(this, R.color.tab_inactive);
+                filterColor = ContextCompat.getColor(this, R.color.blue_light);
             }
             title.setTextColor(filterColor);
             image.setColorFilter(filterColor, PorterDuff.Mode.SRC_IN);
@@ -206,6 +205,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
 
     @OnClick(R.id.fast_operations)
     void onFastOperationsClick() {
+//        MultyApi.INSTANCE.getSpendableOutputs();
 //        MultyApi.INSTANCE.getUserAssets();
 //        MultyApi.INSTANCE.getTransactionSpeed();
 //        try {

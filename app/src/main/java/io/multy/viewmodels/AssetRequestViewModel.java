@@ -18,6 +18,7 @@ import java.util.List;
 
 import io.multy.model.DataManager;
 import io.multy.model.entities.wallet.Wallet;
+import io.multy.model.entities.wallet.WalletRealmObject;
 
 /**
  * Created by Ihar Paliashchuk on 14.11.2017.
@@ -37,7 +38,7 @@ public class AssetRequestViewModel extends BaseViewModel {
         dataManager = new DataManager(context);
     }
 
-    public List<Wallet> getWallets(){
+    public List<WalletRealmObject> getWallets(){
         return dataManager.getWallets();
     }
 

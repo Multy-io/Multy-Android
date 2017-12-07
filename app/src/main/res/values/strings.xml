@@ -106,5 +106,10 @@
     <string name="my_wallets">My Wallets</string>
     <string name="all_addresses">All addresses</string>
     <string name="btc_adddresses">BTC Addresses</string>
+    <string name="eth">ETH</string>
+    <string name="create">Create</string>
+    <string name="currency_to_convert">Currency to convert</string>
+    <string name="create_wallet">Create Wallet</string>
+    <string name="chain">Chain</string>
 
 </resources>

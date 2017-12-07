@@ -109,6 +109,4 @@
             tools:listitem="@layout/view_asset_item" />
 
     </android.support.constraint.ConstraintLayout>
-
-
 </android.support.v4.widget.NestedScrollView>

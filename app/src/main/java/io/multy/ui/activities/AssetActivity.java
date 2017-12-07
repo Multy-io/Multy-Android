@@ -15,15 +15,22 @@ import android.support.v4.app.FragmentManager;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
+import io.multy.model.DataManager;
+import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.ui.fragments.asset.AssetInfoFragment;
+import io.multy.util.Constants;
 
 public class AssetActivity extends BaseActivity {
+
+    private WalletRealmObject walletRealmObject;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_asset_info);
         ButterKnife.bind(this);
+
+        walletRealmObject = new DataManager(this).getWallet(getIntent().getExtras().getInt(Constants.EXTRA_WALLET_ID, 0));
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
@@ -52,5 +59,9 @@ public class AssetActivity extends BaseActivity {
     @OnClick(R.id.exchange)
     void onClickExchange() {
         startActivity(new Intent(this, AssetSendActivity.class));
+    }
+
+    public WalletRealmObject getWalletRealmObject() {
+        return walletRealmObject;
     }
 }

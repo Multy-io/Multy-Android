@@ -9,17 +9,15 @@ package io.multy.model.entities.wallet;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
-
 import io.realm.RealmList;
 import io.realm.RealmObject;
 
 public class WalletRealmObject extends RealmObject {
 
     private String name;
-    @SerializedName("address")
-    private String creationAddress;
     @SerializedName("addresses")
+    private String creationAddress;
+    @SerializedName("address")
     private RealmList<WalletAddress> addresses;
     private double balance;
     @SerializedName("currency")
@@ -27,7 +25,12 @@ public class WalletRealmObject extends RealmObject {
     @SerializedName("addressID")
     private int addressIndex;
     @SerializedName("walletID")
-    private String walletIndex;
+    private int walletIndex;
+    @SerializedName("Chain")
+    private int chain;
+
+    private String chainCurrency;
+    private String fiatCurrency;
 
     public WalletRealmObject() {
     }
@@ -39,7 +42,7 @@ public class WalletRealmObject extends RealmObject {
     }
 
     public WalletRealmObject(String name, String creationAddress, RealmList<WalletAddress> addresses,
-                             double balance, int currency, int addressIndex, String walletIndex) {
+                             double balance, int currency, int addressIndex, int walletIndex) {
         this.name = name;
         this.creationAddress = creationAddress;
         this.addresses = addresses;
@@ -73,7 +76,7 @@ public class WalletRealmObject extends RealmObject {
         this.creationAddress = creationAddress;
     }
 
-    public List<WalletAddress> getAddresses() {
+    public RealmList<WalletAddress> getAddresses() {
         return addresses;
     }
 
@@ -101,12 +104,36 @@ public class WalletRealmObject extends RealmObject {
         this.addressIndex = addressIndex;
     }
 
-    public String getWalletIndex() {
+    public int getWalletIndex() {
         return walletIndex;
     }
 
-    public void setWalletIndex(String walletIndex) {
+    public void setWalletIndex(int walletIndex) {
         this.walletIndex = walletIndex;
+    }
+
+    public int getChain() {
+        return chain;
+    }
+
+    public void setChain(int chain) {
+        this.chain = chain;
+    }
+
+    public String getChainCurrency() {
+        return chainCurrency;
+    }
+
+    public void setChainCurrency(String chainCurrency) {
+        this.chainCurrency = chainCurrency;
+    }
+
+    public String getFiatCurrency() {
+        return fiatCurrency;
+    }
+
+    public void setFiatCurrency(String fiatCurrency) {
+        this.fiatCurrency = fiatCurrency;
     }
 
     @Override

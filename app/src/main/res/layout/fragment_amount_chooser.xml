@@ -194,7 +194,7 @@
         android:id="@+id/text_spendable"
         android:layout_width="@dimen/dp0"
         android:layout_height="@dimen/spendable_height"
-        android:background="@color/blue_light"
+        android:background="@color/gray_middle"
         android:gravity="center_vertical"
         android:paddingStart="@dimen/activity_horizontal_margin"
         android:paddingEnd="@dimen/activity_horizontal_margin"

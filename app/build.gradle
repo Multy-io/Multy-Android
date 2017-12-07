@@ -36,7 +36,7 @@ android {
         }
         externalNativeBuild {
             cmake {
-                path "C:\\workspace\\ENMKMulty-Core\\CMakeLists.txt"
+                path "C:\\workspace\\Multy-Core\\CMakeLists.txt"
             }
         }
     }
@@ -87,6 +87,9 @@ dependencies {
 
     implementation 'io.branch.sdk.android:library:2.+'
     implementation 'com.scottyab:rootbeer-lib:0.0.6'
+    compile ('io.socket:socket.io-client:0.9.+') {
+        exclude group: 'org.json', module: 'json'
+    }
 }
 
 apply plugin: 'com.google.gms.google-services'

@@ -7,12 +7,18 @@
 package io.multy.model.entities.wallet;
 
 
+import com.google.gson.annotations.SerializedName;
+
 import io.realm.RealmObject;
 
 public class WalletAddress extends RealmObject {
 
+    @SerializedName("AddressID")
     private int index;
+    @SerializedName("Address")
     private String address;
+    @SerializedName("Amount")
+    private int amount;
 
     public WalletAddress() {
     }
@@ -36,6 +42,14 @@ public class WalletAddress extends RealmObject {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
     }
 
     @Override

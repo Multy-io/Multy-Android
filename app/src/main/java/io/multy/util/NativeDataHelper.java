@@ -18,12 +18,33 @@ public class NativeDataHelper {
     }
 
     public enum Currency {
-        BITCOIN, ETHEREUM
+        BITCOIN(0),
+        ETHEREUM(1);
+
+        private final int value;
+
+        Currency(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
     }
 
     public enum AddressType {
-        ADDRESS_EXTERNAL,
-        ADDRESS_INTERNAL
+        ADDRESS_EXTERNAL(0),
+        ADDRESS_INTERNAL(1);
+
+        private final int value;
+
+        AddressType(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
     }
 
     public static native String makeMnemonic() throws JniException;
@@ -35,16 +56,15 @@ public class NativeDataHelper {
     public static native String makeAccountId(byte[] seed) throws JniException;
 
     /**
-     *
      * @param seed
-     * @param txHash hash of prev. transaction. should be given from api
-     * @param txPubKey should be given from api
-     * @param txOutIndex should be given from api
-     * @param sum all sum which is now on address
-     * @param amount amount to spend
+     * @param txHash             hash of prev. transaction. should be given from api
+     * @param txPubKey           should be given from api
+     * @param txOutIndex         should be given from api
+     * @param sum                all sum which is now on address
+     * @param amount             amount to spend
      * @param fee
      * @param destinationAddress where money should arrive
-     * @param sendAddress from which address money should depart
+     * @param sendAddress        from which address money should depart
      * @return hex of transaction
      * @throws JniException
      */

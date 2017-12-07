@@ -8,18 +8,16 @@ package io.multy.storage;
 
 import android.content.Context;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import io.multy.model.entities.ByteSeed;
+import io.multy.model.entities.DeviceId;
 import io.multy.model.entities.Mnemonic;
 import io.multy.model.entities.RootKey;
 import io.multy.model.entities.Token;
 import io.multy.model.entities.UserId;
-import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmResults;
 
 public class DatabaseHelper {
 
@@ -39,18 +37,8 @@ public class DatabaseHelper {
 //        }
     }
 
-    public void saveWallets() {
-        realm.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-//                realm.insertOrUpdate();
-            }
-        });
-    }
-
-    public List<Wallet> getWallets() {
-//        return realm.where(Wallet.class).findAll();
-        return new ArrayList<>();
+    public RealmResults<WalletRealmObject> getWallets(){
+        return realm.where(WalletRealmObject.class).findAll();
     }
 
     public void saveWallet(WalletRealmObject wallet) {
@@ -59,6 +47,10 @@ public class DatabaseHelper {
 
     public WalletRealmObject getWallet() {
         return realm.where(WalletRealmObject.class).findFirst();
+    }
+
+    public WalletRealmObject getWalletById(int id) {
+        return realm.where(WalletRealmObject.class).equalTo("walletIndex", id).findFirst();
     }
 
     public void saveRootKey(RootKey key) {
@@ -99,5 +91,13 @@ public class DatabaseHelper {
 
     public Mnemonic getMnemonic() {
         return realm.where(Mnemonic.class).findFirst();
+    }
+
+    public void setDeviceId(DeviceId deviceId) {
+        realm.executeTransaction(realm -> realm.insertOrUpdate(deviceId));
+    }
+
+    public DeviceId getDeviceId() {
+        return realm.where(DeviceId.class).findFirst();
     }
 }

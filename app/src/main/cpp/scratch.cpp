@@ -217,12 +217,6 @@ Java_io_multy_util_NativeDataHelper_makeAccountAddress(JNIEnv *env, jobject obj,
 //    return BinaryData{(const unsigned char*)env->GetByteArrayElements(array, nullptr), (size_t) env->GetArrayLength(array)};
 //}
 
-std::string to_string(int i) {
-    std::stringstream ss;
-    ss << i;
-    return ss.str();
-}
-
 JNIEXPORT jbyteArray JNICALL
 Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *env, jobject obj, jbyteArray array, jstring tx_hash_bytes, jstring tx_pub_key, jint tx_out_index, jstring sum, jstring amount, jstring fee, jstring destination_address, jstring send_address) {
 
