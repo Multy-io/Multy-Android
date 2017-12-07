@@ -19,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -35,6 +36,9 @@ public class ListDialogFragment extends DialogFragment {
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
 
+    @BindView(R.id.text_title)
+    TextView textView;
+
     public interface OnCurrencyClickListener {
         void onClickCurrency(String currency, int position);
     }
@@ -42,7 +46,7 @@ public class ListDialogFragment extends DialogFragment {
     private ArrayList<String> items;
     private CurrencyType currencyType;
 
-    public ListDialogFragment newInstance(ArrayList<String> items, CurrencyType currencyType) {
+    public static ListDialogFragment newInstance(ArrayList<String> items, CurrencyType currencyType) {
         ListDialogFragment listDialogFragment = new ListDialogFragment();
         listDialogFragment.setItems(items);
         listDialogFragment.setCurrencyType(currencyType);
@@ -71,9 +75,8 @@ public class ListDialogFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_blue_list, container, false);
         ButterKnife.bind(this, view);
-
+        textView.setText(currencyType == CurrencyType.CHAIN ? R.string.select_chain : R.string.select_currency);
         if (items != null && items.size() > 0) {
-            recyclerView.setHasFixedSize(true);
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             recyclerView.setAdapter(new CurrenciesAdapter(items, (currency, position) -> {
                 WalletViewModel walletModel = ViewModelProviders.of(getActivity()).get(WalletViewModel.class);

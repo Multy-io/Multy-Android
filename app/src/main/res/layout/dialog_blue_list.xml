@@ -32,9 +32,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserrat"
-            android:padding="8dp"
+            android:paddingBottom="8dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="8dp"
             android:textColor="@android:color/black"
-            android:textSize="16sp"
+            android:textSize="18sp"
             tools:text="Select currency" />
 
         <android.support.v7.widget.RecyclerView
@@ -42,7 +45,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/text_title"
-            android:padding="8dp" />
+            android:fadingEdge="none" />
     </RelativeLayout>
-
 </android.support.constraint.ConstraintLayout>

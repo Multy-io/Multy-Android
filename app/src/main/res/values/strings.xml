@@ -111,5 +111,8 @@
     <string name="currency_to_convert">Currency to convert</string>
     <string name="create_wallet">Create Wallet</string>
     <string name="chain">Chain</string>
+    <string name="select_chain">Select chain</string>
+    <string name="select_currency">Select currency</string>
+    <string name="wallet_name">Wallet Name</string>
 
 </resources>

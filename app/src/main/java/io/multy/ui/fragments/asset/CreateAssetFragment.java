@@ -6,7 +6,6 @@
 
 package io.multy.ui.fragments.asset;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.graphics.Color;
@@ -21,6 +20,7 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -33,6 +33,8 @@ import io.multy.model.DataManager;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.ui.activities.AssetActivity;
 import io.multy.ui.fragments.BaseFragment;
+import io.multy.ui.fragments.dialogs.ListDialogFragment;
+import io.multy.util.CurrencyType;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
 import io.multy.viewmodels.WalletViewModel;
@@ -76,17 +78,13 @@ public class CreateAssetFragment extends BaseFragment {
 
     private void subscribeToCurrencyUpdate() {
         walletViewModel = ViewModelProviders.of(getActivity()).get(WalletViewModel.class);
-        walletViewModel.fiatCurrency.observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                //TODO update wallet fiat currency
-            }
+        walletViewModel.fiatCurrency.observe(this, s -> {
+            //TODO update wallet fiat currency
+            textViewFiatCurrency.setText(s);
         });
-        walletViewModel.chainCurrency.observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                //TODO update wallet chain currency
-            }
+        walletViewModel.chainCurrency.observe(this, s -> {
+            //TODO update wallet chain currency
+            textViewChainCurrency.setText(s);
         });
     }
 
@@ -121,12 +119,19 @@ public class CreateAssetFragment extends BaseFragment {
 
     @OnClick(R.id.button_chain)
     public void onClickChain() {
-
+        ArrayList<String> chains = new ArrayList<>(2);
+        chains.add("Bitcoin");
+        chains.add("Ethereum");
+        ListDialogFragment.newInstance(chains, CurrencyType.CHAIN).show(getFragmentManager(), "");
     }
 
     @OnClick(R.id.button_fiat)
     public void onClickFiat() {
-
+        ArrayList<String> chains = new ArrayList<>(3);
+        chains.add("USD");
+        chains.add("EUR");
+        chains.add("BYN");
+        ListDialogFragment.newInstance(chains, CurrencyType.FIAT).show(getFragmentManager(), "");
     }
 
     @OnClick(R.id.text_create)
