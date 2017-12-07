@@ -12,14 +12,14 @@ To conrtibute please check **Build instraction**
 
 1. Clone master branch of the Multy-android project
 ```
-https://github.com/Appscrunch/Multy-android.git
+git clone https://github.com/Appscrunch/Multy-android.git
 ```
 
 2. Be shure you have CMake and NDK installed in the Android Studio SDK Tools
 
 3. Clone master branch of the Multy-Core project
 ```
-https://github.com/Appscrunch/Multy-Core.git
+git clone https://github.com/Appscrunch/Multy-Core.git
 ```
 4. Checkout master branch of the Multy-Core project
 ```
@@ -34,8 +34,7 @@ add_library(core_jni
     )
 ```
 
-
-5. Update build.gradle extarnalNativeBuild path
+6. Update build.gradle extarnalNativeBuild path
 ```
 externalNativeBuild {
             cmake {
@@ -43,9 +42,9 @@ externalNativeBuild {
             }
         }
 ```
-6. In the Android Studio make Gradle syncronization 
+7. In the Android Studio make Gradle syncronization 
 
-7. In the Android Studio
+8. In the Android Studio
 ```
 Build -> Clean Project
 Build -> Refresh Linked C++ Project
