@@ -48,8 +48,8 @@ public interface ApiServiceInterface {
     @GET("api/v1/gettxspeed")
     Call<ResponseBody> getTransactionSpeed();
 
-    @GET("api/v1/getspendableoutputs/{address}")
-    Call<ResponseBody> getSpendableOutputs(@Path("address") String address);
+    @GET("api/v1/getspendableoutputs/{walletIndex}")
+    Call<ResponseBody> getSpendableOutputs(@Path("address") int walletIndex);
 
     @GET("api/v1/getalluserassets")
     Observable<UserAssetsResponse> getUserAssets();

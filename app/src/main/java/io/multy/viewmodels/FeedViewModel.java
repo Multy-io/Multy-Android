@@ -7,7 +7,5 @@
 package io.multy.viewmodels;
 
 
-import android.arch.lifecycle.ViewModel;
-
-public class FeedViewModel extends ViewModel {
+public class FeedViewModel extends BaseViewModel {
 }

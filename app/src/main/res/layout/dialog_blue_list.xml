@@ -38,7 +38,7 @@
             android:paddingTop="8dp"
             android:textColor="@android:color/black"
             android:textSize="18sp"
-            tools:text="Select currency" />
+            tools:text="Select currencyId" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view"

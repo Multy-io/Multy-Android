@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -38,9 +39,11 @@ public class WalletsAdapter extends RecyclerView.Adapter<WalletsAdapter.Holder> 
 
     @Override
     public void onBindViewHolder(Holder holder, int position) {
+        NativeDataHelper.Currency chain = NativeDataHelper.Currency.values()[data.get(position).getChain()];
         holder.name.setText(data.get(position).getName());
         holder.amount.setText(String.valueOf(data.get(position).getBalance()));
         holder.currency.setText(String.valueOf(NativeDataHelper.Currency.values()[data.get(position).getChain()]));
+        holder.imageChain.setImageResource(chain == NativeDataHelper.Currency.BTC ? R.drawable.ic_btc_huge : R.drawable.ic_eth_medium_icon);
         holder.itemView.setOnClickListener(view -> {
             Intent intent = new Intent(view.getContext(), AssetActivity.class);
             intent.putExtra(Constants.EXTRA_WALLET_ID, data.get(position).getWalletIndex());
@@ -68,6 +71,8 @@ public class WalletsAdapter extends RecyclerView.Adapter<WalletsAdapter.Holder> 
         TextView equals;
         @BindView(R.id.text_currency)
         TextView currency;
+        @BindView(R.id.image_chain)
+        ImageView imageChain;
 
         Holder(View itemView) {
             super(itemView);

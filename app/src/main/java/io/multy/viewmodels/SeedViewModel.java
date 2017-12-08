@@ -7,7 +7,6 @@
 package io.multy.viewmodels;
 
 import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.ViewModel;
 import android.text.TextUtils;
 
 import java.util.ArrayList;
@@ -21,7 +20,7 @@ import timber.log.Timber;
  * Created by andre on 08.11.2017.
  */
 
-public class SeedViewModel extends ViewModel {
+public class SeedViewModel extends BaseViewModel {
 
     public MutableLiveData<ArrayList<String>> phrase = new MutableLiveData<>();
     public MutableLiveData<Integer> position = new MutableLiveData<>();

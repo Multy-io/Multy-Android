@@ -29,6 +29,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.branch.referral.Branch;
 import io.multy.R;
+import io.multy.api.MultyApi;
 import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
 import io.multy.ui.fragments.main.AssetsFragment;
 import io.multy.ui.fragments.main.ContactsFragment;
@@ -205,8 +206,16 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
 
     @OnClick(R.id.fast_operations)
     void onFastOperationsClick() {
-//        MultyApi.INSTANCE.getSpendableOutputs();
-//        MultyApi.INSTANCE.getUserAssets();
+        MultyApi.INSTANCE.getSpendableOutputs();
+//        MultyApi.INSTANCE.getUserAssets()
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(new Consumer<UserAssetsResponse>() {
+//                    @Override
+//                    public void accept(UserAssetsResponse userAssetsResponse) throws Exception {
+//                        Log.i("wise", "response");
+//                    }
+//                });
 //        MultyApi.INSTANCE.getTransactionSpeed();
 //        try {
 ////            Log.i("wise", "to " + (NativeDataHelper.makeAccountAddress(, 0, 0)));

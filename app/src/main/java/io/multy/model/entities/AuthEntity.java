@@ -4,25 +4,28 @@ import com.google.gson.annotations.SerializedName;
 
 public class AuthEntity {
 
-    @SerializedName("username")
-    private String userName;
-    @SerializedName("deviceid")
+    @SerializedName("userID")
+    private String userId;
+    @SerializedName("deviceID")
     private String deviceId;
-    @SerializedName("password")
-    private String password;
+    @SerializedName("pushToken")
+    private String token;
+    @SerializedName("deviceType")
+    private int deviceType;
 
-    public AuthEntity(String userName, String deviceId, String password) {
-        this.userName = userName;
+    public AuthEntity(String userId, String deviceId, String token, int deviceType) {
+        this.userId = userId;
         this.deviceId = deviceId;
-        this.password = password;
+        this.token = token;
+        this.deviceType = deviceType;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUserId(String userName) {
+        this.userId = userName;
     }
 
     public String getDeviceId() {
@@ -33,11 +36,19 @@ public class AuthEntity {
         this.deviceId = deviceId;
     }
 
-    public String getPassword() {
-        return password;
+    public String getToken() {
+        return token;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public int getDeviceType() {
+        return deviceType;
+    }
+
+    public void setDeviceType(int deviceType) {
+        this.deviceType = deviceType;
     }
 }

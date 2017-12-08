@@ -7,7 +7,5 @@
 package io.multy.viewmodels;
 
 
-import android.arch.lifecycle.ViewModel;
-
-public class ContactsViewModel extends ViewModel {
+public class ContactsViewModel extends BaseViewModel {
 }

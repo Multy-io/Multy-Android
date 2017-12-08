@@ -4,28 +4,28 @@
  * See LICENSE for details
  */
 
-package io.multy.api;
+package io.multy.util;
 
-import android.app.Service;
-import android.content.Intent;
-import android.os.IBinder;
-import android.support.annotation.Nullable;
 import android.util.Log;
+
+import com.google.gson.Gson;
 
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import io.multy.viewmodels.TransactionViewModel;
 import io.socket.client.IO;
 import io.socket.client.Manager;
 import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
 import io.socket.engineio.client.Transport;
 import io.socket.engineio.client.transports.WebSocket;
 
-public class SocketService extends Service {
+public class SocketHelper {
 
-    public static final String TAG = SocketService.class.getSimpleName();
+    public static final String TAG = SocketHelper.class.getSimpleName();
 
     private static final String SOCKET_URL = "http://192.168.0.109:6666/";
     private static final String HEADER_AUTH = "jwtToken";
@@ -34,11 +34,12 @@ public class SocketService extends Service {
     private static final String EVENT_RECEIVE = "/newTransaction";
 
     private Socket socket;
-    private boolean connected;
+    private boolean connected = false;
+    private Gson gson;
+    private TransactionViewModel viewModel;
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
+    public SocketHelper() {
+        gson = new Gson();
 
         try {
             IO.Options options = new IO.Options();
@@ -62,7 +63,13 @@ public class SocketService extends Service {
             socket.on(Socket.EVENT_CONNECT_ERROR, args -> log("connection error"))
                     .on(Socket.EVENT_CONNECT_TIMEOUT, args -> log("connection timeout"))
                     .on(Socket.EVENT_CONNECT, args -> log("Connected"))
-                    .on(EVENT_RECEIVE, args -> log("socket data received " + String.valueOf(args[0])))
+                    .on(EVENT_RECEIVE, new Emitter.Listener() {
+                        @Override
+                        public void call(Object... args) {
+//                            viewModel.transactionData.setValue(gson.fromJson(String.valueOf(args[0]), Transaction.class));
+                            SocketHelper.this.log("socket data received " + String.valueOf(args[0]));
+                        }
+                    })
                     .on(Socket.EVENT_DISCONNECT, args -> log("Disconnected"));
 
             socket.connect();
@@ -73,17 +80,5 @@ public class SocketService extends Service {
 
     private void log(String message) {
         Log.i(TAG, message);
-    }
-
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        log("onStartCommand");
-        return START_STICKY;
     }
 }

@@ -50,7 +50,7 @@
             tools:listitem="@layout/view_portfolios_item" />
 
         <View
-            android:id="@+id/devider_gray"
+            android:id="@+id/divider_gray"
             android:layout_width="0dp"
             android:layout_height="0.5dp"
             android:layout_marginTop="39dp"
@@ -75,7 +75,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/devider_gray" />
+            app:layout_constraintTop_toTopOf="@+id/divider_gray" />
 
         <ImageButton
             android:id="@+id/button_add"

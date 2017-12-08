@@ -9,7 +9,6 @@ package io.multy.ui.fragments;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,12 +18,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
-import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.ui.adapters.AddressesAdapter;
-import io.multy.ui.adapters.WalletAddressesAdapter;
-import io.multy.ui.fragments.send.AmountChooserFragment;
-import io.multy.util.NativeDataHelper;
-import io.multy.viewmodels.AssetsViewModel;
 import io.multy.viewmodels.WalletViewModel;
 
 public class AddressesFragment extends BaseFragment {
@@ -59,7 +53,7 @@ public class AddressesFragment extends BaseFragment {
 
 //    private void initList() {
 //        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
-//        adapter = new WalletAddressesAdapter(wallet.getAddresses(), NativeDataHelper.Currency.values()[wallet.getCurrency()]);
+//        adapter = new WalletAddressesAdapter(wallet.getAddresses(), NativeDataHelper.Currency.values()[wallet.getCurrencyId()]);
 //        recyclerView.setLayoutManager(layoutManager);
 //        recyclerView.setHasFixedSize(true);
 //        recyclerView.setAdapter(adapter);

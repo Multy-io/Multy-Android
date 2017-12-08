@@ -33,8 +33,6 @@ public class ContactsFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-//        DataBindingUtil.inflate(inflater, R.layout.fragment_contacts, container, false);
-//        return DataBindingUtil.inflate(inflater, R.layout.fragment_contacts, container, false).getRoot();
         View view = inflater.inflate(R.layout.fragment_contacts, container, false);
         viewModel = ViewModelProviders.of(this).get(ContactsViewModel.class);
         return view;

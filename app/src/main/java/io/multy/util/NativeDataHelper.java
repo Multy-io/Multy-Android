@@ -18,8 +18,8 @@ public class NativeDataHelper {
     }
 
     public enum Currency {
-        BITCOIN(0),
-        ETHEREUM(1);
+        BTC(0),
+        ETH(1);
 
         private final int value;
 

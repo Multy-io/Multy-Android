@@ -112,8 +112,14 @@
     <string name="create_wallet">Create Wallet</string>
     <string name="chain">Chain</string>
     <string name="select_chain">Select chain</string>
-    <string name="select_currency">Select currency</string>
+    <string name="select_currency">Select currencyId</string>
     <string name="wallet_name">Wallet Name</string>
+    <string name="no_contacts">No contacts yet</string>
+    <string name="no_contacts_message">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
+    <string name="no_activity">No activity yet</string>
+    <string name="no_activity_message">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
+    <string name="multy_name_long">Multi cryptocurrency and\nassets open-source wallet</string>
+
 	<string name="text_copied">Text was copied to clipboard</string>
-    
+
 </resources>

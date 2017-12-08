@@ -33,5 +33,8 @@ public class Constants {
 
     public static final String DEEP_LINK_QR_CODE = "QR_CODE";
 
-
+    public final static String BTC = "BTC";
+    public final static String ETH = "ETH";
+    public final static String USD = "USD";
+    public final static String EUR = "EUR";
 }

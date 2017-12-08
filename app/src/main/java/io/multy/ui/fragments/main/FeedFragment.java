@@ -33,7 +33,6 @@ public class FeedFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-//        DataBindingUtil.inflate(inflater, R.layout.fragment_feed, container, false);
         View view = inflater.inflate(R.layout.fragment_feed, container, false);
         viewModel = ViewModelProviders.of(this).get(FeedViewModel.class);
         return view;

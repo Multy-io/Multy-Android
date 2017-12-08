@@ -187,7 +187,8 @@ Java_io_multy_util_NativeDataHelper_makeAccountId(JNIEnv *env, jobject obj, jbyt
 }
 
 JNIEXPORT jstring JNICALL
-Java_io_multy_util_NativeDataHelper_makeAccountAddress(JNIEnv *env, jobject obj, jbyteArray array, jint index, jint currency) {
+Java_io_multy_util_NativeDataHelper_makeAccountAddress(JNIEnv *env, jobject obj, jbyteArray array,
+                                                       jint index, jint currency) {
 
     using namespace wallet_core::internal;
 
@@ -201,7 +202,8 @@ Java_io_multy_util_NativeDataHelper_makeAccountAddress(JNIEnv *env, jobject obj,
     ERSOR(make_master_key(&seed, reset_sp(rootKey)), jstring());
 
     HDAccountPtr hdAccount;
-    ERSOR(make_hd_account(rootKey.get(), static_cast<Currency >((int) currency), (int) index, reset_sp(hdAccount)), jstring());
+    ERSOR(make_hd_account(rootKey.get(), static_cast<Currency >((int) currency), (int) index,
+                          reset_sp(hdAccount)), jstring());
 
     AccountPtr account;
     ERSOR(make_hd_leaf_account(hdAccount.get(), ADDRESS_EXTERNAL, 0, reset_sp(account)), jstring());
@@ -218,7 +220,11 @@ Java_io_multy_util_NativeDataHelper_makeAccountAddress(JNIEnv *env, jobject obj,
 //}
 
 JNIEXPORT jbyteArray JNICALL
-Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *env, jobject obj, jbyteArray array, jstring tx_hash_bytes, jstring tx_pub_key, jint tx_out_index, jstring sum, jstring amount, jstring fee, jstring destination_address, jstring send_address) {
+Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *env, jobject obj, jbyteArray array,
+                                                    jstring tx_hash_bytes, jstring tx_pub_key,
+                                                    jint tx_out_index, jstring sum, jstring amount,
+                                                    jstring fee, jstring destination_address,
+                                                    jstring send_address) {
 
     using namespace wallet_core::internal;
     using namespace multy_transaction::internal;
@@ -262,22 +268,22 @@ Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *env, jobject obj, jb
 //    Amount one_BTC(Amount(1000) * 1000 * 1000 * 1000 * 1000);
 //    Amount fee_value(Amount(1000) * 1000 * 1000 * 1000);
     {
-        Properties& source = transaction->add_source();
+        Properties &source = transaction->add_source();
         source.set_property("amount", sumAmount);
-        source.set_property("prev_tx_hash",  test_utility::to_binary_data(test_utility::from_hex(txHashStr)));
-       // source.set_property("prev_tx_hash", binaryTxHash);
+        source.set_property("prev_tx_hash", test_utility::to_binary_data(test_utility::from_hex(txHashStr)));
+        // source.set_property("prev_tx_hash", binaryTxHash);
         source.set_property("prev_tx_out_index", tx_out_index);
         source.set_property("prev_tx_out_script_pubkey", test_utility::to_binary_data(test_utility::from_hex(txPubKeyStr)));
     }
 
     {
-        Properties& destination = transaction->add_destination();
+        Properties &destination = transaction->add_destination();
         destination.set_property("address", env->GetStringUTFChars(destination_address, nullptr));
         destination.set_property("amount", one_BTC);
     }
 
     {
-        Properties& change = transaction->add_destination();
+        Properties &change = transaction->add_destination();
         change.set_property("address", env->GetStringUTFChars(send_address, nullptr));
         change.set_property("amount", sumAmount - one_BTC - fee_value);
     }
@@ -290,6 +296,108 @@ Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *env, jobject obj, jb
     env->SetByteArrayRegion(resultArray, 0, serialized.get()->len, reinterpret_cast<const jbyte *>(serialized->data));
     return resultArray;
 }
+
+//JNIEXPORT jobjectArray  JNICALL
+//Java_io_multy_util_NativeDataHelper_estimateFee(JNIEnv *env, jobject obj, jbyteArray array,
+//                                                jstring tx_hash_bytes, jstring tx_pub_key,
+//                                                jint tx_out_index, jstring sum, jstring amount,
+//                                                jstring fee, jstring destination_address,
+//                                                jstring send_address, jobjectArray fees) {
+//
+////    using namespace wallet_core::internal;
+////    using namespace multy_transaction::internal;
+////
+////    size_t len = (size_t) env->GetArrayLength(array);
+////    unsigned char *buf = new unsigned char[len];
+////    env->GetByteArrayRegion(array, 0, len, reinterpret_cast<jbyte *>(buf));
+////
+////    const char *amountStr = env->GetStringUTFChars(amount, nullptr);
+////    const char *feeStr = env->GetStringUTFChars(fee, nullptr);
+////    const char *sumStr = env->GetStringUTFChars(sum, nullptr);
+////    const char *txPubKeyStr = env->GetStringUTFChars(tx_pub_key, nullptr);
+////    const char *txHashStr = env->GetStringUTFChars(tx_hash_bytes, nullptr);
+////
+////    __android_log_print(ANDROID_LOG_INFO, "foo", "Amount: %s", amountStr);
+////    __android_log_print(ANDROID_LOG_INFO, "foo", "Fee: %s", feeStr);
+////
+////    ErrorPtr error;
+////    ExtendedKeyPtr rootKey;
+////
+////    BinaryData seed{buf, len};
+////    error.reset(make_master_key(&seed, reset_sp(rootKey)));
+////
+////    HDAccountPtr hdAccount;
+////    error.reset(make_hd_account(rootKey.get(), CURRENCY_BITCOIN, 0, reset_sp(hdAccount)));
+////
+////    AccountPtr account;
+////    error.reset(make_hd_leaf_account(hdAccount.get(), ADDRESS_EXTERNAL, 0, reset_sp(account)));
+////
+////    ConstCharPtr address;
+////    error.reset(get_account_address_string(account.get(), reset_sp(address)));
+////
+////    __android_log_print(ANDROID_LOG_INFO, "foo", "address: %s", address.get());
+////
+////    TransactionPtr transaction;
+////    error.reset(make_transaction(account.get(), reset_sp(transaction)));
+////
+////    int stringCount = env->GetArrayLength(fees);
+////    for (int i = 0; i < stringCount; i++) {
+////        jstring string = (jstring) (env->GetObjectArrayElement(fees, i));
+////        const char *rawString = env->GetStringUTFChars(string, 0);
+////    }
+////
+////
+////    for (int i = 0; i < stringCount; i++) {
+////        Amount one_BTC(amountStr);
+////        Amount fee_value(feeStr);
+////        Amount sumAmount(sumStr);
+////        {
+////            Properties &source = transaction->add_source();
+////            source.set_property("amount", sumAmount);
+////            source.set_property("prev_tx_hash",
+////                                test_utility::to_binary_data(test_utility::from_hex(txHashStr)));
+////            source.set_property("prev_tx_out_index", tx_out_index);
+////            source.set_property("prev_tx_out_script_pubkey",
+////                                test_utility::to_binary_data(test_utility::from_hex(txPubKeyStr)));
+////        }
+////
+////        {
+////            Properties &destination = transaction->add_destination();
+////            destination.set_property("address",
+////                                     env->GetStringUTFChars(destination_address, nullptr));
+////            destination.set_property("amount", one_BTC);
+////        }
+////
+////        {
+////            Properties &change = transaction->add_destination();
+////            change.set_property("address", env->GetStringUTFChars(send_address, nullptr));
+////            change.set_property("amount", sumAmount - one_BTC - fee_value);
+////        }
+////
+////        transaction->update_state();
+////        transaction->sign();
+////
+////        estimatedFees[i] = transaction->get_total_fee().get_value_as_int64();
+////    }
+////
+//////    env->ReleaseIntArrayElements(fees, feeArray, NULL);
+//////    env->ReleaseIntArrayElements(estimatedFeeArray, estimatedFeeArray, NULL);
+////
+////
+////    jobjectArray ret;
+////    int i;
+////
+////    char *data[5]= {"A", "B", "C", "D", "E"};
+////
+////    ret = (jobjectArray)env->NewObjectArray(5,env->FindClass("java/lang/String"),env->NewStringUTF(""));
+////    for (i = 0; i < stringCount; i ++) {
+////        env->SetObjectArrayElement(ret, i, env->NewStringUTF())
+////    }
+////
+////    for(i=0;i<5;i++) env->SetObjectArrayElement(ret,i,env->NewStringUTF(data[i]));
+//
+//    return nullptr;
+//}
 
 //void foo()
 //{

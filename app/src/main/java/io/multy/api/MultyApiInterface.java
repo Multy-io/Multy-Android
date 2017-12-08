@@ -28,7 +28,7 @@ public interface MultyApiInterface {
 
     void getTransactionSpeed();
 
-    void getSpendableOutputs();
+    void getSpendableOutputs(int walletIndex);
 
     Observable<UserAssetsResponse> getUserAssets();
 

@@ -55,11 +55,11 @@
                 app:layout_constraintTop_toBottomOf="@id/text_main" />
 
             <View
-                android:id="@+id/devider_gray"
+                android:id="@+id/divider_gray"
                 android:layout_width="0dp"
                 android:layout_height="0.5dp"
                 android:layout_marginTop="39dp"
-                android:background="#FF87A1C5"
+                android:background="#7887a1c5"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/dummy" />
@@ -73,29 +73,14 @@
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/montserrat"
                 android:gravity="center_vertical"
-                android:text="My Wallets"
+                android:text="@string/my_wallets"
                 android:textColor="#87a1c5"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/devider_gray" />
-
-            <ImageButton
-                android:id="@+id/button_add"
-                android:layout_width="28dp"
-                android:layout_height="0dp"
-                android:layout_marginEnd="16dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="8dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/ic_add_new_wallet"
-                app:layout_constraintBottom_toBottomOf="@+id/text_wallets"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toEndOf="@+id/text_wallets"
-                app:layout_constraintTop_toTopOf="@+id/text_wallets" />
+                app:layout_constraintTop_toTopOf="@+id/divider_gray" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recycler_wallets"
@@ -112,6 +97,18 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_wallets"
                 tools:listitem="@layout/view_asset_item" />
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/button_add"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:src="@drawable/ic_add_new_wallet"
+                app:backgroundTint="@android:color/white"
+                app:fabSize="mini"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/text_wallets" />
 
         </android.support.constraint.ConstraintLayout>
     </android.support.v4.widget.NestedScrollView>

@@ -33,11 +33,11 @@
             android:textSize="12sp"
             app:layout_constraintEnd_toStartOf="@+id/image_chevron"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/badge_background"
+            app:layout_constraintStart_toEndOf="@+id/image_chain"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:id="@+id/badge_background"
+            android:id="@+id/image_chain"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginBottom="8dp"
@@ -62,7 +62,7 @@
             app:layout_constraintEnd_toStartOf="@+id/text_currency"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintStart_toEndOf="@+id/badge_background"
+            app:layout_constraintStart_toEndOf="@+id/image_chain"
             app:layout_constraintTop_toBottomOf="@+id/text_name" />
 
         <TextView
