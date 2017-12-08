@@ -33,10 +33,7 @@ public class AssetsViewModel extends BaseViewModel {
         dataManager.getWalletsFlowable()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(walletList -> {
-                    wallets.setValue(walletList);
-                    Timber.e("wallets %s", walletList);
-                }, Throwable::printStackTrace);
+                .subscribe(walletList -> wallets.setValue(walletList), Throwable::printStackTrace);
     }
 
     public List<WalletRealmObject> getWalletsFromDB(){

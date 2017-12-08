@@ -13,6 +13,7 @@ import android.content.Context;
 import java.util.List;
 
 import io.multy.model.DataManager;
+import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.model.responses.UserAssetsResponse;
@@ -26,8 +27,8 @@ import timber.log.Timber;
 public class WalletViewModel extends BaseViewModel {
 
     private DataManager dataManager;
-    public MutableLiveData<WalletRealmObject> walletLive = new MutableLiveData<>();
-    public WalletRealmObject wallet = new WalletRealmObject();
+    private MutableLiveData<WalletRealmObject> wallet = new MutableLiveData<>();
+    private MutableLiveData<Double> exchangePrice = new MutableLiveData<>();
     public MutableLiveData<String> chainCurrency = new MutableLiveData<>();
     public MutableLiveData<String> fiatCurrency = new MutableLiveData<>();
     private MutableLiveData<List<WalletAddress>> addresses = new MutableLiveData<>();
@@ -62,12 +63,19 @@ public class WalletViewModel extends BaseViewModel {
                 }, Throwable::printStackTrace);
     }
 
+    public void getApiExchangePrice(){
+        dataManager.getExchangePrice(CurrencyCode.BTC.name(), CurrencyCode.USD.name())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(response -> exchangePrice.setValue(response.getUSD()), Throwable::printStackTrace);
+    }
+
     public void getWalletLive(int walletId) {
 
     }
 
-    public void getExchangePrice() {
-
+    public MutableLiveData<Double> getExchangePrice() {
+        return exchangePrice;
     }
 
     public void addWallet(){
@@ -78,23 +86,17 @@ public class WalletViewModel extends BaseViewModel {
         return addresses;
     }
 
-    public void setWalletLive(WalletRealmObject wallet) {
-        Timber.e("setWalletLive %s", wallet.toString());
-        this.walletLive.setValue(wallet);
-    }
-
-    public void setWallet(WalletRealmObject wallet){
-        Timber.e("setWallet %s", wallet.toString());
-        this.wallet = wallet;
-    }
-
-    public WalletRealmObject getWallet() {
+    public WalletRealmObject getWallet(int walletId) {
+        WalletRealmObject wallet = dataManager.getWallet();
+        this.wallet.setValue(wallet);
         return wallet;
     }
 
     public MutableLiveData<WalletRealmObject> getWalletLive() {
-        return walletLive;
+        return wallet;
     }
+
+
 
 
 }

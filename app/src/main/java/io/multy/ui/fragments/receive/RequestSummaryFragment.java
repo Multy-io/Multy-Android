@@ -26,6 +26,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
+import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.ui.activities.AssetRequestActivity;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.DeepLinkShareHelper;
@@ -79,8 +80,8 @@ public class RequestSummaryFragment extends BaseFragment {
 
         textAddress.setText(viewModel.getWallet().getCreationAddress());
         textWalletName.setText(viewModel.getWallet().getName());
-        textBalanceOriginal.setText(viewModel.getWallet().getBalanceWithCode());
-        textBalanceCurrency.setText(String.valueOf(viewModel.getWallet().getBalance()));
+        textBalanceOriginal.setText(viewModel.getWallet().getBalanceWithCode(CurrencyCode.BTC));
+        textBalanceCurrency.setText(viewModel.getWallet().getBalanceFiatWithCode(viewModel.getExchangePrice().getValue(), CurrencyCode.USD));
 
         if (viewModel.getAmount() != zero){
             textRequestAmount.setVisibility(View.INVISIBLE);

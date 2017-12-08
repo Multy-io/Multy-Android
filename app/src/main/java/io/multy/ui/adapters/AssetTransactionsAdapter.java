@@ -17,6 +17,8 @@ import io.multy.R;
 
 public class AssetTransactionsAdapter extends RecyclerView.Adapter<AssetTransactionsAdapter.Holder> {
 
+//    private List<Transactions> transactions;
+
     @Override
     public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
@@ -31,7 +33,8 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<AssetTransact
 
     @Override
     public int getItemCount() {
-        return 11;
+//        return transactions.size();
+        return 0;
     }
 
     class Holder extends RecyclerView.ViewHolder {

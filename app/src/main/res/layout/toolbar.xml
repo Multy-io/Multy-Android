@@ -7,6 +7,7 @@
 <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
+    android:fontFamily="@font/montserrat"
     android:layout_height="?attr/actionBarSize">
 
     <TextView
@@ -16,6 +17,7 @@
         android:layout_gravity="end|center_horizontal"
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:background="?attr/selectableItemBackground"
+        android:fontFamily="@font/montserrat"
         android:padding="@dimen/margin_2dp"
         android:text="@string/cancel"
         android:textAppearance="@style/TextAppearance.AppCompat.Menu"

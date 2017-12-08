@@ -17,6 +17,7 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -90,8 +91,7 @@ public class AmountChooserFragment extends BaseFragment {
         ButterKnife.bind(this, view);
         viewModel = ViewModelProviders.of(getActivity()).get(AssetSendViewModel.class);
         isAmountSwapped = false;
-        textSpendable.append(Constants.SPACE);
-        textSpendable.append(viewModel.getWallet().getBalanceWithCode());
+        textSpendable.append(viewModel.getWallet().getBalanceWithCode(CurrencyCode.BTC));
         setupSwitcher();
         setupInputOriginal();
         setupInputCurrency();
@@ -268,7 +268,7 @@ public class AmountChooserFragment extends BaseFragment {
             textTotal.append(Constants.SPACE);
             textTotal.append(CurrencyCode.USD.name());
         } else {
-            textTotal.setText(viewModel.getWallet().getBalanceWithCode());
+            textTotal.setText(viewModel.getWallet().getBalanceWithCode(CurrencyCode.BTC));
         }
     }
 

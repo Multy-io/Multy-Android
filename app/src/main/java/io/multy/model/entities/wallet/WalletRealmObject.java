@@ -9,6 +9,7 @@ package io.multy.model.entities.wallet;
 
 import com.google.gson.annotations.SerializedName;
 
+import io.multy.util.Constants;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 
@@ -134,6 +135,14 @@ public class WalletRealmObject extends RealmObject {
 
     public void setFiatCurrency(String fiatCurrency) {
         this.fiatCurrency = fiatCurrency;
+    }
+
+    public String getBalanceWithCode(CurrencyCode currencyCode){
+        return String.valueOf(getCurrency()).concat(Constants.SPACE).concat(currencyCode.name());
+    }
+
+    public String getBalanceFiatWithCode(Double exchangePrice, CurrencyCode currencyCode){
+        return String.valueOf(getCurrency() * exchangePrice).concat(Constants.SPACE).concat(currencyCode.name());
     }
 
     @Override

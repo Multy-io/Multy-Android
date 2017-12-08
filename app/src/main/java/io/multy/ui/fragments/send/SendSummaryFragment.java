@@ -18,6 +18,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
+import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.viewmodels.AssetSendViewModel;
 
@@ -67,8 +68,8 @@ public class SendSummaryFragment extends BaseFragment {
         textReceiverBalanceCurrency.setText(String.valueOf(viewModel.getAmount()));
         textReceiverAddress.setText(viewModel.getReceiverAddress().getValue());
         textWalletName.setText(viewModel.getWallet().getName());
-        textSenderBalanceOriginal.setText(viewModel.getWallet().getBalanceWithCode());
-        textSenderBalanceCurrency.setText(viewModel.getWallet().getBalanceWithCode());
+        textSenderBalanceOriginal.setText(viewModel.getWallet().getBalanceWithCode(CurrencyCode.BTC));
+        textSenderBalanceCurrency.setText(viewModel.getWallet().getBalanceFiatWithCode(viewModel.getExchangePrice().getValue(), CurrencyCode.USD));
         textFeeSpeed.setText(viewModel.getFee().getTime());
         textFeeAmount.setText(String.valueOf(viewModel.getFee().getCost()));
     }

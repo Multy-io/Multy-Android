@@ -17,6 +17,7 @@
     android:layout_marginStart="@dimen/activity_horizontal_margin"
     android:layout_marginTop="@dimen/wallet_item_margin_height"
     android:background="@drawable/shape_squircle_white"
+    android:foreground="?android:attr/selectableItemBackground"
     android:elevation="@dimen/elevation_4dp">
 
     <android.support.v7.widget.AppCompatImageView

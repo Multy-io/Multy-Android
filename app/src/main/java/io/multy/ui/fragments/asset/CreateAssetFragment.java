@@ -34,6 +34,7 @@ import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.ui.activities.AssetActivity;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.dialogs.ListDialogFragment;
+import io.multy.util.Constants;
 import io.multy.util.CurrencyType;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
@@ -136,24 +137,29 @@ public class CreateAssetFragment extends BaseFragment {
 
     @OnClick(R.id.text_create)
     public void onClickCreate() {
+        WalletRealmObject walletRealmObject = null;
         try {
             List<WalletRealmObject> wallets = new DataManager(Multy.getContext()).getWallets();
             final int index = wallets != null && wallets.size() > 0 ? wallets.size() : 0;
             final int currency = NativeDataHelper.Currency.BITCOIN.getValue(); //TODO implement choosing crypto currency using enum NativeDataHelper.CURRENCY
             String creationAddress = NativeDataHelper.makeAccountAddress(new DataManager(getActivity()).getSeed().getSeed(), index, currency);
-            WalletRealmObject walletRealmObject = new WalletRealmObject();
+            walletRealmObject = new WalletRealmObject();
             walletRealmObject.setName(editTextWalletName.getText().toString());
             walletRealmObject.setCurrency(0);
             walletRealmObject.setAddressIndex(0);
             walletRealmObject.setCreationAddress(creationAddress);
             walletRealmObject.setWalletIndex(index);
             MultyApi.INSTANCE.addWallet(getActivity(), walletRealmObject);
-            walletViewModel.setWallet(walletRealmObject);
         } catch (JniException e) {
             e.printStackTrace();
         }
 
-        startActivity(new Intent(getContext(), AssetActivity.class));
+        Intent intent = new Intent(getContext(), AssetActivity.class);
+        if (walletRealmObject != null) {
+            intent.putExtra(Constants.EXTRA_WALLET_ID, walletRealmObject.getWalletIndex());
+        }
+
+        startActivity(intent);
         getActivity().finish();
     }
 

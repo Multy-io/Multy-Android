@@ -17,7 +17,7 @@ import android.view.ViewGroup;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.multy.R;
-import io.multy.model.entities.wallet.Wallet;
+import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.ui.activities.AssetSendActivity;
 import io.multy.ui.adapters.WalletAdapter;
 import io.multy.ui.fragments.BaseFragment;
@@ -34,7 +34,6 @@ public class WalletChooserFragment extends BaseFragment implements WalletAdapter
     RecyclerView recyclerView;
 
     private AssetSendViewModel viewModel;
-    private WalletAdapter adapter;
 
     @Nullable
     @Override
@@ -42,18 +41,25 @@ public class WalletChooserFragment extends BaseFragment implements WalletAdapter
         View view = inflater.inflate(R.layout.fragment_wallet_chooser, container, false);
         ButterKnife.bind(this, view);
         viewModel = ViewModelProviders.of(getActivity()).get(AssetSendViewModel.class);
-        viewModel.setContext(getActivity());
-        viewModel.getApiExchangePrice();
-//        adapter = new WalletAdapter(viewModel.getWalletsFlowable(), this) //TODO uncomment when real wallets will be added
-        adapter = new WalletAdapter(this);
-        recyclerView.setAdapter(adapter);
+//        if (viewModel.getExchangePrice().getValue() != null) {
+            setupAdapter(viewModel.getExchangePrice().getValue());
+//        } else {
+//            viewModel.getApiExchangePrice();
+//            viewModel.getExchangePrice().observe(this, this::setupAdapter);
+//        }
         return view;
     }
 
     @Override
-    public void onWalletClick(Wallet wallet) {
-        viewModel.saveWallet(wallet);
+    public void onWalletClick(WalletRealmObject wallet) {
+        viewModel.setWallet(wallet);
         ((AssetSendActivity) getActivity()).setFragment(R.string.transaction_speed, R.id.container, TransactionFeeFragment.newInstance());
+    }
+
+    private void setupAdapter(Double exchangePrice){
+        WalletAdapter adapter = new WalletAdapter(exchangePrice, this);
+        adapter.setWallets(viewModel.getWalletsDB());
+        recyclerView.setAdapter(adapter);
     }
 
 }

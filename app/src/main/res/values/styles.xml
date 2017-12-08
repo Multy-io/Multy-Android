@@ -11,6 +11,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:fontFamily">@font/montserrat</item>
     </style>
 
     <style name="TransparentActionBar" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
@@ -130,6 +131,7 @@
         <item name="android:foreground">?attr/selectableItemBackground</item>
         <item name="android:gravity">center</item>
         <item name="android:textColor">@android:color/white</item>
+        <item name="android:fontFamily">@font/montserrat</item>
     </style>
 
     <style name="ShareButton" parent="TextAppearance.AppCompat.Body2">
@@ -137,6 +139,7 @@
         <item name="android:layout_height">@dimen/share_btn_height</item>
         <item name="android:gravity">center_horizontal</item>
         <item name="android:textColor">@color/text_grey</item>
+        <item name="android:fontFamily">@font/montserrat</item>
     </style>
 
     <style name="SendShareButton" parent="TextAppearance.AppCompat.Body2">
@@ -145,6 +148,7 @@
         <item name="android:elevation">@dimen/elevation_6dp</item>
         <item name="android:gravity">center_horizontal</item>
         <item name="android:textColor">@color/text_grey</item>
+        <item name="android:fontFamily">@font/montserrat</item>
     </style>
 
     <style name="Send" parent="AppTheme">

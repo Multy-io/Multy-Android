@@ -29,7 +29,7 @@ import io.reactivex.schedulers.Schedulers;
 public class AssetSendViewModel extends BaseViewModel {
 
     private DataManager dataManager;
-    private Wallet wallet;
+    private WalletRealmObject wallet;
     private Fee fee;
     private double amount;
     private boolean isPayForCommission;
@@ -59,12 +59,11 @@ public class AssetSendViewModel extends BaseViewModel {
 //        return dataManager.getWalletsFlowable();
 //    }
 
-    public void saveWallet(Wallet wallet){
+    public void setWallet(WalletRealmObject wallet){
         this.wallet = wallet;
-//        dataManager.saveRequestWallet(wallet);
     }
 
-    public Wallet getWallet(){
+    public WalletRealmObject getWallet(){
         return wallet;
     }
 
@@ -118,5 +117,9 @@ public class AssetSendViewModel extends BaseViewModel {
 
     public void setPayForCommission(boolean payForCommission) {
         isPayForCommission = payForCommission;
+    }
+
+    public List<WalletRealmObject> getWalletsDB(){
+        return dataManager.getWallets();
     }
 }

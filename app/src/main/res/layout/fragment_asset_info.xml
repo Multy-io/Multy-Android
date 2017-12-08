@@ -169,6 +169,7 @@
                     android:text="83T28WCp4Cu5LQiddJnDJJmKWvmmXJSP9L"
                     android:textColor="#ffffff"
                     android:textSize="12sp"
+                    android:foreground="?android:attr/selectableItemBackgroundBorderless"
                     app:layout_constraintEnd_toStartOf="@+id/image_copy"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintHorizontal_chainStyle="packed"
@@ -177,12 +178,13 @@
 
                 <ImageView
                     android:id="@+id/image_copy"
-                    android:layout_width="12dp"
-                    android:layout_height="14dp"
-                    android:layout_marginStart="10dp"
+                    android:layout_width="32dp"
+                    android:layout_height="34dp"
+                    android:padding="@dimen/margin_10dp"
                     app:layout_constraintBottom_toBottomOf="@+id/text_address"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
+                    android:foreground="?android:attr/selectableItemBackgroundBorderless"
                     app:layout_constraintStart_toEndOf="@+id/text_address"
                     app:layout_constraintTop_toTopOf="@+id/text_address"
                     app:srcCompat="@drawable/ic_share_mini" />

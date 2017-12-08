@@ -6,6 +6,7 @@
 
 package io.multy.ui.fragments.receive;
 
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -18,6 +19,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.multy.R;
 import io.multy.model.entities.wallet.Wallet;
+import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.ui.activities.AssetRequestActivity;
 import io.multy.ui.adapters.WalletAdapter;
 import io.multy.ui.fragments.BaseFragment;
@@ -43,16 +45,21 @@ public class WalletChooserFragment extends BaseFragment implements WalletAdapter
         ButterKnife.bind(this, view);
         viewModel = ViewModelProviders.of(getActivity()).get(AssetRequestViewModel.class);
         viewModel.setContext(getActivity());
-//        adapter = new WalletAdapter(viewModel.getWalletsFlowable(), this) //TODO uncomment when real wallets will be added
-        adapter = new WalletAdapter(this);
-        recyclerView.setAdapter(adapter);
+        viewModel.getApiExchangePrice();
+        viewModel.getExchangePrice().observe(this, this::setupAdapter);
         return view;
     }
 
     @Override
-    public void onWalletClick(Wallet wallet) {
-        viewModel.saveWallet(wallet);
+    public void onWalletClick(WalletRealmObject wallet) {
+        viewModel.setWallet(wallet);
         ((AssetRequestActivity) getActivity()).setFragment(R.string.receive, RequestSummaryFragment.newInstance());
+    }
+
+    private void setupAdapter(Double exchangePrice){
+        adapter = new WalletAdapter(exchangePrice, WalletChooserFragment.this);
+        adapter.setWallets(viewModel.getWalletsDB());
+        recyclerView.setAdapter(adapter);
     }
 
 }

@@ -114,5 +114,6 @@
     <string name="select_chain">Select chain</string>
     <string name="select_currency">Select currency</string>
     <string name="wallet_name">Wallet Name</string>
-
+	<string name="text_copied">Text was copied to clipboard</string>
+    
 </resources>
