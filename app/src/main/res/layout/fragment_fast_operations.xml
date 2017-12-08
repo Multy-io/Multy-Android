@@ -5,8 +5,141 @@
   ~  See LICENSE for details
   -->
 
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:clickable="true"
+    android:focusable="true">
+
+    <TextView
+        android:id="@+id/text_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="56dp"
+        android:fontFamily="@font/montserrat"
+        android:text="@string/fast_operations"
+        android:textColor="@color/text_main"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/button_send"
+        style="@style/FastButton"
+        android:layout_marginStart="58dp"
+        android:layout_marginTop="80dp"
+        app:cardCornerRadius="43dp"
+        app:cardElevation="4dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_title">
+
+        <ImageView
+            style="@style/FastImage"
+            app:srcCompat="@drawable/ic_fast_send" />
+    </android.support.v7.widget.CardView>
+
+    <TextView
+        android:id="@+id/send"
+        android:text="@string/send"
+        app:layout_constraintEnd_toEndOf="@+id/button_send"
+        app:layout_constraintStart_toStartOf="@+id/button_send"
+        app:layout_constraintTop_toBottomOf="@+id/button_send"
+        style="@style/FastTitle" />
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/button_receive"
+        style="@style/FastButton"
+        android:layout_marginEnd="58dp"
+        android:layout_marginTop="80dp"
+        app:cardCornerRadius="43dp"
+        app:cardElevation="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_title">
+
+        <ImageView
+            style="@style/FastImage"
+            app:srcCompat="@drawable/ic_fast_recieve" />
+    </android.support.v7.widget.CardView>
+
+    <TextView
+        android:id="@+id/receive"
+        style="@style/FastTitle"
+        android:text="@string/receive"
+        app:layout_constraintEnd_toEndOf="@+id/button_receive"
+        app:layout_constraintStart_toStartOf="@+id/button_receive"
+        app:layout_constraintTop_toBottomOf="@+id/button_receive" />
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/button_nfc"
+        style="@style/FastButton"
+        android:layout_marginTop="41dp"
+        app:cardCornerRadius="43dp"
+        app:cardElevation="4dp"
+        app:layout_constraintEnd_toEndOf="@+id/button_send"
+        app:layout_constraintStart_toStartOf="@+id/button_send"
+        app:layout_constraintTop_toBottomOf="@+id/send">
+
+        <ImageView
+            style="@style/FastImage"
+            app:srcCompat="@drawable/ic_f_ast_nfc" />
+    </android.support.v7.widget.CardView>
+
+    <TextView
+        android:id="@+id/text_nfc"
+        style="@style/FastTitle"
+        android:text="@string/nfc"
+        app:layout_constraintEnd_toEndOf="@+id/button_nfc"
+        app:layout_constraintStart_toStartOf="@+id/button_nfc"
+        app:layout_constraintTop_toBottomOf="@+id/button_nfc" />
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/button_scan_qr"
+        style="@style/FastButton"
+        android:layout_marginTop="41dp"
+        app:cardCornerRadius="43dp"
+        app:cardElevation="4dp"
+        app:layout_constraintEnd_toEndOf="@+id/button_receive"
+        app:layout_constraintStart_toStartOf="@+id/button_receive"
+        app:layout_constraintTop_toBottomOf="@+id/receive">
+
+        <ImageView
+            style="@style/FastImage"
+            app:srcCompat="@drawable/ic_fast_scan" />
+    </android.support.v7.widget.CardView>
+
+    <TextView
+        android:id="@+id/text_scan"
+        style="@style/FastTitle"
+        android:text="@string/scan"
+        app:layout_constraintEnd_toEndOf="@+id/button_scan_qr"
+        app:layout_constraintStart_toStartOf="@+id/button_scan_qr"
+        app:layout_constraintTop_toBottomOf="@+id/button_scan_qr" />
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/button_cancel"
+        android:layout_width="54dp"
+        android:layout_height="54dp"
+        android:layout_marginBottom="14dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="27dp"
+        app:cardElevation="6dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?attr/selectableItemBackground"
+            android:padding="20dp"
+            app:srcCompat="@drawable/ic_cancel_blue" />
+    </android.support.v7.widget.CardView>
 
 </android.support.constraint.ConstraintLayout>

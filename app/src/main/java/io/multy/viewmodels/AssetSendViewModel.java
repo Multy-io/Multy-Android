@@ -10,13 +10,10 @@ import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
 
 import java.util.List;
-import java.util.Observable;
 
 import io.multy.model.DataManager;
 import io.multy.model.entities.Fee;
 import io.multy.model.entities.wallet.CurrencyCode;
-import io.multy.model.entities.wallet.Wallet;
-import io.multy.model.responses.UserAssetsResponse;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;

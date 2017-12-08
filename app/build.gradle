@@ -52,7 +52,8 @@ android {
         }
         externalNativeBuild {
             cmake {
-                path "C:\\workspace\\Multy-Core\\CMakeLists.txt"
+                path "/Users/appscrunch/Downloads/Multy-Core-master/CMakeLists.txt"
+//                path "C:\\workspace\\Multy-Core\\CMakeLists.txt"
             }
         }
     }

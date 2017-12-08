@@ -15,7 +15,6 @@ import io.multy.model.DataManager;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
 
 public class AssetsViewModel extends BaseViewModel {
 

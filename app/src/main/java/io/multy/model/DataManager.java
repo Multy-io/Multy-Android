@@ -9,10 +9,6 @@ package io.multy.model;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.samwolfand.oneprefs.Prefs;
-
-import java.util.List;
-
 import io.multy.api.MultyApi;
 import io.multy.model.entities.ByteSeed;
 import io.multy.model.entities.DeviceId;
@@ -25,7 +21,6 @@ import io.multy.model.responses.AuthResponse;
 import io.multy.model.responses.ExchangePriceResponse;
 import io.multy.model.responses.UserAssetsResponse;
 import io.multy.storage.DatabaseHelper;
-import io.multy.util.Constants;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.realm.RealmResults;

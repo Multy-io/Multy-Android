@@ -60,6 +60,8 @@
         android:id="@+id/full_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:elevation="@dimen/elevation_6dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -74,7 +76,7 @@
         android:foreground="?android:attr/selectableItemBackground"
         app:cardCornerRadius="27dp"
         app:cardElevation="5dp"
-        app:layout_anchor="@id/full_container"
+        app:layout_anchor="@id/tabLayout"
         app:layout_anchorGravity="bottom|center_horizontal">
 
         <ImageView

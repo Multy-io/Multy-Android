@@ -7,7 +7,6 @@
 package io.multy.viewmodels;
 
 import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.ViewModel;
 import android.content.Context;
 
 import java.util.List;
@@ -20,7 +19,6 @@ import io.multy.model.responses.UserAssetsResponse;
 import io.multy.model.responses.WalletInfo;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 

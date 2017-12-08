@@ -31,7 +31,6 @@ import butterknife.OnClick;
 import io.multy.R;
 import io.multy.model.entities.Fee;
 import io.multy.model.entities.wallet.CurrencyCode;
-import io.multy.model.entities.wallet.Wallet;
 import io.multy.ui.activities.AssetSendActivity;
 import io.multy.ui.adapters.FeeAdapter;
 import io.multy.ui.fragments.BaseFragment;

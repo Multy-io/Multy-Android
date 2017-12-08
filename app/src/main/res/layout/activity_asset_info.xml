@@ -17,61 +17,36 @@
         android:id="@+id/frame_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="8dp"
         android:visibility="visible"
-        app:layout_constraintBottom_toTopOf="@+id/receive"
+        app:layout_constraintBottom_toTopOf="@+id/send"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/send"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginStart="48dp"
-        android:scaleType="centerInside"
-        android:tint="#87A1C5"
-        app:layout_constraintBottom_toTopOf="@+id/text_send"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/ic_send" />
-
-    <ImageView
-        android:id="@+id/receive"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:scaleType="centerInside"
-        android:tint="#87A1C5"
-        app:layout_constraintBottom_toTopOf="@+id/text_receive"
-        app:layout_constraintEnd_toEndOf="@+id/text_receive"
-        app:layout_constraintRight_toLeftOf="@+id/exchange"
-        app:layout_constraintStart_toStartOf="@+id/text_receive"
-        app:srcCompat="@drawable/ic_recieve" />
-
-    <ImageView
-        android:id="@+id/exchange"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginEnd="48dp"
-        app:layout_constraintBottom_toTopOf="@+id/text_exchange"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_exchange" />
-
     <TextView
-        android:id="@+id/text_send"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_marginBottom="8dp"
+        android:id="@+id/send"
+        android:layout_width="54dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="31dp"
+        android:background="?attr/selectableItemBackground"
+        android:drawableTint="@color/blue_light"
+        android:drawableTop="@drawable/ic_send"
+        android:gravity="center"
+        android:paddingTop="9dp"
         android:text="Send"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/send"
-        app:layout_constraintStart_toStartOf="@+id/send" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/text_receive"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
+        android:id="@+id/receive"
+        android:layout_width="54dp"
+        android:layout_height="56dp"
+        android:background="?attr/selectableItemBackground"
+        android:drawableTint="@color/blue_light"
+        android:drawableTop="@drawable/ic_recieve"
+        android:gravity="center"
+        android:paddingTop="9dp"
         android:text="Receive"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -79,15 +54,19 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/text_exchange"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
+        android:id="@+id/exchange"
+        android:layout_width="54dp"
+        android:layout_height="56dp"
+        android:layout_marginEnd="31dp"
+        android:background="?attr/selectableItemBackground"
+        android:drawableTint="@color/blue_light"
+        android:drawableTop="@drawable/ic_exchange"
+        android:gravity="center"
+        android:paddingTop="9dp"
         android:text="Exchange"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/exchange"
-        app:layout_constraintStart_toStartOf="@+id/exchange" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <FrameLayout
         android:id="@+id/container_full"

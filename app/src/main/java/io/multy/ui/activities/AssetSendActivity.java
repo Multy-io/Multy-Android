@@ -8,7 +8,6 @@ package io.multy.ui.activities;
 
 import android.Manifest;
 import android.app.Activity;
-import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.pm.PackageManager;

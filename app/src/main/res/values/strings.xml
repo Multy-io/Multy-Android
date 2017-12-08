@@ -122,4 +122,26 @@
 
 	<string name="text_copied">Text was copied to clipboard</string>
 
+    <string name="wallet_settings">Wallet Settings</string>
+    <string name="general">General</string>
+    <string name="security">Security</string>
+    <string name="my_private_key">My Private Key</string>
+    <string name="delete_wallet">Delete Wallet</string>
+    <string name="delete_confirm">Are you shure wont to delete this wallet?</string>
+    <string name="save">Save</string>
+
+    <string name="about_private_key">
+        Private key – A donation is a gift given by physical or legal persons, typically for
+        charitable purposes and/or to benefit a cause. A donation may take various forms, including
+        cash offering, services
+    </string>
+    <string name="about_delete_wallet">
+        Delete wallet – A donation is a gift given by physical or legal persons, typically for
+        charitable purposes and/or to benefit a cause. A donation may take various forms, including
+        cash offering, services
+    </string>
+    <string name="us_dollars_usd">US Dollars ∙ USD</string>
+    <string name="fast_operations">Fast Operations</string>
+    <string name="nfc">NFC</string>
+    <string name="scan">Scan</string>
 </resources>

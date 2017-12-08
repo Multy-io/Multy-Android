@@ -23,5 +23,4 @@
         android:text="SettingsFragment"
         />
 
-
 </android.support.constraint.ConstraintLayout>

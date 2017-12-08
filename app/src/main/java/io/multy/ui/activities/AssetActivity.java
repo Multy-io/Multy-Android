@@ -12,17 +12,13 @@ import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
-import io.multy.model.DataManager;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.ui.fragments.asset.AssetInfoFragment;
-import io.multy.util.Constants;
-import io.multy.viewmodels.AssetSendViewModel;
 import io.multy.viewmodels.AssetsViewModel;
 
 public class AssetActivity extends BaseActivity {

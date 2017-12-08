@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
   ~  Copyright 2017 Idealnaya rabota LLC
   ~  Licensed under Multy.io license.
   ~  See LICENSE for details
@@ -91,6 +92,8 @@
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toEndOf="@+id/text_wallets"
             app:layout_constraintTop_toTopOf="@+id/text_wallets" />
+            app:layout_constraintTop_toTopOf="@+id/text_wallets"
+            app:srcCompat="@drawable/ic_add_new_wallet" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_wallets"
