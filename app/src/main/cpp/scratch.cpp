@@ -265,8 +265,6 @@ Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *env, jobject obj, jb
     Amount one_BTC(amountStr);
     Amount fee_value(feeStr);
     Amount sumAmount(sumStr);
-//    Amount one_BTC(Amount(1000) * 1000 * 1000 * 1000 * 1000);
-//    Amount fee_value(Amount(1000) * 1000 * 1000 * 1000);
     {
         Properties &source = transaction->add_source();
         source.set_property("amount", sumAmount);

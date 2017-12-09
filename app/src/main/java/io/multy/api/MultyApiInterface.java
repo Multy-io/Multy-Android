@@ -8,6 +8,7 @@ import io.multy.model.responses.AuthResponse;
 import io.multy.model.responses.ExchangePriceResponse;
 import io.multy.model.responses.UserAssetsResponse;
 import io.reactivex.Observable;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 
 public interface MultyApiInterface {
@@ -20,7 +21,7 @@ public interface MultyApiInterface {
 
     void getBalance(String address);
 
-    void addWallet(Context context, WalletRealmObject wallet);
+    Call<ResponseBody> addWallet(Context context, WalletRealmObject wallet);
 
     Observable<ExchangePriceResponse> getExchangePrice(String firstCurrency, String secondCurrency);
 
@@ -28,9 +29,11 @@ public interface MultyApiInterface {
 
     void getTransactionSpeed();
 
-    void getSpendableOutputs(int walletIndex);
+    Call<ResponseBody> getSpendableOutputs(int walletIndex);
 
     Observable<UserAssetsResponse> getUserAssets();
 
     Observable<UserAssetsResponse> getWalletAddresses(int walletId);
+
+    Call<ResponseBody> sendRawTransaction(String transactionHex);
 }

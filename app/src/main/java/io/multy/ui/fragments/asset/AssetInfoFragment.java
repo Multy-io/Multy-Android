@@ -15,6 +15,7 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -76,6 +77,7 @@ public class AssetInfoFragment extends BaseFragment {
 //        });
 
         textAddress.setText(viewModel.getWallet().getCreationAddress());
+        Log.i("wise", "address " + textAddress.getText().toString());
         textBalanceOriginal.setText(String.valueOf(viewModel.getWallet().getBalance()));
         textBalanceFiat.setText(String.valueOf(viewModel.getWallet().getFiatCurrency()));
 

@@ -15,20 +15,19 @@ import io.realm.RealmObject;
 
 public class WalletRealmObject extends RealmObject {
 
+    @SerializedName("walletName")
     private String name;
-    @SerializedName("addresses")
-    private String creationAddress;
     @SerializedName("address")
+    private String creationAddress;
+    @SerializedName("addresses")
     private RealmList<WalletAddress> addresses;
     private double balance;
-    @SerializedName("currency")
+    @SerializedName("currencyID")
     private int currency;
-    @SerializedName("addressID")
+    @SerializedName("addressIndex")
     private int addressIndex;
-    @SerializedName("walletID")
+    @SerializedName("walletIndex")
     private int walletIndex;
-    @SerializedName("Chain")
-    private int chain;
 
     private String chainCurrency;
     private String fiatCurrency;
@@ -111,14 +110,6 @@ public class WalletRealmObject extends RealmObject {
 
     public void setWalletIndex(int walletIndex) {
         this.walletIndex = walletIndex;
-    }
-
-    public int getChain() {
-        return chain;
-    }
-
-    public void setChain(int chain) {
-        this.chain = chain;
     }
 
     public String getChainCurrency() {

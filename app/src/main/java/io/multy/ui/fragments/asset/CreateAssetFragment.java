@@ -39,6 +39,10 @@ import io.multy.util.CurrencyType;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
 import io.multy.viewmodels.WalletViewModel;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by anschutz1927@gmail.com on 23.11.17.
@@ -145,26 +149,43 @@ public class CreateAssetFragment extends BaseFragment {
             walletRealmObject = new WalletRealmObject();
             walletRealmObject.setName(editTextWalletName.getText().toString());
 
-            if (textViewChainCurrency.getText().toString().equals(Constants.BTC)) {
-                walletRealmObject.setCurrencyId(0);
-            } else {
-                walletRealmObject.setCurrencyId(1);
-            }
+//            if (textViewChainCurrency.getText().toString().equals(Constants.BTC)) {
+                walletRealmObject.setCurrency(0);
+//            } else {
+//                walletRealmObject.setCurrency(1);
+//            }
             walletRealmObject.setAddressIndex(0);
             walletRealmObject.setCreationAddress(creationAddress);
             walletRealmObject.setWalletIndex(index);
-            MultyApi.INSTANCE.addWallet(getActivity(), walletRealmObject);
+            saveWallet(walletRealmObject);
         } catch (JniException e) {
             e.printStackTrace();
         }
+    }
 
-        Intent intent = new Intent(getContext(), AssetActivity.class);
-        if (walletRealmObject != null) {
-            intent.putExtra(Constants.EXTRA_WALLET_ID, walletRealmObject.getWalletIndex());
-        }
+    private void saveWallet(WalletRealmObject walletRealmObject) {
+        Call<ResponseBody> responseBodyCall = MultyApi.INSTANCE.addWallet(getActivity(), walletRealmObject);
+        responseBodyCall.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    new DataManager(getActivity()).saveWallet(walletRealmObject);
 
-        startActivity(intent);
-        getActivity().finish();
+                    Intent intent = new Intent(getContext(), AssetActivity.class);
+                    if (walletRealmObject != null) {
+                        intent.putExtra(Constants.EXTRA_WALLET_ID, walletRealmObject.getWalletIndex());
+                    }
+
+                    startActivity(intent);
+                    getActivity().finish();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
     }
 
     @OnClick(R.id.text_cancel)
