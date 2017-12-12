@@ -41,11 +41,11 @@ public class WalletChooserFragment extends BaseFragment implements WalletAdapter
         View view = inflater.inflate(R.layout.fragment_wallet_chooser, container, false);
         ButterKnife.bind(this, view);
         viewModel = ViewModelProviders.of(getActivity()).get(AssetSendViewModel.class);
-//        if (viewModel.getExchangePrice().getValue() != null) {
+//        if (viewModel.getExchangePriceLive().getValue() != null) {
             setupAdapter(viewModel.getExchangePrice().getValue());
 //        } else {
-//            viewModel.getApiExchangePrice();
-//            viewModel.getExchangePrice().observe(this, this::setupAdapter);
+//            viewModel.getExchangePrice();
+//            viewModel.getExchangePriceLive().observe(this, this::setupAdapter);
 //        }
         return view;
     }

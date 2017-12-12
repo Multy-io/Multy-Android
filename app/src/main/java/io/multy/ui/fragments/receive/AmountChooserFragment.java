@@ -9,14 +9,25 @@ package io.multy.ui.fragments.receive;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.constraint.Group;
+import android.support.v4.content.ContextCompat;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AccelerateInterpolator;
 import android.widget.EditText;
+import android.widget.TextView;
+
+import java.text.DecimalFormat;
 
 import butterknife.BindInt;
+import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -34,10 +45,24 @@ public class AmountChooserFragment extends BaseFragment {
     @BindView(R.id.group_send)
     Group groupSend;
     @BindView(R.id.input_balance_original)
-    EditText input;
+    EditText inputOriginal;
+    @BindView(R.id.input_balance_currency)
+    EditText inputCurrency;
+    @BindView(R.id.button_next)
+    TextView buttonNext;
+    @BindView(R.id.container_input_original)
+    ConstraintLayout containerInputOriginal;
+    @BindView(R.id.container_input_currency)
+    ConstraintLayout containerInputCurrency;
+
     @BindInt(R.integer.zero)
     int zero;
+    @BindString(R.string.donation_format_pattern)
+    String formatPattern;
+    @BindString(R.string.donation_format_pattern_bitcoin)
+    String formatPatternBitcoin;
 
+    private boolean isAmountSwapped;
     private AssetRequestViewModel viewModel;
 
     @Nullable
@@ -48,18 +73,132 @@ public class AmountChooserFragment extends BaseFragment {
 
         viewModel = ViewModelProviders.of(getActivity()).get(AssetRequestViewModel.class);
         if (viewModel.getAmount() != zero) {
-            input.setText(String.valueOf(viewModel.getAmount()));
+            inputOriginal.setText(String.valueOf(viewModel.getAmount()));
         }
         groupSend.setVisibility(View.GONE);
+        buttonNext.setGravity(Gravity.CENTER);
+        buttonNext.setText(R.string.send);
+        setupInputOriginal();
+        setupInputCurrency();
         return view;
+    }
+
+    @OnClick(R.id.image_swap)
+    void onClickImageSwap() {
+        if (isAmountSwapped) {
+            inputOriginal.requestFocus();
+        } else {
+            inputCurrency.requestFocus();
+        }
     }
 
     @OnClick(R.id.button_next)
     void onClickNext() {
-        if (!TextUtils.isEmpty(input.getText())) {
-            viewModel.setAmount(Double.valueOf(input.getText().toString()));
+        if (!TextUtils.isEmpty(inputOriginal.getText())) {
+            viewModel.setAmount(Double.valueOf(inputOriginal.getText().toString()));
         }
         getFragmentManager().popBackStack();
+    }
+
+    private void setupInputOriginal() {
+        inputOriginal.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                animateOriginalBalance();
+            }
+        });
+
+        inputOriginal.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (!isAmountSwapped) { // if currency input is main
+                    if (!TextUtils.isEmpty(charSequence)) {
+                        if (isParsable(charSequence.toString())) {
+                            inputCurrency.setText(new DecimalFormat(formatPattern)
+                                    .format(viewModel.getExchangePriceLive().getValue() == null ? viewModel.getExchangePrice() : viewModel.getExchangePriceLive().getValue()
+                                            * Double.parseDouble(charSequence.toString())));
+                        }
+                    } else {
+                        inputCurrency.getText().clear();
+                        inputOriginal.getText().clear();
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+    }
+
+    private void setupInputCurrency() {
+        inputCurrency.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                animateCurrencyBalance();
+            }
+        });
+
+        inputCurrency.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (isAmountSwapped) {
+                    if (!TextUtils.isEmpty(charSequence)) {
+                        if (isParsable(charSequence.toString())) {
+                            inputOriginal.setText(new DecimalFormat(formatPatternBitcoin)
+                                    .format(Double.parseDouble(charSequence.toString())
+                                            / (viewModel.getExchangePriceLive().getValue() == null ? viewModel.getExchangePrice() : viewModel.getExchangePriceLive().getValue())));
+                        }
+                    } else {
+                        inputCurrency.getText().clear();
+                        inputOriginal.getText().clear();
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+    }
+
+    private void animateOriginalBalance() {
+        containerInputOriginal.animate().scaleY(1.5f).setInterpolator(new AccelerateInterpolator()).setDuration(300);
+        containerInputOriginal.animate().scaleX(1.5f).setInterpolator(new AccelerateInterpolator()).setDuration(300);
+        containerInputCurrency.animate().scaleY(1f).setInterpolator(new AccelerateInterpolator()).setDuration(300);
+        containerInputCurrency.animate().scaleX(1f).setInterpolator(new AccelerateInterpolator()).setDuration(300);
+        isAmountSwapped = false;
+        inputOriginal.setTextColor(ContextCompat.getColor(getActivity(), R.color.text_main));
+        inputCurrency.setTextColor(ContextCompat.getColor(getActivity(), R.color.text_grey));
+    }
+
+    private void animateCurrencyBalance() {
+        containerInputOriginal.animate().scaleY(1f).setInterpolator(new AccelerateDecelerateInterpolator()).setDuration(300);
+        containerInputOriginal.animate().scaleX(1f).setInterpolator(new AccelerateDecelerateInterpolator()).setDuration(300);
+        containerInputCurrency.animate().scaleY(1.5f).setInterpolator(new AccelerateDecelerateInterpolator()).setDuration(300);
+        containerInputCurrency.animate().scaleX(1.5f).setInterpolator(new AccelerateDecelerateInterpolator()).setDuration(300);
+        isAmountSwapped = true;
+        inputOriginal.setTextColor(ContextCompat.getColor(getActivity(), R.color.text_grey));
+        inputCurrency.setTextColor(ContextCompat.getColor(getActivity(), R.color.text_main));
+    }
+
+    private boolean isParsable(String input) {
+        try {
+            Double.parseDouble(input);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
 }

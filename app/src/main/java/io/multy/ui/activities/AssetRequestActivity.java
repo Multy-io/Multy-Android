@@ -20,6 +20,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
+import io.multy.ui.fragments.AddressesFragment;
+import io.multy.ui.fragments.receive.AmountChooserFragment;
 import io.multy.ui.fragments.receive.WalletChooserFragment;
 
 
@@ -64,7 +66,12 @@ public class AssetRequestActivity extends BaseActivity {
         if (getSupportFragmentManager().getBackStackEntryCount() > zero) {
             List<Fragment> backStackFragments = getSupportFragmentManager().getFragments();
             for (Fragment backStackFragment : backStackFragments) {
-
+                if (backStackFragment instanceof AddressesFragment) {
+                    toolbar.setTitle(R.string.receive);
+                }
+                if (backStackFragment instanceof AmountChooserFragment) {
+                    toolbar.setTitle(R.string.receive);
+                }
             }
             getSupportFragmentManager().popBackStack();
         } else {

@@ -1,24 +1,27 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
   ~ Copyright 2017 Idealnaya rabota LLC
   ~ Licensed under Multy.io license.
   ~ See LICENSE for details
   -->
 
 <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
     android:fontFamily="@font/montserrat"
-    android:layout_height="?attr/actionBarSize">
+    android:layout_height="?attr/actionBarSize"
+    app:titleTextAppearance="@style/ToolbarTitleTextAppearance">
 
     <TextView
         android:id="@+id/button_cancel"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|center_horizontal"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:gravity="center"
         android:background="?attr/selectableItemBackground"
         android:fontFamily="@font/montserrat"
-        android:padding="@dimen/margin_2dp"
+        android:padding="@dimen/activity_vertical_margin"
         android:text="@string/cancel"
         android:textAppearance="@style/TextAppearance.AppCompat.Menu"
         android:textColor="@color/text_main" />

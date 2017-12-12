@@ -55,6 +55,11 @@ public class WalletAdapter extends RecyclerView.Adapter<WalletAdapter.WalletHold
         notifyDataSetChanged();
     }
 
+    public void setExchangePrice(Double exchangePrice){
+        this.exchangePrice = exchangePrice;
+        notifyDataSetChanged();
+    }
+
 
     public class WalletHolder extends RecyclerView.ViewHolder {
 

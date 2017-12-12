@@ -81,4 +81,6 @@ public class AssetActivity extends BaseActivity {
 
         transaction.commit();
     }
+
+
 }

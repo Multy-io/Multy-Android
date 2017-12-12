@@ -27,7 +27,6 @@
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:background="@drawable/shape_squircle_white"
             android:elevation="@dimen/elevation_4dp"
-            android:paddingBottom="@dimen/activity_vertical_margin"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -37,7 +36,8 @@
                 android:layout_width="@dimen/qr_size"
                 android:layout_height="@dimen/qr_size"
                 android:elevation="@dimen/elevation_4dp"
-                android:scaleType="fitCenter"
+
+                android:foreground="?attr/selectableItemBackground"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -56,15 +56,18 @@
                 android:id="@+id/text_address"
                 android:layout_width="@dimen/dp0"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/margin_30dp"
-                android:layout_marginRight="@dimen/margin_30dp"
+                android:background="?android:attr/selectableItemBackground"
                 android:gravity="center"
+                android:paddingBottom="@dimen/margin_5dp"
+                android:paddingEnd="@dimen/margin_30dp"
+                android:paddingStart="@dimen/margin_30dp"
+                android:paddingTop="@dimen/margin_5dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                 android:textColor="@color/text_main_dark"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/image_qr"
-                tools:text="1GLY7sDe7a6xsewDdUNA6F8CEoAxQsHV37"
-                android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
+                tools:text="1GLY7sDe7a6xsewDdUNA6F8CEoAxQsHV37" />
 
             <ImageView
                 style="@style/ArrowSmall"
@@ -79,132 +82,159 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
                 android:background="@drawable/shape_squircle_blue"
-                android:padding="5dp"
+                android:foreground="?android:attr/selectableItemBackgroundBorderless"
+                android:padding="@dimen/margin_5dp"
                 android:paddingEnd="@dimen/dimen_20dp"
                 android:paddingStart="@dimen/dimen_20dp"
                 android:text="@string/generate_new_address"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 android:textColor="@color/colorPrimaryDark"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/text_address"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+                app:layout_constraintTop_toBottomOf="@+id/text_address" />
 
-            <View
-                android:id="@+id/divider_qr"
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/container_summ"
                 android:layout_width="@dimen/dp0"
-                android:layout_height="@dimen/divider_height_medium"
+                android:layout_height="84dp"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
-                android:background="@color/grey_divider"
+                android:background="?android:attr/selectableItemBackground"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/button_generate_address" />
+                app:layout_constraintTop_toBottomOf="@+id/button_generate_address">
 
-            <TextView
-                android:id="@+id/button_request_amount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/divider_margin_top"
-                android:text="@string/request_summ"
-                android:textColor="@color/text_grey"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/divider_qr"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+                <View
+                    android:id="@+id/divider_qr"
+                    android:layout_width="@dimen/dp0"
+                    android:layout_height="@dimen/divider_height_small"
+                    android:background="@color/grey_light"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/text_balance_original_send"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/text_main"
-                android:textSize="32sp"
-                android:visibility="gone"
-                app:layout_constraintBottom_toTopOf="@+id/text_balance_currency_send"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/divider_qr"
-                app:layout_constraintVertical_bias="0.20999998"
-                app:layout_constraintVertical_chainStyle="packed"
-                tools:text="23 BTC"
-                tools:visibility="visible" />
+                <TextView
+                    android:id="@+id/button_request_amount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/request_summ"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="@color/text_grey"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/text_balance_currency_send"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/text_grey"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@+id/divider_summ"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/text_balance_original_send"
-                tools:text="583980 USD"
-                tools:visibility="visible"
-                android:textAppearance="@style/TextAppearance.AppCompat.Menu"/>
+                <TextView
+                    android:id="@+id/text_balance_original_send"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_main"
+                    android:textSize="32sp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toTopOf="@+id/text_balance_currency_send"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/divider_qr"
+                    app:layout_constraintVertical_bias="0.20999998"
+                    app:layout_constraintVertical_chainStyle="packed"
+                    tools:text="23 BTC"
+                    tools:visibility="visible" />
 
-            <ImageView
-                style="@style/ArrowSmall"
-                app:layout_constraintBottom_toBottomOf="@+id/divider_summ"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/divider_qr"
-                tools:ignore="ContentDescription" />
+                <TextView
+                    android:id="@+id/text_balance_currency_send"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+                    android:textColor="@color/text_grey"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@+id/divider_summ"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/text_balance_original_send"
+                    tools:text="583980 USD"
+                    tools:visibility="visible" />
 
-            <View
-                android:id="@+id/divider_summ"
+                <ImageView
+                    style="@style/ArrowSmall"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="ContentDescription" />
+
+                <View
+                    android:id="@+id/divider_summ"
+                    android:layout_width="@dimen/dp0"
+                    android:layout_height="@dimen/divider_height_small"
+                    android:layout_marginTop="@dimen/divider_margin_top"
+                    android:background="@color/grey_light"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+            </android.support.constraint.ConstraintLayout>
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/container_wallet"
                 android:layout_width="@dimen/dp0"
-                android:layout_height="@dimen/divider_height_medium"
-                android:layout_marginTop="@dimen/divider_margin_top"
-                android:background="@color/grey_divider"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/button_request_amount" />
-
-            <TextView
-                android:id="@+id/text_wallet_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_10dp"
-                android:textColor="@color/orange"
+                android:layout_height="97dp"
+                android:background="?android:attr/selectableItemBackground"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/divider_summ"
-                tools:text="BTC Personal"
-                android:textAppearance="@style/TextAppearance.AppCompat.Menu"/>
+                app:layout_constraintTop_toBottomOf="@+id/container_summ">
 
-            <TextView
-                android:id="@+id/text_balance_original"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/text_grey"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/text_wallet_name"
-                tools:text="23 BTC"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+                <TextView
+                    android:id="@+id/text_wallet_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+                    android:textColor="@color/orange"
+                    app:layout_constraintBottom_toTopOf="@id/text_balance_original"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_chainStyle="packed"
+                    tools:text="BTC Personal" />
 
-            <ImageView
-                style="@style/ArrowSmall"
-                android:layout_marginTop="@dimen/margin_10dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/divider_summ"
-                tools:ignore="ContentDescription" />
+                <TextView
+                    android:id="@+id/text_balance_original"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/elevation_3dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="@color/text_grey"
+                    app:layout_constraintBottom_toTopOf="@id/text_balance_currency"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/text_wallet_name"
+                    tools:text="23 BTC" />
 
-            <TextView
-                android:id="@+id/text_balance_currency"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/text_grey"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/text_balance_original"
-                tools:text="583980 USD"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+                <ImageView
+                    style="@style/ArrowSmall"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="ContentDescription" />
+
+                <TextView
+                    android:id="@+id/text_balance_currency"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/elevation_3dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="@color/text_grey"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/text_balance_original"
+                    tools:text="583980 USD" />
+
+            </android.support.constraint.ConstraintLayout>
 
         </android.support.constraint.ConstraintLayout>
 
         <View
             android:layout_width="@dimen/dp0"
-            android:layout_height="@dimen/divider_height_medium"
+            android:layout_height="@dimen/divider_height_small"
             android:layout_marginEnd="@dimen/activity_horizontal_margin"
             android:layout_marginStart="@dimen/activity_horizontal_margin"
             android:layout_marginTop="@dimen/margin_4dp"
@@ -217,25 +247,25 @@
         <TextView
             android:id="@+id/text_send_via"
             android:layout_width="wrap_content"
-            android:layout_height="17dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_30dp"
             android:background="@color/background_main"
             android:paddingEnd="@dimen/activity_horizontal_margin"
             android:paddingStart="@dimen/activity_horizontal_margin"
             android:text="@string/send_via"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:textColor="@color/text_main"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/container_receiver"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+            app:layout_constraintTop_toBottomOf="@+id/container_receiver" />
 
         <TextView
             android:id="@+id/button_address"
             style="@style/ShareButton"
+            android:layout_marginTop="@dimen/margin_10dp"
             android:drawablePadding="@dimen/margin_12dp"
             android:drawableTop="@drawable/ic_address_book2"
             android:paddingTop="@dimen/margin_12dp"
-            android:layout_marginTop="@dimen/margin_10dp"
             android:text="@string/address_book"
             app:layout_constraintHorizontal_chainStyle="spread"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -245,10 +275,10 @@
         <TextView
             android:id="@+id/button_scan_wireless"
             style="@style/ShareButton"
+            android:layout_marginTop="@dimen/margin_11dp"
             android:drawablePadding="@dimen/margin_9dp"
             android:drawableTop="@drawable/ic_nfc"
             android:paddingTop="@dimen/margin_10dp"
-            android:layout_marginTop="@dimen/margin_11dp"
             android:text="@string/wireless_scan"
             app:layout_constraintLeft_toRightOf="@+id/button_address"
             app:layout_constraintRight_toLeftOf="@+id/button_options"
@@ -257,10 +287,10 @@
         <TextView
             android:id="@+id/button_options"
             style="@style/ShareButton"
+            android:layout_marginTop="@dimen/margin_11dp"
             android:drawablePadding="@dimen/margin_7dp"
             android:drawableTop="@drawable/ic_options"
             android:paddingTop="@dimen/margin_10dp"
-            android:layout_marginTop="@dimen/margin_11dp"
             android:text="@string/more_options"
             app:layout_constraintLeft_toRightOf="@+id/button_scan_wireless"
             app:layout_constraintRight_toRightOf="parent"

@@ -9,6 +9,7 @@ package io.multy.api;
 
 import io.multy.model.entities.AuthEntity;
 import io.multy.model.entities.wallet.WalletRealmObject;
+import io.multy.model.requests.AddWalletAddressRequest;
 import io.multy.model.responses.AuthResponse;
 import io.multy.model.responses.ExchangePriceResponse;
 import io.multy.model.responses.UserAssetsResponse;
@@ -19,6 +20,7 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface ApiServiceInterface {
 
@@ -56,5 +58,8 @@ public interface ApiServiceInterface {
 
     @GET("api/v1/getwalletaddresses/{walletId}")
     Observable<UserAssetsResponse> getWalletAddresses(@Path("walletId") int walletId);
+
+    @POST("api/v1/address")
+    Observable<Object> addWalletAddress(@Body AddWalletAddressRequest addWalletAddressRequest);
 
 }

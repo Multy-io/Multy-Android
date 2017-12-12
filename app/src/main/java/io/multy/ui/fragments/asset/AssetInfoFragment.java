@@ -27,7 +27,6 @@ import io.multy.ui.activities.AssetActivity;
 import io.multy.ui.adapters.AssetTransactionsAdapter;
 import io.multy.ui.fragments.AddressesFragment;
 import io.multy.ui.fragments.BaseFragment;
-import io.multy.util.Constants;
 import io.multy.viewmodels.WalletViewModel;
 
 public class AssetInfoFragment extends BaseFragment {
@@ -116,7 +115,8 @@ public class AssetInfoFragment extends BaseFragment {
 
     @OnClick(R.id.card_addresses)
     void onClickAddress() {
-        ((AssetActivity) getActivity()).setFragment(R.id.container_full, AddressesFragment.newInstance());
+        ((AssetActivity) getActivity()).setFragment(R.id.container_full,
+                AddressesFragment.newInstance(viewModel.getWallet().getWalletIndex()));
     }
 
     @OnClick(R.id.image_copy)
@@ -134,7 +134,7 @@ public class AssetInfoFragment extends BaseFragment {
         ClipData clip = ClipData.newPlainText(address, address);
         assert clipboard != null;
         clipboard.setPrimaryClip(clip);
-        Toast.makeText(getActivity(), R.string.text_copied, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), R.string.address_copied, Toast.LENGTH_SHORT).show();
     }
 
     @OnClick(R.id.close)

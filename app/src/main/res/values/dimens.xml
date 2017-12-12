@@ -37,8 +37,8 @@
     <dimen name="elevation_12dp">12dp</dimen>
 
     <dimen name="dimen_60dp">60dp</dimen>
-    <dimen name="qr_size">130dp</dimen>
-    <dimen name="dimen_150dp">150dp</dimen>
+    <dimen name="qr_size">170dp</dimen>
+    <dimen name="dimen_150dp">190dp</dimen>
     <dimen name="input_address_height">70dp</dimen>
     <dimen name="donation_height">60dp</dimen>
     <dimen name="donation_summ_height">80dp</dimen>

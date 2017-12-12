@@ -39,19 +39,19 @@ public class WalletViewModel extends BaseViewModel {
         dataManager = new DataManager(context);
     }
 
-    public void getUserAssets() {
-        Disposable disposable = dataManager.getUserAssets()
-                .map(UserAssetsResponse::getWalletInfo)
-                .flatMapIterable(walletsInfo -> walletsInfo)
-                .map(WalletInfo::getAddress)
-                .flatMapIterable(addresses -> addresses)
-                .toList()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(response -> addresses.setValue(response), Throwable::printStackTrace);
-
-        addDisposable(disposable);
-    }
+//    public void getUserAssets() {
+//        Disposable disposable = dataManager.getUserAssets()
+//                .map(UserAssetsResponse::getWalletInfo)
+//                .flatMapIterable(walletsInfo -> walletsInfo)
+//                .map(WalletInfo::getAddress)
+//                .flatMapIterable(addresses -> addresses)
+//                .toList()
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribeOn(Schedulers.io())
+//                .subscribe(response -> addresses.setValue(response), Throwable::printStackTrace);
+//
+//        addDisposable(disposable);
+//    }
 
     public void getWalletAddresses(int walletId) {
         dataManager.getWalletAddresses(walletId)

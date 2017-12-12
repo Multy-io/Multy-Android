@@ -30,6 +30,7 @@ import io.multy.Multy;
 import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.model.DataManager;
+import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.ui.activities.AssetActivity;
 import io.multy.ui.fragments.BaseFragment;
@@ -39,6 +40,7 @@ import io.multy.util.CurrencyType;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
 import io.multy.viewmodels.WalletViewModel;
+import io.realm.RealmList;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -143,12 +145,14 @@ public class CreateAssetFragment extends BaseFragment {
         WalletRealmObject walletRealmObject = null;
         try {
             List<WalletRealmObject> wallets = new DataManager(Multy.getContext()).getWallets();
-            final int index = wallets != null && wallets.size() > 0 ? wallets.size() : 0;
+            final int index = wallets.size();
             final int currency = NativeDataHelper.Currency.BTC.getValue(); //TODO implement choosing crypto currency using enum NativeDataHelper.CURRENCY
             String creationAddress = NativeDataHelper.makeAccountAddress(new DataManager(getActivity()).getSeed().getSeed(), index, currency);
             walletRealmObject = new WalletRealmObject();
             walletRealmObject.setName(editTextWalletName.getText().toString());
-
+            RealmList<WalletAddress> addresses = new RealmList<>();
+            addresses.add(new WalletAddress(0, creationAddress));
+            walletRealmObject.setAddresses(addresses);
 //            if (textViewChainCurrency.getText().toString().equals(Constants.BTC)) {
                 walletRealmObject.setCurrency(0);
 //            } else {

@@ -4,6 +4,7 @@ package io.multy.api;
 import android.content.Context;
 
 import io.multy.model.entities.wallet.WalletRealmObject;
+import io.multy.model.requests.AddWalletAddressRequest;
 import io.multy.model.responses.AuthResponse;
 import io.multy.model.responses.ExchangePriceResponse;
 import io.multy.model.responses.UserAssetsResponse;
@@ -36,4 +37,6 @@ public interface MultyApiInterface {
     Observable<UserAssetsResponse> getWalletAddresses(int walletId);
 
     Call<ResponseBody> sendRawTransaction(String transactionHex);
+
+    Observable<Object> addWalletAddress(AddWalletAddressRequest addWalletAddressRequest);
 }
