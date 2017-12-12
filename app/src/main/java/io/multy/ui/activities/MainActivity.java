@@ -29,13 +29,18 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.branch.referral.Branch;
 import io.multy.R;
+import io.multy.api.MultyApi;
 import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
 import io.multy.ui.fragments.main.AssetsFragment;
 import io.multy.ui.fragments.main.ContactsFragment;
-import io.multy.ui.fragments.main.FastOperationsFragment;
 import io.multy.ui.fragments.main.FeedFragment;
 import io.multy.ui.fragments.main.SettingsFragment;
 import io.multy.util.Constants;
+import io.multy.util.SocketHelper;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class MainActivity extends BaseActivity implements TabLayout.OnTabSelectedListener {
@@ -45,6 +50,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
 
     private boolean isFirstFragmentCreation;
     private int lastTabPosition = 0;
+    private SocketHelper socketHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +60,8 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         isFirstFragmentCreation = true;
         setupFooter();
         setFragment(R.id.container_frame, AssetsFragment.newInstance());
+
+        socketHelper = new SocketHelper();
 
 //        preventRootIfDetected();
 
@@ -229,15 +237,39 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
 
     @OnClick(R.id.fast_operations)
     void onFastOperationsClick() {
-        Fragment fastOperationsFragment = getSupportFragmentManager()
-                .findFragmentByTag(FastOperationsFragment.TAG);
-        if (fastOperationsFragment == null) {
-            fastOperationsFragment = FastOperationsFragment.newInstance();
-        }
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.full_container, fastOperationsFragment, FastOperationsFragment.TAG)
-                .addToBackStack(FastOperationsFragment.TAG)
-                .commit();
+//        FirebaseMessaging.getInstance().subscribeToTopic("someTopic");
+//        Fragment fastOperationsFragment = getSupportFragmentManager()
+//                .findFragmentByTag(FastOperationsFragment.TAG);
+//        if (fastOperationsFragment == null) {
+//            fastOperationsFragment = FastOperationsFragment.newInstance();
+//        }
+//        getSupportFragmentManager().beginTransaction()
+//                .replace(R.id.full_container, fastOperationsFragment, FastOperationsFragment.TAG)
+//                .addToBackStack(FastOperationsFragment.TAG)
+//                .commit();
+
+        MultyApi.INSTANCE.getSpendableOutputs(0).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Log.i("wise", "response");
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+            }
+        });
+
+//        RealmResults<WalletRealmObject> wallets = new DataManager(this).getWallets();
+//        if (wallets != null && wallets.size() > 0) {
+//            WalletRealmObject walletRealmObject = wallets.get(0);
+//            try {
+//                Log.i("wise", "address " + walletRealmObject.getCreationAddress());
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+//
 //        MultyApi.INSTANCE.getSpendableOutputs();
 //        MultyApi.INSTANCE.getUserAssets()
 //                .subscribeOn(Schedulers.io())
@@ -262,5 +294,11 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
 //        } catch (JniException e) {
 //            e.printStackTrace();
 //        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        socketHelper.disconnect();
+        super.onDestroy();
     }
 }

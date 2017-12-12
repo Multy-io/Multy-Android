@@ -17,8 +17,9 @@ import io.reactivex.disposables.Disposable;
 
 public class BaseViewModel extends ViewModel {
 
-    SingleLiveEvent<String> errorMessage = new SingleLiveEvent<>();
-    SingleLiveEvent<Boolean> isLoading = new SingleLiveEvent<>();
+    public SingleLiveEvent<String> errorMessage = new SingleLiveEvent<>();
+    public SingleLiveEvent<String> criticalMessage = new SingleLiveEvent<>();
+    public SingleLiveEvent<Boolean> isLoading = new SingleLiveEvent<>();
 
     @NonNull
     private final CompositeDisposable disposables = new CompositeDisposable();

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~  Copyright 2017 Idealnaya rabota LLC
   ~  Licensed under Multy.io license.
   ~  See LICENSE for details
@@ -12,16 +11,6 @@
     android:layout_height="match_parent"
     tools:showIn="io.multy.android.MainActivity">
 
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="WalletsFragment"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/scroll_parent"
         android:layout_width="match_parent"
@@ -31,7 +20,7 @@
             android:id="@+id/constraint_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#f9faff">
+            android:background="@color/background_main">
 
             <TextView
                 android:id="@+id/text_main"
@@ -90,6 +79,7 @@
                 android:layout_marginBottom="8dp"
                 android:layout_marginTop="6dp"
                 android:focusableInTouchMode="false"
+                android:background="@color/background_main"
                 android:focusedByDefault="false"
                 android:touchscreenBlocksFocus="false"
                 android:visibility="visible"

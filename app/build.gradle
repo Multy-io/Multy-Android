@@ -52,8 +52,8 @@ android {
         }
         externalNativeBuild {
             cmake {
-                path "/Users/appscrunch/Downloads/Multy-Core-master/CMakeLists.txt"
-//                path "C:\\workspace\\Multy-Core\\CMakeLists.txt"
+//                path "/Users/appscrunch/Downloads/Multy-Core-master/CMakeLists.txt"
+                path "C:\\workspace\\Multy-Core\\CMakeLists.txt"
             }
         }
     }
@@ -90,7 +90,8 @@ dependencies {
     implementation('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
         transitive = true
     }
-    compile 'com.google.firebase:firebase-core:11.6.2'
+    implementation 'com.google.firebase:firebase-core:11.6.2'
+    implementation 'com.google.firebase:firebase-messaging:11.6.2'
 
     implementation "android.arch.lifecycle:extensions:1.0.0"
     testImplementation "android.arch.core:core-testing:1.0.0"
@@ -104,7 +105,7 @@ dependencies {
 
     implementation 'io.branch.sdk.android:library:2.+'
     implementation 'com.scottyab:rootbeer-lib:0.0.6'
-    compile ('io.socket:socket.io-client:0.9.+') {
+    implementation ('io.socket:socket.io-client:0.9.+') {
         exclude group: 'org.json', module: 'json'
     }
 }

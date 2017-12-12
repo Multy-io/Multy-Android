@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +36,8 @@ public class SimpleDialogFragment extends DialogFragment {
     private int messageResId;
     private View.OnClickListener listener;
     private boolean isNegative = false;
+    private String message;
+    private String title;
 
 
     public static SimpleDialogFragment newInstance(int titleResId, int messageResId, View.OnClickListener positiveListener) {
@@ -61,6 +64,22 @@ public class SimpleDialogFragment extends DialogFragment {
         return simpleDialogFragment;
     }
 
+    /**
+     * Creates fragment with only one option enabled
+     *
+     * @param titleResId
+     * @param messageResId
+     * @param negativeListener
+     * @return
+     */
+    public static SimpleDialogFragment newInstanceNegative(String titleResId, String messageResId, View.OnClickListener negativeListener) {
+        SimpleDialogFragment simpleDialogFragment = new SimpleDialogFragment();
+        simpleDialogFragment.setTitle(titleResId);
+        simpleDialogFragment.setMessage(messageResId);
+        simpleDialogFragment.setListenerNegative(negativeListener);
+        return simpleDialogFragment;
+    }
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
@@ -82,8 +101,14 @@ public class SimpleDialogFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_blue, container, false);
         ButterKnife.bind(this, view);
-        textViewMessage.setText(messageResId);
-        textViewTitle.setText(titleResId);
+        if (!TextUtils.isEmpty(message)) {
+            textViewTitle.setText(title);
+            textViewMessage.setText(message);
+        } else {
+            textViewMessage.setText(messageResId);
+            textViewTitle.setText(titleResId);
+        }
+
         if (isNegative) {
             buttonNegative.setVisibility(View.GONE);
             buttonPositive.setText(R.string.ok);
@@ -93,7 +118,9 @@ public class SimpleDialogFragment extends DialogFragment {
 
     @OnClick(R.id.button_positive)
     public void onClickPositive() {
-        listener.onClick(null);
+        if (listener != null) {
+            listener.onClick(null);
+        }
         dismiss();
     }
 
@@ -116,6 +143,22 @@ public class SimpleDialogFragment extends DialogFragment {
 
     public void setListener(View.OnClickListener listener) {
         this.listener = listener;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public void setListenerNegative(View.OnClickListener listener) {

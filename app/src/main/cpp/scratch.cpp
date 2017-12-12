@@ -214,10 +214,8 @@ Java_io_multy_util_NativeDataHelper_makeAccountAddress(JNIEnv *env, jobject obj,
     return env->NewStringUTF(address.get());
 }
 
-//BinaryData to_binary_data(JNIEnv *env, jbyteArray array)
-//{
-//    return BinaryData{(const unsigned char*)env->GetByteArrayElements(array, nullptr), (size_t) env->GetArrayLength(array)};
-//}
+//JNIEXPORT jstring JNICALL
+//Java_io_multy_util_NativeDataHelper_makePrivateKey
 
 JNIEXPORT jbyteArray JNICALL
 Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *env, jobject obj, jbyteArray array,

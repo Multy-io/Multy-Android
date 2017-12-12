@@ -144,4 +144,5 @@
     <string name="fast_operations">Fast Operations</string>
     <string name="nfc">NFC</string>
     <string name="scan">Scan</string>
+    <string name="error">An error occurred</string>
 </resources>

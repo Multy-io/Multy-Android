@@ -27,7 +27,7 @@ public class SocketHelper {
 
     public static final String TAG = SocketHelper.class.getSimpleName();
 
-    private static final String SOCKET_URL = "http://192.168.0.109:6666/";
+    private static final String SOCKET_URL = "http://192.168.0.121:7780/";
     private static final String HEADER_AUTH = "jwtToken";
     private static final String HEADER_DEVICE_TYPE = "deviceType";
     private static final String HEADER_USER_ID = "userId";
@@ -60,7 +60,7 @@ public class SocketHelper {
                 });
             });
 
-            socket.on(Socket.EVENT_CONNECT_ERROR, args -> log("connection error"))
+            socket.on(Socket.EVENT_CONNECT_ERROR, args -> SocketHelper.this.log("connection error" ))
                     .on(Socket.EVENT_CONNECT_TIMEOUT, args -> log("connection timeout"))
                     .on(Socket.EVENT_CONNECT, args -> log("Connected"))
                     .on(EVENT_RECEIVE, new Emitter.Listener() {
@@ -80,5 +80,9 @@ public class SocketHelper {
 
     private void log(String message) {
         Log.i(TAG, message);
+    }
+
+    public void disconnect() {
+        socket.disconnect();
     }
 }

@@ -48,7 +48,7 @@ public interface ApiServiceInterface {
     @GET("api/v1/gettxspeed")
     Call<ResponseBody> getTransactionSpeed();
 
-    @GET("api/v1/getspendableoutputs/{walletIndex}")
+    @GET("api/v1/outputs/spendable/{walletIndex}")
     Call<ResponseBody> getSpendableOutputs(@Path("walletIndex") int walletIndex);
 
     @GET("api/v1/getalluserassets")

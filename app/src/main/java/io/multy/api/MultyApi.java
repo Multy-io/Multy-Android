@@ -43,7 +43,7 @@ public enum MultyApi implements MultyApiInterface {
 
     INSTANCE {
 
-        static final String BASE_URL = "http://192.168.0.121:8080/";
+        static final String BASE_URL = "http://192.168.0.121:7778/";
 
         private ApiServiceInterface api = new Retrofit.Builder()
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())

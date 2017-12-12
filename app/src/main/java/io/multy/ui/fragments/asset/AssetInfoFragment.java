@@ -1,34 +1,33 @@
-/*
- *  Copyright 2017 Idealnaya rabota LLC
- *  Licensed under Multy.io license.
- *  See LICENSE for details
- */
-
 package io.multy.ui.fragments.asset;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
+import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.ui.activities.AssetActivity;
 import io.multy.ui.adapters.AssetTransactionsAdapter;
 import io.multy.ui.fragments.AddressesFragment;
 import io.multy.ui.fragments.BaseFragment;
+import io.multy.util.Constants;
 import io.multy.viewmodels.WalletViewModel;
 
 public class AssetInfoFragment extends BaseFragment {
@@ -70,16 +69,13 @@ public class AssetInfoFragment extends BaseFragment {
         ButterKnife.bind(this, view);
 
         viewModel = ViewModelProviders.of(getActivity()).get(WalletViewModel.class);
-//        viewModel.getWalletLive().observe(this, walletRealmObject -> {
-//            textAddress.setText(walletRealmObject.getAddresses().get(walletRealmObject.getAddresses().size() - 1).getAddress());
-//            textBalanceOriginal.setText(String.valueOf(walletRealmObject.getCurrencyId()));
-//            textBalanceFiat.setText(String.valueOf(walletRealmObject.getFiatCurrency()));
-//        });
-
-        textAddress.setText(viewModel.getWallet().getCreationAddress());
-        Log.i("wise", "address " + textAddress.getText().toString());
-        textBalanceOriginal.setText(String.valueOf(viewModel.getWallet().getBalance()));
-        textBalanceFiat.setText(String.valueOf(viewModel.getWallet().getFiatCurrency()));
+        viewModel.setContext(getActivity());
+        WalletRealmObject wallet = viewModel.getWallet(getActivity().getIntent().getIntExtra(Constants.EXTRA_WALLET_ID, 0));
+        if (wallet != null) {
+            setupWalletInfo(wallet);
+        } else {
+            viewModel.getWalletLive().observe(this, this::setupWalletInfo);
+        }
 
         initialize();
         return view;
@@ -92,21 +88,22 @@ public class AssetInfoFragment extends BaseFragment {
             recyclerView.setVisibility(View.GONE);
             emptyAsset.setVisibility(View.VISIBLE);
             setToolbarScrollFlag(0);
-        }
-        else {
+        } else {
             emptyAsset.setVisibility(View.GONE);
             setToolbarScrollFlag(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL);
         }
+    }
+
+    private void setupWalletInfo(WalletRealmObject wallet) {
+        textAddress.setText(wallet.getCreationAddress()); // TODO wallet.getAddresses();
+        textBalanceOriginal.setText(String.valueOf(wallet.getCurrency()));
+        viewModel.getExchangePrice().observe(AssetInfoFragment.this, exchangePrice -> textBalanceFiat.setText(String.valueOf(wallet.getCurrency() + exchangePrice)));
     }
 
     private void setToolbarScrollFlag(int flag) {
         AppBarLayout.LayoutParams params =
                 (AppBarLayout.LayoutParams) collapsingToolbarLayout.getLayoutParams();
         params.setScrollFlags(flag);
-    }
-
-    private void copyAddress() {
-
     }
 
     private void switchNfcPayment() {
@@ -122,23 +119,26 @@ public class AssetInfoFragment extends BaseFragment {
         ((AssetActivity) getActivity()).setFragment(R.id.container_full, AddressesFragment.newInstance());
     }
 
-    @OnClick(R.id.close)
-    void onCloseClick() {
-        getActivity().finish();
+    @OnClick(R.id.image_copy)
+    void onClickShare() {
+        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+        sharingIntent.setType("text/plain");
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, viewModel.getWalletLive().getValue().getCreationAddress());
+        startActivity(Intent.createChooser(sharingIntent, getResources().getString(R.string.send_via)));
     }
 
-    @OnClick(R.id.options)
-    void onOptionsClick() {
-        Fragment fragment = getFragmentManager().findFragmentByTag(AssetSettingsFragment.TAG);
-        if (fragment == null) {
-            fragment = AssetSettingsFragment.newInstance();
-        }
-        View parentView = getActivity().findViewById(R.id.frame_container);
-        if (parentView != null) {
-            getFragmentManager().beginTransaction()
-                    .replace(parentView.getId(), fragment)
-                    .addToBackStack(AssetSettingsFragment.TAG)
-                    .commit();
-        }
+    @OnClick(R.id.text_address)
+    void onClickCopy() {
+        String address = viewModel.getWalletLive().getValue().getCreationAddress();
+        ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText(address, address);
+        assert clipboard != null;
+        clipboard.setPrimaryClip(clip);
+        Toast.makeText(getActivity(), R.string.text_copied, Toast.LENGTH_SHORT).show();
+    }
+
+    @OnClick(R.id.close)
+    void onClickClose() {
+        getActivity().finish();
     }
 }

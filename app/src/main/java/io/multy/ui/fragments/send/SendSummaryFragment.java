@@ -89,7 +89,7 @@ public class SendSummaryFragment extends BaseFragment {
         DataManager dataManager = new DataManager(getActivity());
         int amount = (int) viewModel.getAmount();
         String addressTo = viewModel.getReceiverAddress().getValue();
-        String addressFrom = viewModel.getWallet().getAddresses().get(0).getAddress();
+        String addressFrom = viewModel.getWallet().getCreationAddress();
         String txHash = "";
         String pubKey = "";
         String sum = "";
@@ -98,6 +98,7 @@ public class SendSummaryFragment extends BaseFragment {
         try {
             byte[] transactionHex = NativeDataHelper.makeTransaction(seed, txHash, pubKey, outIndex, sum, String.valueOf(amount), "1", addressTo, addressFrom);
             String hex = byteArrayToHex(transactionHex);
+            Log.i("wise", "hex=" + hex);
 
             //TODO send hex
         } catch (JniException e) {
@@ -107,7 +108,7 @@ public class SendSummaryFragment extends BaseFragment {
 
     public static String byteArrayToHex(byte[] a) {
         StringBuilder sb = new StringBuilder(a.length * 2);
-        for(byte b: a)
+        for (byte b : a)
             sb.append(String.format("%02x", b));
         return sb.toString();
     }

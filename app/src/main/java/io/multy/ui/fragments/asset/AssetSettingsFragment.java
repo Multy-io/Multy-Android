@@ -56,7 +56,6 @@ public class AssetSettingsFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        super.showPinDialog();
     }
 
     private void saveSettings() {
