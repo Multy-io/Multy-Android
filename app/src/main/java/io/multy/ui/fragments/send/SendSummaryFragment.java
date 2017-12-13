@@ -7,6 +7,7 @@
 package io.multy.ui.fragments.send;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -21,7 +22,10 @@ import butterknife.OnClick;
 import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.model.DataManager;
+import io.multy.model.entities.Output;
 import io.multy.model.entities.wallet.CurrencyCode;
+import io.multy.model.responses.OutputsResponse;
+import io.multy.ui.activities.MainActivity;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
@@ -71,39 +75,50 @@ public class SendSummaryFragment extends BaseFragment {
 //        AssetSendDialogFragment dialog = new AssetSendDialogFragment();
 //        dialog.show(getActivity().getFragmentManager(), null);
 
-        //TODO get outputs
-        Call<ResponseBody> responseBodyCall = MultyApi.INSTANCE.getSpendableOutputs(0);
-        responseBodyCall.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                Log.i("wise", "onResponse ");
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                t.printStackTrace();
-            }
-        });
-
 
         DataManager dataManager = new DataManager(getActivity());
         int amount = (int) viewModel.getAmount();
         String addressTo = viewModel.getReceiverAddress().getValue();
         String addressFrom = viewModel.getWallet().getCreationAddress();
-        String txHash = "";
-        String pubKey = "";
-        String sum = "";
-        byte[] seed = dataManager.getSeed().getSeed();
-        int outIndex = 0;
-        try {
-            byte[] transactionHex = NativeDataHelper.makeTransaction(seed, txHash, pubKey, outIndex, sum, String.valueOf(amount), "1", addressTo, addressFrom);
-            String hex = byteArrayToHex(transactionHex);
-            Log.i("wise", "hex=" + hex);
 
-            //TODO send hex
-        } catch (JniException e) {
-            e.printStackTrace();
-        }
+        MultyApi.INSTANCE.getSpendableOutputs(1, addressFrom).enqueue(new Callback<OutputsResponse>() {
+            @Override
+            public void onResponse(Call<OutputsResponse> call, Response<OutputsResponse> response) {
+                OutputsResponse outputsResponse = response.body();
+                Output output = outputsResponse.getOutputs().get(0);
+
+                String txHash = output.getTxId();
+                String pubKey = output.getTxOutScript();
+                String sum = output.getTxOutAmount();
+                long amountTotal = (long) (amount * Math.pow(10, 8));
+                byte[] seed = dataManager.getSeed().getSeed();
+                int outIndex = output.getTxOutId();
+                try {
+                    byte[] transactionHex = NativeDataHelper.makeTransaction(seed, txHash, pubKey, outIndex, sum, String.valueOf(amountTotal), "9999", addressTo, addressFrom);
+                    String hex = byteArrayToHex(transactionHex);
+                    Log.i("wise", "hex=" + hex);
+
+                    MultyApi.INSTANCE.sendRawTransaction(hex, 1).enqueue(new Callback<ResponseBody>() {
+                        @Override
+                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                            startActivity(new Intent(getActivity(), MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+                        }
+                    });
+                } catch (JniException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<OutputsResponse> call, Throwable t) {
+                Log.i("wise", "fail");
+            }
+        });
     }
 
     public static String byteArrayToHex(byte[] a) {

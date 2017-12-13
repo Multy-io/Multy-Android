@@ -21,10 +21,13 @@ import javax.annotation.Nullable;
 import io.multy.Multy;
 import io.multy.model.DataManager;
 import io.multy.model.entities.AuthEntity;
+import io.multy.model.entities.TransactionRequestEntity;
 import io.multy.model.entities.wallet.WalletRealmObject;
+import io.multy.model.responses.AddressBalanceResponse;
 import io.multy.model.requests.AddWalletAddressRequest;
 import io.multy.model.responses.AuthResponse;
 import io.multy.model.responses.ExchangePriceResponse;
+import io.multy.model.responses.OutputsResponse;
 import io.multy.model.responses.UserAssetsResponse;
 import io.multy.util.Constants;
 import io.reactivex.Observable;
@@ -114,8 +117,8 @@ public enum MultyApi implements MultyApiInterface {
         }
 
         @Override
-        public void getBalance(String address) {
-            Call<ResponseBody> responseCall = api.getBalance(address);
+        public Call<AddressBalanceResponse> getBalanceByAddress(int currencyId, String address) {
+            return api.getBalanceByAddress(currencyId, address);
         }
 
         @Override
@@ -161,8 +164,8 @@ public enum MultyApi implements MultyApiInterface {
         }
 
         @Override
-        public Call<ResponseBody> getSpendableOutputs(int walletIndex) {
-            return api.getSpendableOutputs(walletIndex);
+        public Call<OutputsResponse> getSpendableOutputs(int net, String address) {
+            return api.getSpendableOutputs(net, address);
         }
 
         @Override
@@ -187,8 +190,8 @@ public enum MultyApi implements MultyApiInterface {
         }
 
         @Override
-        public Call<ResponseBody> sendRawTransaction(String transactionHex) {
-            return null;
+        public Call<ResponseBody> sendRawTransaction(String transactionHex, int currencyId) {
+            return api.sendRawTransaction(new TransactionRequestEntity(transactionHex, false), 1);
         }
 
         @Override

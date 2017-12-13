@@ -236,6 +236,7 @@
 
     <style name="FastButton">
         <item name="android:layout_width">86dp</item>
+        <item name="android:stateListAnimator">@drawable/z_animation</item>
         <item name="android:layout_height">86dp</item>
         <item name="android:foreground">?attr/selectableItemBackground</item>
         <item name="android:clickable">true</item>

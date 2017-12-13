@@ -70,6 +70,10 @@ public class DataManager {
         return MultyApi.INSTANCE.getWalletAddresses(walletId);
     }
 
+    public void saveWalletAmount(WalletRealmObject walletRealmObject, double amount){
+        database.saveAmount(walletRealmObject, amount);
+    }
+
     public void saveRootKey(RootKey key) {
         database.saveRootKey(key);
     }

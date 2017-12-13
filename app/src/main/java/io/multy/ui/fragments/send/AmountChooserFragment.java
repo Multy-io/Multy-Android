@@ -23,7 +23,6 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.text.DecimalFormat;
 
@@ -100,22 +99,22 @@ public class AmountChooserFragment extends BaseFragment {
 
     @OnClick(R.id.button_next)
     void onClickNext() {
-        if (!TextUtils.isEmpty(inputOriginal.getText())
-                && isParsable(inputOriginal.getText().toString())
-                && Double.valueOf(inputOriginal.getText().toString()) != zero) {
-            if (!TextUtils.isEmpty(inputOriginal.getText()) &&
-                    (Double.parseDouble(inputOriginal.getText().toString())
-                            + viewModel.getFee().getAmount()
-                            + (viewModel.getDonationAmount() == null ? zero : Double.parseDouble(viewModel.getDonationAmount()))
-                            > viewModel.getWallet().getBalance())) {
-                Toast.makeText(getActivity(), R.string.error_balance, Toast.LENGTH_LONG).show();
-            } else {
+//        if (!TextUtils.isEmpty(inputOriginal.getText())
+//                && isParsable(inputOriginal.getText().toString())
+//                && Double.valueOf(inputOriginal.getText().toString()) != zero) {
+//            if (!TextUtils.isEmpty(inputOriginal.getText()) &&
+//                    (Double.parseDouble(inputOriginal.getText().toString())
+//                            + viewModel.getFee().getAmount()
+//                            + (viewModel.getDonationAmount() == null ? zero : Double.parseDouble(viewModel.getDonationAmount()))
+//                            > viewModel.getWallet().getBalance())) {
+//                Toast.makeText(getActivity(), R.string.error_balance, Toast.LENGTH_LONG).show();
+//            } else {
                 viewModel.setAmount(Double.valueOf(inputOriginal.getText().toString()));
                 ((AssetSendActivity) getActivity()).setFragment(R.string.ready_to_send, R.id.container, SendSummaryFragment.newInstance());
-            }
-        } else {
-            Toast.makeText(getActivity(), R.string.choose_amount, Toast.LENGTH_SHORT).show();
-        }
+//            }
+//        } else {
+//            Toast.makeText(getActivity(), R.string.choose_amount, Toast.LENGTH_SHORT).show();
+//        }
     }
 
     @OnClick(R.id.image_swap)

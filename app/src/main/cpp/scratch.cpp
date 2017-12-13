@@ -79,10 +79,14 @@ static void *thread_func(void *) {
     return 0;
 }
 
-void throw_java_exception(JNIEnv *env, const Error &error) {
+void throw_java_exception_str(JNIEnv *env, const char* message) {
     jclass c = env->FindClass("io/multy/util/JniException");
-//    __android_log_print(ANDROID_LOG_INFO, "log message", "Error: %s", error->message);
-    env->ThrowNew(c, error.message);
+//    __android_log_print(ANDROID_LOG_INFO, "log message", "Error: %s", message);
+    env->ThrowNew(c, message);
+}
+
+void throw_java_exception(JNIEnv *env, const Error &error) {
+    throw_java_exception_str(env, error.message);
 }
 
 #define ERSOR(statement, value) do { ErrorPtr error(statement); if (error) {throw_java_exception(env, *error); return (value);} } while(false)
@@ -237,60 +241,84 @@ Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *env, jobject obj, jb
     const char *txPubKeyStr = env->GetStringUTFChars(tx_pub_key, nullptr);
     const char *txHashStr = env->GetStringUTFChars(tx_hash_bytes, nullptr);
 
-    __android_log_print(ANDROID_LOG_INFO, "foo", "Amount: %s", amountStr);
-    __android_log_print(ANDROID_LOG_INFO, "foo", "Fee: %s", feeStr);
+    try {
 
-    ErrorPtr error;
-    ExtendedKeyPtr rootKey;
+        ErrorPtr error;
+        ExtendedKeyPtr rootKey;
 
-    BinaryData seed{buf, len};
-    error.reset(make_master_key(&seed, reset_sp(rootKey)));
+        BinaryData seed{buf, len};
+        error.reset(make_master_key(&seed, reset_sp(rootKey)));
 
-    HDAccountPtr hdAccount;
-    error.reset(make_hd_account(rootKey.get(), CURRENCY_BITCOIN, 0, reset_sp(hdAccount)));
+        HDAccountPtr hdAccount;
+        error.reset(make_hd_account(rootKey.get(), CURRENCY_BITCOIN, 0, reset_sp(hdAccount)));
 
-    AccountPtr account;
-    error.reset(make_hd_leaf_account(hdAccount.get(), ADDRESS_EXTERNAL, 0, reset_sp(account)));
+        AccountPtr account;
+        error.reset(make_hd_leaf_account(hdAccount.get(), ADDRESS_EXTERNAL, 0, reset_sp(account)));
 
-    ConstCharPtr address;
-    error.reset(get_account_address_string(account.get(), reset_sp(address)));
+        ConstCharPtr address;
+        error.reset(get_account_address_string(account.get(), reset_sp(address)));
 
-    __android_log_print(ANDROID_LOG_INFO, "foo", "address: %s", address.get());
+        __android_log_print(ANDROID_LOG_INFO, "foo", "address: %s", address.get());
+        __android_log_print(ANDROID_LOG_INFO, "foo", "txPubKey %s", txPubKeyStr);
+        __android_log_print(ANDROID_LOG_INFO, "foo", "txHash %s", txHashStr);
 
-    TransactionPtr transaction;
-    error.reset(make_transaction(account.get(), reset_sp(transaction)));
+        TransactionPtr transaction;
+        error.reset(make_transaction(account.get(), reset_sp(transaction)));
 
-    Amount one_BTC(amountStr);
-    Amount fee_value(feeStr);
-    Amount sumAmount(sumStr);
-    {
-        Properties &source = transaction->add_source();
-        source.set_property("amount", sumAmount);
-        source.set_property("prev_tx_hash", test_utility::to_binary_data(test_utility::from_hex(txHashStr)));
-        // source.set_property("prev_tx_hash", binaryTxHash);
-        source.set_property("prev_tx_out_index", tx_out_index);
-        source.set_property("prev_tx_out_script_pubkey", test_utility::to_binary_data(test_utility::from_hex(txPubKeyStr)));
+        __android_log_print(ANDROID_LOG_INFO, "foo", "amountStr: %s", amountStr);
+        __android_log_print(ANDROID_LOG_INFO, "foo", "feeValue: %s", feeStr);
+        __android_log_print(ANDROID_LOG_INFO, "foo", "sumAmount: %s", sumStr);
+
+        Amount payAmount(amountStr);
+        Amount fee_value(feeStr);
+        Amount sumAmount(sumStr);
+        {
+            Properties &source = transaction->add_source();
+            source.set_property("amount", sumAmount);
+            source.set_property("prev_tx_hash",
+                                test_utility::to_binary_data(test_utility::from_hex(txHashStr)));
+            source.set_property("prev_tx_out_index", tx_out_index);
+            source.set_property("prev_tx_out_script_pubkey",
+                                test_utility::to_binary_data(test_utility::from_hex(txPubKeyStr)));
+            __android_log_print(ANDROID_LOG_INFO, "foo", "amountStr: %s", "first source");
+        }
+
+        {
+            Properties &destination = transaction->add_destination();
+            destination.set_property("address",
+                                     env->GetStringUTFChars(destination_address, nullptr));
+            destination.set_property("amount", payAmount);
+            __android_log_print(ANDROID_LOG_INFO, "foo", "amountStr: %s", "second source");
+        }
+
+        {
+            Properties &change = transaction->add_destination();
+            change.set_property("address", env->GetStringUTFChars(send_address, nullptr));
+            change.set_property("amount", sumAmount - payAmount - fee_value);
+            __android_log_print(ANDROID_LOG_INFO, "foo", "amountStr: %s", "last source");
+
+            Properties &fee = transaction->get_fee();
+            fee.set_property("amount_per_byte", Amount(1000));
+            fee.set_property("min_amount_per_byte", Amount(0));
+        }
+
+
+        transaction->update_state();
+        transaction->sign();
+        BinaryDataPtr serialized = transaction->serialize();
+
+        jbyteArray resultArray = env->NewByteArray(serialized.get()->len);
+        env->SetByteArrayRegion(resultArray, 0, serialized.get()->len,
+                                reinterpret_cast<const jbyte *>(serialized->data));
+        return resultArray;
+    } catch (std::exception const &e){
+        throw_java_exception_str(env, e.what());
+    } catch (...){
+        throw_java_exception_str(env, "something went wrong");
     }
 
-    {
-        Properties &destination = transaction->add_destination();
-        destination.set_property("address", env->GetStringUTFChars(destination_address, nullptr));
-        destination.set_property("amount", one_BTC);
-    }
 
-    {
-        Properties &change = transaction->add_destination();
-        change.set_property("address", env->GetStringUTFChars(send_address, nullptr));
-        change.set_property("amount", sumAmount - one_BTC - fee_value);
-    }
-
-    transaction->update_state();
-    transaction->sign();
-    BinaryDataPtr serialized = transaction->serialize();
-
-    jbyteArray resultArray = env->NewByteArray(serialized.get()->len);
-    env->SetByteArrayRegion(resultArray, 0, serialized.get()->len, reinterpret_cast<const jbyte *>(serialized->data));
-    return resultArray;
+    return jbyteArray();
 }
 
 //JNIEXPORT jobjectArray  JNICALL

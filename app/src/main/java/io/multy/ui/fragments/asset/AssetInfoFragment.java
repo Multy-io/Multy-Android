@@ -27,6 +27,7 @@ import io.multy.ui.activities.AssetActivity;
 import io.multy.ui.adapters.AssetTransactionsAdapter;
 import io.multy.ui.fragments.AddressesFragment;
 import io.multy.ui.fragments.BaseFragment;
+import io.multy.util.Constants;
 import io.multy.viewmodels.WalletViewModel;
 
 public class AssetInfoFragment extends BaseFragment {
@@ -115,8 +116,14 @@ public class AssetInfoFragment extends BaseFragment {
 
     @OnClick(R.id.card_addresses)
     void onClickAddress() {
-        ((AssetActivity) getActivity()).setFragment(R.id.container_full,
-                AddressesFragment.newInstance(viewModel.getWallet().getWalletIndex()));
+        if (viewModel.getWalletLive().getValue() != null) {
+            ((AssetActivity) getActivity()).setFragment(R.id.container_full,
+                    AddressesFragment.newInstance(viewModel.getWalletLive().getValue().getWalletIndex()));
+        } else {
+            WalletRealmObject wallet = viewModel.getWallet(getActivity().getIntent().getIntExtra(Constants.EXTRA_WALLET_ID, 0));
+            ((AssetActivity) getActivity()).setFragment(R.id.container_full,
+                    AddressesFragment.newInstance(wallet.getWalletIndex()));
+        }
     }
 
     @OnClick(R.id.image_copy)

@@ -17,18 +17,25 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.multy.Multy;
 import io.multy.R;
+import io.multy.api.MultyApi;
 import io.multy.model.DataManager;
 import io.multy.model.entities.wallet.WalletRealmObject;
+import io.multy.model.responses.AddressBalanceResponse;
 import io.multy.ui.activities.CreateAssetActivity;
 import io.multy.ui.adapters.PortfoliosAdapter;
 import io.multy.ui.adapters.WalletsAdapter;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.viewmodels.AssetsViewModel;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Ihar Paliashchuk on 02.11.2017.
@@ -81,6 +88,26 @@ public class AssetsFragment extends BaseFragment {
         walletsAdapter.setData(viewModel.getWalletsFromDB());
 //        viewModel.getWalletsFlowable();
 //        viewModel.getWallets().observe(this, walletRealmObjects -> walletsAdapter.setData(walletRealmObjects));
+
+        List<WalletRealmObject> objects = walletsAdapter.getData();
+        for (int i = 0; i < walletsAdapter.getItemCount(); i++) {
+            updateBalance(i, objects.get(i).getCreationAddress());
+        }
+    }
+
+    private void updateBalance(final int position, final String creationAddress) {
+        MultyApi.INSTANCE.getBalanceByAddress(1, creationAddress).enqueue(new Callback<AddressBalanceResponse>() {
+            @Override
+            public void onResponse(Call<AddressBalanceResponse> call, Response<AddressBalanceResponse> response) {
+                new DataManager(Multy.getContext()).saveWalletAmount(walletsAdapter.getItem(position), Double.parseDouble(response.body().getBalance()));
+                walletsAdapter.setData(viewModel.getWalletsFromDB());
+            }
+
+            @Override
+            public void onFailure(Call<AddressBalanceResponse> call, Throwable t) {
+
+            }
+        });
     }
 
     @Override

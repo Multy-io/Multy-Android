@@ -39,12 +39,19 @@ public class DatabaseHelper {
 //        }
     }
 
-    public RealmResults<WalletRealmObject> getWallets(){
+    public RealmResults<WalletRealmObject> getWallets() {
         return realm.where(WalletRealmObject.class).findAll();
     }
 
     public void saveWallet(WalletRealmObject wallet) {
         realm.executeTransaction(realm -> realm.insertOrUpdate(wallet));
+    }
+
+    public void saveAmount(WalletRealmObject wallet, double amount) {
+        realm.executeTransaction(realm -> {
+            wallet.setBalance(amount);
+            realm.insertOrUpdate(wallet);
+        });
     }
 
     public void saveAddress(WalletRealmObject wallet, WalletAddress address) {

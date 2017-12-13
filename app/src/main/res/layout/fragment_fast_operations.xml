@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~  Copyright 2017 Idealnaya rabota LLC
   ~  Licensed under Multy.io license.
   ~  See LICENSE for details
@@ -44,11 +43,11 @@
 
     <TextView
         android:id="@+id/send"
+        style="@style/FastTitle"
         android:text="@string/send"
         app:layout_constraintEnd_toEndOf="@+id/button_send"
         app:layout_constraintStart_toStartOf="@+id/button_send"
-        app:layout_constraintTop_toBottomOf="@+id/button_send"
-        style="@style/FastTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/button_send" />
 
     <android.support.v7.widget.CardView
         android:id="@+id/button_receive"
@@ -123,10 +122,11 @@
         android:id="@+id/button_cancel"
         android:layout_width="54dp"
         android:layout_height="54dp"
-        android:layout_marginBottom="14dp"
+        android:layout_marginBottom="32dp"
         android:clickable="true"
         android:focusable="true"
         android:foreground="?attr/selectableItemBackground"
+        android:stateListAnimator="@drawable/z_animation"
         app:cardBackgroundColor="@color/white"
         app:cardCornerRadius="27dp"
         app:cardElevation="6dp"
