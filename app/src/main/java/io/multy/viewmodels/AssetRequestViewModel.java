@@ -22,6 +22,7 @@ import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.model.requests.AddWalletAddressRequest;
+import io.multy.util.Constants;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -49,7 +50,6 @@ public class AssetRequestViewModel extends BaseViewModel {
 
     public void setContext(Context context){
         dataManager = new DataManager(context);
-        saveExchangePrice();
     }
 
     public Double getExchangePrice(){
@@ -58,8 +58,19 @@ public class AssetRequestViewModel extends BaseViewModel {
                 .subscribeOn(Schedulers.io())
                 .subscribe(response -> {
                     exchangePrice.setValue(response.getUSD());
-                }, Throwable::printStackTrace);
-        return dataManager.getExchangePriceDB();
+                }, throwable -> {
+                    errorMessage.setValue(Constants.ERROR_LOAD_EXCHANGE_PRICE);
+                    errorMessage.call();
+                    throwable.printStackTrace();
+                });
+
+        if (dataManager.getExchangePriceDB() != null) {
+            exchangePrice.setValue(dataManager.getExchangePriceDB());
+            return dataManager.getExchangePriceDB();
+        } else {
+            exchangePrice.setValue(16000.0);
+            return 16000.0;
+        }
     }
 
     public List<WalletRealmObject> getWallets(){
@@ -86,9 +97,9 @@ public class AssetRequestViewModel extends BaseViewModel {
         return amount;
     }
 
-    public void saveExchangePrice(){
-        dataManager.saveExchangePrice(15432.0);
-    }
+//    public void saveExchangePrice(){
+//        dataManager.saveExchangePrice(15432.0);
+//    }
 
     public Bitmap generateQR(Context context) throws WriterException {
         BitMatrix bitMatrix;
@@ -134,6 +145,9 @@ public class AssetRequestViewModel extends BaseViewModel {
                 Timber.i("before address %s", address);
             }
 
+            isLoading.setValue(true);
+            isLoading.call();
+
             final int index = wallet.getAddresses().size();
             final int currency = NativeDataHelper.Currency.BTC.getValue();
             final byte[] seed = dataManager.getSeed().getSeed();
@@ -150,7 +164,12 @@ public class AssetRequestViewModel extends BaseViewModel {
                         for (WalletAddress address : wallet.getAddresses()) { // to view wallet addresses after adding new address
                             Timber.i("after address %s", address);
                         }
+                        isLoading.setValue(false);
+                        isLoading.call();
                     }, throwable -> {
+                        isLoading.setValue(false);
+                        isLoading.call();
+                        errorMessage.setValue("An error occurred while adding new address");
                         throwable.printStackTrace();
                         // TODO show error dialog
                     });

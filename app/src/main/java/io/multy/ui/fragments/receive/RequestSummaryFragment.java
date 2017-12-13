@@ -71,13 +71,18 @@ public class RequestSummaryFragment extends BaseFragment {
 
     private AssetRequestViewModel viewModel;
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        viewModel = ViewModelProviders.of(getActivity()).get(AssetRequestViewModel.class);
+        setBaseViewModel(viewModel);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_request_summary, container, false);
         ButterKnife.bind(this, view);
-
-        viewModel = ViewModelProviders.of(getActivity()).get(AssetRequestViewModel.class);
 
         return view;
     }

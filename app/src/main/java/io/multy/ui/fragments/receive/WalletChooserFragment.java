@@ -41,13 +41,19 @@ public class WalletChooserFragment extends BaseFragment implements WalletAdapter
     private AssetRequestViewModel viewModel;
     private WalletAdapter adapter;
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        viewModel = ViewModelProviders.of(getActivity()).get(AssetRequestViewModel.class);
+        viewModel.setContext(getActivity());
+        setBaseViewModel(viewModel);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_wallet_chooser, container, false);
         ButterKnife.bind(this, view);
-        viewModel = ViewModelProviders.of(getActivity()).get(AssetRequestViewModel.class);
-        viewModel.setContext(getActivity());
         setupAdapter(viewModel.getExchangePrice());
         viewModel.getExchangePriceLive().observe(this, this::setupAdapter);
         return view;

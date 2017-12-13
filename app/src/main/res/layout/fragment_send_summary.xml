@@ -194,7 +194,7 @@
                 android:id="@+id/text_fee_speed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_5dp"
+                android:layout_marginTop="@dimen/margin_7dp"
                 android:textColor="@color/text_grey"
                 android:textSize="17sp"
                 app:layout_constraintLeft_toLeftOf="parent"

@@ -57,6 +57,10 @@ public class AmountChooserFragment extends BaseFragment {
 
     @BindInt(R.integer.zero)
     int zero;
+    @BindInt(R.integer.one)
+    int one;
+    @BindString(R.string.point)
+    String point;
     @BindString(R.string.donation_format_pattern)
     String formatPattern;
     @BindString(R.string.donation_format_pattern_bitcoin)
@@ -65,13 +69,19 @@ public class AmountChooserFragment extends BaseFragment {
     private boolean isAmountSwapped;
     private AssetRequestViewModel viewModel;
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        viewModel = ViewModelProviders.of(getActivity()).get(AssetRequestViewModel.class);
+        setBaseViewModel(viewModel);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_amount_chooser, container, false);
         ButterKnife.bind(this, view);
 
-        viewModel = ViewModelProviders.of(getActivity()).get(AssetRequestViewModel.class);
         if (viewModel.getAmount() != zero) {
             inputOriginal.setText(String.valueOf(viewModel.getAmount()));
         }
@@ -119,7 +129,9 @@ public class AmountChooserFragment extends BaseFragment {
                     if (!TextUtils.isEmpty(charSequence)) {
                         if (isParsable(charSequence.toString())) {
                             inputCurrency.setText(new DecimalFormat(formatPattern)
-                                    .format(viewModel.getExchangePriceLive().getValue() == null ? viewModel.getExchangePrice() : viewModel.getExchangePriceLive().getValue()
+                                    .format((viewModel.getExchangePriceLive().getValue() == null
+                                            ? viewModel.getExchangePrice()
+                                            : viewModel.getExchangePriceLive().getValue())
                                             * Double.parseDouble(charSequence.toString())));
                         }
                     } else {
@@ -131,7 +143,12 @@ public class AmountChooserFragment extends BaseFragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
-
+                if (!TextUtils.isEmpty(editable)
+                        && editable.toString().length() == one
+                        && editable.toString().contains(point)) {
+                    String result = editable.toString().replaceAll(point, "");
+                    inputOriginal.setText(result);
+                }
             }
         });
     }
@@ -156,7 +173,9 @@ public class AmountChooserFragment extends BaseFragment {
                         if (isParsable(charSequence.toString())) {
                             inputOriginal.setText(new DecimalFormat(formatPatternBitcoin)
                                     .format(Double.parseDouble(charSequence.toString())
-                                            / (viewModel.getExchangePriceLive().getValue() == null ? viewModel.getExchangePrice() : viewModel.getExchangePriceLive().getValue())));
+                                            / (viewModel.getExchangePriceLive().getValue() == null
+                                            ? viewModel.getExchangePrice()
+                                            : viewModel.getExchangePriceLive().getValue())));
                         }
                     } else {
                         inputCurrency.getText().clear();
@@ -167,7 +186,12 @@ public class AmountChooserFragment extends BaseFragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
-
+                if (!TextUtils.isEmpty(editable)
+                        && editable.toString().length() == one
+                        && editable.toString().contains(point)) {
+                    String result = editable.toString().replaceAll(point, "");
+                    inputCurrency.setText(result);
+                }
             }
         });
     }

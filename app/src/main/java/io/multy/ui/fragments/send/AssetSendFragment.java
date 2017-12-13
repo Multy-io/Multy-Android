@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -51,6 +52,16 @@ public class AssetSendFragment extends BaseFragment {
         viewModel.getUserAssetsApi();
         setupInputAddress();
         return view;
+    }
+
+    @OnClick(R.id.button_address)
+    void onClickAddressBook(){
+        Toast.makeText(getActivity(), R.string.not_implemented, Toast.LENGTH_SHORT).show();
+    }
+
+    @OnClick(R.id.button_scan_wireless)
+    void onClickWirelessScan(){
+        Toast.makeText(getActivity(), R.string.not_implemented, Toast.LENGTH_SHORT).show();
     }
 
     @OnClick(R.id.button_scan_qr)

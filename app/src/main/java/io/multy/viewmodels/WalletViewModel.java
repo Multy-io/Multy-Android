@@ -67,6 +67,7 @@ public class WalletViewModel extends BaseViewModel {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(response -> exchangePrice.setValue(response.getUSD()), Throwable::printStackTrace);
+        exchangePrice.setValue(dataManager.getExchangePriceDB());
     }
 
     public void getWalletLive(int walletId) {

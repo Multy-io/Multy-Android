@@ -6,6 +6,8 @@
 
 package io.multy.ui.fragments;
 
+import android.app.ProgressDialog;
+import android.arch.lifecycle.Observer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -18,6 +20,7 @@ import io.multy.viewmodels.BaseViewModel;
 public class BaseFragment extends Fragment {
 
     private BaseViewModel baseViewModel;
+    private ProgressDialog progressDialog;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -35,16 +38,29 @@ public class BaseFragment extends Fragment {
 
     protected void subscribeToErrors() {
         if (baseViewModel != null) {
-            baseViewModel.errorMessage.observe(this, s ->
-                    SimpleDialogFragment.newInstanceNegative(getString(R.string.error), baseViewModel.errorMessage.getValue(),
-                            null).show(getFragmentManager(), "")
-            );
+            baseViewModel.errorMessage.observe(this, s -> {
+                SimpleDialogFragment dialog = SimpleDialogFragment.newInstanceNegative(getString(R.string.error), baseViewModel.errorMessage.getValue(),
+                        null);
+                dialog.setTitleResId(R.string.error);
+                dialog.setMessageResId(R.string.error);
+                dialog.show(getFragmentManager(), "");
+            });
 
             baseViewModel.isLoading.observe(this, aBoolean -> {
-                if (aBoolean) {
-                    //TODO show loading
-                } else {
-                    //TODO hide loading
+                if (aBoolean != null) {
+                    if (aBoolean) {
+                        if (progressDialog == null) {
+                            progressDialog = new ProgressDialog(BaseFragment.this.getActivity());
+                            progressDialog.setCancelable(false);
+                            progressDialog.show();
+                        } else {
+                            progressDialog.show();
+                        }
+                    } else {
+                        if (progressDialog != null) {
+                            progressDialog.dismiss();
+                        }
+                    }
                 }
             });
 
@@ -53,5 +69,7 @@ public class BaseFragment extends Fragment {
             });
         }
     }
+
+
 
 }

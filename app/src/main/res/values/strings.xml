@@ -120,7 +120,7 @@
     <string name="no_activity_message">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
     <string name="multy_name_long">Multi cryptocurrency and\nassets open-source wallet</string>
 
-    <string name="address_copied"> was copied to clipboard</string>
+    <string name="address_copied">Address was copied to clipboard</string>
     <string name="wallet_settings">Wallet Settings</string>
     <string name="general">General</string>
     <string name="security">Security</string>
@@ -147,4 +147,6 @@
     <string name="not_implemented">Sorry, this feature is not implemented</string>
     <string name="addresses_empty">There are no addresses</string>
     <string name="receive_summ">Receive Summ</string>
+    <string name="input_symbols">abcdefghijklmnopqrstuvwxyz1234567890</string>
+    <string name="point">.</string>
 </resources>

@@ -37,4 +37,7 @@ public class Constants {
     public final static String ETH = "ETH";
     public final static String USD = "USD";
     public final static String EUR = "EUR";
+
+    public static final String ERROR_LOAD_EXCHANGE_PRICE = "Can't load exchange price. Will be used the last one";
+    public static final String ERROR_ADDING_ADDRESS = "An error occurred while adding new address";
 }

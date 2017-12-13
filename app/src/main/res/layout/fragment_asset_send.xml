@@ -38,6 +38,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Menu"
         android:maxLines="@integer/two"
         android:fontFamily="@font/montserrat"
+        android:digits="@string/input_symbols"
         />
 
     <View
