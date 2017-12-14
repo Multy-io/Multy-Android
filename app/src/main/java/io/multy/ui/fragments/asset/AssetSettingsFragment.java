@@ -11,7 +11,6 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -28,9 +27,7 @@ public class AssetSettingsFragment extends BaseFragment {
     public static final String TAG = AssetSettingsFragment.class.getSimpleName();
 
     public static AssetSettingsFragment newInstance() {
-        
         Bundle args = new Bundle();
-        
         AssetSettingsFragment fragment = new AssetSettingsFragment();
         fragment.setArguments(args);
         return fragment;
@@ -59,7 +56,6 @@ public class AssetSettingsFragment extends BaseFragment {
     }
 
     private void saveSettings() {
-        Toast.makeText(getContext(), "Delete this notification", Toast.LENGTH_SHORT).show();
     }
 
     private void choiceCurrencyToConvert() {
@@ -71,33 +67,32 @@ public class AssetSettingsFragment extends BaseFragment {
     }
 
     private void deleteWallet() {
-        Toast.makeText(getContext(), "Delete this notification", Toast.LENGTH_SHORT).show();
     }
 
     @OnClick(R.id.button_cancel)
-    void onCancelClick() {
+    void onClickCancel() {
         getActivity().onBackPressed();
     }
 
     @OnClick(R.id.button_save)
-    void onSaveClick() {
+    void onClickSave() {
         saveSettings();
     }
 
     @OnClick(R.id.button_currency)
-    void onCurrencyClick() {
+    void onClickCurrency() {
         choiceCurrencyToConvert();
     }
 
     @OnClick(R.id.button_key)
-    void onKeyClick() {
+    void onClickKey() {
         showMyPrivateKey();
     }
 
     @OnClick(R.id.button_delete)
-    void onDeleteClick() {
+    void onClickDelete() {
         SimpleDialogFragment dialogConfirmation = SimpleDialogFragment
                 .newInstance(R.string.delete_wallet, R.string.delete_confirm, v -> deleteWallet());
-        dialogConfirmation.show(getChildFragmentManager(),SimpleDialogFragment.class.getSimpleName());
+        dialogConfirmation.show(getChildFragmentManager(), SimpleDialogFragment.class.getSimpleName());
     }
 }

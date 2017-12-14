@@ -10,7 +10,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class AddressBalanceResponse {
 
-    @SerializedName("ballance")
+    @SerializedName("balance")
     private String balance;
 
     public String getBalance() {

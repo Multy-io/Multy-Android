@@ -10,12 +10,13 @@ package io.multy.api;
 import io.multy.model.entities.AuthEntity;
 import io.multy.model.entities.TransactionRequestEntity;
 import io.multy.model.entities.wallet.WalletRealmObject;
-import io.multy.model.responses.AddressBalanceResponse;
 import io.multy.model.requests.AddWalletAddressRequest;
+import io.multy.model.responses.AddressBalanceResponse;
 import io.multy.model.responses.AuthResponse;
 import io.multy.model.responses.ExchangePriceResponse;
 import io.multy.model.responses.OutputsResponse;
 import io.multy.model.responses.UserAssetsResponse;
+import io.multy.model.responses.WalletsResponse;
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -23,7 +24,6 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
-import retrofit2.http.Query;
 
 public interface ApiServiceInterface {
 
@@ -62,13 +62,18 @@ public interface ApiServiceInterface {
     @GET("api/v1/getwalletaddresses/{walletId}")
     Observable<UserAssetsResponse> getWalletAddresses(@Path("walletId") int walletId);
 
-    @POST("/api/v1/transaction/send/{currencyId}")
+    @POST("/api/v1/transaction/requestRates/{currencyId}")
     Call<ResponseBody> sendRawTransaction(@Body TransactionRequestEntity transactionRequestEntity, @Path("currencyId") int currencyId);
 
-    @GET("/api/v1/address/ballance/{currencyId}/{address}")
+    @GET("/api/v1/address/balance/{currencyId}/{address}")
     Call<AddressBalanceResponse> getBalanceByAddress(@Path("currencyId") int currencyId, @Path("address") String address);
 
     @POST("api/v1/address")
     Observable<Object> addWalletAddress(@Body AddWalletAddressRequest addWalletAddressRequest);
 
+    @GET("api/v1/wallets/{walletIndex}/verbose")
+    Call<ResponseBody> getWalletVerboseByIndex(@Path ("walletIndex") int walletIndex);
+
+    @GET("api/v1/wallets/verbose")
+    Call<WalletsResponse> getWalletsVerbose();
 }

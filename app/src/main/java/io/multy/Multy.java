@@ -3,11 +3,10 @@ package io.multy;
 import android.app.Application;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.provider.Settings;
 
 import com.crashlytics.android.Crashlytics;
 import com.samwolfand.oneprefs.Prefs;
-
-import java.util.UUID;
 
 import io.branch.referral.Branch;
 import io.multy.model.DataManager;
@@ -49,7 +48,7 @@ public class Multy extends Application {
                 final String mnemonic = NativeDataHelper.makeMnemonic();
                 final byte[] seed = NativeDataHelper.makeSeed(mnemonic);
                 final String userId = NativeDataHelper.makeAccountId(seed);
-                final String deviceId = UUID.randomUUID().toString();
+                final String deviceId = Settings.Secure.ANDROID_ID;
 
                 DataManager dataManager = new DataManager(this);
                 dataManager.saveSeed(new ByteSeed(seed));

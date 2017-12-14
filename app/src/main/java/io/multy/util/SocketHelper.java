@@ -9,12 +9,16 @@ package io.multy.util;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.samwolfand.oneprefs.Prefs;
 
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import io.multy.Multy;
+import io.multy.model.DataManager;
+import io.multy.model.entities.ExchangeRequestEntity;
 import io.multy.viewmodels.TransactionViewModel;
 import io.socket.client.Ack;
 import io.socket.client.IO;
@@ -28,13 +32,13 @@ public class SocketHelper {
 
     public static final String TAG = SocketHelper.class.getSimpleName();
 
-    private static final String SOCKET_URL = "http://192.168.0.105:7780/";
+    private static final String SOCKET_URL = "http://192.168.0.111:7780/";
     private static final String HEADER_AUTH = "jwtToken";
     private static final String HEADER_DEVICE_TYPE = "deviceType";
     private static final String HEADER_USER_ID = "userId";
-    private static final String EVENT_RECEIVE = "/newTransaction";
+    private static final String EVENT_RECEIVE = "/transactionData";
     private static final String EVENT_EXCHANGE_REQUEST = "getExchangeReq";
-    private static final String EVENT_EXCHANGE_RESPONSE = "/getExchangeResp";
+    private static final String EVENT_EXCHANGE_RESPONSE = "getExchangeResp";
 
     private Socket socket;
     private boolean connected = false;
@@ -57,15 +61,23 @@ public class SocketHelper {
                 transport.on(Transport.EVENT_REQUEST_HEADERS, args1 -> {
                     @SuppressWarnings("unchecked")
                     Map<String, List<String>> headers = (Map<String, List<String>>) args1[0];
-                    headers.put(HEADER_AUTH, Arrays.asList("SomeVerySecureJWTToken"));
+
+                    DataManager dataManager = new DataManager(Multy.getContext());
+                    headers.put(HEADER_AUTH, Arrays.asList(Prefs.getString(Constants.PREF_AUTH)));
                     headers.put(HEADER_DEVICE_TYPE, Arrays.asList("Android"));
-                    headers.put(HEADER_USER_ID, Arrays.asList("228"));
+                    headers.put(HEADER_USER_ID, Arrays.asList(dataManager.getUserId().getUserId()));
                 });
             });
 
             socket.on(Socket.EVENT_CONNECT_ERROR, args -> SocketHelper.this.log("connection error"))
                     .on(Socket.EVENT_CONNECT_TIMEOUT, args -> log("connection timeout"))
-                    .on(Socket.EVENT_CONNECT, args -> SocketHelper.this.log("Connected"))
+                    .on(Socket.EVENT_CONNECT, new Emitter.Listener() {
+                        @Override
+                        public void call(Object... args) {
+                            SocketHelper.this.log("Connected");
+                            requestRates();
+                        }
+                    })
                     .on(EVENT_RECEIVE, args -> {
 //                            viewModel.transactionData.setValue(gson.fromJson(String.valueOf(args[0]), Transaction.class));
                         SocketHelper.this.log("socket data received " + String.valueOf(args[0]));
@@ -74,7 +86,7 @@ public class SocketHelper {
                     .on(EVENT_EXCHANGE_RESPONSE, new Emitter.Listener() {
                         @Override
                         public void call(Object... args) {
-                            Log.i("wise", String.valueOf(args[0]));
+                            log(String.valueOf(args[0]));
                         }
                     });
 
@@ -84,9 +96,22 @@ public class SocketHelper {
         }
     }
 
-    public void send() {
+    public void requestRates() {
         if (socket != null) {
-            socket.emit(EVENT_EXCHANGE_REQUEST, "my serialized object", (Ack) args -> Log.i("wise", "exchange request delivered"));
+            final ExchangeRequestEntity entity = new ExchangeRequestEntity("USD", "BTC");
+            log("sending " + EVENT_EXCHANGE_REQUEST + " " + gson.toJson(entity));
+            socket.emit("/getExchangeReq", "[\"From\": \"USD\", \"To\": \"BTC\"]", new Ack() {
+                @Override
+                public void call(Object... args) {
+                    log("exchange request delivered ");
+                }
+            });
+            socket.emit("getExchangeReq", "{\"From\": \"USD\", \"To\": \"BTC\"}", new Ack() {
+                @Override
+                public void call(Object... args) {
+                    log("exchange request delivered ");
+                }
+            });
         }
     }
 

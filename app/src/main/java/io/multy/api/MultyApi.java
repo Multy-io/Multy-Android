@@ -23,12 +23,13 @@ import io.multy.model.DataManager;
 import io.multy.model.entities.AuthEntity;
 import io.multy.model.entities.TransactionRequestEntity;
 import io.multy.model.entities.wallet.WalletRealmObject;
-import io.multy.model.responses.AddressBalanceResponse;
 import io.multy.model.requests.AddWalletAddressRequest;
+import io.multy.model.responses.AddressBalanceResponse;
 import io.multy.model.responses.AuthResponse;
 import io.multy.model.responses.ExchangePriceResponse;
 import io.multy.model.responses.OutputsResponse;
 import io.multy.model.responses.UserAssetsResponse;
+import io.multy.model.responses.WalletsResponse;
 import io.multy.util.Constants;
 import io.reactivex.Observable;
 import okhttp3.Authenticator;
@@ -197,6 +198,16 @@ public enum MultyApi implements MultyApiInterface {
         @Override
         public Observable<Object> addWalletAddress(AddWalletAddressRequest addWalletAddressRequest) {
             return api.addWalletAddress(addWalletAddressRequest);
+        }
+
+        @Override
+        public Call<ResponseBody> getWalletVerbose(int walletIndex) {
+            return api.getWalletVerboseByIndex(walletIndex);
+        }
+
+        @Override
+        public Call<WalletsResponse> getWalletsVerbose() {
+            return api.getWalletsVerbose();
         }
     }
 }

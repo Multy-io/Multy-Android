@@ -28,7 +28,6 @@ public class WalletRealmObject extends RealmObject {
     private int addressIndex;
     @SerializedName("walletIndex")
     private int walletIndex;
-
     private String chainCurrency;
     private String fiatCurrency;
 
@@ -50,6 +49,15 @@ public class WalletRealmObject extends RealmObject {
         this.currency = currency;
         this.addressIndex = addressIndex;
         this.walletIndex = walletIndex;
+    }
+
+    public double calculateBalance() {
+        double calculatedBalance = 0;
+        for (WalletAddress walletAddress : addresses) {
+            calculatedBalance += walletAddress.getAmount();
+        }
+
+        return calculatedBalance;
     }
 
     public String getName() {
@@ -112,27 +120,11 @@ public class WalletRealmObject extends RealmObject {
         this.walletIndex = walletIndex;
     }
 
-    public String getChainCurrency() {
-        return chainCurrency;
-    }
-
-    public void setChainCurrency(String chainCurrency) {
-        this.chainCurrency = chainCurrency;
-    }
-
-    public String getFiatCurrency() {
-        return fiatCurrency;
-    }
-
-    public void setFiatCurrency(String fiatCurrency) {
-        this.fiatCurrency = fiatCurrency;
-    }
-
-    public String getBalanceWithCode(CurrencyCode currencyCode){
+    public String getBalanceWithCode(CurrencyCode currencyCode) {
         return String.valueOf(getCurrency()).concat(Constants.SPACE).concat(currencyCode.name());
     }
 
-    public String getBalanceFiatWithCode(Double exchangePrice, CurrencyCode currencyCode){
+    public String getBalanceFiatWithCode(Double exchangePrice, CurrencyCode currencyCode) {
         return String.valueOf(getCurrency() * exchangePrice).concat(Constants.SPACE).concat(currencyCode.name());
     }
 

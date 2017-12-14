@@ -4,12 +4,13 @@ package io.multy.api;
 import android.content.Context;
 
 import io.multy.model.entities.wallet.WalletRealmObject;
-import io.multy.model.responses.AddressBalanceResponse;
 import io.multy.model.requests.AddWalletAddressRequest;
+import io.multy.model.responses.AddressBalanceResponse;
 import io.multy.model.responses.AuthResponse;
 import io.multy.model.responses.ExchangePriceResponse;
 import io.multy.model.responses.OutputsResponse;
 import io.multy.model.responses.UserAssetsResponse;
+import io.multy.model.responses.WalletsResponse;
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -41,4 +42,8 @@ public interface MultyApiInterface {
     Call<ResponseBody> sendRawTransaction(String transactionHex, int currencyId);
 
     Observable<Object> addWalletAddress(AddWalletAddressRequest addWalletAddressRequest);
+
+    Call<ResponseBody> getWalletVerbose(int walletIndex);
+
+    Call<WalletsResponse> getWalletsVerbose();
 }

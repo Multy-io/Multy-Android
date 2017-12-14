@@ -8,17 +8,21 @@ package io.multy.storage;
 
 import android.content.Context;
 
+import io.multy.encryption.MasterKeyGenerator;
 import io.multy.model.entities.ByteSeed;
 import io.multy.model.entities.DeviceId;
 import io.multy.model.entities.ExchangePrice;
 import io.multy.model.entities.Mnemonic;
+import io.multy.model.entities.Output;
 import io.multy.model.entities.RootKey;
 import io.multy.model.entities.Token;
 import io.multy.model.entities.UserId;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.entities.wallet.WalletRealmObject;
+import io.multy.util.MyRealmMigration;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 
 public class DatabaseHelper {
@@ -30,13 +34,15 @@ public class DatabaseHelper {
     }
 
     private RealmConfiguration getRealmConfiguration(Context context) {
-//        if (MasterKeyGenerator.generateKey(context) != null) {
-//            return new RealmConfiguration.Builder()
+        if (MasterKeyGenerator.generateKey(context) != null) {
+            return new RealmConfiguration.Builder()
 //                    .encryptionKey(MasterKeyGenerator.generateKey(context))
-//                    .build();
-//        } else {
-        return new RealmConfiguration.Builder().build();
-//        }
+                    .schemaVersion(1)
+                    .migration(new MyRealmMigration())
+                    .build();
+        } else {
+            return new RealmConfiguration.Builder().build();
+        }
     }
 
     public RealmResults<WalletRealmObject> getWallets() {
@@ -123,5 +129,42 @@ public class DatabaseHelper {
 
     public ExchangePrice getExchangePrice() {
         return realm.where(ExchangePrice.class).findFirst();
+    }
+
+    public void updateWallet(int index, RealmList<WalletAddress> addresses, double balance) {
+        realm.executeTransaction(realm -> {
+            WalletRealmObject savedWallet = getWalletById(index);
+            if (savedWallet != null) {
+                if (!addresses.isManaged()) {
+                    RealmList<WalletAddress> managedAddresses = new RealmList<>();
+                    RealmList<Output> managedOutputs = new RealmList<>();
+                    WalletAddress managedAddress;
+                    Output managedOutput;
+
+                    for (WalletAddress walletAddress : addresses) {
+                        managedAddress = realm.createObject(WalletAddress.class);
+                        managedAddress.setAddress(walletAddress.getAddress());
+                        managedAddress.setAmount(walletAddress.getAmount());
+                        managedAddress.setIndex(walletAddress.getIndex());
+
+                        if (walletAddress.getOutputs() != null && walletAddress.getOutputs().size() > 0 && !walletAddress.isManaged()) {
+                            for (Output output : walletAddress.getOutputs()) {
+                                managedOutput = realm.createObject(Output.class);
+                                managedOutput.setTxId(output.getTxId());
+                                managedOutput.setTxOutAmount(output.getTxOutAmount());
+                                managedOutput.setTxOutScript(output.getTxOutScript());
+                                managedOutput.setTxOutId(output.getTxOutId());
+                            }
+                            managedAddress.setOutputs(managedOutputs);
+                        }
+                    }
+
+                    savedWallet.setAddresses(managedAddresses);
+                }
+                savedWallet.setBalance(balance);
+                realm.insertOrUpdate(savedWallet);
+            }
+        });
+
     }
 }

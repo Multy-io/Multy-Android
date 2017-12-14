@@ -8,7 +8,9 @@ package io.multy.model.entities;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Output {
+import io.realm.RealmObject;
+
+public class Output extends RealmObject{
 
     @SerializedName("txid")
     private String txId;

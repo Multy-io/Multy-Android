@@ -26,6 +26,7 @@ import io.multy.model.responses.UserAssetsResponse;
 import io.multy.storage.DatabaseHelper;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.realm.RealmList;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
@@ -170,5 +171,9 @@ public class DataManager {
         } else {
             return database.getExchangePrice().getExchangePrice();
         }
+    }
+
+    public void updateWallet(int index, RealmList<WalletAddress> addresses, double balance) {
+        database.updateWallet(index, addresses, balance);
     }
 }

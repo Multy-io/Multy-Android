@@ -17,7 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -89,10 +88,10 @@ public class AssetsFragment extends BaseFragment {
 //        viewModel.getWalletsFlowable();
 //        viewModel.getWallets().observe(this, walletRealmObjects -> walletsAdapter.setData(walletRealmObjects));
 
-        List<WalletRealmObject> objects = walletsAdapter.getData();
-        for (int i = 0; i < walletsAdapter.getItemCount(); i++) {
-            updateBalance(i, objects.get(i).getCreationAddress());
-        }
+//        List<WalletRealmObject> objects = walletsAdapter.getData();
+//        for (int i = 0; i < walletsAdapter.getItemCount(); i++) {
+//            updateBalance(i, objects.get(i).getCreationAddress());
+//        }
     }
 
     private void updateBalance(final int position, final String creationAddress) {
