@@ -36,6 +36,7 @@ public class AssetSendViewModel extends BaseViewModel {
     private MutableLiveData<String> receiverAddress = new MutableLiveData<>();
     private MutableLiveData<Double> exchangePrice = new MutableLiveData<>();
     private String donationAmount;
+    private boolean isAmountScanned = false;
 
     public AssetSendViewModel() {
     }
@@ -126,5 +127,13 @@ public class AssetSendViewModel extends BaseViewModel {
 
     public List<WalletRealmObject> getWalletsDB(){
         return dataManager.getWallets();
+    }
+
+    public boolean isAmountScanned() {
+        return isAmountScanned;
+    }
+
+    public void setAmountScanned(boolean amountScanned) {
+        isAmountScanned = amountScanned;
     }
 }

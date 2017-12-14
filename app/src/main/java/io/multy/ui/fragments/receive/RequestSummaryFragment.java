@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,10 +33,12 @@ import butterknife.OnClick;
 import io.multy.R;
 import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.model.entities.wallet.WalletAddress;
+import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.ui.activities.AssetActivity;
 import io.multy.ui.activities.AssetRequestActivity;
 import io.multy.ui.fragments.AddressesFragment;
 import io.multy.ui.fragments.BaseFragment;
+import io.multy.util.Constants;
 import io.multy.util.DeepLinkShareHelper;
 import io.multy.viewmodels.AssetRequestViewModel;
 import timber.log.Timber;
@@ -65,6 +68,8 @@ public class RequestSummaryFragment extends BaseFragment {
     TextView textAddress;
     @BindView(R.id.text_wallet_name)
     TextView textWalletName;
+    @BindView(R.id.container_wallet)
+    ConstraintLayout containerWallet;
 
     @BindInt(R.integer.zero)
     int zero;
@@ -75,6 +80,8 @@ public class RequestSummaryFragment extends BaseFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = ViewModelProviders.of(getActivity()).get(AssetRequestViewModel.class);
+        viewModel.setContext(getActivity());
+        viewModel.getExchangePrice();
         setBaseViewModel(viewModel);
     }
 
@@ -83,6 +90,9 @@ public class RequestSummaryFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_request_summary, container, false);
         ButterKnife.bind(this, view);
+        if (getActivity().getIntent().hasExtra(Constants.EXTRA_WALLET_ID)) {
+            containerWallet.setEnabled(false);
+        }
 
         return view;
     }
@@ -95,8 +105,13 @@ public class RequestSummaryFragment extends BaseFragment {
         textAddress.setText(viewModel.getWalletAddress());
         textWalletName.setText(viewModel.getWallet().getName());
         textBalanceOriginal.setText(viewModel.getWallet().getBalanceWithCode(CurrencyCode.BTC));
+//        Timber.e("wallet %s", viewModel.getWallet().toString());
+//        for (WalletAddress wal : viewModel.getWallet().getAddresses()){
+//            Timber.e("wallet address %s", wal.toString());
+//        }
         if (viewModel.getExchangePriceLive().getValue() != null) {
-            textBalanceCurrency.setText(viewModel.getWallet().getBalanceFiatWithCode(viewModel.getExchangePriceLive().getValue(), CurrencyCode.USD));
+            textBalanceCurrency.setText(viewModel.getWallet()
+                    .getBalanceFiatWithCode(viewModel.getExchangePriceLive().getValue(), CurrencyCode.USD));
         } else {
             textBalanceCurrency.setText(viewModel.getWallet().getBalanceFiatWithCode(viewModel.getExchangePrice(), CurrencyCode.USD));
         }
@@ -105,8 +120,12 @@ public class RequestSummaryFragment extends BaseFragment {
             textRequestAmount.setVisibility(View.INVISIBLE);
             textBalanceCurrencySend.setVisibility(View.VISIBLE);
             textBalanceOriginalSend.setVisibility(View.VISIBLE);
-            textBalanceCurrencySend.setText(String.valueOf(viewModel.getAmount()));
+            textBalanceCurrencySend.setText(String.valueOf(viewModel.getAmount() * viewModel.getExchangePriceLive().getValue()));
+            textBalanceCurrencySend.append(Constants.SPACE);
+            textBalanceCurrencySend.append(CurrencyCode.USD.name());
             textBalanceOriginalSend.setText(String.valueOf(viewModel.getAmount()));
+            textBalanceOriginalSend.append(Constants.SPACE);
+            textBalanceOriginalSend.append(CurrencyCode.BTC.name());
         }
 
         generateQR();
@@ -130,11 +149,11 @@ public class RequestSummaryFragment extends BaseFragment {
 
     @OnClick(R.id.container_summ)
     void onClickRequestAmount(){
-        ((AssetRequestActivity) getActivity()).setFragment(R.string.receive_summ, AmountChooserFragment.newInstance());
+        ((AssetRequestActivity) getActivity()).setFragment(R.string.receive_amount, AmountChooserFragment.newInstance());
     }
 
     @OnClick(R.id.container_wallet)
-    void onClickBalanceUsdAmount(){
+    void onClickWallet(){
         ((AssetRequestActivity) getActivity()).setFragment(R.string.receive, WalletChooserFragment.newInstance());
     }
 

@@ -6,12 +6,15 @@
 
 package io.multy.ui.fragments;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.arch.lifecycle.Observer;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import io.multy.R;
 import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
@@ -70,6 +73,25 @@ public class BaseFragment extends Fragment {
         }
     }
 
+    public void showKeyboard(Activity activity) {
+        InputMethodManager inputMethodManager =
+                (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.showSoftInputFromInputMethod(
+                activity.getWindow().getDecorView().getWindowToken(),
+                InputMethodManager.SHOW_FORCED);
+//        InputMethodManager inputMethodManager = (InputMethodManager)
+//                getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+//        if (inputMethodManager != null) {
+//            inputMethodManager.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+//        }
+    }
+
+    public void hideKeyboard(Activity activity) {
+        if (activity != null && activity.getWindow() != null && activity.getWindow().getDecorView() != null) {
+            InputMethodManager imm = (InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(activity.getWindow().getDecorView().getWindowToken(), 0);
+        }
+    }
 
 
 }

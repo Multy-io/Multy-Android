@@ -36,6 +36,7 @@ import io.multy.ui.adapters.FeeAdapter;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
 import io.multy.viewmodels.AssetSendViewModel;
+import timber.log.Timber;
 
 public class TransactionFeeFragment extends BaseFragment implements FeeAdapter.OnFeeClickListener{
 
@@ -89,7 +90,10 @@ public class TransactionFeeFragment extends BaseFragment implements FeeAdapter.O
             } else {
                 viewModel.setDonationAmount(null);
             }
-            ((AssetSendActivity) getActivity()).setFragment(R.string.send, R.id.container, AmountChooserFragment.newInstance());
+            ((AssetSendActivity) getActivity()).setFragment(R.string.send_amount, R.id.container, AmountChooserFragment.newInstance());
+            if (viewModel.isAmountScanned()) {
+                ((AssetSendActivity) getActivity()).setFragment(R.string.send_summary, R.id.container, SendSummaryFragment.newInstance());
+            }
         } else {
             Toast.makeText(getActivity(), R.string.choose_transaction_speed, Toast.LENGTH_SHORT).show();
         }
@@ -108,6 +112,7 @@ public class TransactionFeeFragment extends BaseFragment implements FeeAdapter.O
             } else {
                 textDonationAllow.setBackground(getResources().getDrawable(R.drawable.shape_squircle_white, null));
                 groupDonation.setVisibility(View.GONE);
+                hideKeyboard(getActivity());
             }
         });
     }

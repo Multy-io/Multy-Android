@@ -53,7 +53,7 @@ public class WalletChooserFragment extends BaseFragment implements WalletAdapter
     @Override
     public void onWalletClick(WalletRealmObject wallet) {
         viewModel.setWallet(wallet);
-        ((AssetSendActivity) getActivity()).setFragment(R.string.transaction_speed, R.id.container, TransactionFeeFragment.newInstance());
+        ((AssetSendActivity) getActivity()).setFragment(R.string.transaction_fee, R.id.container, TransactionFeeFragment.newInstance());
     }
 
     private void setupAdapter(Double exchangePrice){

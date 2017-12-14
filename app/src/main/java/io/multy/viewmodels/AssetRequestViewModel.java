@@ -17,6 +17,7 @@ import com.google.zxing.common.BitMatrix;
 
 import java.util.List;
 
+import io.multy.Multy;
 import io.multy.model.DataManager;
 import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.model.entities.wallet.WalletAddress;
@@ -44,6 +45,10 @@ public class AssetRequestViewModel extends BaseViewModel {
 //    private MutableLiveData<List<WalletRealmObject>> wallets = new MutableLiveData<>();
     private MutableLiveData<Double> exchangePrice = new MutableLiveData<>();
     private MutableLiveData<String> address = new MutableLiveData<>();
+    /**
+     * for subscribing wallet from db in case if flow starts from summary screen (if activity starts from wallet screen.
+     */
+    private MutableLiveData<WalletRealmObject> walletLive = new MutableLiveData<>();
 
     public AssetRequestViewModel() {
     }
@@ -100,6 +105,16 @@ public class AssetRequestViewModel extends BaseViewModel {
 //    public void saveExchangePrice(){
 //        dataManager.saveExchangePrice(15432.0);
 //    }
+
+    public WalletRealmObject getWallet(int index) {
+        this.wallet = dataManager.getWallet(index);
+        walletLive.setValue(wallet);
+        return wallet;
+    }
+
+    public MutableLiveData<WalletRealmObject> getWalletLive() {
+        return walletLive;
+    }
 
     public Bitmap generateQR(Context context) throws WriterException {
         BitMatrix bitMatrix;

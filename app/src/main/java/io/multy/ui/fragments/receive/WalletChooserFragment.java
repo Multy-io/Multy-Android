@@ -63,9 +63,9 @@ public class WalletChooserFragment extends BaseFragment implements WalletAdapter
     public void onWalletClick(WalletRealmObject wallet) {
         viewModel.setWallet(wallet);
         if (getActivity().getSupportFragmentManager().getBackStackEntryCount() == zero) {
-            ((AssetRequestActivity) getActivity()).setFragment(R.string.receive, RequestSummaryFragment.newInstance());
+            ((AssetRequestActivity) getActivity()).setFragment(R.string.receive_summary, RequestSummaryFragment.newInstance());
         } else {
-            getActivity().getSupportFragmentManager().popBackStack();
+            getActivity().onBackPressed();
         }
     }
 

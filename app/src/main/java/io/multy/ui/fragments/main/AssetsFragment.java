@@ -99,13 +99,15 @@ public class AssetsFragment extends BaseFragment {
         MultyApi.INSTANCE.getBalanceByAddress(1, creationAddress).enqueue(new Callback<AddressBalanceResponse>() {
             @Override
             public void onResponse(Call<AddressBalanceResponse> call, Response<AddressBalanceResponse> response) {
-                new DataManager(Multy.getContext()).saveWalletAmount(walletsAdapter.getItem(position), Double.parseDouble(response.body().getBalance()));
-                walletsAdapter.setData(viewModel.getWalletsFromDB());
+                if (response.body() != null) {
+                    new DataManager(Multy.getContext()).saveWalletAmount(walletsAdapter.getItem(position), Double.parseDouble(response.body().getBalance()));
+                    walletsAdapter.setData(viewModel.getWalletsFromDB());
+                }
             }
 
             @Override
             public void onFailure(Call<AddressBalanceResponse> call, Throwable t) {
-
+                t.printStackTrace();
             }
         });
     }

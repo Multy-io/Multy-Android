@@ -92,7 +92,7 @@
     <string name="send_to">Send to</string>
     <string name="send_from">Send from</string>
     <string name="send_formatted" formatted="false">Send %s</string>
-    <string name="transaction_speed">Transaction speed</string>
+    <string name="transaction_fee">Transaction fee</string>
     <string name="ready_to_send">Ready to send</string>
     <string name="donation_default">0.0001</string>
     <string name="donation_format_pattern">##.##</string>
@@ -147,6 +147,11 @@
     <string name="not_implemented">Sorry, this feature is not implemented</string>
     <string name="addresses_empty">There are no addresses</string>
     <string name="receive_summ">Receive Summ</string>
+    <string name="receive_amount">Receive Amount</string>
+    <string name="send_amount">Send Amount</string>
     <string name="input_symbols">abcdefghijklmnopqrstuvwxyz1234567890</string>
     <string name="point">.</string>
+    <string name="receive_summary">Receive summary</string>
+    <string name="send_summary">Send summary</string>
+    <string name="done">Done</string>
 </resources>

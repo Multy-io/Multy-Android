@@ -97,8 +97,14 @@ public class AmountChooserFragment extends BaseFragment {
         setupSwitcher();
         setupInputOriginal();
         setupInputCurrency();
-        setEmptyTotalWithFee();
+        setAmountTotalWithFee();
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        showKeyboard(getActivity());
     }
 
     @OnClick(R.id.button_next)
@@ -165,6 +171,10 @@ public class AmountChooserFragment extends BaseFragment {
     }
 
     private void setupInputOriginal() {
+        if (viewModel.getAmount() != zero) {
+            inputOriginal.setText(String.valueOf(viewModel.getAmount()));
+        }
+
         inputOriginal.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
                 animateOriginalBalance();
@@ -211,6 +221,10 @@ public class AmountChooserFragment extends BaseFragment {
     }
 
     private void setupInputCurrency() {
+        if (viewModel.getAmount() != zero) {
+            inputCurrency.setText(String.valueOf(viewModel.getAmount() * viewModel.getExchangePrice().getValue()));
+        }
+
         inputCurrency.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
                 animateCurrencyBalance();
@@ -341,6 +355,29 @@ public class AmountChooserFragment extends BaseFragment {
             } else {
                 textTotal.setText(new DecimalFormat(formatPatternBitcoin)
                         .format(viewModel.getFee().getAmount()
+                                + (viewModel.getDonationAmount() == null ? zero : Double.parseDouble(viewModel.getDonationAmount()))));
+                textTotal.append(Constants.SPACE);
+                textTotal.append(CurrencyCode.BTC.name());
+            }
+        } else {
+            textTotal.getEditableText().clear();
+        }
+    }
+
+    private void setAmountTotalWithFee() {
+        if (switcher.isChecked()) {
+            if (isAmountSwapped) {
+                textTotal.setText(new DecimalFormat(formatPatternBitcoin)
+                        .format((viewModel.getFee().getAmount()
+                                + viewModel.getAmount()
+                                + (viewModel.getDonationAmount() == null ? zero : Double.parseDouble(viewModel.getDonationAmount())))
+                                * viewModel.getExchangePrice().getValue()));
+                textTotal.append(Constants.SPACE);
+                textTotal.append(CurrencyCode.USD.name());
+            } else {
+                textTotal.setText(new DecimalFormat(formatPatternBitcoin)
+                        .format(viewModel.getFee().getAmount()
+                                + viewModel.getAmount()
                                 + (viewModel.getDonationAmount() == null ? zero : Double.parseDouble(viewModel.getDonationAmount()))));
                 textTotal.append(Constants.SPACE);
                 textTotal.append(CurrencyCode.BTC.name());

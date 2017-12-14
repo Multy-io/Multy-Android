@@ -14,14 +14,22 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 
+import butterknife.BindInt;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.ui.fragments.asset.AssetInfoFragment;
+import io.multy.util.Constants;
 import io.multy.viewmodels.AssetsViewModel;
+import io.multy.viewmodels.WalletViewModel;
 
 public class AssetActivity extends BaseActivity {
+
+    @BindInt(R.integer.one)
+    int one;
+    @BindInt(R.integer.one_negative)
+    int oneNegative;
 
     private boolean isFirstFragmentCreation;
 
@@ -45,23 +53,35 @@ public class AssetActivity extends BaseActivity {
 
     @Override
     protected void onDestroy() {
-        ViewModelProviders.of(this).get(AssetsViewModel.class).destroy();
+        ViewModelProviders.of(this).get(WalletViewModel.class).destroy();
         super.onDestroy();
     }
 
     @OnClick(R.id.send)
     void onClickSend() {
-        startActivity(new Intent(this, AssetSendActivity.class));
+        WalletRealmObject wallet = ViewModelProviders.of(this)
+                .get(WalletViewModel.class).getWallet(getIntent()
+                .getIntExtra(Constants.EXTRA_WALLET_ID, oneNegative));
+
+        String address;
+        if (wallet.getAddresses().size() > one) {
+            address = wallet.getAddresses().get(wallet.getAddresses().size() - one).getAddress();
+        } else {
+            address = wallet.getCreationAddress();
+        }
+
+        startActivity(new Intent(this, AssetSendActivity.class).putExtra(Constants.EXTRA_ADDRESS, address));
     }
 
     @OnClick(R.id.receive)
     void onClickReceive() {
-        startActivity(new Intent(this, AssetRequestActivity.class));
+        startActivity(new Intent(this, AssetRequestActivity.class)
+                .putExtra(Constants.EXTRA_WALLET_ID, getIntent().getIntExtra(Constants.EXTRA_WALLET_ID, oneNegative)));
     }
 
     @OnClick(R.id.exchange)
     void onClickExchange() {
-        startActivity(new Intent(this, AssetSendActivity.class));
+//        startActivity(new Intent(this, AssetSendActivity.class));
     }
 
     public WalletRealmObject getWalletRealmObject() {

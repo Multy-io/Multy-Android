@@ -69,7 +69,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activities.AssetSendActivity"
-            android:label="@string/send"
+            android:label="@string/send_to"
             android:screenOrientation="portrait"
             android:theme="@style/Send" />
         <activity

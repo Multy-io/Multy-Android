@@ -84,13 +84,20 @@ public class AmountChooserFragment extends BaseFragment {
 
         if (viewModel.getAmount() != zero) {
             inputOriginal.setText(String.valueOf(viewModel.getAmount()));
+            inputCurrency.setText(String.valueOf(viewModel.getAmount() * viewModel.getExchangePriceLive().getValue()));
         }
         groupSend.setVisibility(View.GONE);
         buttonNext.setGravity(Gravity.CENTER);
-        buttonNext.setText(R.string.send);
+        buttonNext.setText(R.string.done);
         setupInputOriginal();
         setupInputCurrency();
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        showKeyboard(getActivity());
     }
 
     @OnClick(R.id.image_swap)
@@ -107,7 +114,7 @@ public class AmountChooserFragment extends BaseFragment {
         if (!TextUtils.isEmpty(inputOriginal.getText())) {
             viewModel.setAmount(Double.valueOf(inputOriginal.getText().toString()));
         }
-        getFragmentManager().popBackStack();
+        getActivity().onBackPressed();
     }
 
     private void setupInputOriginal() {

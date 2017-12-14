@@ -26,6 +26,9 @@ import io.multy.model.responses.UserAssetsResponse;
 import io.multy.storage.DatabaseHelper;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -59,7 +62,10 @@ public class DataManager {
     }
 
     public Observable<ExchangePriceResponse> getExchangePrice(String originalCurrency, String currency) {
-        return MultyApi.INSTANCE.getExchangePrice(originalCurrency, currency);
+        return MultyApi.INSTANCE.getExchangePrice(originalCurrency, currency)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .doOnNext(exchangePriceResponse -> database.saveExchangePrice(new ExchangePrice(exchangePriceResponse.getUSD())));
     }
 
     public Observable<UserAssetsResponse> getUserAssets(){
@@ -159,6 +165,10 @@ public class DataManager {
     }
 
     public Double getExchangePriceDB() {
-        return database.getExchangePrice().getExchangePrice();
+        if (database.getExchangePrice() == null) {
+            return 1600.0;
+        } else {
+            return database.getExchangePrice().getExchangePrice();
+        }
     }
 }
