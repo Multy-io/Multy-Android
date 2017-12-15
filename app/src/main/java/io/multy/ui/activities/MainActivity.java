@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
@@ -31,11 +32,17 @@ import android.widget.TextView;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.scottyab.rootbeer.RootBeer;
 
+import org.spongycastle.jcajce.provider.symmetric.SEED;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.branch.referral.Branch;
 import io.multy.R;
+import io.multy.model.DataManager;
+import io.multy.model.entities.ByteSeed;
+import io.multy.model.entities.DeviceId;
+import io.multy.model.entities.UserId;
 import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
 import io.multy.ui.fragments.main.AssetsFragment;
 import io.multy.ui.fragments.main.ContactsFragment;
@@ -43,6 +50,8 @@ import io.multy.ui.fragments.main.FastOperationsFragment;
 import io.multy.ui.fragments.main.FeedFragment;
 import io.multy.ui.fragments.main.SettingsFragment;
 import io.multy.util.Constants;
+import io.multy.util.JniException;
+import io.multy.util.NativeDataHelper;
 import io.multy.util.SocketHelper;
 import timber.log.Timber;
 
@@ -66,6 +75,8 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         setFragment(R.id.container_frame, AssetsFragment.newInstance());
 
         socketHelper = new SocketHelper();
+
+//        startActivity(new Intent(this, SeedActivity.class));
 
 //        preventRootIfDetected();
     }

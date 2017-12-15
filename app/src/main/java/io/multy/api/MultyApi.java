@@ -14,6 +14,7 @@ import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.samwolfand.oneprefs.Prefs;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
@@ -208,6 +209,11 @@ public enum MultyApi implements MultyApiInterface {
         @Override
         public Call<WalletsResponse> getWalletsVerbose() {
             return api.getWalletsVerbose();
+        }
+
+        @Override
+        public Observable<List<WalletRealmObject>> restore() {
+            return api.restore();
         }
     }
 }

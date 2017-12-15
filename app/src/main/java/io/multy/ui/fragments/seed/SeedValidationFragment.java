@@ -26,6 +26,9 @@ import butterknife.OnEditorAction;
 import io.multy.R;
 import io.multy.ui.fragments.BaseSeedFragment;
 import io.multy.util.BrickView;
+import io.multy.util.Constants;
+import io.multy.util.JniException;
+import io.multy.util.NativeDataHelper;
 import io.multy.viewmodels.SeedViewModel;
 
 public class SeedValidationFragment extends BaseSeedFragment {
@@ -48,6 +51,13 @@ public class SeedValidationFragment extends BaseSeedFragment {
     private int maxCount = 0;
     private Handler handler = new Handler();
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        seedModel = ViewModelProviders.of(getActivity()).get(SeedViewModel.class);
+        setBaseViewModel(seedModel);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -55,7 +65,10 @@ public class SeedValidationFragment extends BaseSeedFragment {
         ButterKnife.bind(this, convertView);
 
         seedModel = ViewModelProviders.of(getActivity()).get(SeedViewModel.class);
-        maxCount = seedModel.phrase.getValue().size() * 3;
+        if (!getActivity().getIntent().hasCategory(Constants.EXTRA_RESTORE)) {
+            maxCount = seedModel.phrase.getValue().size() * 3;
+        }
+
         initBricks(recyclerView);
         adapter.enableGreenMode();
         buttonNext.setText(R.string.next_word);
@@ -63,6 +76,14 @@ public class SeedValidationFragment extends BaseSeedFragment {
         recyclerView.post(() -> redrawOne(true));
         inputWord.setImeOptions(EditorInfo.IME_ACTION_NEXT);
         return convertView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (getActivity().getIntent().hasCategory(Constants.EXTRA_RESTORE)) {
+            maxCount = 15;
+        }
     }
 
     private void refreshCounter() {
@@ -94,9 +115,13 @@ public class SeedValidationFragment extends BaseSeedFragment {
         refreshCounter();
         buttonNext.setEnabled(false);
         if (count == maxCount) {
-            boolean result = phrase.toString().equals(TextUtils.join(" ", seedModel.phrase.getValue()).replace("\n", " "));
-            seedModel.failed.setValue(!result);
-            showNext(new SeedResultFragment());
+            if (getActivity().getIntent().hasCategory(Constants.EXTRA_RESTORE)) {
+                seedModel.restore(phrase.toString(), getActivity(), () -> showNext(new SeedResultFragment()));
+            } else {
+                boolean result = phrase.toString().equals(TextUtils.join(" ", seedModel.phrase.getValue()).replace("\n", " "));
+                seedModel.failed.setValue(!result);
+                showNext(new SeedResultFragment());
+            }
         } else if (count != maxCount - 1) {
             redrawOne(true);
         }
@@ -104,4 +129,5 @@ public class SeedValidationFragment extends BaseSeedFragment {
         count++;
         handler.postDelayed(() -> buttonNext.setEnabled(true), BrickView.ANIMATION_DURATION);
     }
+
 }

@@ -25,9 +25,8 @@
 
     <TextView
         android:id="@+id/send"
-        android:layout_width="54dp"
+        android:layout_width="@dimen/dp0"
         android:layout_height="56dp"
-        android:layout_marginStart="31dp"
         android:background="?attr/selectableItemBackground"
         android:drawableTint="@color/blue_light"
         android:drawableTop="@drawable/ic_send"
@@ -36,11 +35,12 @@
         android:text="Send"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/receive"/>
 
     <TextView
         android:id="@+id/receive"
-        android:layout_width="54dp"
+        android:layout_width="@dimen/dp0"
         android:layout_height="56dp"
         android:background="?attr/selectableItemBackground"
         android:drawableTint="@color/blue_light"
@@ -50,14 +50,13 @@
         android:text="Receive"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintEnd_toStartOf="@+id/exchange"
+        app:layout_constraintStart_toEndOf="@+id/send" />
 
     <TextView
         android:id="@+id/exchange"
-        android:layout_width="54dp"
+        android:layout_width="@dimen/dp0"
         android:layout_height="56dp"
-        android:layout_marginEnd="31dp"
         android:background="?attr/selectableItemBackground"
         android:drawableTint="@color/blue_light"
         android:drawableTop="@drawable/ic_exchange"
@@ -66,6 +65,7 @@
         android:text="Exchange"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/receive"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <FrameLayout

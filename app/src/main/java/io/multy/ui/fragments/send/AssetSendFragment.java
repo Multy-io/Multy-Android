@@ -25,6 +25,7 @@ import butterknife.OnClick;
 import io.multy.R;
 import io.multy.ui.activities.AssetSendActivity;
 import io.multy.ui.fragments.BaseFragment;
+import io.multy.util.Constants;
 import io.multy.viewmodels.AssetSendViewModel;
 
 public class AssetSendFragment extends BaseFragment {
@@ -74,6 +75,10 @@ public class AssetSendFragment extends BaseFragment {
         viewModel.setReceiverAddress(inputAddress.getText().toString());
         viewModel.thoseAddress.setValue(inputAddress.getText().toString());
         ((AssetSendActivity) getActivity()).setFragment(R.string.send_from, R.id.container, WalletChooserFragment.newInstance());
+        if (getActivity().getIntent().hasCategory(Constants.EXTRA_SENDER_ADDRESS)) {
+            viewModel.getWalletFromDB(getActivity().getIntent().getIntExtra(Constants.EXTRA_WALLET_ID, 0));
+            ((AssetSendActivity) getActivity()).setFragment(R.string.transaction_fee, R.id.container, TransactionFeeFragment.newInstance());
+        }
     }
 
     private void setupInputAddress(){

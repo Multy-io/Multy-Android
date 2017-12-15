@@ -29,6 +29,7 @@ import io.multy.ui.fragments.AddressesFragment;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
 import io.multy.viewmodels.WalletViewModel;
+import timber.log.Timber;
 
 public class AssetInfoFragment extends BaseFragment {
 
@@ -44,6 +45,8 @@ public class AssetInfoFragment extends BaseFragment {
     TextView textBalanceOriginal;
     @BindView(R.id.text_amount)
     TextView textBalanceFiat;
+    @BindView(R.id.text_wallet_name)
+    TextView textWalletName;
     @BindView(R.id.text_address)
     TextView textAddress;
 
@@ -96,6 +99,7 @@ public class AssetInfoFragment extends BaseFragment {
     }
 
     private void setupWalletInfo(WalletRealmObject wallet) {
+        textWalletName.setText(wallet.getName());
         textAddress.setText(wallet.getCreationAddress()); // TODO wallet.getAddresses();
         textBalanceOriginal.setText(String.valueOf(wallet.getCurrency()));
         viewModel.getExchangePrice().observe(AssetInfoFragment.this, exchangePrice -> textBalanceFiat.setText(String.valueOf(wallet.getCurrency() * exchangePrice)));
@@ -112,6 +116,11 @@ public class AssetInfoFragment extends BaseFragment {
     }
 
     private void subscribeViewModel() {
+
+    }
+
+    @OnClick(R.id.options)
+    void onClickOptions() {
 
     }
 

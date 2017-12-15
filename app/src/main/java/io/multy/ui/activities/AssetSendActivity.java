@@ -84,7 +84,7 @@ public class AssetSendActivity extends BaseActivity {
             List<Fragment> backStackFragments = getSupportFragmentManager().getFragments();
             for (Fragment backStackFragment : backStackFragments) {
                 if (backStackFragment instanceof SendSummaryFragment) {
-                    toolbar.setTitle(R.string.send);
+                    toolbar.setTitle(R.string.send_amount);
                 } else if (backStackFragment instanceof AmountChooserFragment) {
                     toolbar.setTitle(R.string.transaction_fee);
                 } else if (backStackFragment instanceof TransactionFeeFragment) {

@@ -7,13 +7,19 @@
 package io.multy.viewmodels;
 
 import android.arch.lifecycle.MutableLiveData;
+import android.content.Context;
 import android.text.TextUtils;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import io.multy.Multy;
 import io.multy.model.DataManager;
+import io.multy.util.FirstLaunchHelper;
+import io.multy.util.JniException;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
@@ -44,6 +50,30 @@ public class SeedViewModel extends BaseViewModel {
         binarySeed.setValue(seed);
         failed.setValue(false);
         this.phrase.setValue(phraseToShow);
+    }
+
+    public void restore(String phrase, Context context, Runnable callback){
+        try {
+            FirstLaunchHelper.setCredentials(phrase, context);
+
+            new DataManager(context).restore()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(walletList -> {
+                        failed.setValue(false);
+                        callback.run();
+                    }, throwable -> {
+                        failed.setValue(true);
+                        Toast.makeText(context, throwable.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                        throwable.printStackTrace();
+                        callback.run();
+                    });
+
+        } catch (JniException e) {
+            failed.setValue(true);
+            callback.run();
+            Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 
 }

@@ -3,6 +3,8 @@ package io.multy.api;
 
 import android.content.Context;
 
+import java.util.List;
+
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.model.requests.AddWalletAddressRequest;
 import io.multy.model.responses.AddressBalanceResponse;
@@ -46,4 +48,6 @@ public interface MultyApiInterface {
     Call<ResponseBody> getWalletVerbose(int walletIndex);
 
     Call<WalletsResponse> getWalletsVerbose();
+
+    Observable<List<WalletRealmObject>> restore();
 }

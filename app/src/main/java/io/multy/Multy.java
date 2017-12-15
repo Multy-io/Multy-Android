@@ -43,27 +43,6 @@ public class Multy extends Application {
                 .setDefaultStringValue("")
                 .build();
 
-        if (Prefs.getBoolean(Constants.PREF_FIRST_SUCCESSFUL_START, true)) {
-            try {
-                final String mnemonic = NativeDataHelper.makeMnemonic();
-                final byte[] seed = NativeDataHelper.makeSeed(mnemonic);
-                final String userId = NativeDataHelper.makeAccountId(seed);
-                final String deviceId = Settings.Secure.ANDROID_ID;
-
-                DataManager dataManager = new DataManager(this);
-                dataManager.saveSeed(new ByteSeed(seed));
-                dataManager.saveUserId(new UserId(userId));
-                dataManager.setMnemonic(new Mnemonic(mnemonic));
-                dataManager.setDeviceId(new DeviceId(deviceId));
-
-                Prefs.putBoolean(Constants.PREF_FIRST_SUCCESSFUL_START, false);
-            } catch (JniException e) {
-                e.printStackTrace();
-                Crashlytics.logException(e);
-                //TODO show CRITICAL EXCEPTION HERE. Can the app work without seed?
-            }
-        }
-
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
                 .setDefaultFontPath("montseratt_regular.ttf")
                 .setFontAttrId(R.attr.fontPath)

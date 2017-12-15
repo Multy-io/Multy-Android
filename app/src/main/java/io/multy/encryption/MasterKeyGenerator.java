@@ -16,6 +16,7 @@ import org.spongycastle.jcajce.provider.digest.SHA3;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 /**
  * Created by Ihar Paliashchuk on 10.11.2017.
@@ -50,7 +51,10 @@ public class MasterKeyGenerator {
             outputStream.write(getInstanceID(context));
             outputStream.write(getUserSecret());
             outputStream.write(getSecureID(context));
-            return calculateSHA3256(outputStream.toByteArray());
+            return ByteBuffer.allocate(calculateSHA3256(outputStream.toByteArray()).length * 2)
+                    .put(calculateSHA3256(outputStream.toByteArray()))
+                    .put(calculateSHA3256(outputStream.toByteArray()))
+                    .array();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

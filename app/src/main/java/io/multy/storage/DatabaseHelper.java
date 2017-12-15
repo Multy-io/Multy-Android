@@ -8,6 +8,9 @@ package io.multy.storage;
 
 import android.content.Context;
 
+import java.nio.ByteBuffer;
+import java.util.List;
+
 import io.multy.encryption.MasterKeyGenerator;
 import io.multy.model.entities.ByteSeed;
 import io.multy.model.entities.DeviceId;
@@ -24,19 +27,43 @@ import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmList;
 import io.realm.RealmResults;
+import io.realm.exceptions.RealmFileException;
+import timber.log.Timber;
 
 public class DatabaseHelper {
 
     private Realm realm;
 
     public DatabaseHelper(Context context) {
-        realm = Realm.getDefaultInstance();
+        try {
+            realm = Realm.getInstance(getRealmConfiguration(context));
+        } catch (Exception exception) {
+            // todo check access error
+            exception.printStackTrace();
+            try {
+            realm = Realm.getDefaultInstance();
+            realm.executeTransaction(realm -> realm.deleteAll());
+            realm = Realm.getInstance(getRealmConfiguration(context));
+            } catch (Exception e) {
+                exception.printStackTrace();
+                try {
+                realm = Realm.getDefaultInstance();
+                } catch (Exception e1) {
+                    realm = Realm.getDefaultInstance();
+                    e1.printStackTrace();
+                }
+                e.printStackTrace();
+            }
+        }
+//        } catch (IllegalArgumentException exception) {
+//        } catch (IllegalStateException exception) {
+
     }
 
-    private RealmConfiguration getRealmConfiguration(Context context) {
+    private RealmConfiguration getRealmConfiguration(Context context) throws Exception {
         if (MasterKeyGenerator.generateKey(context) != null) {
             return new RealmConfiguration.Builder()
-//                    .encryptionKey(MasterKeyGenerator.generateKey(context))
+                    .encryptionKey(MasterKeyGenerator.generateKey(context))
                     .schemaVersion(2)
                     .migration(new MyRealmMigration())
                     .build();
@@ -51,6 +78,10 @@ public class DatabaseHelper {
 
     public void saveWallet(WalletRealmObject wallet) {
         realm.executeTransaction(realm -> realm.insertOrUpdate(wallet));
+    }
+
+    public void saveWallets(List<WalletRealmObject> wallets) {
+        realm.executeTransaction(realm -> realm.insertOrUpdate(wallets));
     }
 
     public void saveAmount(WalletRealmObject wallet, double amount) {
@@ -167,5 +198,9 @@ public class DatabaseHelper {
             }
         });
 
+    }
+
+    public void clear() {
+        realm.executeTransaction(realm -> realm.deleteAll());
     }
 }

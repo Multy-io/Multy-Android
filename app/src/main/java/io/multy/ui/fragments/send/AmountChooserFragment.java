@@ -120,7 +120,7 @@ public class AmountChooserFragment extends BaseFragment {
 //                Toast.makeText(getActivity(), R.string.error_balance, Toast.LENGTH_LONG).show();
 //            } else {
                 viewModel.setAmount(Double.valueOf(inputOriginal.getText().toString()));
-                ((AssetSendActivity) getActivity()).setFragment(R.string.ready_to_send, R.id.container, SendSummaryFragment.newInstance());
+                ((AssetSendActivity) getActivity()).setFragment(R.string.send_summary, R.id.container, SendSummaryFragment.newInstance());
 //            }
 //        } else {
 //            Toast.makeText(getActivity(), R.string.choose_amount, Toast.LENGTH_SHORT).show();

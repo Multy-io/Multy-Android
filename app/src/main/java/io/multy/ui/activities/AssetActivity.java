@@ -70,7 +70,9 @@ public class AssetActivity extends BaseActivity {
             address = wallet.getCreationAddress();
         }
 
-        startActivity(new Intent(this, AssetSendActivity.class).putExtra(Constants.EXTRA_ADDRESS, address));
+        startActivity(new Intent(this, AssetSendActivity.class)
+                .addCategory(Constants.EXTRA_SENDER_ADDRESS)
+                .putExtra(Constants.EXTRA_WALLET_ID, getIntent().getIntExtra(Constants.EXTRA_WALLET_ID, oneNegative)));
     }
 
     @OnClick(R.id.receive)

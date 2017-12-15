@@ -7,6 +7,8 @@
 package io.multy.api;
 
 
+import java.util.List;
+
 import io.multy.model.entities.AuthEntity;
 import io.multy.model.entities.TransactionRequestEntity;
 import io.multy.model.entities.wallet.WalletRealmObject;
@@ -76,4 +78,7 @@ public interface ApiServiceInterface {
 
     @GET("api/v1/wallets/verbose")
     Call<WalletsResponse> getWalletsVerbose();
+
+    @GET("api/v1/wallets/restore")
+    Observable<List<WalletRealmObject>> restore();
 }

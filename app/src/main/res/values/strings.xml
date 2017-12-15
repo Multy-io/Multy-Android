@@ -154,6 +154,16 @@
     <string name="receive_summary">Receive summary</string>
     <string name="send_summary">Send summary</string>
     <string name="done">Done</string>
+
+    <string name="create_first_wallet">Create First Wallet</string>
+    <string name="restore_multy">Restore Multy</string>
+    <string name="restore_wallet_description">
+        You do not have any wallet yet. You can <b>create new</b>
+        one or <b>import</b> any your existing wallet into Multy application.
+    </string>
+
+
     <string name="pending">Pending</string>
     <string name="outputs">Outputs</string>
+
 </resources>

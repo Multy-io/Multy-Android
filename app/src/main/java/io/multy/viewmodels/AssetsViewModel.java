@@ -9,10 +9,13 @@ package io.multy.viewmodels;
 import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
 
+import com.samwolfand.oneprefs.Prefs;
+
 import java.util.List;
 
 import io.multy.model.DataManager;
 import io.multy.model.entities.wallet.WalletRealmObject;
+import io.multy.util.Constants;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
@@ -41,5 +44,9 @@ public class AssetsViewModel extends BaseViewModel {
 
     public MutableLiveData<List<WalletRealmObject>> getWallets(){
         return wallets;
+    }
+
+    public boolean isFirstStart(){
+        return Prefs.getBoolean(Constants.PREF_IS_FIRST_START, true);
     }
 }
