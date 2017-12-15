@@ -17,8 +17,6 @@ import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.util.Constants;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -35,6 +33,7 @@ public class AssetSendViewModel extends BaseViewModel {
     private boolean isPayForCommission;
     private MutableLiveData<String> receiverAddress = new MutableLiveData<>();
     private MutableLiveData<Double> exchangePrice = new MutableLiveData<>();
+    public MutableLiveData<String> thoseAddress = new MutableLiveData<>();
     private String donationAmount;
     private boolean isAmountScanned = false;
 

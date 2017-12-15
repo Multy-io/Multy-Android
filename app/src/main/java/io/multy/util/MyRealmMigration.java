@@ -19,8 +19,12 @@ public class MyRealmMigration implements RealmMigration {
 
         Log.i("wise", "oldVersion " + oldVersion);
         if (oldVersion == 0) {
-            schema.create("ExchangePrice");
-            schema.get("ExchangePrice").addField("exchangePrice", Double.class);
+            schema.get("WalletRealmObject").addField("pendingBalance", Double.class);
+            oldVersion++;
+        }
+
+        if (oldVersion == 2) {
+            schema.get("WalletRealmObject").addField("pendingBalance", Double.class);
             oldVersion++;
         }
     }

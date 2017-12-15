@@ -149,9 +149,11 @@
     <string name="receive_summ">Receive Summ</string>
     <string name="receive_amount">Receive Amount</string>
     <string name="send_amount">Send Amount</string>
-    <string name="input_symbols">abcdefghijklmnopqrstuvwxyz1234567890</string>
+    <string name="input_symbols">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890</string>
     <string name="point">.</string>
     <string name="receive_summary">Receive summary</string>
     <string name="send_summary">Send summary</string>
     <string name="done">Done</string>
+    <string name="pending">Pending</string>
+    <string name="outputs">Outputs</string>
 </resources>

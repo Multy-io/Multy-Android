@@ -27,6 +27,7 @@ import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.model.responses.OutputsResponse;
 import io.multy.ui.activities.MainActivity;
 import io.multy.ui.fragments.BaseFragment;
+import io.multy.util.CryptoFormatUtils;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
 import io.multy.viewmodels.AssetSendViewModel;
@@ -77,7 +78,7 @@ public class SendSummaryFragment extends BaseFragment {
 
 
         DataManager dataManager = new DataManager(getActivity());
-        int amount = (int) viewModel.getAmount();
+        double amount = viewModel.getAmount();
         String addressTo = viewModel.getReceiverAddress().getValue();
         String addressFrom = viewModel.getWallet().getCreationAddress();
 
@@ -131,9 +132,11 @@ public class SendSummaryFragment extends BaseFragment {
     private void setInfo() {
         textReceiverBalanceOriginal.setText(String.valueOf(viewModel.getAmount()));
         textReceiverBalanceCurrency.setText(String.valueOf(viewModel.getAmount()));
-        textReceiverAddress.setText(viewModel.getReceiverAddress().getValue());
+//        textReceiverAddress.setText(viewModel.getReceiverAddress().getValue());
+        textReceiverAddress.setText(viewModel.thoseAddress.getValue());
         textWalletName.setText(viewModel.getWallet().getName());
-        textSenderBalanceOriginal.setText(viewModel.getWallet().getBalanceWithCode(CurrencyCode.BTC));
+        double balance = viewModel.getWallet().getBalance();
+        textSenderBalanceOriginal.setText(balance != 0 ? CryptoFormatUtils.satoshiToBtc(balance) : String.valueOf(balance));
         textSenderBalanceCurrency.setText(viewModel.getWallet().getBalanceFiatWithCode(viewModel.getExchangePrice().getValue(), CurrencyCode.USD));
         textFeeSpeed.setText(viewModel.getFee().getTime());
         textFeeAmount.setText(String.valueOf(viewModel.getFee().getCost()));

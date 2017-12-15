@@ -38,11 +38,29 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <View
+            <ImageView
                 android:id="@+id/dummy"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="48dp"
+                android:src="@drawable/logo_blue"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/text_main" />
+
+            <TextView
+                android:id="@+id/logo_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center_horizontal"
+                android:letterSpacing="0.12"
+                android:lineSpacingExtra="4sp"
+                android:textSize="12sp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/dummy"
+                android:text="@string/multy_name_long" />
 
             <View
                 android:id="@+id/divider_gray"
@@ -52,7 +70,7 @@
                 android:background="#7887a1c5"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/dummy" />
+                app:layout_constraintTop_toBottomOf="@+id/logo_text" />
 
             <TextView
                 android:id="@+id/text_wallets"
@@ -78,8 +96,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:layout_marginTop="6dp"
-                android:focusableInTouchMode="false"
                 android:background="@color/background_main"
+                android:focusableInTouchMode="false"
                 android:focusedByDefault="false"
                 android:touchscreenBlocksFocus="false"
                 android:visibility="visible"

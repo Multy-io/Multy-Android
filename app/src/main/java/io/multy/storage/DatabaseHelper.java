@@ -37,7 +37,7 @@ public class DatabaseHelper {
         if (MasterKeyGenerator.generateKey(context) != null) {
             return new RealmConfiguration.Builder()
 //                    .encryptionKey(MasterKeyGenerator.generateKey(context))
-                    .schemaVersion(1)
+                    .schemaVersion(2)
                     .migration(new MyRealmMigration())
                     .build();
         } else {
@@ -131,7 +131,7 @@ public class DatabaseHelper {
         return realm.where(ExchangePrice.class).findFirst();
     }
 
-    public void updateWallet(int index, RealmList<WalletAddress> addresses, double balance) {
+    public void updateWallet(int index, RealmList<WalletAddress> addresses, double balance, double pendingBalance) {
         realm.executeTransaction(realm -> {
             WalletRealmObject savedWallet = getWalletById(index);
             if (savedWallet != null) {
@@ -162,6 +162,7 @@ public class DatabaseHelper {
                     savedWallet.setAddresses(managedAddresses);
                 }
                 savedWallet.setBalance(balance);
+                savedWallet.setPendingBalance(pendingBalance);
                 realm.insertOrUpdate(savedWallet);
             }
         });

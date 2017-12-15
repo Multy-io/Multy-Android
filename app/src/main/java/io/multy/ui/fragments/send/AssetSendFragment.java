@@ -48,7 +48,7 @@ public class AssetSendFragment extends BaseFragment {
         viewModel = ViewModelProviders.of(getActivity()).get(AssetSendViewModel.class);
         viewModel.setContext(getActivity());
         viewModel.getApiExchangePrice();
-        viewModel.getReceiverAddress().observe(this, s -> inputAddress.setText(s));
+        viewModel.getReceiverAddress().observe(getActivity(), s -> inputAddress.setText(s));
         viewModel.getUserAssetsApi();
         setupInputAddress();
         return view;
@@ -72,6 +72,7 @@ public class AssetSendFragment extends BaseFragment {
     @OnClick(R.id.button_next)
     void onClickNext(){
         viewModel.setReceiverAddress(inputAddress.getText().toString());
+        viewModel.thoseAddress.setValue(inputAddress.getText().toString());
         ((AssetSendActivity) getActivity()).setFragment(R.string.send_from, R.id.container, WalletChooserFragment.newInstance());
     }
 

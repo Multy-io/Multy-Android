@@ -62,7 +62,7 @@ public interface ApiServiceInterface {
     @GET("api/v1/getwalletaddresses/{walletId}")
     Observable<UserAssetsResponse> getWalletAddresses(@Path("walletId") int walletId);
 
-    @POST("/api/v1/transaction/requestRates/{currencyId}")
+    @POST("/api/v1/transaction/send/{currencyId}")
     Call<ResponseBody> sendRawTransaction(@Body TransactionRequestEntity transactionRequestEntity, @Path("currencyId") int currencyId);
 
     @GET("/api/v1/address/balance/{currencyId}/{address}")

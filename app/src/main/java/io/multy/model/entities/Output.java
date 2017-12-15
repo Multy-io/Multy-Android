@@ -21,6 +21,16 @@ public class Output extends RealmObject{
     @SerializedName("txoutscript")
     private String txOutScript;
 
+    private boolean pending;
+
+    public boolean isPending() {
+        return pending;
+    }
+
+    public void setPending(boolean pending) {
+        this.pending = pending;
+    }
+
     public String getTxId() {
         return txId;
     }

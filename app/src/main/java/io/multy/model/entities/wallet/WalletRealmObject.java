@@ -9,6 +9,7 @@ package io.multy.model.entities.wallet;
 
 import com.google.gson.annotations.SerializedName;
 
+import io.multy.model.entities.Output;
 import io.multy.util.Constants;
 import io.realm.RealmList;
 import io.realm.RealmObject;
@@ -28,8 +29,8 @@ public class WalletRealmObject extends RealmObject {
     private int addressIndex;
     @SerializedName("walletIndex")
     private int walletIndex;
-    private String chainCurrency;
-    private String fiatCurrency;
+    private double pendingBalance;
+    private boolean isEnabled;
 
     public WalletRealmObject() {
     }
@@ -58,6 +59,19 @@ public class WalletRealmObject extends RealmObject {
         }
 
         return calculatedBalance;
+    }
+
+    public double calculatePendingBalance() {
+        double pendingBalance = 0;
+        for (WalletAddress walletAddress : addresses) {
+            if (walletAddress.getOutputs() != null) {
+                for (Output output : walletAddress.getOutputs()) {
+                    pendingBalance += Integer.valueOf(output.getTxOutAmount());
+                }
+            }
+        }
+
+        return pendingBalance;
     }
 
     public String getName() {
@@ -126,6 +140,22 @@ public class WalletRealmObject extends RealmObject {
 
     public String getBalanceFiatWithCode(Double exchangePrice, CurrencyCode currencyCode) {
         return String.valueOf(getCurrency() * exchangePrice).concat(Constants.SPACE).concat(currencyCode.name());
+    }
+
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        isEnabled = enabled;
+    }
+
+    public double getPendingBalance() {
+        return pendingBalance;
+    }
+
+    public void setPendingBalance(double pendingBalance) {
+        this.pendingBalance = pendingBalance;
     }
 
     @Override

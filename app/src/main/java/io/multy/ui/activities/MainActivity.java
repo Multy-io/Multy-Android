@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.scottyab.rootbeer.RootBeer;
 
 import butterknife.BindView;
@@ -67,6 +68,10 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         socketHelper = new SocketHelper();
 
 //        preventRootIfDetected();
+    }
+
+    private void getRealmedAddresses() {
+
     }
 
     private void preventRootIfDetected() {
@@ -217,7 +222,8 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
 
     @OnClick(R.id.fast_operations)
     void onFastOperationsClick() {
-//        FirebaseMessaging.getInstance().subscribeToTopic("someTopic");
+        socketHelper.requestRates();
+        FirebaseMessaging.getInstance().subscribeToTopic("someTopic");
         Fragment fastOperationsFragment = getSupportFragmentManager()
                 .findFragmentByTag(FastOperationsFragment.TAG);
         if (fastOperationsFragment == null) {
