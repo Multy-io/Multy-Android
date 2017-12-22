@@ -14,9 +14,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.multy.Multy;
 import io.multy.R;
-import io.multy.model.DataManager;
+import io.multy.api.socket.CurrenciesRate;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.ui.activities.AssetActivity;
 import io.multy.util.Constants;
@@ -30,6 +29,7 @@ import io.multy.util.NativeDataHelper;
 public class WalletsAdapter extends RecyclerView.Adapter<WalletsAdapter.Holder> {
 
     private List<WalletRealmObject> data;
+    private CurrenciesRate rates;
 
     public WalletsAdapter(ArrayList<WalletRealmObject> data) {
         this.data = data;
@@ -38,6 +38,11 @@ public class WalletsAdapter extends RecyclerView.Adapter<WalletsAdapter.Holder> 
     @Override
     public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new Holder(LayoutInflater.from(parent.getContext()).inflate(R.layout.view_asset_item, parent, false));
+    }
+
+    public void updateRates(CurrenciesRate rates) {
+        this.rates = rates;
+        notifyDataSetChanged();
     }
 
     @Override
@@ -49,13 +54,15 @@ public class WalletsAdapter extends RecyclerView.Adapter<WalletsAdapter.Holder> 
 
         if (balance != 0) {
             try {
-                double formatBalance = balance / Math.pow(10, 8);
-                final double exchangePrice = new DataManager(Multy.getContext()).getExchangePriceDB();
-                String fiatBalance = new DecimalFormat("#.##").format(exchangePrice * formatBalance) + "USD";
+                final double formatBalance = balance / Math.pow(10, 8);
+                final double exchangePrice = rates.getBtcToUsd();
+                final String fiatBalance = new DecimalFormat("#.##").format(exchangePrice * formatBalance) + "USD";
                 holder.equals.setText(fiatBalance);
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        } else {
+            holder.equals.setText("0.0 USD");
         }
 
         holder.amount.setText(balance != 0 ? CryptoFormatUtils.satoshiToBtc(balance) : String.valueOf(balance));

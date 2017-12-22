@@ -6,7 +6,6 @@
 
 package io.multy.ui.fragments;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
@@ -25,9 +24,7 @@ import io.multy.model.DataManager;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.ui.activities.AssetRequestActivity;
 import io.multy.ui.adapters.AddressesAdapter;
-import io.multy.ui.adapters.WalletAddressesAdapter;
 import io.multy.util.Constants;
-import io.multy.viewmodels.WalletViewModel;
 
 public class AddressesFragment extends BaseFragment {
 
@@ -77,8 +74,7 @@ public class AddressesFragment extends BaseFragment {
     public void onStart() {
         super.onStart();
         if (getArguments().getInt(Constants.EXTRA_WALLET_ID) != oneNegative) {
-            WalletRealmObject wallet = new DataManager(getActivity())
-                    .getWallet(getArguments().getInt(Constants.EXTRA_WALLET_ID, oneNegative));
+            WalletRealmObject wallet = new DataManager(getActivity()).getWallet(getArguments().getInt(Constants.EXTRA_WALLET_ID, oneNegative));
             recyclerView.setAdapter(new AddressesAdapter(wallet.getAddresses()));
         } else {
             Toast.makeText(getActivity(), R.string.addresses_empty, Toast.LENGTH_SHORT).show();

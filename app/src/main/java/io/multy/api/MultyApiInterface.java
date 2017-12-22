@@ -10,6 +10,7 @@ import io.multy.model.requests.AddWalletAddressRequest;
 import io.multy.model.responses.AddressBalanceResponse;
 import io.multy.model.responses.AuthResponse;
 import io.multy.model.responses.ExchangePriceResponse;
+import io.multy.model.responses.FeeRatesResponse;
 import io.multy.model.responses.OutputsResponse;
 import io.multy.model.responses.UserAssetsResponse;
 import io.multy.model.responses.WalletsResponse;
@@ -25,7 +26,7 @@ public interface MultyApiInterface {
 
     void getAssetsInfo();
 
-    Call<AddressBalanceResponse>  getBalanceByAddress(int currencyId, String address);
+    Call<AddressBalanceResponse> getBalanceByAddress(int currencyId, String address);
 
     Call<ResponseBody> addWallet(Context context, WalletRealmObject wallet);
 
@@ -33,7 +34,7 @@ public interface MultyApiInterface {
 
     void getTransactionInfo(String transactionId);
 
-    void getTransactionSpeed();
+    Call<FeeRatesResponse> getFeeRates();
 
     Call<OutputsResponse> getSpendableOutputs(int net, String address);
 

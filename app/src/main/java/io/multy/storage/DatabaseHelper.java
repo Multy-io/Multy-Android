@@ -8,15 +8,14 @@ package io.multy.storage;
 
 import android.content.Context;
 
-import java.nio.ByteBuffer;
 import java.util.List;
 
+import io.multy.api.socket.CurrenciesRate;
 import io.multy.encryption.MasterKeyGenerator;
 import io.multy.model.entities.ByteSeed;
 import io.multy.model.entities.DeviceId;
 import io.multy.model.entities.ExchangePrice;
 import io.multy.model.entities.Mnemonic;
-import io.multy.model.entities.Output;
 import io.multy.model.entities.RootKey;
 import io.multy.model.entities.Token;
 import io.multy.model.entities.UserId;
@@ -27,8 +26,6 @@ import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmList;
 import io.realm.RealmResults;
-import io.realm.exceptions.RealmFileException;
-import timber.log.Timber;
 
 public class DatabaseHelper {
 
@@ -41,13 +38,13 @@ public class DatabaseHelper {
             // todo check access error
             exception.printStackTrace();
             try {
-            realm = Realm.getDefaultInstance();
-            realm.executeTransaction(realm -> realm.deleteAll());
-            realm = Realm.getInstance(getRealmConfiguration(context));
+                realm = Realm.getDefaultInstance();
+                realm.executeTransaction(realm -> realm.deleteAll());
+                realm = Realm.getInstance(getRealmConfiguration(context));
             } catch (Exception e) {
                 exception.printStackTrace();
                 try {
-                realm = Realm.getDefaultInstance();
+                    realm = Realm.getDefaultInstance();
                 } catch (Exception e1) {
                     realm = Realm.getDefaultInstance();
                     e1.printStackTrace();
@@ -165,42 +162,30 @@ public class DatabaseHelper {
     public void updateWallet(int index, RealmList<WalletAddress> addresses, double balance, double pendingBalance) {
         realm.executeTransaction(realm -> {
             WalletRealmObject savedWallet = getWalletById(index);
-            if (savedWallet != null) {
-                if (!addresses.isManaged()) {
-                    RealmList<WalletAddress> managedAddresses = new RealmList<>();
-                    RealmList<Output> managedOutputs = new RealmList<>();
-                    WalletAddress managedAddress;
-                    Output managedOutput;
-
-                    for (WalletAddress walletAddress : addresses) {
-                        managedAddress = realm.createObject(WalletAddress.class);
-                        managedAddress.setAddress(walletAddress.getAddress());
-                        managedAddress.setAmount(walletAddress.getAmount());
-                        managedAddress.setIndex(walletAddress.getIndex());
-
-                        if (walletAddress.getOutputs() != null && walletAddress.getOutputs().size() > 0 && !walletAddress.isManaged()) {
-                            for (Output output : walletAddress.getOutputs()) {
-                                managedOutput = realm.createObject(Output.class);
-                                managedOutput.setTxId(output.getTxId());
-                                managedOutput.setTxOutAmount(output.getTxOutAmount());
-                                managedOutput.setTxOutScript(output.getTxOutScript());
-                                managedOutput.setTxOutId(output.getTxOutId());
-                            }
-                            managedAddress.setOutputs(managedOutputs);
-                        }
-                    }
-
-                    savedWallet.setAddresses(managedAddresses);
-                }
-                savedWallet.setBalance(balance);
-                savedWallet.setPendingBalance(pendingBalance);
-                realm.insertOrUpdate(savedWallet);
+            savedWallet.setAddresses(new RealmList<>());
+            for (WalletAddress walletAddress : addresses) {
+                savedWallet.getAddresses().add(realm.copyToRealm(walletAddress));
             }
+            savedWallet.setBalance(balance);
+            savedWallet.setPendingBalance(pendingBalance);
+            realm.insertOrUpdate(savedWallet);
         });
 
     }
 
     public void clear() {
         realm.executeTransaction(realm -> realm.deleteAll());
+    }
+
+    public void saveCurrenciesRate(CurrenciesRate currenciesRate) {
+        realm.executeTransaction(realm -> realm.insertOrUpdate(currenciesRate));
+    }
+
+    public CurrenciesRate getCurrenciesRate() {
+        return realm.where(CurrenciesRate.class).findFirst();
+    }
+
+    public WalletAddress getWalletAddress(int id) {
+        return realm.where(WalletAddress.class).equalTo("index", id).findFirst();
     }
 }

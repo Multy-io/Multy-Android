@@ -20,7 +20,7 @@
 #include <multy_transaction/properties.h>
 #include "multy_transaction/internal/amount.h"
 #include "multy_transaction/internal/transaction.h"
-#include "multy_test/utility.h"
+#include "multy_core/internal/account.h"
 
 
 JavaVM *gJvm = nullptr;
@@ -79,7 +79,7 @@ static void *thread_func(void *) {
     return 0;
 }
 
-void throw_java_exception_str(JNIEnv *env, const char* message) {
+void throw_java_exception_str(JNIEnv *env, const char *message) {
     jclass c = env->FindClass("io/multy/util/JniException");
 //    __android_log_print(ANDROID_LOG_INFO, "log message", "Error: %s", message);
     env->ThrowNew(c, message);
@@ -206,11 +206,10 @@ Java_io_multy_util_NativeDataHelper_makeAccountAddress(JNIEnv *env, jobject obj,
     ERSOR(make_master_key(&seed, reset_sp(rootKey)), jstring());
 
     HDAccountPtr hdAccount;
-    ERSOR(make_hd_account(rootKey.get(), static_cast<Currency >((int) currency), (int) index,
-                          reset_sp(hdAccount)), jstring());
+    ERSOR(make_hd_account(rootKey.get(), static_cast<Currency >((int) currency), 0, reset_sp(hdAccount)), jstring());
 
     AccountPtr account;
-    ERSOR(make_hd_leaf_account(hdAccount.get(), ADDRESS_EXTERNAL, 0, reset_sp(account)), jstring());
+    ERSOR(make_hd_leaf_account(hdAccount.get(), ADDRESS_EXTERNAL, (int) index, reset_sp(account)), jstring());
 
     ConstCharPtr address;
     ERSOR(get_account_address_string(account.get(), reset_sp(address)), jstring());
@@ -222,246 +221,160 @@ Java_io_multy_util_NativeDataHelper_makeAccountAddress(JNIEnv *env, jobject obj,
 //Java_io_multy_util_NativeDataHelper_makePrivateKey
 
 JNIEXPORT jbyteArray JNICALL
-Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *env, jobject obj, jbyteArray array,
-                                                    jstring tx_hash_bytes, jstring tx_pub_key,
-                                                    jint tx_out_index, jstring sum, jstring amount,
-                                                    jstring fee, jstring destination_address,
-                                                    jstring send_address) {
+Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *jniEnv, jobject obj, jbyteArray jSeed,
+                                                    jint jWalletIndex, jstring amountToSpend,
+                                                    jstring jFeePerByte, jstring jDonation,
+                                                    jstring jDestinationAddress) {
 
     using namespace wallet_core::internal;
     using namespace multy_transaction::internal;
 
-    size_t len = (size_t) env->GetArrayLength(array);
-    unsigned char *buf = new unsigned char[len];
-    env->GetByteArrayRegion(array, 0, len, reinterpret_cast<jbyte *>(buf));
+    JNIEnv *env = getEnv();
+    size_t len = (size_t) env->GetArrayLength(jSeed);
+    unsigned char *seedBuf = new unsigned char[len];
+    env->GetByteArrayRegion(jSeed, 0, len, reinterpret_cast<jbyte *>(seedBuf));
 
-    const char *amountStr = env->GetStringUTFChars(amount, nullptr);
-    const char *feeStr = env->GetStringUTFChars(fee, nullptr);
-    const char *sumStr = env->GetStringUTFChars(sum, nullptr);
-    const char *txPubKeyStr = env->GetStringUTFChars(tx_pub_key, nullptr);
-    const char *txHashStr = env->GetStringUTFChars(tx_hash_bytes, nullptr);
+    jclass jTransaction = env->FindClass("io/multy/util/SendTransactionModel");
+    jmethodID jMethodInit = env->GetMethodID(jTransaction, "<init>", "(ILjava/lang/String;)V");
+    jobject jObjectTransaction = env->NewObject(jTransaction, jMethodInit, jWalletIndex, amountToSpend);
+
+    jmethodID jMidSetup = env->GetMethodID(jTransaction, "setupFields", "(I)V");
+    jmethodID jMidAddrIdes = env->GetMethodID(jTransaction, "getAddressesIndexes", "()[I");
+    jmethodID jMidIds = env->GetMethodID(jTransaction, "getOutIds", "()[I");
+    jmethodID jMidHashes = env->GetMethodID(jTransaction, "getHashes" , "()[Ljava/lang/String;");
+    jmethodID jMidKeys = env->GetMethodID(jTransaction, "getPubKeys", "()[Ljava/lang/String;");
+    jmethodID jMidAmounts = env->GetMethodID(jTransaction, "getAmounts", "()[Ljava/lang/String;");
+
+    jintArray addrIds = (jintArray) env->CallObjectMethod(jObjectTransaction, jMidAddrIdes);
+    jint *addressIds = env->GetIntArrayElements(addrIds, NULL);
+    int length = env->GetArrayLength(addrIds);
+
+    ErrorPtr error;
+    ExtendedKeyPtr rootKey;
+
+    BinaryData seed{seedBuf, len};
+    error.reset(make_master_key(&seed, reset_sp(rootKey)));
+
+    HDAccountPtr hdAccount;
+    error.reset(make_hd_account(rootKey.get(), CURRENCY_BITCOIN, jWalletIndex, reset_sp(hdAccount)));
+
+    AccountPtr baseAccount;
+    error.reset(make_hd_leaf_account(hdAccount.get(), ADDRESS_EXTERNAL, 0, reset_sp(baseAccount)));
+
+    TransactionPtr transaction;
+    error.reset(make_transaction(baseAccount.get(), reset_sp(transaction)));
+
+    Amount sum(0);
+
+    const char *donationAmountStr = env->GetStringUTFChars(jDonation, nullptr);
+    const char *donationAddressStr = "mzqiDnETWkunRDZxjUQ34JzN1LDevh5DpU";
+    const char *feePerByteStr = env->GetStringUTFChars(jFeePerByte, nullptr);
+
+    const char *destinationAddressStr = env->GetStringUTFChars(jDestinationAddress, nullptr);
+    const char *destinationAmountStr = env->GetStringUTFChars(amountToSpend, nullptr);
+
+    const Amount destinationAmount(destinationAmountStr);
+    const Amount feePerByte(feePerByteStr);
+    const Amount donationAmount(donationAmountStr);
+    size_t outputsCount = 0;
+    Amount total_fee;
 
     try {
 
-        ErrorPtr error;
-        ExtendedKeyPtr rootKey;
+        for (int i = 0; i < length; i++) {
+            //SET ADDRESS INDEX
+            //GET DATA FROM SET ADDRESS
+            jint addressId = addressIds[i];
 
-        BinaryData seed{buf, len};
-        error.reset(make_master_key(&seed, reset_sp(rootKey)));
+            env->CallVoidMethod(jObjectTransaction, jMidSetup, addressId);
 
-        HDAccountPtr hdAccount;
-        error.reset(make_hd_account(rootKey.get(), CURRENCY_BITCOIN, 0, reset_sp(hdAccount)));
+            jintArray outIds = (jintArray) env->CallObjectMethod(jObjectTransaction, jMidIds);
+            jobjectArray hashes = (jobjectArray) env->CallObjectMethod(jObjectTransaction,jMidHashes);
+            jobjectArray keys = (jobjectArray) env->CallObjectMethod(jObjectTransaction, jMidKeys);
+            jobjectArray amounts = (jobjectArray) env->CallObjectMethod(jObjectTransaction, jMidAmounts);
 
-        AccountPtr account;
-        error.reset(make_hd_leaf_account(hdAccount.get(), ADDRESS_EXTERNAL, 0, reset_sp(account)));
+            int stringCount = env->GetArrayLength(hashes);
+            jint *outIdArr = env->GetIntArrayElements(outIds, nullptr);
 
-        ConstCharPtr address;
-        error.reset(get_account_address_string(account.get(), reset_sp(address)));
+            AccountPtr account;
+            error.reset(make_hd_leaf_account(hdAccount.get(), ADDRESS_EXTERNAL, addressId,
+                                             reset_sp(account)));
 
-        __android_log_print(ANDROID_LOG_INFO, "foo", "address: %s", address.get());
-        __android_log_print(ANDROID_LOG_INFO, "foo", "txPubKey %s", txPubKeyStr);
-        __android_log_print(ANDROID_LOG_INFO, "foo", "txHash %s", txHashStr);
+            for (int k = 0; k < stringCount; k++) {
+                jstring jHash = (jstring) (env->GetObjectArrayElement(hashes, k));
+                jstring jKey = (jstring) (env->GetObjectArrayElement(keys, k));
+                jstring jAmount = (jstring) (env->GetObjectArrayElement(amounts, k));
+                const char *hashString = env->GetStringUTFChars(jHash, 0);
+                const char *keyString = env->GetStringUTFChars(jKey, 0);
+                const char *amountString = env->GetStringUTFChars(jAmount, 0);
+                jint outId = outIdArr[k];
 
-        TransactionPtr transaction;
-        error.reset(make_transaction(account.get(), reset_sp(transaction)));
+                BinaryDataPtr binaryDataTxHash;
+                BinaryDataPtr binaryDataPubKey;
+                make_binary_data_from_hex(hashString, reset_sp(binaryDataTxHash));
+                make_binary_data_from_hex(keyString, reset_sp(binaryDataPubKey));
 
-        __android_log_print(ANDROID_LOG_INFO, "foo", "amountStr: %s", amountStr);
-        __android_log_print(ANDROID_LOG_INFO, "foo", "feeValue: %s", feeStr);
-        __android_log_print(ANDROID_LOG_INFO, "foo", "sumAmount: %s", sumStr);
+                sum += amountString;
 
-        Amount payAmount(amountStr);
-        Amount fee_value(feeStr);
-        Amount sumAmount(sumStr);
-        {
-            Properties &source = transaction->add_source();
-            source.set_property("amount", sumAmount);
-            source.set_property("prev_tx_hash",
-                                test_utility::to_binary_data(test_utility::from_hex(txHashStr)));
-            source.set_property("prev_tx_out_index", tx_out_index);
-            source.set_property("prev_tx_out_script_pubkey",
-                                test_utility::to_binary_data(test_utility::from_hex(txPubKeyStr)));
-            __android_log_print(ANDROID_LOG_INFO, "foo", "amountStr: %s", "first source");
+                Properties &source = transaction->add_source();
+                source.set_property("amount", Amount(amountString));
+                source.set_property("prev_tx_hash", *binaryDataTxHash);
+                source.set_property("prev_tx_out_index", outId);
+                source.set_property("prev_tx_out_script_pubkey", *binaryDataPubKey);
+                source.set_property("private_key", *account->get_private_key());
+
+                outputsCount++;
+
+                env->ReleaseStringUTFChars(jHash, hashString);
+                env->ReleaseStringUTFChars(jKey, keyString);
+                env->ReleaseStringUTFChars(jAmount, amountString);
+            }
+            env->ReleaseIntArrayElements(outIds, outIdArr, 0);
         }
 
         {
+            Properties &fee = transaction->get_fee();
+            fee.set_property("amount_per_byte", feePerByte);
+            fee.set_property("min_amount_per_byte", Amount(0));
+            fee.set_property("max_amount_per_byte", feePerByte + "1000");
+        }
+
+        total_fee = transaction->estimate_total_fee(outputsCount, donationAmount == "0" ? 2 : 3);
+
+        {
             Properties &destination = transaction->add_destination();
-            destination.set_property("address",
-                                     env->GetStringUTFChars(destination_address, nullptr));
-            destination.set_property("amount", payAmount);
-            __android_log_print(ANDROID_LOG_INFO, "foo", "amountStr: %s", "second source");
+            destination.set_property("address", destinationAddressStr);
+            destination.set_property("amount", destinationAmount);
+        }
+
+        if (donationAmount != "0") {
+            Properties &donation = transaction->add_destination();
+            donation.set_property("address", donationAddressStr);
+            donation.set_property("amount", donationAmount);
         }
 
         {
             Properties &change = transaction->add_destination();
-            change.set_property("address", env->GetStringUTFChars(send_address, nullptr));
-            change.set_property("amount", sumAmount - payAmount - fee_value);
-            __android_log_print(ANDROID_LOG_INFO, "foo", "amountStr: %s", "last source");
-
-            Properties &fee = transaction->get_fee();
-            fee.set_property("amount_per_byte", Amount(1000));
-            fee.set_property("min_amount_per_byte", Amount(0));
+            change.set_property("address", baseAccount->get_address());
+            change.set_property("amount", sum - destinationAmount - donationAmount - total_fee);
         }
-
 
         transaction->update_state();
         transaction->sign();
         BinaryDataPtr serialized = transaction->serialize();
 
         jbyteArray resultArray = env->NewByteArray(serialized.get()->len);
-        env->SetByteArrayRegion(resultArray, 0, serialized.get()->len,
-                                reinterpret_cast<const jbyte *>(serialized->data));
+        env->SetByteArrayRegion(resultArray, 0, serialized.get()->len, reinterpret_cast<const jbyte *>(serialized->data));
         return resultArray;
-    } catch (std::exception const &e){
+
+    } catch (std::exception const &e) {
         throw_java_exception_str(env, e.what());
-    } catch (...){
+    } catch (...) {
         throw_java_exception_str(env, "something went wrong");
     }
-
-
+    env->ReleaseIntArrayElements(addrIds, addressIds, 0);
     return jbyteArray();
 }
-
-//JNIEXPORT jobjectArray  JNICALL
-//Java_io_multy_util_NativeDataHelper_estimateFee(JNIEnv *env, jobject obj, jbyteArray array,
-//                                                jstring tx_hash_bytes, jstring tx_pub_key,
-//                                                jint tx_out_index, jstring sum, jstring amount,
-//                                                jstring fee, jstring destination_address,
-//                                                jstring send_address, jobjectArray fees) {
-//
-////    using namespace wallet_core::internal;
-////    using namespace multy_transaction::internal;
-////
-////    size_t len = (size_t) env->GetArrayLength(array);
-////    unsigned char *buf = new unsigned char[len];
-////    env->GetByteArrayRegion(array, 0, len, reinterpret_cast<jbyte *>(buf));
-////
-////    const char *amountStr = env->GetStringUTFChars(amount, nullptr);
-////    const char *feeStr = env->GetStringUTFChars(fee, nullptr);
-////    const char *sumStr = env->GetStringUTFChars(sum, nullptr);
-////    const char *txPubKeyStr = env->GetStringUTFChars(tx_pub_key, nullptr);
-////    const char *txHashStr = env->GetStringUTFChars(tx_hash_bytes, nullptr);
-////
-////    __android_log_print(ANDROID_LOG_INFO, "foo", "Amount: %s", amountStr);
-////    __android_log_print(ANDROID_LOG_INFO, "foo", "Fee: %s", feeStr);
-////
-////    ErrorPtr error;
-////    ExtendedKeyPtr rootKey;
-////
-////    BinaryData seed{buf, len};
-////    error.reset(make_master_key(&seed, reset_sp(rootKey)));
-////
-////    HDAccountPtr hdAccount;
-////    error.reset(make_hd_account(rootKey.get(), CURRENCY_BITCOIN, 0, reset_sp(hdAccount)));
-////
-////    AccountPtr account;
-////    error.reset(make_hd_leaf_account(hdAccount.get(), ADDRESS_EXTERNAL, 0, reset_sp(account)));
-////
-////    ConstCharPtr address;
-////    error.reset(get_account_address_string(account.get(), reset_sp(address)));
-////
-////    __android_log_print(ANDROID_LOG_INFO, "foo", "address: %s", address.get());
-////
-////    TransactionPtr transaction;
-////    error.reset(make_transaction(account.get(), reset_sp(transaction)));
-////
-////    int stringCount = env->GetArrayLength(fees);
-////    for (int i = 0; i < stringCount; i++) {
-////        jstring string = (jstring) (env->GetObjectArrayElement(fees, i));
-////        const char *rawString = env->GetStringUTFChars(string, 0);
-////    }
-////
-////
-////    for (int i = 0; i < stringCount; i++) {
-////        Amount one_BTC(amountStr);
-////        Amount fee_value(feeStr);
-////        Amount sumAmount(sumStr);
-////        {
-////            Properties &source = transaction->add_source();
-////            source.set_property("amount", sumAmount);
-////            source.set_property("prev_tx_hash",
-////                                test_utility::to_binary_data(test_utility::from_hex(txHashStr)));
-////            source.set_property("prev_tx_out_index", tx_out_index);
-////            source.set_property("prev_tx_out_script_pubkey",
-////                                test_utility::to_binary_data(test_utility::from_hex(txPubKeyStr)));
-////        }
-////
-////        {
-////            Properties &destination = transaction->add_destination();
-////            destination.set_property("address",
-////                                     env->GetStringUTFChars(destination_address, nullptr));
-////            destination.set_property("amount", one_BTC);
-////        }
-////
-////        {
-////            Properties &change = transaction->add_destination();
-////            change.set_property("address", env->GetStringUTFChars(send_address, nullptr));
-////            change.set_property("amount", sumAmount - one_BTC - fee_value);
-////        }
-////
-////        transaction->update_state();
-////        transaction->sign();
-////
-////        estimatedFees[i] = transaction->get_total_fee().get_value_as_int64();
-////    }
-////
-//////    env->ReleaseIntArrayElements(fees, feeArray, NULL);
-//////    env->ReleaseIntArrayElements(estimatedFeeArray, estimatedFeeArray, NULL);
-////
-////
-////    jobjectArray ret;
-////    int i;
-////
-////    char *data[5]= {"A", "B", "C", "D", "E"};
-////
-////    ret = (jobjectArray)env->NewObjectArray(5,env->FindClass("java/lang/String"),env->NewStringUTF(""));
-////    for (i = 0; i < stringCount; i ++) {
-////        env->SetObjectArrayElement(ret, i, env->NewStringUTF())
-////    }
-////
-////    for(i=0;i<5;i++) env->SetObjectArrayElement(ret,i,env->NewStringUTF(data[i]));
-//
-//    return nullptr;
-//}
-
-//void foo()
-//{
-//    ConstCharPtr mnemonic_str;
-//    ErrorPtr error;
-//    error.reset(make_mnemonic(dummy_entropy_source, reset_sp(mnemonic_str)));
-//    ASSERT_EQ(nullptr, error);
-//    ASSERT_NE(nullptr, mnemonic_str);
-//
-//    BinaryDataPtr seed;
-//    error.reset(make_seed(mnemonic_str.get(), "", reset_sp(seed)));
-//    ASSERT_EQ(nullptr, error);
-//    ASSERT_NE(nullptr, seed);
-//
-//    ExtendedKeyPtr root_key;
-//    error.reset(make_master_key(seed.get(), reset_sp(root_key)));
-//    ASSERT_EQ(nullptr, error);
-//    ASSERT_NE(nullptr, root_key);
-//
-//    HDAccountPtr root_account;
-//    error.reset(make_hd_account(root_key.get(), CURRENCY_BITCOIN, 0, reset_sp(root_account)));
-//    ASSERT_EQ(nullptr, error);
-//    ASSERT_NE(nullptr, root_account);
-//
-//    AccountPtr leaf_account;
-//    error.reset(
-//            make_hd_leaf_account(
-//                    root_account.get(), ADDRESS_EXTERNAL, 0,
-//                    reset_sp(leaf_account)));
-//    ASSERT_EQ(nullptr, error);
-//    ASSERT_NE(nullptr, leaf_account);
-//
-//    ConstCharPtr address;
-//    error.reset(
-//            get_account_address_string(leaf_account.get(), reset_sp(address)));
-//    ASSERT_EQ(nullptr, error);
-//    ASSERT_NE(nullptr, address);
-//    ASSERT_LT(0, strlen(address.get()));
-//    printf("final address: %s\n", address.get());
-//}
 
 /** Generates a pseudo-random seed from given mnemonic and password.
  * @param mnemonic - space-separated list of mnemonic words.

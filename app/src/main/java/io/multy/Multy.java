@@ -19,7 +19,6 @@ import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
 import io.realm.Realm;
 import timber.log.Timber;
-import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 public class Multy extends Application {
 
@@ -42,11 +41,6 @@ public class Multy extends Application {
                 .setDefaultBooleanValue(false)
                 .setDefaultStringValue("")
                 .build();
-
-        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                .setDefaultFontPath("montseratt_regular.ttf")
-                .setFontAttrId(R.attr.fontPath)
-                .build());
 
         context = getApplicationContext();
     }

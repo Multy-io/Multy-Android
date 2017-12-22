@@ -19,16 +19,14 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.multy.Multy;
 import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.model.DataManager;
-import io.multy.model.entities.Output;
 import io.multy.model.entities.wallet.CurrencyCode;
-import io.multy.model.responses.OutputsResponse;
 import io.multy.ui.activities.MainActivity;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.CryptoFormatUtils;
-import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
 import io.multy.viewmodels.AssetSendViewModel;
 import okhttp3.ResponseBody;
@@ -38,9 +36,7 @@ import retrofit2.Response;
 
 public class SendSummaryFragment extends BaseFragment {
 
-    public static SendSummaryFragment newInstance() {
-        return new SendSummaryFragment();
-    }
+    private static final String TAG = SendSummaryFragment.class.getSimpleName();
 
     @BindView(R.id.text_receiver_balance_original)
     TextView textReceiverBalanceOriginal;
@@ -61,6 +57,10 @@ public class SendSummaryFragment extends BaseFragment {
 
     private AssetSendViewModel viewModel;
 
+    public static SendSummaryFragment newInstance() {
+        return new SendSummaryFragment();
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -76,50 +76,29 @@ public class SendSummaryFragment extends BaseFragment {
 //        AssetSendDialogFragment dialog = new AssetSendDialogFragment();
 //        dialog.show(getActivity().getFragmentManager(), null);
 
-
-        DataManager dataManager = new DataManager(getActivity());
         double amount = viewModel.getAmount();
+        long amountSatoshi = (long) (amount * Math.pow(10, 8));
         String addressTo = viewModel.getReceiverAddress().getValue();
-        String addressFrom = viewModel.getWallet().getCreationAddress();
 
-        MultyApi.INSTANCE.getSpendableOutputs(1, addressFrom).enqueue(new Callback<OutputsResponse>() {
-            @Override
-            public void onResponse(Call<OutputsResponse> call, Response<OutputsResponse> response) {
-                OutputsResponse outputsResponse = response.body();
-                Output output = outputsResponse.getOutputs().get(0);
+        try {
+            byte[] transactionHex = NativeDataHelper.makeTransaction(new DataManager(Multy.getContext()).getSeed().getSeed(), 0, String.valueOf(amountSatoshi), "2000", "20000", addressTo);
+            String hex = byteArrayToHex(transactionHex);
+            Log.i(TAG, "hex= " + hex);
 
-                String txHash = output.getTxId();
-                String pubKey = output.getTxOutScript();
-                String sum = output.getTxOutAmount();
-                long amountTotal = (long) (amount * Math.pow(10, 8));
-                byte[] seed = dataManager.getSeed().getSeed();
-                int outIndex = output.getTxOutId();
-                try {
-                    byte[] transactionHex = NativeDataHelper.makeTransaction(seed, txHash, pubKey, outIndex, sum, String.valueOf(amountTotal), "9999", addressTo, addressFrom);
-                    String hex = byteArrayToHex(transactionHex);
-                    Log.i("wise", "hex=" + hex);
-
-                    MultyApi.INSTANCE.sendRawTransaction(hex, 1).enqueue(new Callback<ResponseBody>() {
-                        @Override
-                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                            startActivity(new Intent(getActivity(), MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-                        }
-
-                        @Override
-                        public void onFailure(Call<ResponseBody> call, Throwable t) {
-
-                        }
-                    });
-                } catch (JniException e) {
-                    e.printStackTrace();
+            MultyApi.INSTANCE.sendRawTransaction(hex, 1).enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    startActivity(new Intent(getActivity(), MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                 }
-            }
 
-            @Override
-            public void onFailure(Call<OutputsResponse> call, Throwable t) {
-                Log.i("wise", "fail");
-            }
-        });
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static String byteArrayToHex(byte[] a) {

@@ -17,6 +17,7 @@
     app:cardElevation="2dp">
 
     <android.support.constraint.ConstraintLayout
+        android:stateListAnimator="@drawable/z_animation"
         android:id="@+id/constraint_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">

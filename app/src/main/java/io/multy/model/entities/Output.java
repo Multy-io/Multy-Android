@@ -62,4 +62,15 @@ public class Output extends RealmObject{
     public void setTxOutScript(String txOutScript) {
         this.txOutScript = txOutScript;
     }
+
+    @Override
+    public String toString() {
+        return "Output{" +
+                "txId='" + txId + '\'' +
+                ", txOutId=" + txOutId +
+                ", txOutAmount='" + txOutAmount + '\'' +
+                ", txOutScript='" + txOutScript + '\'' +
+                ", pending=" + pending +
+                '}';
+    }
 }

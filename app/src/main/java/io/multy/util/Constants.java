@@ -46,4 +46,6 @@ public class Constants {
 
     public static final String ERROR_LOAD_EXCHANGE_PRICE = "Can't load exchange price. Will be used the last one";
     public static final String ERROR_ADDING_ADDRESS = "An error occurred while adding new address";
+
+    public static final String NOTIFICATION_CHANNEL = "Multy wallet";
 }

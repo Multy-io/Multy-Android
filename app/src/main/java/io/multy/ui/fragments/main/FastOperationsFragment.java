@@ -6,29 +6,24 @@
 
 package io.multy.ui.fragments.main;
 
-import android.Manifest;
-import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import butterknife.BindColor;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.ui.activities.AssetRequestActivity;
 import io.multy.ui.activities.AssetSendActivity;
 import io.multy.ui.activities.MainActivity;
-import io.multy.ui.activities.ScanActivity;
 import io.multy.ui.fragments.BaseFragment;
-import io.multy.util.Constants;
-import io.multy.viewmodels.AssetSendViewModel;
+import io.multy.util.AnimationUtils;
 import io.multy.viewmodels.FeedViewModel;
 
 /**
@@ -42,8 +37,23 @@ public class FastOperationsFragment extends BaseFragment {
 
     private FeedViewModel viewModel;
 
-    public static FastOperationsFragment newInstance() {
-        return new FastOperationsFragment();
+    @BindView(R.id.button_cancel)
+    View buttonCancel;
+
+    @BindColor(R.color.colorPrimary)
+    int colorBlue;
+
+    @BindColor(R.color.white)
+    int colorWhite;
+
+    private int revealX;
+    private int revealY;
+
+    public static FastOperationsFragment newInstance(int revealX, int revealY) {
+        FastOperationsFragment fragment = new FastOperationsFragment();
+        fragment.setRevealX(revealX);
+        fragment.setRevealY(revealY);
+        return fragment;
     }
 
     @Override
@@ -55,10 +65,12 @@ public class FastOperationsFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-//        DataBindingUtil.inflate(inflater, R.layout.fragment_feed, container, false);
         View view = inflater.inflate(R.layout.fragment_fast_operations, container, false);
         ButterKnife.bind(this, view);
         viewModel = ViewModelProviders.of(this).get(FeedViewModel.class);
+        AnimationUtils.createReveal(view, revealX, revealY, colorBlue, colorWhite);
+        buttonCancel.setEnabled(false);
+        buttonCancel.postDelayed(() -> buttonCancel.setEnabled(true), AnimationUtils.DURATION_MEDIUM);
         return view;
     }
 
@@ -95,12 +107,20 @@ public class FastOperationsFragment extends BaseFragment {
     }
 
     @OnClick(R.id.button_cancel)
-    void onCancelClick() {
-        getActivity().onBackPressed();
+    void onCancelClick(View v) {
+        AnimationUtils.createConceal(getView(), revealX, revealY, colorWhite, colorBlue, () -> getActivity().onBackPressed());
+        v.setEnabled(false);
     }
 
+    public void setRevealX(int revealX) {
+        this.revealX = revealX;
+    }
 
-//    public void showScanScreen() {
+    public void setRevealY(int revealY) {
+        this.revealY = revealY;
+    }
+
+    //    public void showScanScreen() {
 //        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
 //                != PackageManager.PERMISSION_GRANTED) {
 //            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, Constants.CAMERA_REQUEST_CODE);
