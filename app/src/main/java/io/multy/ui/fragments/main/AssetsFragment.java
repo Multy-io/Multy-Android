@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
+import android.support.constraint.ConstraintSet;
 import android.support.constraint.Group;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
@@ -30,12 +31,14 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.multy.Multy;
 import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.model.DataManager;
 import io.multy.model.entities.Output;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.entities.wallet.WalletRealmObject;
+import io.multy.model.responses.AddressBalanceResponse;
 import io.multy.model.responses.WalletsResponse;
 import io.multy.ui.activities.CreateAssetActivity;
 import io.multy.ui.activities.SeedActivity;
@@ -49,6 +52,7 @@ import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import timber.log.Timber;
 
 public class AssetsFragment extends BaseFragment {
 
@@ -95,6 +99,30 @@ public class AssetsFragment extends BaseFragment {
         initialize();
         viewModel = ViewModelProviders.of(getActivity()).get(AssetsViewModel.class);
         viewModel.setContext(getActivity());
+
+        return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (viewModel.isFirstStart()) {
+            groupWalletsList.setVisibility(View.GONE);
+            containerCreateRestore.setVisibility(View.VISIBLE);
+        } else {
+            groupWalletsList.setVisibility(View.VISIBLE);
+            containerCreateRestore.setVisibility(View.GONE);
+            groupCreateDescription.setVisibility(View.GONE);
+        }
+
+        walletsAdapter.setData(viewModel.getWalletsFromDB());
+        if (Prefs.contains(Constants.PREF_IS_FIRST_START)) {
+            updateWallets();
+        }
+    }
+
+    private void updateBalance(final int position, final String creationAddress) {
+        MultyApi.INSTANCE.getBalanceByAddress(1, creationAddress).enqueue(new Callback<AddressBalanceResponse>() {
         viewModel.rates.observe(this, currenciesRate -> walletsAdapter.updateRates(currenciesRate));
         viewModel.init(getLifecycle());
         viewModel.graphPoints.observe(this, graphPoints -> {
@@ -104,7 +132,6 @@ public class AssetsFragment extends BaseFragment {
             for (int i = 0; i < graphPoints.size(); i++) {
                 values[i] = graphPoints.get(i).getPrice();
                 stamps[i] = graphPoints.get(i).getDate();
-            }
 
             sparkView.setLineColor(getResources().getColor(R.color.colorPrimaryDark));
             sparkView.setAdapter(new SparkAdapter() {
@@ -129,7 +156,6 @@ public class AssetsFragment extends BaseFragment {
                 }
             });
         });
-
 
         return view;
     }
@@ -173,12 +199,6 @@ public class AssetsFragment extends BaseFragment {
 
             }
         });
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        updateWallets();
     }
 
     @Override

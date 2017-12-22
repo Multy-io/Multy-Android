@@ -85,6 +85,8 @@ public class CreateAssetFragment extends BaseFragment {
 
     private void subscribeToCurrencyUpdate() {
         walletViewModel = ViewModelProviders.of(getActivity()).get(WalletViewModel.class);
+        walletViewModel.setContext(getActivity());
+        setBaseViewModel(walletViewModel);
         walletViewModel.fiatCurrency.observe(this, s -> {
             //TODO update wallet fiat currency
             textViewFiatCurrency.setText(s);
@@ -142,54 +144,7 @@ public class CreateAssetFragment extends BaseFragment {
 
     @OnClick(R.id.text_create)
     public void onClickCreate() {
-        WalletRealmObject walletRealmObject = null;
-        try {
-            List<WalletRealmObject> wallets = new DataManager(Multy.getContext()).getWallets();
-            final int index = wallets.size();
-            final int currency = NativeDataHelper.Currency.BTC.getValue(); //TODO implement choosing crypto currency using enum NativeDataHelper.CURRENCY
-            String creationAddress = NativeDataHelper.makeAccountAddress(new DataManager(getActivity()).getSeed().getSeed(), index, currency);
-            walletRealmObject = new WalletRealmObject();
-            walletRealmObject.setName(editTextWalletName.getText().toString());
-            RealmList<WalletAddress> addresses = new RealmList<>();
-            addresses.add(new WalletAddress(0, creationAddress));
-            walletRealmObject.setAddresses(addresses);
-//            if (textViewChainCurrency.getText().toString().equals(Constants.BTC)) {
-                walletRealmObject.setCurrency(0);
-//            } else {
-//                walletRealmObject.setCurrency(1);
-//            }
-            walletRealmObject.setAddressIndex(0);
-            walletRealmObject.setCreationAddress(creationAddress);
-            walletRealmObject.setWalletIndex(index);
-            saveWallet(walletRealmObject);
-        } catch (JniException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void saveWallet(WalletRealmObject walletRealmObject) {
-        Call<ResponseBody> responseBodyCall = MultyApi.INSTANCE.addWallet(getActivity(), walletRealmObject);
-        responseBodyCall.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    new DataManager(getActivity()).saveWallet(walletRealmObject);
-
-                    Intent intent = new Intent(getContext(), AssetActivity.class);
-                    if (walletRealmObject != null) {
-                        intent.putExtra(Constants.EXTRA_WALLET_ID, walletRealmObject.getWalletIndex());
-                    }
-
-                    startActivity(intent);
-                    getActivity().finish();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                t.printStackTrace();
-            }
-        });
+        walletViewModel.createWallet(getActivity(), editTextWalletName.getText().toString());
     }
 
     @OnClick(R.id.text_cancel)

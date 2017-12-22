@@ -90,7 +90,7 @@
             android:layout_marginBottom="4dp"
             android:layout_marginTop="4dp"
             android:fontFamily="@font/montserrat"
-            android:text="1 233 $"
+            tools:text="1 233 $"
             android:textColor="#87a1c5"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"

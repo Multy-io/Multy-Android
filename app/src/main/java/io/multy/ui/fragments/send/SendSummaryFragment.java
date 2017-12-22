@@ -16,6 +16,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.text.DecimalFormat;
+
+import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -26,8 +29,10 @@ import io.multy.model.DataManager;
 import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.ui.activities.MainActivity;
 import io.multy.ui.fragments.BaseFragment;
+import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
 import io.multy.util.NativeDataHelper;
+import io.multy.util.NumberFormatter;
 import io.multy.viewmodels.AssetSendViewModel;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -54,6 +59,11 @@ public class SendSummaryFragment extends BaseFragment {
     TextView textFeeSpeed;
     @BindView(R.id.text_fee_amount)
     TextView textFeeAmount;
+
+    @BindString(R.string.donation_format_pattern)
+    String formatPattern;
+    @BindString(R.string.donation_format_pattern_bitcoin)
+    String formatPatternBitcoin;
 
     private AssetSendViewModel viewModel;
 
@@ -109,8 +119,12 @@ public class SendSummaryFragment extends BaseFragment {
     }
 
     private void setInfo() {
-        textReceiverBalanceOriginal.setText(String.valueOf(viewModel.getAmount()));
-        textReceiverBalanceCurrency.setText(String.valueOf(viewModel.getAmount()));
+        textReceiverBalanceOriginal.setText(NumberFormatter.getInstance().format(viewModel.getAmount()));
+        textReceiverBalanceOriginal.append(Constants.SPACE);
+        textReceiverBalanceOriginal.append(CurrencyCode.BTC.name());
+        textReceiverBalanceCurrency.setText(NumberFormatter.getInstance().format(viewModel.getAmount() * viewModel.getExchangePrice().getValue()));
+        textReceiverBalanceCurrency.append(Constants.SPACE);
+        textReceiverBalanceCurrency.append(CurrencyCode.USD.name());
 //        textReceiverAddress.setText(viewModel.getReceiverAddress().getValue());
         textReceiverAddress.setText(viewModel.thoseAddress.getValue());
         textWalletName.setText(viewModel.getWallet().getName());

@@ -6,6 +6,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.AppBarLayout;
@@ -18,17 +19,29 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.DecimalFormat;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.multy.Multy;
 import io.multy.R;
+import io.multy.api.MultyApi;
+import io.multy.model.DataManager;
+import io.multy.model.entities.wallet.CurrencyCode;
+import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.entities.wallet.WalletRealmObject;
+import io.multy.model.responses.WalletsResponse;
 import io.multy.ui.activities.AssetActivity;
 import io.multy.ui.adapters.AssetTransactionsAdapter;
 import io.multy.ui.fragments.AddressesFragment;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
+import io.multy.util.CryptoFormatUtils;
 import io.multy.viewmodels.WalletViewModel;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import timber.log.Timber;
 
 public class AssetInfoFragment extends BaseFragment {
@@ -81,6 +94,27 @@ public class AssetInfoFragment extends BaseFragment {
             viewModel.getWalletLive().observe(this, this::setupWalletInfo);
         }
 
+//        MultyApi.INSTANCE.getWalletsVerbose().enqueue(new Callback<WalletsResponse>() {
+//            @Override
+//            public void onResponse(@NonNull Call<WalletsResponse> call, @NonNull Response<WalletsResponse> response) {
+//                if (response.body() != null && response.body().getWallets() != null) {
+//                    for (WalletRealmObject wallet : response.body().getWallets()) {
+//                        Timber.i("wallet1 %s", wallet.toString());
+//                        if (wallet.getWalletIndex() == getActivity().getIntent().getIntExtra(Constants.EXTRA_WALLET_ID, 0)) {
+//                            Timber.i("wallet2 %s", wallet.toString());
+//                            viewModel.getWalletLive().setValue(wallet);
+//                            setupWalletInfo(wallet);
+//                        }
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<WalletsResponse> call, Throwable t) {
+//
+//            }
+//        });
+
         initialize();
         return view;
     }
@@ -99,10 +133,37 @@ public class AssetInfoFragment extends BaseFragment {
     }
 
     private void setupWalletInfo(WalletRealmObject wallet) {
+        Timber.i("wallet %s", wallet.toString());
+        if (wallet.getAddresses() != null && !wallet.getAddresses().isEmpty()) {
+            for (WalletAddress address : wallet.getAddresses()) {
+                Timber.i("address %s", address.getAddress());
+            }
+        } else {
+            Timber.i("addresses empty ");
+        }
         textWalletName.setText(wallet.getName());
-        textAddress.setText(wallet.getCreationAddress()); // TODO wallet.getAddresses();
-        textBalanceOriginal.setText(String.valueOf(wallet.getCurrency()));
-        viewModel.getExchangePrice().observe(AssetInfoFragment.this, exchangePrice -> textBalanceFiat.setText(String.valueOf(wallet.getCurrency() * exchangePrice)));
+        if (wallet.getAddresses() != null && !wallet.getAddresses().isEmpty()) {
+            textAddress.setText(wallet.getAddresses().get(wallet.getAddresses().size() - 1).getAddress());
+        } else {
+            textAddress.setText(wallet.getCreationAddress());
+        }
+
+        double balance = wallet.calculateBalance();
+
+        if (balance != 0) {
+            try {
+                double formatBalance = balance / Math.pow(10, 8);
+                String fiatBalance = new DecimalFormat("#.##").format(viewModel.getExchangePrice().getValue() * formatBalance);
+                textBalanceFiat.setText(fiatBalance);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            textBalanceFiat.setText("0");
+        }
+
+
+        textBalanceOriginal.setText(balance != 0 ? CryptoFormatUtils.satoshiToBtc(balance) : String.valueOf(balance));
     }
 
     private void setToolbarScrollFlag(int flag) {

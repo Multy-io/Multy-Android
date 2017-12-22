@@ -15,6 +15,7 @@ import io.multy.model.entities.DeviceId;
 import io.multy.model.entities.Mnemonic;
 import io.multy.model.entities.UserId;
 import io.multy.util.Constants;
+import io.multy.util.FirstLaunchHelper;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
 import io.realm.Realm;
@@ -41,6 +42,17 @@ public class Multy extends Application {
                 .setDefaultBooleanValue(false)
                 .setDefaultStringValue("")
                 .build();
+
+//        try {
+//            FirstLaunchHelper.setCredentials(null, this);
+//        } catch (JniException e) {
+//            e.printStackTrace();
+//        }
+
+        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                .setDefaultFontPath("montseratt_regular.ttf")
+                .setFontAttrId(R.attr.fontPath)
+                .build());
 
         context = getApplicationContext();
     }

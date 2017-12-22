@@ -25,6 +25,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 import butterknife.BindInt;
 import butterknife.BindString;
@@ -33,6 +35,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.ui.fragments.BaseFragment;
+import io.multy.util.NumberFormatter;
 import io.multy.viewmodels.AssetRequestViewModel;
 
 
@@ -83,8 +86,9 @@ public class AmountChooserFragment extends BaseFragment {
         ButterKnife.bind(this, view);
 
         if (viewModel.getAmount() != zero) {
-            inputOriginal.setText(String.valueOf(viewModel.getAmount()));
-            inputCurrency.setText(String.valueOf(viewModel.getAmount() * viewModel.getExchangePriceLive().getValue()));
+            inputOriginal.setText(NumberFormatter.getInstance().format(viewModel.getAmount()));
+            inputCurrency.setText(NumberFormatter.getInstance().format(viewModel.getAmount()
+                    * viewModel.getExchangePriceLive().getValue()));
         }
         groupSend.setVisibility(View.GONE);
         buttonNext.setGravity(Gravity.CENTER);
@@ -135,7 +139,7 @@ public class AmountChooserFragment extends BaseFragment {
                 if (!isAmountSwapped) { // if currency input is main
                     if (!TextUtils.isEmpty(charSequence)) {
                         if (isParsable(charSequence.toString())) {
-                            inputCurrency.setText(new DecimalFormat(formatPattern)
+                            inputCurrency.setText(NumberFormatter.getInstance()
                                     .format((viewModel.getExchangePriceLive().getValue() == null
                                             ? viewModel.getExchangePrice()
                                             : viewModel.getExchangePriceLive().getValue())
@@ -178,7 +182,7 @@ public class AmountChooserFragment extends BaseFragment {
                 if (isAmountSwapped) {
                     if (!TextUtils.isEmpty(charSequence)) {
                         if (isParsable(charSequence.toString())) {
-                            inputOriginal.setText(new DecimalFormat(formatPatternBitcoin)
+                            inputOriginal.setText(NumberFormatter.getInstance()
                                     .format(Double.parseDouble(charSequence.toString())
                                             / (viewModel.getExchangePriceLive().getValue() == null
                                             ? viewModel.getExchangePrice()

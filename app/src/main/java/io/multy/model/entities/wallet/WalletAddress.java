@@ -70,6 +70,7 @@ public class WalletAddress extends RealmObject {
                 "index=" + index +
                 ", address='" + address + '\'' +
                 ", amount=" + amount +
+                ", outputs=" + outputs +
                 '}';
     }
 }

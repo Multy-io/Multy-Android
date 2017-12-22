@@ -13,6 +13,7 @@ import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.widget.Toast;
 
 import butterknife.BindInt;
 import butterknife.ButterKnife;
@@ -83,7 +84,7 @@ public class AssetActivity extends BaseActivity {
 
     @OnClick(R.id.exchange)
     void onClickExchange() {
-//        startActivity(new Intent(this, AssetSendActivity.class));
+        Toast.makeText(this, R.string.not_implemented, Toast.LENGTH_SHORT).show();
     }
 
     public WalletRealmObject getWalletRealmObject() {

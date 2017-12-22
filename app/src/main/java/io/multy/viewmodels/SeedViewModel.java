@@ -54,15 +54,17 @@ public class SeedViewModel extends BaseViewModel {
 
     public void restore(String phrase, Context context, Runnable callback){
         try {
+
+            isLoading.setValue(true);
             FirstLaunchHelper.setCredentials(phrase, context);
 
             new DataManager(context).restore()
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeOn(Schedulers.io())
                     .subscribe(walletList -> {
+                        isLoading.setValue(false);
                         failed.setValue(false);
                         callback.run();
                     }, throwable -> {
+                        isLoading.setValue(false);
                         failed.setValue(true);
                         Toast.makeText(context, throwable.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                         throwable.printStackTrace();
@@ -70,6 +72,7 @@ public class SeedViewModel extends BaseViewModel {
                     });
 
         } catch (JniException e) {
+            isLoading.setValue(false);
             failed.setValue(true);
             callback.run();
             Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();

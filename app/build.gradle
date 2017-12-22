@@ -3,7 +3,7 @@ apply plugin: 'realm-android'
 
 def versionMajor = 0
 def versionMinor = 0
-def versionPatch = 3
+def versionPatch = 5
 
 def version_code = versionMajor * 100 + versionMinor * 10 + versionPatch
 def version_name = "${versionMajor}.${versionMinor}.${versionPatch}"
@@ -54,7 +54,7 @@ android {
         }
         externalNativeBuild {
             cmake {
-//                path "/Users/appscrunch/Downloads/Multy-Core-master/CMakeLists.txt"
+//                path "/Users/appscrunch/AndroidStudioProjects/Multy-Core/CMakeLists.txt"
                 path "C:\\workspace\\KLUBIKMulty-Core\\CMakeLists.txt"
             }
         }

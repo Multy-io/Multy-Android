@@ -37,6 +37,7 @@ import io.multy.ui.fragments.AddressesFragment;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
 import io.multy.util.DeepLinkShareHelper;
+import io.multy.util.NumberFormatter;
 import io.multy.viewmodels.AssetRequestViewModel;
 
 
@@ -116,10 +117,10 @@ public class RequestSummaryFragment extends BaseFragment {
             textRequestAmount.setVisibility(View.INVISIBLE);
             textBalanceCurrencySend.setVisibility(View.VISIBLE);
             textBalanceOriginalSend.setVisibility(View.VISIBLE);
-            textBalanceCurrencySend.setText(String.valueOf(viewModel.getAmount() * viewModel.getExchangePriceLive().getValue()));
+            textBalanceCurrencySend.setText(NumberFormatter.getInstance().format(viewModel.getAmount() * viewModel.getExchangePriceLive().getValue()));
             textBalanceCurrencySend.append(Constants.SPACE);
             textBalanceCurrencySend.append(CurrencyCode.USD.name());
-            textBalanceOriginalSend.setText(String.valueOf(viewModel.getAmount()));
+            textBalanceOriginalSend.setText(NumberFormatter.getInstance().format(viewModel.getAmount()));
             textBalanceOriginalSend.append(Constants.SPACE);
             textBalanceOriginalSend.append(CurrencyCode.BTC.name());
         }

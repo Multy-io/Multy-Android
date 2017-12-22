@@ -13,12 +13,16 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
+import com.samwolfand.oneprefs.Prefs;
 
 import butterknife.BindColor;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
+import io.multy.model.DataManager;
 import io.multy.ui.activities.AssetRequestActivity;
 import io.multy.ui.activities.AssetSendActivity;
 import io.multy.ui.activities.MainActivity;
@@ -89,21 +93,61 @@ public class FastOperationsFragment extends BaseFragment {
 
     @OnClick(R.id.button_send)
     void onSendClick() {
-        startActivity(new Intent(getContext(), AssetSendActivity.class));
+        if (Prefs.contains(Constants.PREF_FIRST_SUCCESSFUL_START)) {
+            DataManager dataManager = new DataManager(getActivity());
+            if (dataManager.getDeviceId() != null && dataManager.getUserId() != null) {
+                if (!dataManager.getWallets().isEmpty()) {
+                    startActivity(new Intent(getContext(), AssetSendActivity.class));
+                } else {
+                    Toast.makeText(getActivity(), "Please, create wallet", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(getActivity(), "Please, create wallet", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(getActivity(), "Please, create wallet", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @OnClick(R.id.button_receive)
     void onReceiveClick() {
-        startActivity(new Intent(getContext(), AssetRequestActivity.class));
+        if (Prefs.contains(Constants.PREF_FIRST_SUCCESSFUL_START)) {
+            DataManager dataManager = new DataManager(getActivity());
+            if (dataManager.getDeviceId() != null && dataManager.getUserId() != null) {
+                if (!dataManager.getWallets().isEmpty()) {
+                    startActivity(new Intent(getContext(), AssetRequestActivity.class));
+                } else {
+                    Toast.makeText(getActivity(), "Please, create wallet", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(getActivity(), "Please, create wallet", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(getActivity(), "Please, create wallet", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @OnClick(R.id.button_nfc)
     void onNfcClick() {
+        Toast.makeText(getActivity(), R.string.not_implemented, Toast.LENGTH_SHORT).show();
     }
 
     @OnClick(R.id.button_scan_qr)
     void onScanClick() {
-        ((MainActivity) getActivity()).showScanScreen();
+        if (Prefs.contains(Constants.PREF_FIRST_SUCCESSFUL_START)) {
+            DataManager dataManager = new DataManager(getActivity());
+            if (dataManager.getDeviceId() != null && dataManager.getUserId() != null) {
+                if (!dataManager.getWallets().isEmpty()) {
+                    ((MainActivity) getActivity()).showScanScreen();
+                } else {
+                    Toast.makeText(getActivity(), "Please, create wallet", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(getActivity(), "Please, create wallet", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(getActivity(), "Please, create wallet", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @OnClick(R.id.button_cancel)

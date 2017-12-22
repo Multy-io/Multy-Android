@@ -19,6 +19,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.MenuItem;
 
 import java.util.List;
@@ -103,17 +104,19 @@ public class AssetSendActivity extends BaseActivity {
 
     private void startFlow(){
         if (getIntent().hasExtra(Constants.EXTRA_ADDRESS)) {
+            setFragment(R.string.send_to, R.id.container, AssetSendFragment.newInstance());
+            setFragment(R.string.send_from, R.id.container, WalletChooserFragment.newInstance());
+            setTitle(R.string.send_from);
             AssetSendViewModel viewModel = ViewModelProviders.of(this).get(AssetSendViewModel.class);
             viewModel.setContext(this);
             viewModel.setReceiverAddress(getIntent().getStringExtra(Constants.EXTRA_ADDRESS));
             if (getIntent().hasExtra(Constants.EXTRA_AMOUNT)) {
-                Timber.i("amount %s", getIntent().getStringExtra(Constants.EXTRA_AMOUNT));
-                viewModel.setAmount(Double.parseDouble(getIntent().getStringExtra(Constants.EXTRA_AMOUNT)));
-                viewModel.setAmountScanned(true);
+                if (!TextUtils.isEmpty(getIntent().getStringExtra(Constants.EXTRA_AMOUNT))) {
+                    Timber.i("amount %s", getIntent().getStringExtra(Constants.EXTRA_AMOUNT));
+                    viewModel.setAmount(Double.parseDouble(getIntent().getStringExtra(Constants.EXTRA_AMOUNT)));
+                    viewModel.setAmountScanned(true);
+                }
             }
-            setFragment(R.string.send_to, R.id.container, AssetSendFragment.newInstance());
-            setFragment(R.string.send_from, R.id.container, WalletChooserFragment.newInstance());
-            setTitle(R.string.send_from);
         } else {
             setFragment(R.string.send_to, R.id.container, AssetSendFragment.newInstance());
         }

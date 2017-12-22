@@ -47,6 +47,10 @@ import io.multy.ui.fragments.main.FeedFragment;
 import io.multy.ui.fragments.main.SettingsFragment;
 import io.multy.util.AnimationUtils;
 import io.multy.util.Constants;
+import io.multy.util.FirstLaunchHelper;
+import io.multy.util.JniException;
+import io.multy.util.NativeDataHelper;
+import io.multy.util.SocketHelper;
 import timber.log.Timber;
 
 
@@ -70,6 +74,9 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         isFirstFragmentCreation = true;
         setupFooter();
         setFragment(R.id.container_frame, AssetsFragment.newInstance());
+
+
+//        socketHelper = new SocketHelper();
 
 
         String userId = new DataManager(this).getUserId().getUserId();
@@ -227,6 +234,9 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
 
     @OnClick(R.id.fast_operations)
     void onFastOperationsClick(final View v) {
+//        socketHelper.requestRates();
+        FirebaseMessaging.getInstance().subscribeToTopic("someTopic");
+
         v.setEnabled(false);
         v.postDelayed(() -> v.setEnabled(true), AnimationUtils.DURATION_MEDIUM * 2);
         Fragment fastOperationsFragment = getSupportFragmentManager()
@@ -241,6 +251,13 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
                 .addToBackStack(FastOperationsFragment.TAG)
                 .commit();
     }
+
+
+//    @Override
+//    protected void onDestroy() {
+//        socketHelper.disconnect();
+//        super.onDestroy();
+//    }
 
     public void showScanScreen() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)

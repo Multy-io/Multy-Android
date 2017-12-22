@@ -104,7 +104,8 @@
             android:elevation="@dimen/elevation_4dp"
             android:gravity="center"
             android:hint="@string/hint_add_note"
-            android:maxLines="1"
+            android:lines="@integer/one"
+            android:inputType="text"
             app:layout_constraintLeft_toLeftOf="@+id/container_receiver"
             app:layout_constraintRight_toRightOf="@+id/container_receiver"
             app:layout_constraintTop_toBottomOf="@+id/container_receiver" />

@@ -69,12 +69,7 @@ public class SeedValidationFragment extends BaseSeedFragment {
             maxCount = seedModel.phrase.getValue().size() * 3;
         }
 
-        initBricks(recyclerView);
-        adapter.enableGreenMode();
-        buttonNext.setText(R.string.next_word);
-        setRedrawPosition(0);
-        recyclerView.post(() -> redrawOne(true));
-        inputWord.setImeOptions(EditorInfo.IME_ACTION_NEXT);
+        init();
         return convertView;
     }
 
@@ -83,7 +78,18 @@ public class SeedValidationFragment extends BaseSeedFragment {
         super.onResume();
         if (getActivity().getIntent().hasCategory(Constants.EXTRA_RESTORE)) {
             maxCount = 15;
+            count = 1;
+            phrase.setLength(0);
         }
+    }
+
+    private void init(){
+        initBricks(recyclerView);
+        adapter.enableGreenMode();
+        buttonNext.setText(R.string.next_word);
+        setRedrawPosition(0);
+        recyclerView.post(() -> redrawOne(true));
+        inputWord.setImeOptions(EditorInfo.IME_ACTION_NEXT);
     }
 
     private void refreshCounter() {

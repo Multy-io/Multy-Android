@@ -25,6 +25,7 @@ import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.model.requests.AddWalletAddressRequest;
 import io.multy.model.responses.AuthResponse;
 import io.multy.model.responses.ExchangePriceResponse;
+import io.multy.model.responses.RestoreResponse;
 import io.multy.model.responses.UserAssetsResponse;
 import io.multy.storage.DatabaseHelper;
 import io.reactivex.Flowable;
@@ -80,11 +81,12 @@ public class DataManager {
         return MultyApi.INSTANCE.getWalletAddresses(walletId);
     }
 
-    public Observable<List<WalletRealmObject>> restore() {
+    public Observable<RestoreResponse> restore() {
         return MultyApi.INSTANCE.restore()
-                .doOnNext(walletRealmObjects -> {
-                    Timber.i("wallets %s", walletRealmObjects.toString());
-                    database.saveWallets(walletRealmObjects);
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .doOnNext(response -> {
+                    database.saveWallets(response.getWallets());
                 });
     }
 
@@ -126,6 +128,10 @@ public class DataManager {
 
     public void saveWallet(WalletRealmObject wallet) {
         database.saveWallet(wallet);
+    }
+
+    public void saveWallets(List<WalletRealmObject> wallet) {
+        database.saveWallets(wallet);
     }
 
     public Observable<Object> addWalletAddress(AddWalletAddressRequest addWalletAddressRequest) {

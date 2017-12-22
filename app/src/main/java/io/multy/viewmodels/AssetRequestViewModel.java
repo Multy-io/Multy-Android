@@ -95,6 +95,7 @@ public class AssetRequestViewModel extends BaseViewModel {
     }
 
     public void setAmount(double amount){
+        Timber.e("amount %s", String.valueOf(amount));
         this.amount = amount;
     }
 

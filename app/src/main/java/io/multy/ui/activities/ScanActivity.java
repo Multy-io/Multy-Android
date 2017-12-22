@@ -11,10 +11,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import butterknife.BindInt;
 import butterknife.ButterKnife;
 import io.multy.R;
 import io.multy.util.Constants;
+import me.dm7.barcodescanner.zbar.BarcodeFormat;
 import me.dm7.barcodescanner.zbar.Result;
 import me.dm7.barcodescanner.zbar.ZBarScannerView;
 import timber.log.Timber;
@@ -40,6 +44,9 @@ public class ScanActivity extends AppCompatActivity implements ZBarScannerView.R
     @Override
     public void onResume() {
         super.onResume();
+        List<BarcodeFormat> formats = new ArrayList<>();
+        formats.add(BarcodeFormat.QRCODE);
+        scannerView.setFormats(formats);
         scannerView.setResultHandler(this);
         scannerView.startCamera();
     }

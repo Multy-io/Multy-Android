@@ -25,9 +25,9 @@ public class WalletRealmObject extends RealmObject {
     private double balance;
     @SerializedName("currencyID")
     private int currency;
-    @SerializedName("addressIndex")
+    @SerializedName("addressindex")
     private int addressIndex;
-    @SerializedName("walletIndex")
+    @SerializedName("walletindex")
     private int walletIndex;
     private double pendingBalance;
     private boolean isEnabled;
@@ -160,14 +160,16 @@ public class WalletRealmObject extends RealmObject {
 
     @Override
     public String toString() {
-        return "Wallet{" +
+        return "WalletRealmObject{" +
                 "name='" + name + '\'' +
                 ", creationAddress='" + creationAddress + '\'' +
                 ", addresses=" + addresses +
                 ", balance=" + balance +
                 ", currency=" + currency +
-                ", addressIndex='" + addressIndex + '\'' +
-                ", walletIndex='" + walletIndex + '\'' +
+                ", addressIndex=" + addressIndex +
+                ", walletIndex=" + walletIndex +
+                ", pendingBalance=" + pendingBalance +
+                ", isEnabled=" + isEnabled +
                 '}';
     }
 }

@@ -18,8 +18,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/AppTheme">
 
-        <activity
-            android:name=".ui.activities.MainActivity"
+        <activity android:name=".ui.activities.SplashActivity"
+            android:theme="@style/SplashTheme"
             android:launchMode="singleTask"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -50,6 +50,41 @@
                     android:host="zn0o.test-app.link"
                     android:scheme="https" />
             </intent-filter>
+
+        </activity>
+
+        <activity
+            android:name=".ui.activities.MainActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
+
+            <!--&lt;!&ndash; Branch URI scheme &ndash;&gt;-->
+            <!--<intent-filter>-->
+                <!--<data-->
+                    <!--android:host="open"-->
+                    <!--android:scheme="multyrelease" />-->
+                <!--<action android:name="android.intent.action.VIEW" />-->
+
+                <!--<category android:name="android.intent.category.DEFAULT" />-->
+                <!--<category android:name="android.intent.category.BROWSABLE" />-->
+            <!--</intent-filter>-->
+
+            <!--&lt;!&ndash; Branch App Links &ndash;&gt;-->
+            <!--<intent-filter android:autoVerify="true">-->
+                <!--<action android:name="android.intent.action.VIEW" />-->
+
+                <!--<category android:name="android.intent.category.DEFAULT" />-->
+                <!--<category android:name="android.intent.category.BROWSABLE" />-->
+
+                <!--<data-->
+                    <!--android:host="zn0o.test-app.link"-->
+                    <!--android:scheme="https" />-->
+            <!--</intent-filter>-->
 
         </activity>
         <activity
