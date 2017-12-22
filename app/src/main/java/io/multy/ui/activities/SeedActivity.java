@@ -20,7 +20,6 @@ import io.multy.util.Constants;
 
 import io.multy.util.FirstLaunchHelper;
 import io.multy.util.JniException;
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 
 public class SeedActivity extends AppCompatActivity {

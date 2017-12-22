@@ -12,6 +12,7 @@ import io.realm.RealmObject;
 
 public class Output extends RealmObject{
 
+    private int addressId;
     @SerializedName("txid")
     private String txId;
     @SerializedName("txoutid")
@@ -61,6 +62,14 @@ public class Output extends RealmObject{
 
     public void setTxOutScript(String txOutScript) {
         this.txOutScript = txOutScript;
+    }
+
+    public int getAddressId() {
+        return addressId;
+    }
+
+    public void setAddressId(int addressId) {
+        this.addressId = addressId;
     }
 
     @Override

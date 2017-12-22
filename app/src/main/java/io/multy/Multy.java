@@ -3,21 +3,10 @@ package io.multy;
 import android.app.Application;
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.provider.Settings;
 
-import com.crashlytics.android.Crashlytics;
 import com.samwolfand.oneprefs.Prefs;
 
 import io.branch.referral.Branch;
-import io.multy.model.DataManager;
-import io.multy.model.entities.ByteSeed;
-import io.multy.model.entities.DeviceId;
-import io.multy.model.entities.Mnemonic;
-import io.multy.model.entities.UserId;
-import io.multy.util.Constants;
-import io.multy.util.FirstLaunchHelper;
-import io.multy.util.JniException;
-import io.multy.util.NativeDataHelper;
 import io.realm.Realm;
 import timber.log.Timber;
 
@@ -48,11 +37,6 @@ public class Multy extends Application {
 //        } catch (JniException e) {
 //            e.printStackTrace();
 //        }
-
-        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                .setDefaultFontPath("montseratt_regular.ttf")
-                .setFontAttrId(R.attr.fontPath)
-                .build());
 
         context = getApplicationContext();
     }

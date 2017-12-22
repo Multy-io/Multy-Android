@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
-import android.support.constraint.ConstraintSet;
 import android.support.constraint.Group;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
@@ -31,14 +30,12 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.multy.Multy;
 import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.model.DataManager;
 import io.multy.model.entities.Output;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.entities.wallet.WalletRealmObject;
-import io.multy.model.responses.AddressBalanceResponse;
 import io.multy.model.responses.WalletsResponse;
 import io.multy.ui.activities.CreateAssetActivity;
 import io.multy.ui.activities.SeedActivity;
@@ -52,7 +49,6 @@ import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import timber.log.Timber;
 
 public class AssetsFragment extends BaseFragment {
 
@@ -100,6 +96,42 @@ public class AssetsFragment extends BaseFragment {
         viewModel = ViewModelProviders.of(getActivity()).get(AssetsViewModel.class);
         viewModel.setContext(getActivity());
 
+        if (new DataManager(getActivity()).getUserId() != null) {
+            viewModel.rates.observe(this, currenciesRate -> walletsAdapter.updateRates(currenciesRate));
+            viewModel.init(getLifecycle());
+            viewModel.graphPoints.observe(this, graphPoints -> {
+                float[] values = new float[graphPoints.size()];
+                String[] stamps = new String[graphPoints.size()];
+
+                for (int i = 0; i < graphPoints.size(); i++) {
+                    values[i] = graphPoints.get(i).getPrice();
+                    stamps[i] = graphPoints.get(i).getDate();
+
+                    sparkView.setLineColor(getResources().getColor(R.color.colorPrimaryDark));
+                    sparkView.setAdapter(new SparkAdapter() {
+                        @Override
+                        public int getCount() {
+                            return graphPoints.size();
+                        }
+
+                        @Override
+                        public Object getItem(int index) {
+                            return stamps[index];
+                        }
+
+                        @Override
+                        public float getY(int index) {
+                            return values[index];
+                        }
+
+                        @Override
+                        public boolean hasBaseLine() {
+                            return false;
+                        }
+                    });
+                }
+            });
+        }
         return view;
     }
 
@@ -119,45 +151,6 @@ public class AssetsFragment extends BaseFragment {
         if (Prefs.contains(Constants.PREF_IS_FIRST_START)) {
             updateWallets();
         }
-    }
-
-    private void updateBalance(final int position, final String creationAddress) {
-        MultyApi.INSTANCE.getBalanceByAddress(1, creationAddress).enqueue(new Callback<AddressBalanceResponse>() {
-        viewModel.rates.observe(this, currenciesRate -> walletsAdapter.updateRates(currenciesRate));
-        viewModel.init(getLifecycle());
-        viewModel.graphPoints.observe(this, graphPoints -> {
-            float[] values = new float[graphPoints.size()];
-            String[] stamps = new String[graphPoints.size()];
-
-            for (int i = 0; i < graphPoints.size(); i++) {
-                values[i] = graphPoints.get(i).getPrice();
-                stamps[i] = graphPoints.get(i).getDate();
-
-            sparkView.setLineColor(getResources().getColor(R.color.colorPrimaryDark));
-            sparkView.setAdapter(new SparkAdapter() {
-                @Override
-                public int getCount() {
-                    return graphPoints.size();
-                }
-
-                @Override
-                public Object getItem(int index) {
-                    return stamps[index];
-                }
-
-                @Override
-                public float getY(int index) {
-                    return values[index];
-                }
-
-                @Override
-                public boolean hasBaseLine() {
-                    return false;
-                }
-            });
-        });
-
-        return view;
     }
 
     private void updateWallets() {
@@ -239,8 +232,7 @@ public class AssetsFragment extends BaseFragment {
                 onWalletImportClick();
             }
         };
-        WalletActionsDialog dialog = (WalletActionsDialog) getChildFragmentManager()
-                .findFragmentByTag(WalletActionsDialog.TAG);
+        WalletActionsDialog dialog = (WalletActionsDialog) getChildFragmentManager().findFragmentByTag(WalletActionsDialog.TAG);
         if (dialog == null) {
             dialog = WalletActionsDialog.newInstance(callback);
         }
@@ -281,13 +273,4 @@ public class AssetsFragment extends BaseFragment {
         startActivity(new Intent(getActivity(), SeedActivity.class).addCategory(Constants.EXTRA_RESTORE));
         Prefs.putBoolean(Constants.PREF_IS_FIRST_START, false);
     }
-
-//    @OnClick(R.id.title)
-//    void onTitleCLick() {
-//        getActivity().getSupportFragmentManager()
-//                .beginTransaction()
-//                .addToBackStack(null)
-//                .replace(R.id.full_container, AssetInfoFragment.newInstance())
-//                .commit();
-//    }
 }

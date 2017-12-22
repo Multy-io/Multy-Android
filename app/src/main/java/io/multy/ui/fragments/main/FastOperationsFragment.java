@@ -28,6 +28,7 @@ import io.multy.ui.activities.AssetSendActivity;
 import io.multy.ui.activities.MainActivity;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.AnimationUtils;
+import io.multy.util.Constants;
 import io.multy.viewmodels.FeedViewModel;
 
 /**

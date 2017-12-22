@@ -14,7 +14,6 @@ import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.samwolfand.oneprefs.Prefs;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
@@ -54,8 +53,8 @@ public enum MultyApi implements MultyApiInterface {
     INSTANCE {
 
 
-        static final String BASE_URL = "http://192.168.0.121:7778/";  // local
-//        static final String BASE_URL = "http://88.198.47.112:7780/";  // remote
+//        static final String BASE_URL = "http://192.168.0.121:7778/";  // local
+        static final String BASE_URL = "http://88.198.47.112:7778/";  // remote
 
 
         private ApiServiceInterface api = new Retrofit.Builder()

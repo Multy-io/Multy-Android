@@ -13,8 +13,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.multy.R;
 import io.multy.ui.fragments.BaseFragment;
+import io.multy.ui.fragments.PinFragment;
 import io.multy.viewmodels.ContactsViewModel;
 
 /**
@@ -35,7 +38,12 @@ public class ContactsFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_contacts, container, false);
         viewModel = ViewModelProviders.of(this).get(ContactsViewModel.class);
+        ButterKnife.bind(this, view);
         return view;
     }
 
+    @OnClick(R.id.image_address)
+    public void onClickAddresses() {
+        new PinFragment().show(getFragmentManager(), "");
+    }
 }
