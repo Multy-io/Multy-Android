@@ -38,11 +38,15 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <com.hrules.charter.CharterLine
+            <com.robinhood.spark.SparkView
                 android:id="@+id/chart"
                 android:layout_width="match_parent"
                 android:layout_height="140dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
                 android:layout_marginTop="8dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/text_main" />
 
             <View

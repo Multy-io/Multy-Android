@@ -76,18 +76,8 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         Log.i("wise", "subscribing to topic " + userId);
         FirebaseMessaging.getInstance().subscribeToTopic("btcTransactionUpdate-" + userId);
 
+
 //        preventRootIfDetected();
-    }
-
-    public static String byteArrayToHex(byte[] a) {
-        StringBuilder sb = new StringBuilder(a.length * 2);
-        for (byte b : a)
-            sb.append(String.format("%02x", b));
-        return sb.toString();
-    }
-
-    private void getRealmedAddresses() {
-
     }
 
     private void preventRootIfDetected() {
@@ -106,7 +96,6 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
 
     private void initBranchIO() {
         Branch branch = Branch.getInstance(getApplicationContext());
-
         branch.initSession((referringParams, error) -> {
             Log.i(getClass().getSimpleName(), "branch io link");
             if (error == null) {

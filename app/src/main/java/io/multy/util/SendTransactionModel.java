@@ -6,10 +6,7 @@
 
 package io.multy.util;
 
-import android.util.Log;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import io.multy.Multy;
 import io.multy.model.DataManager;
@@ -32,29 +29,22 @@ public class SendTransactionModel {
     public SendTransactionModel(int walletIndex, String amount) {
         wallet = new DataManager(Multy.getContext()).getWallet(walletIndex);
         initAddresses(Long.valueOf(amount));
-        Log.i(TAG, "consctuctor");
     }
 
     public void initAddresses(long amount) {
         long spendableAmount = 0;
         addresses = new ArrayList<>();
 
-        for (int i = 1; i < wallet.getAddresses().size(); i++){
-            addresses.add(wallet.getAddresses().get(i));
+        for (WalletAddress walletAddress : wallet.getAddresses()) {
+            if (walletAddress.getAmount() != 0) {
+                spendableAmount += walletAddress.getAmount();
+                addresses.add(walletAddress);
+            }
+
+            if (spendableAmount > amount) {
+                break;
+            }
         }
-
-//        for (WalletAddress walletAddress : wallet.getAddresses()) {
-//            if (walletAddress.getAmount() != 0) {
-//                spendableAmount += walletAddress.getAmount();
-//                addresses.add(walletAddress);
-//            }
-//
-//            if (spendableAmount > amount) {
-//                break;
-//            }
-//        }
-
-        Log.i(TAG, "init addresses " + addresses.size());
     }
 
     private WalletAddress getAddressByIndex(int index) {
@@ -68,7 +58,6 @@ public class SendTransactionModel {
     }
 
     public void setupFields(int index) {
-        Log.i(TAG, "setup fields called with index " + index);
         WalletAddress walletAddress = getAddressByIndex(index);
 
         final int size = walletAddress.getOutputs().size();
@@ -96,9 +85,7 @@ public class SendTransactionModel {
     }
 
     public int[] getAddressesIndexes() {
-        Log.i(TAG, "get addresses indexes called");
         int[] indexes = new int[addresses.size()];
-
         for (int i = 0; i < indexes.length; i++) {
             indexes[i] = addresses.get(i).getIndex();
         }
@@ -107,24 +94,18 @@ public class SendTransactionModel {
     }
 
     public int[] getOutIds() {
-        for (int id : outIds){
-            Log.i("wise", "id " + id);
-        }
         return outIds;
     }
 
     public String[] getHashes() {
-        Log.i("wise", "hashes " + Arrays.toString(hashes));
         return hashes;
     }
 
     public String[] getPubKeys() {
-        Log.i("wise", "pubkeys " + Arrays.toString(pubKeys));
         return pubKeys;
     }
 
     public String[] getAmounts() {
-        Log.i("wise", "amounts " + Arrays.toString(amounts));
         return amounts;
     }
 }

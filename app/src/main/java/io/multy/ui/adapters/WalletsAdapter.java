@@ -14,8 +14,10 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.multy.Multy;
 import io.multy.R;
 import io.multy.api.socket.CurrenciesRate;
+import io.multy.model.DataManager;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.ui.activities.AssetActivity;
 import io.multy.util.Constants;
@@ -55,7 +57,7 @@ public class WalletsAdapter extends RecyclerView.Adapter<WalletsAdapter.Holder> 
         if (balance != 0) {
             try {
                 final double formatBalance = balance / Math.pow(10, 8);
-                final double exchangePrice = rates.getBtcToUsd();
+                final double exchangePrice = rates != null ? rates.getBtcToUsd() : new DataManager(Multy.getContext()).getExchangePriceDB();
                 final String fiatBalance = new DecimalFormat("#.##").format(exchangePrice * formatBalance) + "USD";
                 holder.equals.setText(fiatBalance);
             } catch (Exception e) {
@@ -69,10 +71,6 @@ public class WalletsAdapter extends RecyclerView.Adapter<WalletsAdapter.Holder> 
         holder.pendingAmount.setText(pending != 0 ? CryptoFormatUtils.satoshiToBtc(pending) : String.valueOf(pending));
         holder.currency.setText(String.valueOf(NativeDataHelper.Currency.values()[data.get(position).getCurrency()]));
         holder.imageChain.setImageResource(chain == NativeDataHelper.Currency.BTC ? R.drawable.ic_btc_huge : R.drawable.ic_eth_medium_icon);
-
-//        String fiatBalance = String.valueOf(Double.valueOf(holder.amount.getText().toString()) * exchangePrice).concat(Constants.SPACE).concat(CurrencyCode.USD.name());
-
-//        holder.equals.setText(fiatBalance);
         holder.itemView.setOnClickListener(view -> {
             Intent intent = new Intent(view.getContext(), AssetActivity.class);
             intent.putExtra(Constants.EXTRA_WALLET_ID, data.get(position).getWalletIndex());

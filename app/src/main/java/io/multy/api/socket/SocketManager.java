@@ -10,12 +10,14 @@ import android.arch.lifecycle.MutableLiveData;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.samwolfand.oneprefs.Prefs;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +30,6 @@ import io.socket.client.Ack;
 import io.socket.client.IO;
 import io.socket.client.Manager;
 import io.socket.client.Socket;
-import io.socket.emitter.Emitter;
 import io.socket.engineio.client.Transport;
 import io.socket.engineio.client.transports.WebSocket;
 
@@ -65,7 +66,7 @@ public class SocketManager {
         }
     }
 
-    public void connect(MutableLiveData<CurrenciesRate> rates) {
+    public void connect(MutableLiveData<CurrenciesRate> rates, MutableLiveData<ArrayList<GraphPoint>> graphPoints) {
         try {
             IO.Options options = new IO.Options();
             options.forceNew = true;
@@ -88,42 +89,13 @@ public class SocketManager {
             });
 
             socket
-                    .on(Socket.EVENT_CONNECT_ERROR, args -> {
-//                        Exception e = (Exception) args[0];
-//                        e.printStackTrace();SocketManager.this.log("connection error " + String.valueOf(args[0]));
-                    })
+                    .on(Socket.EVENT_CONNECT_ERROR, args -> ((Exception) args[0]).printStackTrace())
                     .on(Socket.EVENT_CONNECT_TIMEOUT, args -> log("connection timeout"))
-                    .on(Socket.EVENT_CONNECT, args -> {
-                        log("Connected");
-                    })
-                    .on(EVENT_RECEIVE, new Emitter.Listener() {
-                        @Override
-                        public void call(Object... args) {
-                            log("event receive");
-                        }
-                    })
-                    .on(EVENT_EXCHANGE_RESPONSE, new Emitter.Listener() {
-                        @Override
-                        public void call(Object... args) {
-                            log("event exchange response");
-                        }
-                    })
-                    .on(EVENT_EXCHANGE_ALL, new Emitter.Listener() {
-                        @Override
-                        public void call(Object... args) {
-                            log("event EVENT_EXCHANGE_ALL " + String.valueOf(args[0]));
-                        }
-                    })
-                    .on(EVENT_EXCHANGE_UPDATE, new Emitter.Listener() {
-                        @Override
-                        public void call(Object... args) {
-                            rates.postValue(gson.fromJson(String.valueOf(args[0]), CurrenciesRate.class));
-                            log("event EVENT_EXCHANGE_UPDATE " + String.valueOf(args[0]));
-                        }
-                    })
+                    .on(Socket.EVENT_CONNECT, args -> log("Connected"))
+                    .on(EVENT_EXCHANGE_ALL, args -> graphPoints.postValue(gson.fromJson(String.valueOf(args[0]), new TypeToken<ArrayList<GraphPoint>>(){}.getType())))
+                    .on(EVENT_EXCHANGE_UPDATE, args -> rates.postValue(gson.fromJson(String.valueOf(args[0]), CurrenciesRate.class)))
                     .on(Socket.EVENT_DISCONNECT, args -> log("Disconnected"))
                     .on(EVENT_EXCHANGE_RESPONSE, args -> log(String.valueOf(args[0])));
-
             socket.connect();
         } catch (URISyntaxException e) {
             e.printStackTrace();

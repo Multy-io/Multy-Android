@@ -6,7 +6,6 @@
 
 package io.multy.ui.fragments.main;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,7 +21,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.hrules.charter.CharterLine;
+import com.robinhood.spark.SparkAdapter;
+import com.robinhood.spark.SparkView;
 import com.samwolfand.oneprefs.Prefs;
 
 import java.util.ArrayList;
@@ -32,8 +32,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.api.MultyApi;
-import io.multy.api.socket.CurrenciesRate;
-import io.multy.api.socket.SocketManager;
 import io.multy.model.DataManager;
 import io.multy.model.entities.Output;
 import io.multy.model.entities.wallet.WalletAddress;
@@ -41,7 +39,6 @@ import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.model.responses.WalletsResponse;
 import io.multy.ui.activities.CreateAssetActivity;
 import io.multy.ui.activities.SeedActivity;
-import io.multy.ui.adapters.PortfoliosAdapter;
 import io.multy.ui.adapters.WalletsAdapter;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
@@ -52,11 +49,6 @@ import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-/**
- * Created by Ihar Paliashchuk on 02.11.2017.
- * ihar.paliashchuk@gmail.com
- */
 
 public class AssetsFragment extends BaseFragment {
 
@@ -72,14 +64,11 @@ public class AssetsFragment extends BaseFragment {
     FloatingActionButton buttonAdd;
     @BindView(R.id.container_create_restore)
     ConstraintLayout containerCreateRestore;
-
     @BindView(R.id.chart)
-    CharterLine charterLine;
+    SparkView sparkView;
 
     private AssetsViewModel viewModel;
     private WalletsAdapter walletsAdapter;
-    private PortfoliosAdapter portfoliosAdapter;
-    private SocketManager socketManager;
 
     public static AssetsFragment newInstance() {
         return new AssetsFragment();
@@ -95,7 +84,6 @@ public class AssetsFragment extends BaseFragment {
         }
         walletsAdapter = new WalletsAdapter(wallets);
         walletsAdapter = new WalletsAdapter(new ArrayList<>());
-        portfoliosAdapter = new PortfoliosAdapter();
     }
 
     @Nullable
@@ -107,13 +95,42 @@ public class AssetsFragment extends BaseFragment {
         initialize();
         viewModel = ViewModelProviders.of(getActivity()).get(AssetsViewModel.class);
         viewModel.setContext(getActivity());
-        viewModel.rates.observe(this, new Observer<CurrenciesRate>() {
-            @Override
-            public void onChanged(@Nullable CurrenciesRate currenciesRate) {
-                walletsAdapter.updateRates(currenciesRate);
-            }
-        });
+        viewModel.rates.observe(this, currenciesRate -> walletsAdapter.updateRates(currenciesRate));
         viewModel.init(getLifecycle());
+        viewModel.graphPoints.observe(this, graphPoints -> {
+            float[] values = new float[graphPoints.size()];
+            String[] stamps = new String[graphPoints.size()];
+
+            for (int i = 0; i < graphPoints.size(); i++) {
+                values[i] = graphPoints.get(i).getPrice();
+                stamps[i] = graphPoints.get(i).getDate();
+            }
+
+            sparkView.setLineColor(getResources().getColor(R.color.colorPrimaryDark));
+            sparkView.setAdapter(new SparkAdapter() {
+                @Override
+                public int getCount() {
+                    return graphPoints.size();
+                }
+
+                @Override
+                public Object getItem(int index) {
+                    return stamps[index];
+                }
+
+                @Override
+                public float getY(int index) {
+                    return values[index];
+                }
+
+                @Override
+                public boolean hasBaseLine() {
+                    return false;
+                }
+            });
+        });
+
+
         return view;
     }
 
@@ -175,7 +192,6 @@ public class AssetsFragment extends BaseFragment {
     }
 
     private void initialize() {
-        setupViewPager();
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setAutoMeasureEnabled(true);
         recyclerWallets.setLayoutManager(layoutManager);
@@ -189,24 +205,6 @@ public class AssetsFragment extends BaseFragment {
 
     private void setAdapter() {
         recyclerWallets.setAdapter(walletsAdapter);
-    }
-
-    private void setupViewPager() {
-//        pagerPortfolios.setAdapter(portfoliosAdapter);
-//        pagerPortfolios.setPageMargin(40);
-        setVisibilityToPortfolios(false);
-    }
-
-    private void onItemClick() {
-
-    }
-
-    private void onClickPortfolio() {
-
-    }
-
-    private void onClickAsset() {
-
     }
 
     private void showAddWalletActions() {
@@ -235,17 +233,6 @@ public class AssetsFragment extends BaseFragment {
 
     private void onWalletAddClick() {
         startActivity(new Intent(getContext(), CreateAssetActivity.class));
-    }
-
-    private void setVisibilityToPortfolios(boolean isVisible) {
-        int visibility = isVisible ? View.VISIBLE : View.GONE;
-//        pagerPortfolios.setVisibility(visibility);
-    }
-
-    @Override
-    public void onDestroy() {
-//        socketManager.disconnect();
-        super.onDestroy();
     }
 
     @OnClick(R.id.button_add)

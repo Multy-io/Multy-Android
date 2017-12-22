@@ -27,6 +27,7 @@ android {
                 cppFlags "-std=c++11"
                 arguments "-DWITH_TESTS=1"
                 arguments "-DPATH_TO_JNI_WRAPPER=C:\\workspace\\Multy-android\\app\\src\\main\\cpp\\scratch.cpp"
+                arguments "-DANDROID_STL=c++_shared"
             }
         }
         ndk {
@@ -109,7 +110,7 @@ dependencies {
         exclude group: 'org.json', module: 'json'
     }
     implementation 'com.madgag.spongycastle:prov:1.58.0.0'
-    implementation 'com.hrules:charter:1.5.1'
+    implementation 'com.robinhood.spark:spark:1.2.0'
 }
 
 apply plugin: 'com.google.gms.google-services'
