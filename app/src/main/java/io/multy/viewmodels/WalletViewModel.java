@@ -19,14 +19,11 @@ import io.multy.model.DataManager;
 import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.entities.wallet.WalletRealmObject;
-import io.multy.model.responses.UserAssetsResponse;
-import io.multy.model.responses.WalletInfo;
 import io.multy.ui.activities.AssetActivity;
 import io.multy.util.Constants;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import io.realm.RealmList;
 import okhttp3.ResponseBody;
@@ -123,22 +120,23 @@ public class WalletViewModel extends BaseViewModel {
         WalletRealmObject walletRealmObject = null;
         try {
             List<WalletRealmObject> wallets = dataManager.getWallets();
-            final int index = wallets.size();
+            final int walletIndex = wallets.size();
             final int currency = NativeDataHelper.Currency.BTC.getValue(); //TODO implement choosing crypto currency using enum NativeDataHelper.CURRENCY
-            String creationAddress = NativeDataHelper.makeAccountAddress(dataManager.getSeed().getSeed(), index, currency);
+
+            String creationAddress = NativeDataHelper.makeAccountAddress(dataManager.getSeed().getSeed(), walletIndex, 0, currency);
+
             walletRealmObject = new WalletRealmObject();
             walletRealmObject.setName(walletName);
+
             RealmList<WalletAddress> addresses = new RealmList<>();
             addresses.add(new WalletAddress(0, creationAddress));
+
             walletRealmObject.setAddresses(addresses);
-//            if (textViewChainCurrency.getText().toString().equals(Constants.BTC)) {
             walletRealmObject.setCurrency(0);
-//            } else {
-//                walletRealmObject.setCurrency(1);
-//            }
             walletRealmObject.setAddressIndex(0);
             walletRealmObject.setCreationAddress(creationAddress);
-            walletRealmObject.setWalletIndex(index);
+            walletRealmObject.setWalletIndex(walletIndex);
+
             saveWallet(activity, walletRealmObject);
         } catch (JniException e) {
             e.printStackTrace();

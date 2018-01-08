@@ -38,6 +38,7 @@ import butterknife.OnClick;
 import io.branch.referral.Branch;
 import io.multy.R;
 import io.multy.model.DataManager;
+import io.multy.model.entities.UserId;
 import io.multy.ui.fragments.main.AssetsFragment;
 import io.multy.ui.fragments.main.ContactsFragment;
 import io.multy.ui.fragments.main.FastOperationsFragment;
@@ -67,12 +68,14 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         ButterKnife.bind(this);
         isFirstFragmentCreation = true;
         setupFooter();
-        setFragment(R.id.container_frame, AssetsFragment.newInstance());
 
+        onTabSelected(tabLayout.getTabAt(0));
 
-        String userId = new DataManager(this).getUserId().getUserId();
-        Log.i("wise", "subscribing to topic " + userId);
-        FirebaseMessaging.getInstance().subscribeToTopic("btcTransactionUpdate-" + userId);
+        UserId userId = new DataManager(this).getUserId();
+        if (userId != null) {
+            Log.i("wise", "subscribing to topic " + userId.getUserId());
+            FirebaseMessaging.getInstance().subscribeToTopic("btcTransactionUpdate-" + userId.getUserId());
+        }
     }
 
     @Override
@@ -91,14 +94,6 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
                     Log.i(getClass().getSimpleName(), "branch io link exist");
                     getIntent().putExtra(Constants.DEEP_LINK_QR_CODE, qrCode);
                 }
-
-//                {"session_id":"465086124545736122","identity_id":"465073643500779705","link":"https://zn0o.test-app.link?%24identity_id=465073643500779705",
-//                  "data":"{\"$og_title\":\"QR_CODE\",\"$publicly_indexable\":\"true\",\"~creation_source\":2,\"$og_description\":\"Multi cryptocurrency and assets open-source wallet\",
-//                  \"+referrer\":\"com.skype.raider\",\"+click_timestamp\":1512122667,\"QR_CODE\":\"bitcoin:1GLY7sDe7a6xsewDdUNA6F8CEoAxQsHV37\",
-//                  \"source\":\"android\",\"$identity_id\":\"465073643500779705\",\"$og_image_url\":\"http://multy.io/wp-content/uploads/2017/11/logo-1.png\",
-//                  \"~feature\":\"Share\",\"+match_guaranteed\":false,\"$desktop_url\":\"http://multy.io\",\"~tags\":[\"bitcoin:1GLY7sDe7a6xsewDdUNA6F8CEoAxQsHV37\"],
-//                  \"$canonical_identifier\":\"QR_CODE/bitcoin:1GLY7sDe7a6xsewDdUNA6F8CEoAxQsHV37\",\"+clicked_branch_link\":true,\"$one_time_use\":false,
-//                  \"~id\":\"465075453422808951\",\"+is_first_session\":false,\"~referring_link\":\"https://zn0o.test-app.link/7kshikidwI\"}","device_fingerprint_id":"465073643483986343"}
             } else {
                 Log.i(getClass().getSimpleName(), error.getMessage());
             }
@@ -110,18 +105,8 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
                 .beginTransaction()
                 .replace(container, fragment);
 
-        if (!isFirstFragmentCreation) {
-            transaction.addToBackStack(fragment.getClass().getName());
-        }
-
         isFirstFragmentCreation = false;
         transaction.commit();
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        unCheckAllTabs();
     }
 
     @Override

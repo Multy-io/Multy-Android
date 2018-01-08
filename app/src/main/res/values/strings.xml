@@ -167,5 +167,6 @@
     <string name="outputs">Outputs</string>
     <string name="enter_pin">Enter PIN</string>
     <string name="channel_id">Multy wallet</string>
+    <string name="graph_title">24h BTC to USD graph</string>
 
 </resources>

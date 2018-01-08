@@ -16,6 +16,7 @@ static def releaseTime() {
 android {
     compileSdkVersion 26
     defaultConfig {
+        vectorDrawables.useSupportLibrary = true
         applicationId "io.multy"
         minSdkVersion 21
         targetSdkVersion 26
@@ -72,7 +73,7 @@ dependencies {
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.android.support.constraint:constraint-layout:1.1.0-beta3'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.0-beta4'
     implementation "com.android.support:recyclerview-v7:26.1.0"
     implementation "com.android.support:cardview-v7:26.1.0"
     implementation "com.android.support:design:26.1.0"
@@ -87,13 +88,13 @@ dependencies {
     implementation 'com.jakewharton:butterknife:8.8.1'
     implementation 'com.jakewharton.timber:timber:4.6.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
-    implementation 'com.google.android.gms:play-services-gcm:11.6.2'
-    implementation 'com.google.firebase:firebase-core:11.6.2'
+    implementation 'com.google.android.gms:play-services-gcm:11.8.0'
+    implementation 'com.google.firebase:firebase-core:11.8.0'
     implementation('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
         transitive = true
     }
-    implementation 'com.google.firebase:firebase-core:11.6.2'
-    implementation 'com.google.firebase:firebase-messaging:11.6.2'
+    implementation 'com.google.firebase:firebase-core:11.8.0'
+    implementation 'com.google.firebase:firebase-messaging:11.8.0'
 
     implementation "android.arch.lifecycle:extensions:1.0.0"
     testImplementation "android.arch.core:core-testing:1.0.0"
@@ -110,7 +111,7 @@ dependencies {
         exclude group: 'org.json', module: 'json'
     }
     implementation 'com.madgag.spongycastle:prov:1.58.0.0'
-    implementation 'com.robinhood.spark:spark:1.2.0'
+    implementation 'com.diogobernardino:williamchart:2.5.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

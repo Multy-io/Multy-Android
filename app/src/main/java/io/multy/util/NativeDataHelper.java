@@ -51,7 +51,7 @@ public class NativeDataHelper {
 
     public static native byte[] makeSeed(String mnemonic) throws JniException;
 
-    public static native String makeAccountAddress(byte[] seed, int index, int currency) throws JniException;
+    public static native String makeAccountAddress(byte[] seed, int walletIndex, int addressIndex, int currency) throws JniException;
 
     public static native String makeAccountId(byte[] seed) throws JniException;
 

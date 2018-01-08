@@ -17,7 +17,6 @@ import com.google.zxing.common.BitMatrix;
 
 import java.util.List;
 
-import io.multy.Multy;
 import io.multy.model.DataManager;
 import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.model.entities.wallet.WalletAddress;
@@ -27,9 +26,7 @@ import io.multy.util.Constants;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-import io.realm.RealmList;
 import timber.log.Timber;
 
 /**
@@ -164,17 +161,17 @@ public class AssetRequestViewModel extends BaseViewModel {
             isLoading.setValue(true);
             isLoading.call();
 
-            final int index = wallet.getAddresses().size();
+            final int addressIndex = wallet.getAddresses().size();
             final int currency = NativeDataHelper.Currency.BTC.getValue();
             final byte[] seed = dataManager.getSeed().getSeed();
-            String creationAddress = NativeDataHelper.makeAccountAddress(seed, index, currency);
+            String creationAddress = NativeDataHelper.makeAccountAddress(seed, wallet.getWalletIndex(), addressIndex, currency);
 
             // TODO add loading dialog
-            dataManager.addWalletAddress(new AddWalletAddressRequest(wallet.getWalletIndex(), creationAddress, index))
+            dataManager.addWalletAddress(new AddWalletAddressRequest(wallet.getWalletIndex(), creationAddress, addressIndex))
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeOn(Schedulers.io())
                     .subscribe(response -> {
-                        dataManager.saveAddress(wallet, new WalletAddress(index, creationAddress));
+                        dataManager.saveAddress(wallet, new WalletAddress(addressIndex, creationAddress));
                         address.setValue(creationAddress);
 
                         for (WalletAddress address : wallet.getAddresses()) { // to view wallet addresses after adding new address

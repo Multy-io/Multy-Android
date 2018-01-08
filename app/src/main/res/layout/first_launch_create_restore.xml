@@ -22,7 +22,7 @@
     <TextView
         android:id="@+id/text_create"
         style="@style/FirstStartText"
-        android:drawableStart="@drawable/ic_create_wallet"
+        android:drawableStart="@drawable/wallet_create_new_bigger"
         android:text="@string/create_first_wallet"
         app:layout_constraintBottom_toBottomOf="@id/button_create"
         app:layout_constraintEnd_toEndOf="@+id/button_create"
@@ -41,7 +41,7 @@
     <TextView
         android:id="@+id/text_restore"
         style="@style/FirstStartText"
-        android:drawableStart="@drawable/ic_restore"
+        android:drawableStart="@drawable/restore_multy"
         android:text="@string/restore_multy"
         app:layout_constraintBottom_toBottomOf="@+id/button_restore"
         app:layout_constraintEnd_toEndOf="@+id/button_restore"

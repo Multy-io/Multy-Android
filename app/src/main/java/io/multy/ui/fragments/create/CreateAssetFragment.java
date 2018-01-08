@@ -141,7 +141,7 @@ public class CreateAssetFragment extends BaseFragment {
             List<WalletRealmObject> wallets = new DataManager(Multy.getContext()).getWallets();
             final int index = wallets != null && wallets.size() > 0 ? wallets.size() : 0;
             final int currency = NativeDataHelper.Currency.BTC.getValue(); //TODO implement choosing crypto currency using enum NativeDataHelper.CURRENCY
-            String creationAddress = NativeDataHelper.makeAccountAddress(new DataManager(getActivity()).getSeed().getSeed(), index, currency);
+            String creationAddress = NativeDataHelper.makeAccountAddress(new DataManager(getActivity()).getSeed().getSeed(), index, 0, currency);
             walletRealmObject = new WalletRealmObject();
             walletRealmObject.setName(editTextWalletName.getText().toString());
 

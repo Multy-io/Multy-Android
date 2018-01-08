@@ -192,7 +192,7 @@ Java_io_multy_util_NativeDataHelper_makeAccountId(JNIEnv *env, jobject obj, jbyt
 
 JNIEXPORT jstring JNICALL
 Java_io_multy_util_NativeDataHelper_makeAccountAddress(JNIEnv *env, jobject obj, jbyteArray array,
-                                                       jint index, jint currency) {
+                                                       jint walletIndex, jint addressIndex, jint currency) {
 
     using namespace wallet_core::internal;
 
@@ -206,10 +206,10 @@ Java_io_multy_util_NativeDataHelper_makeAccountAddress(JNIEnv *env, jobject obj,
     ERSOR(make_master_key(&seed, reset_sp(rootKey)), jstring());
 
     HDAccountPtr hdAccount;
-    ERSOR(make_hd_account(rootKey.get(), static_cast<Currency >((int) currency), 0, reset_sp(hdAccount)), jstring());
+    ERSOR(make_hd_account(rootKey.get(), static_cast<Currency >((int) currency), addressIndex, reset_sp(hdAccount)), jstring());
 
     AccountPtr account;
-    ERSOR(make_hd_leaf_account(hdAccount.get(), ADDRESS_EXTERNAL, (int) index, reset_sp(account)), jstring());
+    ERSOR(make_hd_leaf_account(hdAccount.get(), ADDRESS_EXTERNAL, walletIndex, reset_sp(account)), jstring());
 
     ConstCharPtr address;
     ERSOR(get_account_address_string(account.get(), reset_sp(address)), jstring());

@@ -30,6 +30,7 @@ import io.multy.util.NativeDataHelper;
 
 public class WalletsAdapter extends RecyclerView.Adapter<WalletsAdapter.Holder> {
 
+    private final static DecimalFormat format = new DecimalFormat("#.##");
     private List<WalletRealmObject> data;
     private CurrenciesRate rates;
 
@@ -52,20 +53,14 @@ public class WalletsAdapter extends RecyclerView.Adapter<WalletsAdapter.Holder> 
         NativeDataHelper.Currency chain = NativeDataHelper.Currency.values()[data.get(position).getCurrency()];
         holder.name.setText(data.get(position).getName());
         double balance = data.get(position).getBalance();
-        double pending = data.get(position).getPendingBalance();
+        double pending = data.get(position).getPendingBalance() + balance;
 
-        if (balance != 0) {
-            try {
-                final double formatBalance = balance / Math.pow(10, 8);
-                final double exchangePrice = rates != null ? rates.getBtcToUsd() : new DataManager(Multy.getContext()).getExchangePriceDB();
-                final String fiatBalance = new DecimalFormat("#.##").format(exchangePrice * formatBalance) + "USD";
-                holder.equals.setText(fiatBalance);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else {
-            holder.equals.setText("0.0 USD");
-        }
+        final double formatBalance = balance / Math.pow(10, 8);
+        final double formatPending = pending / Math.pow(10, 8);
+        final double exchangePrice = rates != null ? rates.getBtcToUsd() : new DataManager(Multy.getContext()).getExchangePriceDB();
+
+        holder.equals.setText(balance == 0 ? "0.0$" : format.format(exchangePrice * formatBalance) + "$");
+        holder.pendingFiat.setText(pending == 0 ? "0.0$" : format.format(exchangePrice * formatPending) + "$");
 
         holder.amount.setText(balance != 0 ? CryptoFormatUtils.satoshiToBtc(balance) : String.valueOf(balance));
         holder.pendingAmount.setText(pending != 0 ? CryptoFormatUtils.satoshiToBtc(pending) : String.valueOf(pending));
@@ -113,8 +108,10 @@ public class WalletsAdapter extends RecyclerView.Adapter<WalletsAdapter.Holder> 
         TextView currency;
         @BindView(R.id.image_chain)
         ImageView imageChain;
-        @BindView(R.id.text_pending_value)
+        @BindView(R.id.text_amount_pending)
         TextView pendingAmount;
+        @BindView(R.id.text_equals_pending)
+        TextView pendingFiat;
 
         Holder(View itemView) {
             super(itemView);

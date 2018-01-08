@@ -10,6 +10,7 @@ package io.multy.api;
 import android.content.Context;
 import android.util.Log;
 
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.samwolfand.oneprefs.Prefs;
 
@@ -85,7 +86,7 @@ public enum MultyApi implements MultyApiInterface {
                                 final DeviceId deviceIdEntity = dataManager.getDeviceId();
                                 final String userId = userIdEntity == null ? "" : userIdEntity.getUserId();
                                 final String deviceId = deviceIdEntity == null ? "" : deviceIdEntity.getDeviceId();
-                                Call<AuthResponse> responseCall = api.auth(new AuthEntity(userId, deviceId, "somePushToken", 2));
+                                Call<AuthResponse> responseCall = api.auth(new AuthEntity(userId, deviceId, FirebaseInstanceId.getInstance().getToken(), 2));
                                 AuthResponse body = responseCall.execute().body();
                                 Prefs.putString(Constants.PREF_AUTH, body.getToken());
 

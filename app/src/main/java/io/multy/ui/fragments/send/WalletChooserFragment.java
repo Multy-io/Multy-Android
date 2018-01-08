@@ -14,12 +14,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.multy.R;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.ui.activities.AssetSendActivity;
 import io.multy.ui.adapters.WalletAdapter;
+import io.multy.ui.adapters.WalletsAdapter;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.viewmodels.AssetSendViewModel;
 
@@ -41,12 +44,7 @@ public class WalletChooserFragment extends BaseFragment implements WalletAdapter
         View view = inflater.inflate(R.layout.fragment_wallet_chooser, container, false);
         ButterKnife.bind(this, view);
         viewModel = ViewModelProviders.of(getActivity()).get(AssetSendViewModel.class);
-//        if (viewModel.getExchangePriceLive().getValue() != null) {
-            setupAdapter(viewModel.getExchangePrice().getValue());
-//        } else {
-//            viewModel.getExchangePrice();
-//            viewModel.getExchangePriceLive().observe(this, this::setupAdapter);
-//        }
+        setupAdapter();
         return view;
     }
 
@@ -56,10 +54,10 @@ public class WalletChooserFragment extends BaseFragment implements WalletAdapter
         ((AssetSendActivity) getActivity()).setFragment(R.string.transaction_fee, R.id.container, TransactionFeeFragment.newInstance());
     }
 
-    private void setupAdapter(Double exchangePrice){
-        WalletAdapter adapter = new WalletAdapter(exchangePrice, this);
-        adapter.setWallets(viewModel.getWalletsDB());
-        recyclerView.setAdapter(adapter);
+    private void setupAdapter() {
+        WalletsAdapter walletsAdapter = new WalletsAdapter(new ArrayList<>());
+        recyclerView.setAdapter(walletsAdapter);
+        walletsAdapter.setData(viewModel.getWalletsDB());
     }
 
 }

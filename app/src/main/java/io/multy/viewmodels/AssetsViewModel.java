@@ -24,6 +24,7 @@ import io.multy.api.socket.SocketManager;
 import io.multy.model.DataManager;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.util.Constants;
+import io.multy.util.SingleLiveEvent;
 
 public class AssetsViewModel extends BaseViewModel implements LifecycleObserver {
 
@@ -31,7 +32,7 @@ public class AssetsViewModel extends BaseViewModel implements LifecycleObserver 
     private SocketManager socketManager;
     public MutableLiveData<List<WalletRealmObject>> wallets = new MutableLiveData<>();
     public MutableLiveData<CurrenciesRate> rates = new MutableLiveData<>();
-    public MutableLiveData<ArrayList<GraphPoint>> graphPoints = new MutableLiveData<>();
+    public SingleLiveEvent<ArrayList<GraphPoint>> graphPoints = new SingleLiveEvent<>();
 
     public void init(Lifecycle lifecycle) {
         dataManager = new DataManager(Multy.getContext());

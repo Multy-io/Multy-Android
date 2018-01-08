@@ -30,6 +30,7 @@ import io.socket.client.Ack;
 import io.socket.client.IO;
 import io.socket.client.Manager;
 import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
 import io.socket.engineio.client.Transport;
 import io.socket.engineio.client.transports.WebSocket;
 
@@ -92,8 +93,20 @@ public class SocketManager {
                     .on(Socket.EVENT_CONNECT_ERROR, args -> ((Exception) args[0]).printStackTrace())
                     .on(Socket.EVENT_CONNECT_TIMEOUT, args -> log("connection timeout"))
                     .on(Socket.EVENT_CONNECT, args -> log("Connected"))
-                    .on(EVENT_EXCHANGE_ALL, args -> graphPoints.postValue(gson.fromJson(String.valueOf(args[0]), new TypeToken<ArrayList<GraphPoint>>(){}.getType())))
-                    .on(EVENT_EXCHANGE_UPDATE, args -> rates.postValue(gson.fromJson(String.valueOf(args[0]), CurrenciesRate.class)))
+                    .on(EVENT_EXCHANGE_ALL, new Emitter.Listener() {
+                        @Override
+                        public void call(Object... args) {
+                            graphPoints.postValue(gson.fromJson(String.valueOf(args[0]), new TypeToken<ArrayList<GraphPoint>>() {
+                            }.getType()));
+                        }
+                    })
+                    .on(EVENT_EXCHANGE_UPDATE, new Emitter.Listener() {
+                        @Override
+                        public void call(Object... args) {
+                            Log.i("wise", "received rate " + String.valueOf(args[0]));
+                            rates.postValue(gson.fromJson(String.valueOf(args[0]), CurrenciesRate.class));
+                        }
+                    })
                     .on(Socket.EVENT_DISCONNECT, args -> log("Disconnected"))
                     .on(EVENT_EXCHANGE_RESPONSE, args -> log(String.valueOf(args[0])));
             socket.connect();

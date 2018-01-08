@@ -11,15 +11,15 @@ import com.google.gson.annotations.SerializedName;
 public class GraphPoint {
 
     @SerializedName("date")
-    private String date;
+    private long date;
     @SerializedName("price")
     private float price;
 
-    public String getDate() {
+    public long getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(long date) {
         this.date = date;
     }
 

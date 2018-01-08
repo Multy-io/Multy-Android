@@ -18,13 +18,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".ui.activities.SplashActivity"
-            android:theme="@style/SplashTheme"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait">
+        <activity
+            android:name=".ui.activities.SplashActivity"
+            android:noHistory="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
@@ -56,40 +56,9 @@
         <activity
             android:name=".ui.activities.MainActivity"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait">
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
-
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
-
-            <!--&lt;!&ndash; Branch URI scheme &ndash;&gt;-->
-            <!--<intent-filter>-->
-                <!--<data-->
-                    <!--android:host="open"-->
-                    <!--android:scheme="multyrelease" />-->
-                <!--<action android:name="android.intent.action.VIEW" />-->
-
-                <!--<category android:name="android.intent.category.DEFAULT" />-->
-                <!--<category android:name="android.intent.category.BROWSABLE" />-->
-            <!--</intent-filter>-->
-
-            <!--&lt;!&ndash; Branch App Links &ndash;&gt;-->
-            <!--<intent-filter android:autoVerify="true">-->
-                <!--<action android:name="android.intent.action.VIEW" />-->
-
-                <!--<category android:name="android.intent.category.DEFAULT" />-->
-                <!--<category android:name="android.intent.category.BROWSABLE" />-->
-
-                <!--<data-->
-                    <!--android:host="zn0o.test-app.link"-->
-                    <!--android:scheme="https" />-->
-            <!--</intent-filter>-->
-
-        </activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activities.AssetActivity"
-
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
         <activity
@@ -173,7 +142,7 @@
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="@string/channel_id"/>
+            android:value="@string/channel_id" />
 
 
     </application>

@@ -8,18 +8,11 @@ package io.multy.ui.activities;
 
 
 import android.app.AlertDialog;
-import android.content.ComponentName;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Bundle;
-import android.os.CountDownTimer;
-import android.os.PersistableBundle;
-import android.support.annotation.Nullable;
+import android.os.Handler;
 
 import io.multy.storage.DatabaseHelper;
-import io.multy.ui.fragments.BaseSeedFragment;
 import io.multy.util.FirstLaunchHelper;
-import timber.log.Timber;
 
 public class SplashActivity extends BaseActivity {
 
@@ -68,18 +61,10 @@ public class SplashActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
 
-        new CountDownTimer(1000, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-
-            }
-
-            @Override
-            public void onFinish() {
-                startActivity(new Intent(SplashActivity.this, MainActivity.class));
-            }
-        }.start();
-
+        new Handler().postDelayed(() -> {
+            startActivity(new Intent(SplashActivity.this, MainActivity.class));
+            finish();
+        }, 1000);
     }
 
 }

@@ -66,7 +66,15 @@ public class WalletRealmObject extends RealmObject {
         for (WalletAddress walletAddress : addresses) {
             if (walletAddress.getOutputs() != null) {
                 for (Output output : walletAddress.getOutputs()) {
-                    pendingBalance += Integer.valueOf(output.getTxOutAmount());
+                    switch (output.getStatus()) {
+                        case Output.ICOMCING_MEMPOOL:
+                            pendingBalance += Double.valueOf(output.getTxOutAmount());
+                            break;
+                        case Output.OUTCOMING_MEMPOOL:
+                            pendingBalance -= Double.valueOf(output.getTxOutAmount());
+                            break;
+                        case Output.OUTCOMING_BLOCK:
+                    }
                 }
             }
         }

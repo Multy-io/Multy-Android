@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:background="@null"
         android:clickable="false"
-        app:srcCompat="@drawable/ic_settings_tab" />
+        android:src="@drawable/ic_settings_tab" />
 
     <TextView
         android:id="@+id/title"

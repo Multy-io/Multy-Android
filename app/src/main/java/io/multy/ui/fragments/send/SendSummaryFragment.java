@@ -16,8 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.text.DecimalFormat;
-
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -91,7 +89,7 @@ public class SendSummaryFragment extends BaseFragment {
         String addressTo = viewModel.getReceiverAddress().getValue();
 
         try {
-            byte[] transactionHex = NativeDataHelper.makeTransaction(new DataManager(Multy.getContext()).getSeed().getSeed(), 0, String.valueOf(amountSatoshi), "2000", "20000", addressTo);
+            byte[] transactionHex = NativeDataHelper.makeTransaction(new DataManager(Multy.getContext()).getSeed().getSeed(), viewModel.getWallet().getWalletIndex(), String.valueOf(amountSatoshi), "2000", "2000", addressTo);
             String hex = byteArrayToHex(transactionHex);
             Log.i(TAG, "hex= " + hex);
 
