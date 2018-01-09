@@ -10,11 +10,12 @@ package io.multy.ui.activities;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Handler;
+import android.support.v7.app.AppCompatActivity;
 
 import io.multy.storage.DatabaseHelper;
 import io.multy.util.FirstLaunchHelper;
 
-public class SplashActivity extends BaseActivity {
+public class SplashActivity extends AppCompatActivity {
 
     @Override
     protected void onStart() {
@@ -54,7 +55,6 @@ public class SplashActivity extends BaseActivity {
         // if we can create instance of Database, it can be decrypted.
         // Otherwise database is deleted with exiting app.
         new DatabaseHelper(this);
-
     }
 
     @Override

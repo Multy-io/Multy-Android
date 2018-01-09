@@ -13,15 +13,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
@@ -31,6 +28,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.samwolfand.oneprefs.Prefs;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -57,21 +55,17 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
     @BindView(R.id.fast_operations)
     View buttonOperations;
 
-    private boolean isFirstFragmentCreation;
     private int lastTabPosition = 0;
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        isFirstFragmentCreation = true;
         setupFooter();
-
         onTabSelected(tabLayout.getTabAt(0));
 
-        UserId userId = new DataManager(this).getUserId();
+        UserId userId = DataManager.getInstance().getUserId();
         if (userId != null) {
             Log.i("wise", "subscribing to topic " + userId.getUserId());
             FirebaseMessaging.getInstance().subscribeToTopic("btcTransactionUpdate-" + userId.getUserId());
@@ -82,6 +76,14 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
     protected void onResume() {
         super.onResume();
         initBranchIO();
+
+        if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
+            tabLayout.getLayoutParams().height = getResources().getDimensionPixelSize(R.dimen.tab_layout_height);
+            buttonOperations.setVisibility(View.VISIBLE);
+        } else {
+            tabLayout.getLayoutParams().height = 0;
+            buttonOperations.setVisibility(View.GONE);
+        }
     }
 
     private void initBranchIO() {
@@ -101,12 +103,10 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
     }
 
     private void setFragment(@IdRes int container, Fragment fragment) {
-        FragmentTransaction transaction = getSupportFragmentManager()
+        getSupportFragmentManager()
                 .beginTransaction()
-                .replace(container, fragment);
-
-        isFirstFragmentCreation = false;
-        transaction.commit();
+                .replace(container, fragment)
+                .commit();
     }
 
     @Override

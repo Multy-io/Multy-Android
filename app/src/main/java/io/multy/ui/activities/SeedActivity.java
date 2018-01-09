@@ -18,9 +18,6 @@ import io.multy.ui.fragments.seed.HelloSeedFragment;
 import io.multy.ui.fragments.seed.SeedValidationFragment;
 import io.multy.util.Constants;
 
-import io.multy.util.FirstLaunchHelper;
-import io.multy.util.JniException;
-
 
 public class SeedActivity extends AppCompatActivity {
 
@@ -43,17 +40,5 @@ public class SeedActivity extends AppCompatActivity {
                 .beginTransaction()
                 .add(R.id.container, fragment, fragment.getClass().getSimpleName())
                 .commit();
-    }
-
-    @Override
-    protected void onDestroy() {
-        if (getIntent().hasCategory(Constants.EXTRA_RESTORE)) {
-            try {
-                FirstLaunchHelper.setCredentials(null, this); // for case user didn't restore seed phrase
-            } catch (JniException e) {
-                e.printStackTrace();
-            }
-        }
-        super.onDestroy();
     }
 }

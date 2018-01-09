@@ -7,12 +7,10 @@
 package io.multy.util;
 
 import android.app.Activity;
-import android.content.Context;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 
-import com.crashlytics.android.Crashlytics;
 import com.samwolfand.oneprefs.Prefs;
 import com.scottyab.rootbeer.RootBeer;
 
@@ -52,36 +50,27 @@ public class FirstLaunchHelper {
         return Prefs.getInt(Constants.PIN_COUNTER) <= 6;
     }
 
-    public static void setCredentials(String seedPhrase, Context context) throws JniException {
-        if (Prefs.getBoolean(Constants.PREF_FIRST_SUCCESSFUL_START, true)) {
-//            try {
-            String mnemonic = null;
-            byte[] seed;
-            if (TextUtils.isEmpty(seedPhrase)) {
-                mnemonic = NativeDataHelper.makeMnemonic();
-                seed = NativeDataHelper.makeSeed(mnemonic);
-            } else {
-                seed = NativeDataHelper.makeSeed(seedPhrase);
-            }
+    public static void setCredentials(String seedPhrase) throws JniException {
+        String mnemonic = null;
+        byte[] seed;
 
-            final String userId = NativeDataHelper.makeAccountId(seed);
-            final String deviceId = Settings.Secure.ANDROID_ID;
-
-            DataManager dataManager = new DataManager(context);
-            dataManager.saveSeed(new ByteSeed(seed));
-            dataManager.saveUserId(new UserId(userId));
-            if (!TextUtils.isEmpty(mnemonic)) {
-                dataManager.setMnemonic(new Mnemonic(mnemonic));
-            }
-            dataManager.setDeviceId(new DeviceId(deviceId));
-
-            Prefs.putBoolean(Constants.PREF_FIRST_SUCCESSFUL_START, false);
-//            } catch (JniException e) {
-//                e.printStackTrace();
-//                Crashlytics.logException(e);
-//                //TODO show CRITICAL EXCEPTION HERE. Can the app work without seed?
-//            }
+        if (TextUtils.isEmpty(seedPhrase)) {
+            mnemonic = NativeDataHelper.makeMnemonic();
+            seed = NativeDataHelper.makeSeed(mnemonic);
+        } else {
+            seed = NativeDataHelper.makeSeed(seedPhrase);
         }
+
+        final String userId = NativeDataHelper.makeAccountId(seed);
+        final String deviceId = Settings.Secure.ANDROID_ID;
+
+        DataManager dataManager = DataManager.getInstance();
+        dataManager.saveSeed(new ByteSeed(seed));
+        dataManager.saveUserId(new UserId(userId));
+        if (!TextUtils.isEmpty(mnemonic)) {
+            dataManager.setMnemonic(new Mnemonic(mnemonic));
+        }
+        dataManager.setDeviceId(new DeviceId(deviceId));
     }
 
     public static void closeApp(Activity activity) {

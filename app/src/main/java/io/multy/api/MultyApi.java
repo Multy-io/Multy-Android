@@ -19,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
 
-import io.multy.Multy;
 import io.multy.model.DataManager;
 import io.multy.model.entities.AuthEntity;
 import io.multy.model.entities.DeviceId;
@@ -32,7 +31,6 @@ import io.multy.model.responses.AuthResponse;
 import io.multy.model.responses.ExchangePriceResponse;
 import io.multy.model.responses.FeeRatesResponse;
 import io.multy.model.responses.OutputsResponse;
-import io.multy.model.responses.RestoreResponse;
 import io.multy.model.responses.UserAssetsResponse;
 import io.multy.model.responses.WalletsResponse;
 import io.multy.util.Constants;
@@ -81,7 +79,7 @@ public enum MultyApi implements MultyApiInterface {
                             @Nullable
                             @Override
                             public Request authenticate(Route route, okhttp3.Response response) throws IOException {
-                                DataManager dataManager = new DataManager(Multy.getContext());
+                                DataManager dataManager = DataManager.getInstance();
                                 final UserId userIdEntity = dataManager.getUserId();
                                 final DeviceId deviceIdEntity = dataManager.getDeviceId();
                                 final String userId = userIdEntity == null ? "" : userIdEntity.getUserId();
@@ -100,7 +98,7 @@ public enum MultyApi implements MultyApiInterface {
 
         @Override
         public Call<AuthResponse> auth(String userIdString, String deviceIdString, String password) {
-            DataManager dataManager = new DataManager(Multy.getContext());
+            DataManager dataManager = DataManager.getInstance();
             final String userId = dataManager.getUserId().getUserId();
             final String deviceId = dataManager.getDeviceId().getDeviceId();
             return api.auth(new AuthEntity(userId, deviceId, "somePushToken", 2));
@@ -210,8 +208,8 @@ public enum MultyApi implements MultyApiInterface {
         }
 
         @Override
-        public Observable<RestoreResponse> restore() {
-            return api.restore();
+        public Call<WalletsResponse> restore() {
+            return api.getWalletsVerbose();
         }
     }
 }

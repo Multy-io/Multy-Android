@@ -67,6 +67,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activities.SeedActivity"
+            android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activities.AssetRequestActivity"

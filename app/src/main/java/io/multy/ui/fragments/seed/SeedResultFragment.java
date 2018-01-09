@@ -16,11 +16,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.samwolfand.oneprefs.Prefs;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.ui.fragments.BaseSeedFragment;
+import io.multy.util.Constants;
 import io.multy.viewmodels.SeedViewModel;
 
 public class SeedResultFragment extends BaseSeedFragment {
@@ -61,9 +64,14 @@ public class SeedResultFragment extends BaseSeedFragment {
             imageViewResult.setImageResource(R.drawable.ic_fail);
             textViewTitle.setText(R.string.seed_result_fail);
         } else {
+            if (getActivity().getIntent().hasCategory(Constants.EXTRA_RESTORE)) {
+                textViewTitle.setText(R.string.seed_congrats_restore);
+            }
+
             setBrickColor(BRICK_GREEN);
             buttonCancel.setVisibility(View.GONE);
             buttonNext.setText(R.string.great);
+            Prefs.putBoolean(Constants.PREF_APP_INITIALIZED, true);
         }
     }
 

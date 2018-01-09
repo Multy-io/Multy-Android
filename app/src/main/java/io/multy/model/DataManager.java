@@ -6,11 +6,11 @@
 
 package io.multy.model;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 
 import java.util.List;
 
+import io.multy.Multy;
 import io.multy.api.MultyApi;
 import io.multy.api.socket.CurrenciesRate;
 import io.multy.model.entities.ByteSeed;
@@ -25,19 +25,16 @@ import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.model.requests.AddWalletAddressRequest;
 import io.multy.model.responses.AuthResponse;
 import io.multy.model.responses.ExchangePriceResponse;
-import io.multy.model.responses.RestoreResponse;
 import io.multy.model.responses.UserAssetsResponse;
 import io.multy.storage.DatabaseHelper;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
-import io.realm.RealmList;
 import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import timber.log.Timber;
 
 /**
  * Created by Ihar Paliashchuk on 10.11.2017.
@@ -46,17 +43,27 @@ import timber.log.Timber;
 
 public class DataManager {
 
-    private DatabaseHelper database;
+    private static DatabaseHelper databaseHelper;
+    private static DataManager dataManager;
 
-    public DataManager(Context context) {
-        this.database = new DatabaseHelper(context);
+    public static DataManager getInstance() {
+        if (dataManager == null) {
+            dataManager = new DataManager();
+        }
+
+        dataManager.refreshDatabaseHelper();
+        return dataManager;
+    }
+
+    public void refreshDatabaseHelper() {
+        databaseHelper = new DatabaseHelper(Multy.getContext());
     }
 
     public void auth(String userId, String deviceId, String password) {
         MultyApi.INSTANCE.auth(userId, deviceId, password).enqueue(new Callback<AuthResponse>() {
             @Override
             public void onResponse(@NonNull Call<AuthResponse> call, @NonNull Response<AuthResponse> response) {
-                database.saveToken(new Token(response.body()));
+                databaseHelper.saveToken(new Token(response.body()));
             }
 
             @Override
@@ -70,7 +77,7 @@ public class DataManager {
         return MultyApi.INSTANCE.getExchangePrice(originalCurrency, currency)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .doOnNext(exchangePriceResponse -> database.saveExchangePrice(new ExchangePrice(exchangePriceResponse.getUSD())));
+                .doOnNext(exchangePriceResponse -> databaseHelper.saveExchangePrice(new ExchangePrice(exchangePriceResponse.getUSD())));
     }
 
     public Observable<UserAssetsResponse> getUserAssets() {
@@ -81,57 +88,44 @@ public class DataManager {
         return MultyApi.INSTANCE.getWalletAddresses(walletId);
     }
 
-    public Observable<RestoreResponse> restore() {
-        return MultyApi.INSTANCE.restore()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .doOnNext(response -> {
-                    database.saveWallets(response.getWallets());
-                });
-    }
-
     public void saveWalletAmount(WalletRealmObject walletRealmObject, double amount) {
-        database.saveAmount(walletRealmObject, amount);
+        databaseHelper.saveAmount(walletRealmObject, amount);
     }
 
     public void saveRootKey(RootKey key) {
-        database.saveRootKey(key);
+        databaseHelper.saveRootKey(key);
     }
 
     public RootKey getRootKey() {
-        return database.getRootKey();
+        return databaseHelper.getRootKey();
     }
 
     public void saveToken(Token token) {
-        database.saveToken(token);
+        databaseHelper.saveToken(token);
     }
 
     public Token getToken() {
-        return database.getToken();
+        return databaseHelper.getToken();
     }
 
     public void saveUserId(UserId userId) {
-        database.saveUserId(userId);
+        databaseHelper.saveUserId(userId);
     }
 
     public UserId getUserId() {
-        return database.getUserId();
+        return databaseHelper.getUserId();
     }
 
     public void saveSeed(ByteSeed seed) {
-        database.saveSeed(seed);
+        databaseHelper.saveSeed(seed);
     }
 
     public ByteSeed getSeed() {
-        return database.getSeed();
-    }
-
-    public void saveWallet(WalletRealmObject wallet) {
-        database.saveWallet(wallet);
+        return databaseHelper.getSeed();
     }
 
     public void saveWallets(List<WalletRealmObject> wallet) {
-        database.saveWallets(wallet);
+        databaseHelper.saveWallets(wallet);
     }
 
     public Observable<Object> addWalletAddress(AddWalletAddressRequest addWalletAddressRequest) {
@@ -139,74 +133,74 @@ public class DataManager {
     }
 
     public void saveAddress(WalletRealmObject wallet, WalletAddress address) {
-        database.saveAddress(wallet, address);
+        databaseHelper.saveAddress(wallet, address);
     }
 
     public WalletRealmObject getWallet() {
-        return database.getWallet();
+        return databaseHelper.getWallet();
     }
 
     public Flowable<RealmResults<WalletRealmObject>> getWalletsFlowable() {
-        return database.getWallets().asFlowable();
+        return databaseHelper.getWallets().asFlowable();
     }
 
     public RealmResults<WalletRealmObject> getWallets() {
-        return database.getWallets();
+        return databaseHelper.getWallets();
     }
 
     public WalletRealmObject getWalletById(int walletId) {
-        return database.getWallet();
+        return databaseHelper.getWallet();
     }
 
     public WalletRealmObject getWallet(int id) {
-        return database.getWalletById(id);
+        return databaseHelper.getWalletById(id);
     }
 
     public void setMnemonic(Mnemonic mnemonic) {
-        database.setMnemonic(mnemonic);
+        databaseHelper.setMnemonic(mnemonic);
     }
 
     public Mnemonic getMnemonic() {
-        return database.getMnemonic();
+        return databaseHelper.getMnemonic();
     }
 
     public DeviceId getDeviceId() {
-        return database.getDeviceId();
+        return databaseHelper.getDeviceId();
     }
 
     public void setDeviceId(DeviceId deviceId) {
-        database.setDeviceId(deviceId);
+        databaseHelper.setDeviceId(deviceId);
     }
 
     public void saveExchangePrice(Double exchangePrice) {
-        database.saveExchangePrice(new ExchangePrice(exchangePrice));
+        databaseHelper.saveExchangePrice(new ExchangePrice(exchangePrice));
     }
 
     public Double getExchangePriceDB() {
-        if (database.getExchangePrice() == null) {
+        if (databaseHelper.getExchangePrice() == null) {
             return 16000.0;
         } else {
-            return database.getExchangePrice().getExchangePrice();
+            return databaseHelper.getExchangePrice().getExchangePrice();
         }
     }
 
-    public void updateWallet(int index, RealmList<WalletAddress> addresses, double balance, double pendingBalance) {
-        database.updateWallet(index, addresses, balance, pendingBalance);
+    public void saveWallet(WalletRealmObject wallet) {
+        databaseHelper.insertOrUpdate(wallet.getWalletIndex(), wallet.getName(), wallet.getAddresses(), wallet.calculateBalance(), wallet.calculatePendingBalance());
     }
 
     public void deleteDatabase() {
-        database.clear();
+        databaseHelper.clear();
     }
 
     public void saveCurenciesRate(CurrenciesRate currenciesRate) {
-        database.saveCurrenciesRate(currenciesRate);
+        databaseHelper.saveCurrenciesRate(currenciesRate);
     }
 
     public CurrenciesRate getCurrenciesRate() {
-        return database.getCurrenciesRate();
+        return databaseHelper.getCurrenciesRate();
     }
 
     public WalletAddress getWalletAddress(int id) {
-        return  database.getWalletAddress(id);
+        return databaseHelper.getWalletAddress(id);
     }
 }

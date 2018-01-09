@@ -14,7 +14,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.multy.Multy;
 import io.multy.R;
 import io.multy.api.socket.CurrenciesRate;
 import io.multy.model.DataManager;
@@ -57,7 +56,7 @@ public class WalletsAdapter extends RecyclerView.Adapter<WalletsAdapter.Holder> 
 
         final double formatBalance = balance / Math.pow(10, 8);
         final double formatPending = pending / Math.pow(10, 8);
-        final double exchangePrice = rates != null ? rates.getBtcToUsd() : new DataManager(Multy.getContext()).getExchangePriceDB();
+        final double exchangePrice = rates != null ? rates.getBtcToUsd() : DataManager.getInstance().getExchangePriceDB();
 
         holder.equals.setText(balance == 0 ? "0.0$" : format.format(exchangePrice * formatBalance) + "$");
         holder.pendingFiat.setText(pending == 0 ? "0.0$" : format.format(exchangePrice * formatPending) + "$");

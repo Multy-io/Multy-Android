@@ -51,7 +51,7 @@ public class AssetRequestViewModel extends BaseViewModel {
     }
 
     public void setContext(Context context){
-        dataManager = new DataManager(context);
+        dataManager = DataManager.getInstance();
     }
 
     public Double getExchangePrice(){

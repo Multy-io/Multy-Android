@@ -41,7 +41,7 @@ public class AssetSendViewModel extends BaseViewModel {
     }
 
     public void setContext(Context context){
-        dataManager = new DataManager(context);
+        dataManager = DataManager.getInstance();
     }
 
     public void auth(){

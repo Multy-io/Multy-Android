@@ -14,8 +14,9 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
-import com.scottyab.rootbeer.Const;
+import com.samwolfand.oneprefs.Prefs;
 
+import io.multy.ui.fragments.PinFragment;
 import io.multy.util.Constants;
 
 /**
@@ -47,5 +48,14 @@ public class BaseActivity extends AppCompatActivity {
                 hideKeyboard(this);
         }
         return super.dispatchTouchEvent(ev);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if (Prefs.getBoolean(Constants.PREF_LOCK)) {
+            new PinFragment().show(getSupportFragmentManager(), "");
+        }
     }
 }

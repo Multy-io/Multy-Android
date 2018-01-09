@@ -94,8 +94,8 @@ public class FastOperationsFragment extends BaseFragment {
 
     @OnClick(R.id.button_send)
     void onSendClick() {
-        if (Prefs.contains(Constants.PREF_FIRST_SUCCESSFUL_START)) {
-            DataManager dataManager = new DataManager(getActivity());
+        if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
+            DataManager dataManager = DataManager.getInstance();
             if (dataManager.getDeviceId() != null && dataManager.getUserId() != null) {
                 if (!dataManager.getWallets().isEmpty()) {
                     startActivity(new Intent(getContext(), AssetSendActivity.class));
@@ -112,8 +112,8 @@ public class FastOperationsFragment extends BaseFragment {
 
     @OnClick(R.id.button_receive)
     void onReceiveClick() {
-        if (Prefs.contains(Constants.PREF_FIRST_SUCCESSFUL_START)) {
-            DataManager dataManager = new DataManager(getActivity());
+        if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
+            DataManager dataManager = DataManager.getInstance();
             if (dataManager.getDeviceId() != null && dataManager.getUserId() != null) {
                 if (!dataManager.getWallets().isEmpty()) {
                     startActivity(new Intent(getContext(), AssetRequestActivity.class));
@@ -135,8 +135,8 @@ public class FastOperationsFragment extends BaseFragment {
 
     @OnClick(R.id.button_scan_qr)
     void onScanClick() {
-        if (Prefs.contains(Constants.PREF_FIRST_SUCCESSFUL_START)) {
-            DataManager dataManager = new DataManager(getActivity());
+        if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
+            DataManager dataManager = DataManager.getInstance();
             if (dataManager.getDeviceId() != null && dataManager.getUserId() != null) {
                 if (!dataManager.getWallets().isEmpty()) {
                     ((MainActivity) getActivity()).showScanScreen();

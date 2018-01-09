@@ -20,7 +20,6 @@ import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.multy.Multy;
 import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.model.DataManager;
@@ -89,7 +88,7 @@ public class SendSummaryFragment extends BaseFragment {
         String addressTo = viewModel.getReceiverAddress().getValue();
 
         try {
-            byte[] transactionHex = NativeDataHelper.makeTransaction(new DataManager(Multy.getContext()).getSeed().getSeed(), viewModel.getWallet().getWalletIndex(), String.valueOf(amountSatoshi), "2000", "2000", addressTo);
+            byte[] transactionHex = NativeDataHelper.makeTransaction(DataManager.getInstance().getSeed().getSeed(), viewModel.getWallet().getWalletIndex(), String.valueOf(amountSatoshi), "2000", "2000", addressTo);
             String hex = byteArrayToHex(transactionHex);
             Log.i(TAG, "hex= " + hex);
 

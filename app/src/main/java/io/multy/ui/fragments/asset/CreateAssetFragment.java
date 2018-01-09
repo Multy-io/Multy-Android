@@ -7,7 +7,6 @@
 package io.multy.ui.fragments.asset;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -21,30 +20,16 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.multy.Multy;
 import io.multy.R;
-import io.multy.api.MultyApi;
-import io.multy.model.DataManager;
-import io.multy.model.entities.wallet.WalletAddress;
-import io.multy.model.entities.wallet.WalletRealmObject;
-import io.multy.ui.activities.AssetActivity;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.dialogs.ListDialogFragment;
 import io.multy.util.Constants;
 import io.multy.util.CurrencyType;
-import io.multy.util.JniException;
-import io.multy.util.NativeDataHelper;
 import io.multy.viewmodels.WalletViewModel;
-import io.realm.RealmList;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * Created by anschutz1927@gmail.com on 23.11.17.
@@ -75,8 +60,7 @@ public class CreateAssetFragment extends BaseFragment {
         View v = inflater.inflate(R.layout.view_assets_action_add, container, false);
         ButterKnife.bind(this, v);
         if (getActivity().getWindow() != null) {
-            getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE |
-                    WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+            getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         }
         initialize();
         subscribeToCurrencyUpdate();
@@ -85,7 +69,6 @@ public class CreateAssetFragment extends BaseFragment {
 
     private void subscribeToCurrencyUpdate() {
         walletViewModel = ViewModelProviders.of(getActivity()).get(WalletViewModel.class);
-        walletViewModel.setContext(getActivity());
         setBaseViewModel(walletViewModel);
         walletViewModel.fiatCurrency.observe(this, s -> {
             //TODO update wallet fiat currency

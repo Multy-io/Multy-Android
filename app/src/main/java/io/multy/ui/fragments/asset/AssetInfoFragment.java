@@ -6,7 +6,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.AppBarLayout;
@@ -24,14 +23,9 @@ import java.text.DecimalFormat;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.multy.Multy;
 import io.multy.R;
-import io.multy.api.MultyApi;
-import io.multy.model.DataManager;
-import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.entities.wallet.WalletRealmObject;
-import io.multy.model.responses.WalletsResponse;
 import io.multy.ui.activities.AssetActivity;
 import io.multy.ui.adapters.AssetTransactionsAdapter;
 import io.multy.ui.fragments.AddressesFragment;
@@ -39,9 +33,6 @@ import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
 import io.multy.viewmodels.WalletViewModel;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import timber.log.Timber;
 
 public class AssetInfoFragment extends BaseFragment {
@@ -85,7 +76,6 @@ public class AssetInfoFragment extends BaseFragment {
         ButterKnife.bind(this, view);
 
         viewModel = ViewModelProviders.of(getActivity()).get(WalletViewModel.class);
-        viewModel.setContext(getActivity());
         viewModel.getApiExchangePrice();
         WalletRealmObject wallet = viewModel.getWallet(getActivity().getIntent().getIntExtra(Constants.EXTRA_WALLET_ID, 0));
         if (wallet != null) {

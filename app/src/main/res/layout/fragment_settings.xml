@@ -12,17 +12,43 @@
     tools:showIn="io.multy.android.MainActivity">
 
     <TextView
-        android:id="@+id/seed"
-        android:layout_width="wrap_content"
+        android:id="@+id/button_backup"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
         android:padding="16dp"
-        android:text="Show seed phrase section"
+        android:text="Execute backup" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/button_lock"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
         android:clickable="true"
         android:focusable="true"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:padding="16dp"
+        app:layout_constraintTop_toBottomOf="@id/button_backup">
 
+        <TextView
+            android:id="@+id/text_lock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat_bold"
+            android:text="Lock mode" />
+
+        <TextView
+            android:id="@+id/text_lock_mode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="disabled"
+            app:layout_constraintTop_toBottomOf="@id/text_lock" />
+
+        <CheckBox
+            android:id="@+id/check_lock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </android.support.constraint.ConstraintLayout>
 </android.support.constraint.ConstraintLayout>

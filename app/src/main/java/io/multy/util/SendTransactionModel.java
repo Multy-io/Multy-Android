@@ -8,7 +8,6 @@ package io.multy.util;
 
 import java.util.ArrayList;
 
-import io.multy.Multy;
 import io.multy.model.DataManager;
 import io.multy.model.entities.Output;
 import io.multy.model.entities.wallet.WalletAddress;
@@ -27,7 +26,7 @@ public class SendTransactionModel {
     private int addressIndex;
 
     public SendTransactionModel(int walletIndex, String amount) {
-        wallet = new DataManager(Multy.getContext()).getWallet(walletIndex);
+        wallet = DataManager.getInstance().getWallet(walletIndex);
         initAddresses(Long.valueOf(amount));
     }
 

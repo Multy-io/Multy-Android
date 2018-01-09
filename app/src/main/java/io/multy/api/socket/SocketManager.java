@@ -22,7 +22,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import io.multy.Multy;
 import io.multy.model.DataManager;
 import io.multy.model.entities.ExchangeRequestEntity;
 import io.multy.util.Constants;
@@ -82,7 +81,7 @@ public class SocketManager {
                 transport.on(Transport.EVENT_REQUEST_HEADERS, args1 -> {
                     @SuppressWarnings("unchecked")
                     Map<String, List<String>> headers = (Map<String, List<String>>) args1[0];
-                    DataManager dataManager = new DataManager(Multy.getContext());
+                    DataManager dataManager = DataManager.getInstance();
                     headers.put(HEADER_AUTH, Arrays.asList(Prefs.getString(Constants.PREF_AUTH)));
                     headers.put(HEADER_DEVICE_TYPE, Arrays.asList(DEVICE_TYPE));
                     headers.put(HEADER_USER_ID, Arrays.asList(dataManager.getUserId().getUserId()));

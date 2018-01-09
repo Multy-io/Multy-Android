@@ -24,10 +24,11 @@ public class Constants {
     public static final String EQUAL = "=";
 
     public static final String PREF_SPAN = "span";
-    public static final String PREF_FIRST_SUCCESSFUL_START = "first_start";
-    public static final String PREF_IS_FIRST_START = "is_first_start";
+    public static final String PREF_APP_INITIALIZED = "is_first_start";
+    public static final String PREF_BACKUP_SEED = "backup_seed";
     public static final String PREF_AUTH = "pref_auth";
     public static final String PREF_EXCHANGE_PRICE = "pref_exchange_price";
+    public static final String PREF_LOCK ="pref_lock";
 
     public static final int CAMERA_REQUEST_CODE = 328;
     public static final String EXTRA_QR_CONTENTS = "EXTRA_QR_CONTENTS";
@@ -46,7 +47,6 @@ public class Constants {
 
     public static final String ERROR_LOAD_EXCHANGE_PRICE = "Can't load exchange price. Will be used the last one";
     public static final String ERROR_ADDING_ADDRESS = "An error occurred while adding new address";
-
 
     public static final String IS_LOCK_MODE_ENABLED = "IS_LOCK_MODE_ENABLED";
     public static final String IS_FINGERPRINT_ENABLED = "IS_FINGERPRINT_ENABLED";

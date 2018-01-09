@@ -10,14 +10,12 @@ import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.OnLifecycleEvent;
-import android.content.Context;
 
 import com.samwolfand.oneprefs.Prefs;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import io.multy.Multy;
 import io.multy.api.socket.CurrenciesRate;
 import io.multy.api.socket.GraphPoint;
 import io.multy.api.socket.SocketManager;
@@ -28,21 +26,20 @@ import io.multy.util.SingleLiveEvent;
 
 public class AssetsViewModel extends BaseViewModel implements LifecycleObserver {
 
-    private DataManager dataManager;
     private SocketManager socketManager;
+
     public MutableLiveData<List<WalletRealmObject>> wallets = new MutableLiveData<>();
     public MutableLiveData<CurrenciesRate> rates = new MutableLiveData<>();
     public SingleLiveEvent<ArrayList<GraphPoint>> graphPoints = new SingleLiveEvent<>();
 
     public void init(Lifecycle lifecycle) {
-        dataManager = new DataManager(Multy.getContext());
         initRates();
         socketManager = new SocketManager();
         lifecycle.addObserver(this);
     }
 
     private void initRates() {
-        CurrenciesRate currenciesRate = dataManager.getCurrenciesRate();
+        CurrenciesRate currenciesRate = DataManager.getInstance().getCurrenciesRate();
         if (currenciesRate != null) {
             rates.setValue(currenciesRate);
         }
@@ -63,13 +60,8 @@ public class AssetsViewModel extends BaseViewModel implements LifecycleObserver 
         }
     }
 
-    public void setContext(Context context) {
-        dataManager = new DataManager(context);
-    }
-
-
     public List<WalletRealmObject> getWalletsFromDB() {
-        return dataManager.getWallets();
+        return DataManager.getInstance().getWallets();
     }
 
     public MutableLiveData<List<WalletRealmObject>> getWallets() {
@@ -77,6 +69,6 @@ public class AssetsViewModel extends BaseViewModel implements LifecycleObserver 
     }
 
     public boolean isFirstStart() {
-        return Prefs.getBoolean(Constants.PREF_IS_FIRST_START, true);
+        return !Prefs.getBoolean(Constants.PREF_APP_INITIALIZED);
     }
 }

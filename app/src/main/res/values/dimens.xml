@@ -84,5 +84,6 @@
 
     <dimen name="amount_size_medium">16sp</dimen>
     <dimen name="amount_size_huge">42sp</dimen>
+    <dimen name="tab_layout_height">56dp</dimen>
 
 </resources>

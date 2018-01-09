@@ -16,7 +16,7 @@ import io.realm.RealmObject;
 
 public class WalletRealmObject extends RealmObject {
 
-    @SerializedName("walletName")
+    @SerializedName("walletname")
     private String name;
     @SerializedName("address")
     private String creationAddress;

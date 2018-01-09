@@ -74,7 +74,7 @@ public class AddressesFragment extends BaseFragment {
     public void onStart() {
         super.onStart();
         if (getArguments().getInt(Constants.EXTRA_WALLET_ID) != oneNegative) {
-            WalletRealmObject wallet = new DataManager(getActivity()).getWallet(getArguments().getInt(Constants.EXTRA_WALLET_ID, oneNegative));
+            WalletRealmObject wallet = DataManager.getInstance().getWallet(getArguments().getInt(Constants.EXTRA_WALLET_ID, oneNegative));
             recyclerView.setAdapter(new AddressesAdapter(wallet.getAddresses()));
         } else {
             Toast.makeText(getActivity(), R.string.addresses_empty, Toast.LENGTH_SHORT).show();

@@ -7,13 +7,14 @@
 package io.multy.ui.fragments;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
-import android.arch.lifecycle.Observer;
+import android.app.Dialog;
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.View;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 
 import io.multy.R;
@@ -23,7 +24,7 @@ import io.multy.viewmodels.BaseViewModel;
 public class BaseFragment extends Fragment {
 
     private BaseViewModel baseViewModel;
-    private ProgressDialog progressDialog;
+    private Dialog progressDialog;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -53,8 +54,12 @@ public class BaseFragment extends Fragment {
                 if (aBoolean != null) {
                     if (aBoolean) {
                         if (progressDialog == null) {
-                            progressDialog = new ProgressDialog(BaseFragment.this.getActivity());
+                            progressDialog = new  Dialog(getActivity());
+                            progressDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                            progressDialog.setContentView(R.layout.dialog_spinner);
+                            progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                             progressDialog.setCancelable(false);
+                            progressDialog.setCanceledOnTouchOutside(false);
                             progressDialog.show();
                         } else {
                             progressDialog.show();
@@ -88,7 +93,7 @@ public class BaseFragment extends Fragment {
 
     public void hideKeyboard(Activity activity) {
         if (activity != null && activity.getWindow() != null && activity.getWindow().getDecorView() != null) {
-            InputMethodManager imm = (InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(activity.getWindow().getDecorView().getWindowToken(), 0);
         }
     }

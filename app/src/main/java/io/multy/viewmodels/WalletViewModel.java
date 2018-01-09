@@ -8,12 +8,12 @@ package io.multy.viewmodels;
 
 import android.app.Activity;
 import android.arch.lifecycle.MutableLiveData;
-import android.content.Context;
 import android.content.Intent;
+
+import com.samwolfand.oneprefs.Prefs;
 
 import java.util.List;
 
-import io.multy.Multy;
 import io.multy.api.MultyApi;
 import io.multy.model.DataManager;
 import io.multy.model.entities.wallet.CurrencyCode;
@@ -21,6 +21,7 @@ import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.ui.activities.AssetActivity;
 import io.multy.util.Constants;
+import io.multy.util.FirstLaunchHelper;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -34,7 +35,6 @@ import timber.log.Timber;
 
 public class WalletViewModel extends BaseViewModel {
 
-    private DataManager dataManager;
     private MutableLiveData<WalletRealmObject> wallet = new MutableLiveData<>();
     private MutableLiveData<Double> exchangePrice = new MutableLiveData<>();
     public MutableLiveData<String> chainCurrency = new MutableLiveData<>();
@@ -42,10 +42,6 @@ public class WalletViewModel extends BaseViewModel {
     private MutableLiveData<List<WalletAddress>> addresses = new MutableLiveData<>();
 
     public WalletViewModel() {
-    }
-
-    public void setContext(Context context) {
-        dataManager = new DataManager(context);
     }
 
 //    public void getUserAssets() {
@@ -63,7 +59,7 @@ public class WalletViewModel extends BaseViewModel {
 //    }
 
     public void getWalletAddresses(int walletId) {
-        dataManager.getWalletAddresses(walletId)
+        DataManager.getInstance().getWalletAddresses(walletId)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(response -> {
@@ -72,6 +68,7 @@ public class WalletViewModel extends BaseViewModel {
     }
 
     public Double getApiExchangePrice() {
+        DataManager dataManager = DataManager.getInstance();
         dataManager.getExchangePrice(CurrencyCode.BTC.name(), CurrencyCode.USD.name())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
@@ -85,7 +82,6 @@ public class WalletViewModel extends BaseViewModel {
             return 16000.0;
         }
     }
-
 
 
     public void getWalletLive(int walletId) {
@@ -105,8 +101,7 @@ public class WalletViewModel extends BaseViewModel {
     }
 
     public WalletRealmObject getWallet(int index) {
-        dataManager = new DataManager(Multy.getContext());
-        WalletRealmObject wallet = dataManager.getWallet(index);
+        WalletRealmObject wallet = DataManager.getInstance().getWallet(index);
         this.wallet.setValue(wallet);
         return wallet;
     }
@@ -119,9 +114,16 @@ public class WalletViewModel extends BaseViewModel {
         isLoading.setValue(true);
         WalletRealmObject walletRealmObject = null;
         try {
+            DataManager dataManager = DataManager.getInstance();
+
             List<WalletRealmObject> wallets = dataManager.getWallets();
-            final int walletIndex = wallets.size();
+
+            final int walletIndex = wallets == null ? 0 : wallets.size();
             final int currency = NativeDataHelper.Currency.BTC.getValue(); //TODO implement choosing crypto currency using enum NativeDataHelper.CURRENCY
+
+            if (!Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
+                FirstLaunchHelper.setCredentials("");
+            }
 
             String creationAddress = NativeDataHelper.makeAccountAddress(dataManager.getSeed().getSeed(), walletIndex, 0, currency);
 
@@ -151,9 +153,10 @@ public class WalletViewModel extends BaseViewModel {
         responseBodyCall.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                isLoading.setValue(false);
                 if (response.isSuccessful()) {
-                    isLoading.setValue(false);
-                    dataManager.saveWallet(walletRealmObject);
+                    DataManager.getInstance().saveWallet(walletRealmObject);
+                    Prefs.putBoolean(Constants.PREF_APP_INITIALIZED, true);
 
                     Intent intent = new Intent(activity, AssetActivity.class);
                     if (walletRealmObject != null) {
@@ -163,7 +166,6 @@ public class WalletViewModel extends BaseViewModel {
                     activity.startActivity(intent);
                     activity.finish();
                 } else {
-                    isLoading.setValue(false);
                     errorMessage.call();
                 }
             }

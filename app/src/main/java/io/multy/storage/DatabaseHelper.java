@@ -35,26 +35,8 @@ public class DatabaseHelper {
         try {
             realm = Realm.getInstance(getRealmConfiguration(context));
         } catch (Exception exception) {
-            // todo check access error
             exception.printStackTrace();
-            try {
-                realm = Realm.getDefaultInstance();
-                realm.executeTransaction(realm -> realm.deleteAll());
-                realm = Realm.getInstance(getRealmConfiguration(context));
-            } catch (Exception e) {
-                exception.printStackTrace();
-                try {
-                    realm = Realm.getDefaultInstance();
-                } catch (Exception e1) {
-                    realm = Realm.getDefaultInstance();
-                    e1.printStackTrace();
-                }
-                e.printStackTrace();
-            }
         }
-//        } catch (IllegalArgumentException exception) {
-//        } catch (IllegalStateException exception) {
-
     }
 
     private RealmConfiguration getRealmConfiguration(Context context) throws Exception {
@@ -159,9 +141,14 @@ public class DatabaseHelper {
         return realm.where(ExchangePrice.class).findFirst();
     }
 
-    public void updateWallet(int index, RealmList<WalletAddress> addresses, double balance, double pendingBalance) {
+    public void insertOrUpdate(int index, String name, RealmList<WalletAddress> addresses, double balance, double pendingBalance) {
         realm.executeTransaction(realm -> {
             WalletRealmObject savedWallet = getWalletById(index);
+            if (savedWallet == null) {
+                savedWallet = new WalletRealmObject();
+                savedWallet.setWalletIndex(index);
+            }
+            savedWallet.setName(name);
             savedWallet.setAddresses(new RealmList<>());
             for (WalletAddress walletAddress : addresses) {
                 savedWallet.getAddresses().add(realm.copyToRealm(walletAddress));
