@@ -12,6 +12,7 @@ import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
 
 import io.branch.referral.Branch;
+import io.multy.storage.RealmManager;
 import io.multy.storage.SecurePreferencesHelper;
 import io.multy.util.Constants;
 import io.multy.util.EntropyProvider;
@@ -71,6 +72,7 @@ public class Multy extends Application {
         try {
             String key = new String(Base64.encode(EntropyProvider.generateKey(512), Base64.NO_WRAP));
             SecurePreferencesHelper.putString(getContext(), Constants.PREF_KEY, key);
+            RealmManager.open(getContext());
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }

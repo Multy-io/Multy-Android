@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~  Copyright 2017 Idealnaya rabota LLC
   ~  Licensed under Multy.io license.
   ~  See LICENSE for details
@@ -11,6 +10,7 @@
     android:id="@+id/container_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     tools:showIn="io.multy.android.MainActivity">
 
     <FrameLayout
@@ -22,6 +22,12 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/gray_light_transparent"
+        app:layout_constraintBottom_toTopOf="@id/send" />
 
     <TextView
         android:id="@+id/send"
@@ -35,8 +41,8 @@
         android:text="Send"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/receive"/>
+        app:layout_constraintEnd_toStartOf="@+id/receive"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/receive"
@@ -65,8 +71,8 @@
         android:text="Exchange"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/receive"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/receive" />
 
     <FrameLayout
         android:id="@+id/container_full"

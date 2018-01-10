@@ -6,21 +6,17 @@
 
 package io.multy.viewmodels;
 
-import android.app.Activity;
 import android.arch.lifecycle.MutableLiveData;
-import android.content.Intent;
 
 import com.samwolfand.oneprefs.Prefs;
 
 import java.util.List;
 
 import io.multy.Multy;
-import io.multy.api.MultyApi;
 import io.multy.model.DataManager;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.storage.RealmManager;
-import io.multy.ui.activities.AssetActivity;
 import io.multy.util.Constants;
 import io.multy.util.FirstLaunchHelper;
 import io.multy.util.JniException;
@@ -28,10 +24,6 @@ import io.multy.util.NativeDataHelper;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import io.realm.RealmList;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import timber.log.Timber;
 
 public class WalletViewModel extends BaseViewModel {
@@ -44,20 +36,6 @@ public class WalletViewModel extends BaseViewModel {
 
     public WalletViewModel() {
     }
-
-//    public void getUserAssets() {
-//        Disposable disposable = dataManager.getUserAssets()
-//                .map(UserAssetsResponse::getWalletInfo)
-//                .flatMapIterable(walletsInfo -> walletsInfo)
-//                .map(WalletInfo::getAddress)
-//                .flatMapIterable(addresses -> addresses)
-//                .toList()
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribeOn(Schedulers.io())
-//                .subscribe(response -> addresses.setValue(response), Throwable::printStackTrace);
-//
-//        addDisposable(disposable);
-//    }
 
     public void getWalletAddresses(int walletId) {
         DataManager.getInstance().getWalletAddresses(walletId)
@@ -90,7 +68,7 @@ public class WalletViewModel extends BaseViewModel {
         return wallet;
     }
 
-    public void createWallet(Activity activity, String walletName) {
+    public WalletRealmObject createWallet(String walletName) {
         isLoading.setValue(true);
         WalletRealmObject walletRealmObject = null;
         try {
@@ -123,46 +101,14 @@ public class WalletViewModel extends BaseViewModel {
             walletRealmObject.setAddressIndex(0);
             walletRealmObject.setCreationAddress(creationAddress);
             walletRealmObject.setWalletIndex(walletCount);
-
-            saveWallet(activity, walletRealmObject);
         } catch (JniException e) {
             e.printStackTrace();
             isLoading.setValue(false);
             errorMessage.setValue(e.getLocalizedMessage());
             errorMessage.call();
         }
+
+        return walletRealmObject;
     }
-
-    private void saveWallet(Activity activity, WalletRealmObject walletRealmObject) {
-        Call<ResponseBody> responseBodyCall = MultyApi.INSTANCE.addWallet(activity, walletRealmObject);
-        responseBodyCall.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                isLoading.setValue(false);
-                if (response.isSuccessful()) {
-                    DataManager.getInstance().saveWallet(walletRealmObject);
-
-                    Intent intent = new Intent(activity, AssetActivity.class);
-                    if (walletRealmObject != null) {
-                        intent.putExtra(Constants.EXTRA_WALLET_ID, walletRealmObject.getWalletIndex());
-                    }
-
-                    activity.startActivity(intent);
-                    activity.finish();
-                } else {
-                    errorMessage.call();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                isLoading.setValue(false);
-                errorMessage.setValue(t.getLocalizedMessage());
-                errorMessage.call();
-                t.printStackTrace();
-            }
-        });
-    }
-
 
 }

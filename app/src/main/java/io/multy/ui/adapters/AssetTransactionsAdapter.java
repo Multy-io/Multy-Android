@@ -7,23 +7,20 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.multy.R;
-
-/**
- * Created by appscrunch on 20.11.17.
- */
+import io.multy.model.entities.Transaction;
 
 public class AssetTransactionsAdapter extends RecyclerView.Adapter<AssetTransactionsAdapter.Holder> {
 
-//    private List<Transactions> transactions;
+    private List<Transaction> transactions;
 
     @Override
     public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.view_transaction_item, parent, false);
-        return new Holder(v);
+        return new Holder(LayoutInflater.from(parent.getContext()).inflate(R.layout.view_transaction_item, parent, false));
     }
 
     @Override
@@ -33,8 +30,8 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<AssetTransact
 
     @Override
     public int getItemCount() {
+        return 15;
 //        return transactions.size();
-        return 0;
     }
 
     class Holder extends RecyclerView.ViewHolder {

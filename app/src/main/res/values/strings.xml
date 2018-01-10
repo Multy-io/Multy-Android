@@ -171,5 +171,8 @@
     <string name="graph_title">24h BTC to USD graph</string>
     <string name="logo_title">Blockchain\nopen source wallet</string>
     <string name="backup_is_not_executed">Backup is not executed</string>
+    <string name="something_went_wrong">Something went wrong</string>
+    <string name="zero_zero">0.0</string>
+    <string name="show_all_addresses">Show All Addresses</string>
 
 </resources>

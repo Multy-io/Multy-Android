@@ -7,6 +7,7 @@
 package io.multy.ui.fragments.asset;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -25,15 +26,19 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
+import io.multy.api.MultyApi;
+import io.multy.model.entities.wallet.WalletRealmObject;
+import io.multy.storage.RealmManager;
+import io.multy.ui.activities.AssetActivity;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.dialogs.ListDialogFragment;
 import io.multy.util.Constants;
 import io.multy.util.CurrencyType;
 import io.multy.viewmodels.WalletViewModel;
-
-/**
- * Created by anschutz1927@gmail.com on 23.11.17.
- */
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class CreateAssetFragment extends BaseFragment {
 
@@ -109,6 +114,16 @@ public class CreateAssetFragment extends BaseFragment {
         };
     }
 
+    private void showWalletInfoActivity(WalletRealmObject walletRealmObject) {
+        Intent intent = new Intent(getActivity(), AssetActivity.class);
+        if (walletRealmObject != null) {
+            intent.putExtra(Constants.EXTRA_WALLET_ID, walletRealmObject.getWalletIndex());
+        }
+
+        getActivity().startActivity(intent);
+        getActivity().finish();
+    }
+
     @OnClick(R.id.button_chain)
     public void onClickChain() {
         ArrayList<String> chains = new ArrayList<>(2);
@@ -127,7 +142,26 @@ public class CreateAssetFragment extends BaseFragment {
 
     @OnClick(R.id.text_create)
     public void onClickCreate() {
-        walletViewModel.createWallet(getActivity(), editTextWalletName.getText().toString());
+        WalletRealmObject walletRealmObject = walletViewModel.createWallet(editTextWalletName.getText().toString());
+        MultyApi.INSTANCE.addWallet(getActivity(), walletRealmObject).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                walletViewModel.isLoading.setValue(false);
+                if (response.isSuccessful()) {
+                    RealmManager.getAssetsDao().saveWallet(walletRealmObject);
+                    showWalletInfoActivity(walletRealmObject);
+                } else {
+                    walletViewModel.errorMessage.setValue(getString(R.string.something_went_wrong));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                walletViewModel.isLoading.setValue(false);
+                walletViewModel.errorMessage.setValue(t.getLocalizedMessage());
+                t.printStackTrace();
+            }
+        });
     }
 
     @OnClick(R.id.text_cancel)

@@ -24,7 +24,7 @@
             android:layout_height="match_parent"
             android:background="@color/colorPrimaryDark"
             android:fitsSystemWindows="true"
-            app:contentScrim="?attr/colorPrimary"
+            app:contentScrim="?attr/colorPrimaryDark"
             app:expandedTitleMarginEnd="64dp"
             app:expandedTitleMarginStart="48dp"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
@@ -217,18 +217,13 @@
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/refresh_layout"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_transactions"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler_transactions"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:listitem="@layout/view_transaction_item" />
-    </android.support.v4.widget.SwipeRefreshLayout>
+        android:background="@drawable/shape_white_rounded"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:listitem="@layout/view_transaction_item" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/button_share"
@@ -237,7 +232,6 @@
         android:layout_margin="@dimen/activity_horizontal_margin"
         android:src="@drawable/ic_share_white"
         app:backgroundTint="@color/blue_dark"
-        app:elevation="4dp"
         app:fabSize="normal"
         app:layout_anchor="@id/appbar_layout"
         app:layout_anchorGravity="bottom|right|end" />

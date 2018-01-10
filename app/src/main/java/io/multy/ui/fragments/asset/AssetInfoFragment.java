@@ -7,9 +7,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -43,8 +43,6 @@ public class AssetInfoFragment extends BaseFragment {
     CollapsingToolbarLayout collapsingToolbarLayout;
     @BindView(R.id.recycler_transactions)
     RecyclerView recyclerView;
-    @BindView(R.id.constraint_empty)
-    ConstraintLayout emptyAsset;
     @BindView(R.id.text_value)
     TextView textBalanceOriginal;
     @BindView(R.id.text_amount)
@@ -53,6 +51,8 @@ public class AssetInfoFragment extends BaseFragment {
     TextView textWalletName;
     @BindView(R.id.text_address)
     TextView textAddress;
+    @BindView(R.id.refresh_layout)
+    SwipeRefreshLayout refreshLayout;
 
     private WalletViewModel viewModel;
 
@@ -71,39 +71,18 @@ public class AssetInfoFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-//        return DataBindingUtil.inflate(inflater, R.layout.fragment_wallet, container, false).getRoot();
         View view = inflater.inflate(R.layout.fragment_asset_info, container, false);
         ButterKnife.bind(this, view);
 
         viewModel = ViewModelProviders.of(getActivity()).get(WalletViewModel.class);
         viewModel.getApiExchangePrice();
+
         WalletRealmObject wallet = viewModel.getWallet(getActivity().getIntent().getIntExtra(Constants.EXTRA_WALLET_ID, 0));
         if (wallet != null) {
             setupWalletInfo(wallet);
         } else {
             viewModel.getWalletLive().observe(this, this::setupWalletInfo);
         }
-
-//        MultyApi.INSTANCE.getWalletsVerbose().enqueue(new Callback<WalletsResponse>() {
-//            @Override
-//            public void onResponse(@NonNull Call<WalletsResponse> call, @NonNull Response<WalletsResponse> response) {
-//                if (response.body() != null && response.body().getWallets() != null) {
-//                    for (WalletRealmObject wallet : response.body().getWallets()) {
-//                        Timber.i("wallet1 %s", wallet.toString());
-//                        if (wallet.getWalletIndex() == getActivity().getIntent().getIntExtra(Constants.EXTRA_WALLET_ID, 0)) {
-//                            Timber.i("wallet2 %s", wallet.toString());
-//                            viewModel.getWalletLive().setValue(wallet);
-//                            setupWalletInfo(wallet);
-//                        }
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<WalletsResponse> call, Throwable t) {
-//
-//            }
-//        });
 
         initialize();
         return view;
@@ -114,11 +93,11 @@ public class AssetInfoFragment extends BaseFragment {
         recyclerView.setAdapter(transactionsAdapter);
         if (transactionsAdapter.getItemCount() == 0) {
             recyclerView.setVisibility(View.GONE);
-            emptyAsset.setVisibility(View.VISIBLE);
-            setToolbarScrollFlag(0);
+//            emptyAsset.setVisibility(View.VISIBLE);
+//            setToolbarScrollFlag(0);
         } else {
-            emptyAsset.setVisibility(View.GONE);
-            setToolbarScrollFlag(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL);
+//            emptyAsset.setVisibility(View.GONE);
+//            setToolbarScrollFlag(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL);
         }
     }
 
@@ -157,17 +136,8 @@ public class AssetInfoFragment extends BaseFragment {
     }
 
     private void setToolbarScrollFlag(int flag) {
-        AppBarLayout.LayoutParams params =
-                (AppBarLayout.LayoutParams) collapsingToolbarLayout.getLayoutParams();
+        AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) collapsingToolbarLayout.getLayoutParams();
         params.setScrollFlags(flag);
-    }
-
-    private void switchNfcPayment() {
-
-    }
-
-    private void subscribeViewModel() {
-
     }
 
     @OnClick(R.id.options)
@@ -187,7 +157,7 @@ public class AssetInfoFragment extends BaseFragment {
         }
     }
 
-    @OnClick(R.id.image_copy)
+    @OnClick(R.id.button_share)
     void onClickShare() {
         Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
         sharingIntent.setType("text/plain");
