@@ -9,10 +9,12 @@ package io.multy.model.entities;
 import io.realm.RealmObject;
 
 public class DeviceId extends RealmObject {
+
+    private String deviceId;
+
     public DeviceId() {
     }
 
-    private String deviceId;
 
     public DeviceId(String deviceId) {
         this.deviceId = deviceId;

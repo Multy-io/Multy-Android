@@ -33,12 +33,14 @@ public class PinNumbersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     private OnNumberClickListener numberClickListener;
     private OnFingerPrintClickListener fingerPrintClickListener;
-    private boolean isFingerprintAllowed = false;
+    private View.OnClickListener backSpaceClickListener;
+    private boolean isFingerprintAllowed = true;
 
-    public PinNumbersAdapter(OnNumberClickListener numberClickListener, OnFingerPrintClickListener fingerPrintClickListener, boolean isFingerprintAllowed) {
+    public PinNumbersAdapter(OnNumberClickListener numberClickListener, OnFingerPrintClickListener fingerPrintClickListener, View.OnClickListener backSpaceClickListener, boolean isFingerprintAllowed) {
         this.numberClickListener = numberClickListener;
         this.fingerPrintClickListener = fingerPrintClickListener;
-        this.isFingerprintAllowed = isFingerprintAllowed;
+//        this.isFingerprintAllowed = FingerprintManagerCompat.from(context).isHardwareDetected() && Prefs.getBoolean(Constants.PREF_IS_FINGERPRINT_ENABLED);
+        this.backSpaceClickListener = backSpaceClickListener;
     }
 
     @Override
@@ -58,7 +60,13 @@ public class PinNumbersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         final int viewType = getItemViewType(position);
         switch (viewType) {
             case TYPE_IMAGE:
-                ((ImageHolder) holder).image.setOnClickListener(view -> fingerPrintClickListener.onFingerprintClick());
+                if (position == 9) {
+                    ((ImageHolder) holder).image.setOnClickListener(view -> fingerPrintClickListener.onFingerprintClick());
+                    ((ImageHolder) holder).image.setImageResource(R.drawable.ic_fingerprint_white);
+                } else {
+                    ((ImageHolder) holder).image.setOnClickListener(view -> backSpaceClickListener.onClick(null));
+                    ((ImageHolder) holder).image.setImageResource(R.drawable.ic_remove_symbol);
+                }
                 break;
             case TYPE_NUMBER:
                 NumberHolder numberHolder = (NumberHolder) holder;
@@ -72,7 +80,9 @@ public class PinNumbersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public int getItemViewType(int position) {
         if (position < 9 || position == 10) {
             return TYPE_NUMBER;
-        } else if (position == 11 && isFingerprintAllowed) {
+        } else if (position == 9 && isFingerprintAllowed) {
+            return TYPE_IMAGE;
+        } else if (position == 11) {
             return TYPE_IMAGE;
         } else {
             return TYPE_EMPTY;

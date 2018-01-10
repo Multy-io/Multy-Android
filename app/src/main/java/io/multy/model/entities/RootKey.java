@@ -7,9 +7,12 @@
 package io.multy.model.entities;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 public class RootKey extends RealmObject {
 
+    @PrimaryKey
+    private int id = 0;
     private String key;
 
     public RootKey() {
@@ -25,12 +28,5 @@ public class RootKey extends RealmObject {
 
     public void setKey(String key) {
         this.key = key;
-    }
-
-    @Override
-    public String toString() {
-        return "RootKey{" +
-                "key='" + key + '\'' +
-                '}';
     }
 }

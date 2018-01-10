@@ -10,8 +10,12 @@ import com.google.gson.annotations.SerializedName;
 
 import io.multy.model.responses.AuthResponse;
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 public class Token extends RealmObject {
+
+    @PrimaryKey
+    private int id = 0;
 
     @SerializedName("token")
     private String token;

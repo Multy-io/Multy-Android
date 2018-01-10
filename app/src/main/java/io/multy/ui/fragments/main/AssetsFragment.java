@@ -30,6 +30,7 @@ import io.multy.api.MultyApi;
 import io.multy.model.DataManager;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.model.responses.WalletsResponse;
+import io.multy.storage.RealmManager;
 import io.multy.ui.activities.CreateAssetActivity;
 import io.multy.ui.activities.SeedActivity;
 import io.multy.ui.adapters.WalletsAdapter;
@@ -72,9 +73,11 @@ public class AssetsFragment extends BaseFragment {
 
         viewModel = ViewModelProviders.of(getActivity()).get(AssetsViewModel.class);
 
-        if (DataManager.getInstance().getUserId() != null) {
-            viewModel.rates.observe(this, currenciesRate -> walletsAdapter.updateRates(currenciesRate));
-            viewModel.init(getLifecycle());
+        if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)){
+            if (RealmManager.getSettingsDao().getUserId() != null) {
+                viewModel.rates.observe(this, currenciesRate -> walletsAdapter.updateRates(currenciesRate));
+                viewModel.init(getLifecycle());
+            }
         }
         return view;
     }

@@ -8,7 +8,6 @@ package io.multy.api;
 
 
 import android.content.Context;
-import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -21,18 +20,16 @@ import javax.annotation.Nullable;
 
 import io.multy.model.DataManager;
 import io.multy.model.entities.AuthEntity;
-import io.multy.model.entities.DeviceId;
 import io.multy.model.entities.TransactionRequestEntity;
 import io.multy.model.entities.UserId;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.model.requests.AddWalletAddressRequest;
-import io.multy.model.responses.AddressBalanceResponse;
 import io.multy.model.responses.AuthResponse;
-import io.multy.model.responses.ExchangePriceResponse;
-import io.multy.model.responses.FeeRatesResponse;
 import io.multy.model.responses.OutputsResponse;
 import io.multy.model.responses.UserAssetsResponse;
 import io.multy.model.responses.WalletsResponse;
+import io.multy.storage.RealmManager;
+import io.multy.storage.SettingsDao;
 import io.multy.util.Constants;
 import io.reactivex.Observable;
 import okhttp3.Authenticator;
@@ -42,8 +39,6 @@ import okhttp3.ResponseBody;
 import okhttp3.Route;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -70,7 +65,6 @@ public enum MultyApi implements MultyApiInterface {
                             Request request = original.newBuilder()
                                     .header("Authorization", "Bearer " + Prefs.getString(Constants.PREF_AUTH, ""))
                                     .method(original.method(), original.body())
-
                                     .build();
                             return chain.proceed(request);
                         })
@@ -81,10 +75,10 @@ public enum MultyApi implements MultyApiInterface {
                             public Request authenticate(Route route, okhttp3.Response response) throws IOException {
                                 DataManager dataManager = DataManager.getInstance();
                                 final UserId userIdEntity = dataManager.getUserId();
-                                final DeviceId deviceIdEntity = dataManager.getDeviceId();
                                 final String userId = userIdEntity == null ? "" : userIdEntity.getUserId();
-                                final String deviceId = deviceIdEntity == null ? "" : deviceIdEntity.getDeviceId();
-                                Call<AuthResponse> responseCall = api.auth(new AuthEntity(userId, deviceId, FirebaseInstanceId.getInstance().getToken(), 2));
+                                final String pushToken = FirebaseInstanceId.getInstance().getToken() == null ? "noPushToken" : FirebaseInstanceId.getInstance().getToken();
+
+                                Call<AuthResponse> responseCall = api.auth(new AuthEntity(userId, Constants.DEVICE_NAME, pushToken, 2));
                                 AuthResponse body = responseCall.execute().body();
                                 Prefs.putString(Constants.PREF_AUTH, body.getToken());
 
@@ -98,57 +92,16 @@ public enum MultyApi implements MultyApiInterface {
 
         @Override
         public Call<AuthResponse> auth(String userIdString, String deviceIdString, String password) {
-            DataManager dataManager = DataManager.getInstance();
-            final String userId = dataManager.getUserId().getUserId();
-            final String deviceId = dataManager.getDeviceId().getDeviceId();
-            return api.auth(new AuthEntity(userId, deviceId, "somePushToken", 2));
-        }
+            SettingsDao settingsDao = RealmManager.getSettingsDao();
+            final String userId = settingsDao.getUserId().getUserId();
+            final String pushToken = FirebaseInstanceId.getInstance().getToken() == null ? "noPushToken" : FirebaseInstanceId.getInstance().getToken();
 
-        @Override
-        public void getTickets(String firstCurrency, String secondCurrency) {
-            Call<ResponseBody> responseCall = api.getTickets(firstCurrency, secondCurrency);
-            responseCall.enqueue(new Callback<ResponseBody>() {
-                @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                    Log.i("wise", "onResponse Tickets ");
-                }
-
-                @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    Log.i("wise", "onFailure Tickets ");
-                }
-            });
-        }
-
-        @Override
-        public void getAssetsInfo() {
-            Call<ResponseBody> responseCall = api.getAssetsInfo();
-        }
-
-        @Override
-        public Call<AddressBalanceResponse> getBalanceByAddress(int currencyId, String address) {
-            return api.getBalanceByAddress(currencyId, address);
+            return api.auth(new AuthEntity(userId, Constants.DEVICE_NAME, pushToken, 2));
         }
 
         @Override
         public Call<ResponseBody> addWallet(Context context, WalletRealmObject wallet) {
             return api.addWallet(wallet);
-
-        }
-
-        @Override
-        public Observable<ExchangePriceResponse> getExchangePrice(String firstCurrency, String secondCurrency) {
-            return api.getExchangePrice(firstCurrency, secondCurrency);
-//            responseCall.enqueue(new Callback<ExchangePriceResponse>() {
-//                @Override
-//                public void onResponse(@NonNull Call<ExchangePriceResponse> call, @NonNull Response<ExchangePriceResponse> response) {
-//                    Prefs.putDouble(Constants.PREF_EXCHANGE_PRICE, response.body().getUSD());
-//                }
-//
-//                @Override
-//                public void onFailure(Call<ExchangePriceResponse> call, Throwable t) {
-//                }
-//            });
         }
 
         @Override
@@ -157,29 +110,8 @@ public enum MultyApi implements MultyApiInterface {
         }
 
         @Override
-        public Call<FeeRatesResponse> getFeeRates() {
-            return api.getFeeRates();
-        }
-
-        @Override
         public Call<OutputsResponse> getSpendableOutputs(int net, String address) {
             return api.getSpendableOutputs(net, address);
-        }
-
-        @Override
-        public Observable<UserAssetsResponse> getUserAssets() {
-            return api.getUserAssets();
-//            responseBodyCall.enqueue(new Callback<ResponseBody>() {
-//                @Override
-//                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-//                    Log.i("wise", "response ");
-//                }
-//
-//                @Override
-//                public void onFailure(Call<ResponseBody> call, Throwable t) {
-//                    t.printStackTrace();
-//                }
-//            });
         }
 
         @Override

@@ -18,11 +18,10 @@ import com.google.zxing.common.BitMatrix;
 import java.util.List;
 
 import io.multy.model.DataManager;
-import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.model.requests.AddWalletAddressRequest;
-import io.multy.util.Constants;
+import io.multy.storage.RealmManager;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -39,7 +38,7 @@ public class AssetRequestViewModel extends BaseViewModel {
     private DataManager dataManager;
     private WalletRealmObject wallet;
     private double amount;
-//    private MutableLiveData<List<WalletRealmObject>> wallets = new MutableLiveData<>();
+    //    private MutableLiveData<List<WalletRealmObject>> wallets = new MutableLiveData<>();
     private MutableLiveData<Double> exchangePrice = new MutableLiveData<>();
     private MutableLiveData<String> address = new MutableLiveData<>();
     /**
@@ -50,32 +49,15 @@ public class AssetRequestViewModel extends BaseViewModel {
     public AssetRequestViewModel() {
     }
 
-    public void setContext(Context context){
+    public void setContext(Context context) {
         dataManager = DataManager.getInstance();
     }
 
-    public Double getExchangePrice(){
-        dataManager.getExchangePrice(CurrencyCode.BTC.name(), CurrencyCode.USD.name())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(response -> {
-                    exchangePrice.setValue(response.getUSD());
-                }, throwable -> {
-                    errorMessage.setValue(Constants.ERROR_LOAD_EXCHANGE_PRICE);
-                    errorMessage.call();
-                    throwable.printStackTrace();
-                });
-
-        if (dataManager.getExchangePriceDB() != null) {
-            exchangePrice.setValue(dataManager.getExchangePriceDB());
-            return dataManager.getExchangePriceDB();
-        } else {
-            exchangePrice.setValue(16000.0);
-            return 16000.0;
-        }
+    public Double getExchangePrice() {
+        return RealmManager.getSettingsDao().getExchangePrice().getExchangePrice();
     }
 
-    public List<WalletRealmObject> getWallets(){
+    public List<WalletRealmObject> getWallets() {
         return dataManager.getWallets();
     }
 
@@ -83,20 +65,20 @@ public class AssetRequestViewModel extends BaseViewModel {
         return exchangePrice;
     }
 
-    public void setWallet(WalletRealmObject wallet){
+    public void setWallet(WalletRealmObject wallet) {
         this.wallet = wallet;
     }
 
-    public WalletRealmObject getWallet(){
+    public WalletRealmObject getWallet() {
         return wallet;
     }
 
-    public void setAmount(double amount){
+    public void setAmount(double amount) {
         Timber.e("amount %s", String.valueOf(amount));
         this.amount = amount;
     }
 
-    public double getAmount(){
+    public double getAmount() {
         return amount;
     }
 
@@ -134,7 +116,7 @@ public class AssetRequestViewModel extends BaseViewModel {
             int offset = y * bitMatrixWidth;
             for (int x = 0; x < bitMatrixWidth; x++) {
                 pixels[offset + x] = bitMatrix.get(x, y) ?
-                        context.getResources().getColor(android.R.color.black):
+                        context.getResources().getColor(android.R.color.black) :
                         context.getResources().getColor(android.R.color.white);
             }
         }
@@ -144,7 +126,7 @@ public class AssetRequestViewModel extends BaseViewModel {
         return bitmap;
     }
 
-    public List<WalletRealmObject> getWalletsDB(){
+    public List<WalletRealmObject> getWalletsDB() {
         return dataManager.getWallets();
     }
 
@@ -152,7 +134,7 @@ public class AssetRequestViewModel extends BaseViewModel {
         return address;
     }
 
-    public void addAddress(){
+    public void addAddress() {
         try {
             for (WalletAddress address : wallet.getAddresses()) { // to view wallet addresses before adding new address
                 Timber.i("before address %s", address);
@@ -192,12 +174,12 @@ public class AssetRequestViewModel extends BaseViewModel {
         }
     }
 
-    public String getStringQr(){
+    public String getStringQr() {
 //        java.lang.IllegalAccessError: Method 'java.lang.String io.multy.viewmodels.AssetRequestViewModel.getWalletAddress()' is inaccessible to class 'io.multy.viewmodels.AssetRequestViewModel$override' (declaration of 'io.multy.viewmodels.AssetRequestViewModel$override' appears in /data/data/io.multy/files/instant-run/dex-temp/reload0x0000.dex)
-        return "bitcoin:" + getWalletAddress()  + (amount == 0 ? "" : "?amount=" + amount);
+        return "bitcoin:" + getWalletAddress() + (amount == 0 ? "" : "?amount=" + amount);
     }
 
-    public String getWalletAddress(){
+    public String getWalletAddress() {
         return wallet.getAddresses().isEmpty()
                 ? wallet.getCreationAddress()
                 : wallet.getAddresses().get(wallet.getAddresses().size() - 1).getAddress();

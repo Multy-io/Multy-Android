@@ -1,13 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
 
-def versionMajor = 0
-def versionMinor = 0
-def versionPatch = 5
-
-def version_code = versionMajor * 100 + versionMinor * 10 + versionPatch
-def version_name = "${versionMajor}.${versionMinor}.${versionPatch}"
-
 static def releaseTime() {
     return new Date().format("yyyy-MM-dd", TimeZone.getTimeZone("UTC"))
 }
@@ -20,8 +13,8 @@ android {
         applicationId "io.multy"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode version_code
-        versionName version_name
+        versionCode 1
+        versionName "0.0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
@@ -111,6 +104,7 @@ dependencies {
         exclude group: 'org.json', module: 'json'
     }
     implementation 'com.madgag.spongycastle:prov:1.58.0.0'
+    implementation 'com.github.tozny:java-aes-crypto:1.1.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

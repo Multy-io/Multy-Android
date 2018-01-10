@@ -32,7 +32,7 @@ public class CreateAssetActivity extends BaseActivity {
             fragment = CreateAssetFragment.newInstance();
         }
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.constraint_container, fragment, CreateAssetFragment.TAG)
+                .replace(R.id.container_main, fragment, CreateAssetFragment.TAG)
                 .commit();
     }
 }

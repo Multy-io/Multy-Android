@@ -14,11 +14,12 @@ import com.samwolfand.oneprefs.Prefs;
 
 import java.util.List;
 
+import io.multy.Multy;
 import io.multy.api.MultyApi;
 import io.multy.model.DataManager;
-import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.entities.wallet.WalletRealmObject;
+import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetActivity;
 import io.multy.util.Constants;
 import io.multy.util.FirstLaunchHelper;
@@ -68,32 +69,11 @@ public class WalletViewModel extends BaseViewModel {
     }
 
     public Double getApiExchangePrice() {
-        DataManager dataManager = DataManager.getInstance();
-        dataManager.getExchangePrice(CurrencyCode.BTC.name(), CurrencyCode.USD.name())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(response -> exchangePrice.setValue(response.getUSD()), Throwable::printStackTrace);
-
-        if (dataManager.getExchangePriceDB() != null) {
-            exchangePrice.setValue(dataManager.getExchangePriceDB());
-            return dataManager.getExchangePriceDB();
-        } else {
-            exchangePrice.setValue(16000.0);
-            return 16000.0;
-        }
-    }
-
-
-    public void getWalletLive(int walletId) {
-
+        return RealmManager.getSettingsDao().getExchangePrice().getExchangePrice();
     }
 
     public MutableLiveData<Double> getExchangePrice() {
         return exchangePrice;
-    }
-
-    public void addWallet() {
-
     }
 
     public MutableLiveData<List<WalletAddress>> getAddresses() {
@@ -114,18 +94,23 @@ public class WalletViewModel extends BaseViewModel {
         isLoading.setValue(true);
         WalletRealmObject walletRealmObject = null;
         try {
-            DataManager dataManager = DataManager.getInstance();
-
-            List<WalletRealmObject> wallets = dataManager.getWallets();
-
-            final int walletIndex = wallets == null ? 0 : wallets.size();
-            final int currency = NativeDataHelper.Currency.BTC.getValue(); //TODO implement choosing crypto currency using enum NativeDataHelper.CURRENCY
-
             if (!Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
+                Multy.makeInitialized();
                 FirstLaunchHelper.setCredentials("");
             }
+            DataManager dataManager = DataManager.getInstance();
 
-            String creationAddress = NativeDataHelper.makeAccountAddress(dataManager.getSeed().getSeed(), walletIndex, 0, currency);
+            int walletCount = 0;
+            if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
+                List<WalletRealmObject> wallets = dataManager.getWallets();
+                if (wallets != null) {
+                    walletCount = 0;
+                }
+            }
+
+            final int currency = NativeDataHelper.Currency.BTC.getValue(); //TODO implement choosing crypto currency using enum NativeDataHelper.CURRENCY
+
+            String creationAddress = NativeDataHelper.makeAccountAddress(dataManager.getSeed().getSeed(), walletCount, 0, currency);
 
             walletRealmObject = new WalletRealmObject();
             walletRealmObject.setName(walletName);
@@ -137,7 +122,7 @@ public class WalletViewModel extends BaseViewModel {
             walletRealmObject.setCurrency(0);
             walletRealmObject.setAddressIndex(0);
             walletRealmObject.setCreationAddress(creationAddress);
-            walletRealmObject.setWalletIndex(walletIndex);
+            walletRealmObject.setWalletIndex(walletCount);
 
             saveWallet(activity, walletRealmObject);
         } catch (JniException e) {
@@ -156,7 +141,6 @@ public class WalletViewModel extends BaseViewModel {
                 isLoading.setValue(false);
                 if (response.isSuccessful()) {
                     DataManager.getInstance().saveWallet(walletRealmObject);
-                    Prefs.putBoolean(Constants.PREF_APP_INITIALIZED, true);
 
                     Intent intent = new Intent(activity, AssetActivity.class);
                     if (walletRealmObject != null) {

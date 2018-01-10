@@ -53,7 +53,7 @@ public class AssetSendFragment extends BaseFragment {
             inputAddress.setText(viewModel.getReceiverAddress().getValue()); // to set address from scanning qr or wallet
         }
         viewModel.getReceiverAddress().observe(getActivity(), s -> inputAddress.setText(s));
-        viewModel.getUserAssetsApi();
+//        viewModel.getUserAssetsApi(); //TODO maybe I deleted something more :E
         setupInputAddress();
         return view;
     }

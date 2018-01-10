@@ -51,4 +51,55 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </android.support.constraint.ConstraintLayout>
+
+    <EditText
+        android:id="@+id/input_pin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="pin code"
+        app:layout_constraintTop_toBottomOf="@id/button_lock" />
+
+    <Button
+        android:id="@+id/button_save_pin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="Save pin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/input_pin" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/button_fingerprint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/button_save_pin">
+
+        <TextView
+            android:id="@+id/text_finger"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat_bold"
+            android:text="Lock mode" />
+
+        <TextView
+            android:id="@+id/text_finger_mode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="disabled"
+            app:layout_constraintStart_toStartOf="@+id/text_finger"
+            app:layout_constraintTop_toBottomOf="@+id/text_finger" />
+
+        <CheckBox
+            android:id="@+id/check_finger"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </android.support.constraint.ConstraintLayout>
+
 </android.support.constraint.ConstraintLayout>

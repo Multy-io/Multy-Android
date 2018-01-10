@@ -73,21 +73,4 @@ public class MasterKeyGenerator {
         SHA3.DigestSHA3 digestSHA3 = new SHA3.Digest256();
         return digestSHA3.digest(input);
     }
-
-//    private void encrypt() {
-//        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-//        cipher.init(Cipher.ENCRYPT_MODE, MasterKeyGenerator.generateKey(context));
-//        AlgorithmParameters params = cipher.getParameters();
-//        byte[] iv = params.getParameterSpec(IvParameterSpec.class).getIV();
-//        byte[] ciphertext = cipher.doFinal("Hello, World!".getBytes("UTF-8"));
-//
-//    }
-//
-//    private void decrypt() {
-//        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-//        cipher.init(Cipher.DECRYPT_MODE, secret, new IvParameterSpec(iv));
-//        String plaintext = new String(cipher.doFinal(ciphertext), "UTF-8");
-//        System.out.println(plaintext);
-//    }
-
 }

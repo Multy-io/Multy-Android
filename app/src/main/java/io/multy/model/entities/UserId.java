@@ -27,11 +27,4 @@ public class UserId extends RealmObject {
     public void setUserId(String userId) {
         this.userId = userId;
     }
-
-    @Override
-    public String toString() {
-        return "UserId{" +
-                "userId='" + userId + '\'' +
-                '}';
-    }
 }

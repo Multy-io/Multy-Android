@@ -13,11 +13,8 @@ import java.util.List;
 
 import io.multy.model.DataManager;
 import io.multy.model.entities.Fee;
-import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.model.entities.wallet.WalletRealmObject;
-import io.multy.util.Constants;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
+import io.multy.storage.RealmManager;
 
 /**
  * Created by Ihar Paliashchuk on 14.11.2017.
@@ -48,25 +45,10 @@ public class AssetSendViewModel extends BaseViewModel {
         dataManager.auth("dsdbsn", "sfgn", "asdfah");
     }
 
+    @Deprecated
     public void getApiExchangePrice(){
-        dataManager.getExchangePrice(CurrencyCode.BTC.name(), CurrencyCode.USD.name())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(response -> exchangePrice.setValue(response.getUSD()), throwable -> {
-                    errorMessage.setValue(Constants.ERROR_LOAD_EXCHANGE_PRICE);
-                    errorMessage.call();
-                    throwable.printStackTrace();
-                });
-        if (dataManager.getExchangePriceDB() != null) {
-            exchangePrice.setValue(dataManager.getExchangePriceDB());
-        } else {
-            exchangePrice.setValue(16000.0);
-        }
+        RealmManager.getSettingsDao().getExchangePrice().getExchangePrice();
     }
-
-//    public List<WalletRealmObject> getWalletsFlowable(){
-//        return dataManager.getWalletsFlowable();
-//    }
 
     public void setWallet(WalletRealmObject wallet){
         this.wallet = wallet;
@@ -90,10 +72,6 @@ public class AssetSendViewModel extends BaseViewModel {
 
     public double getAmount(){
         return amount;
-    }
-
-    public void getUserAssetsApi(){
-        dataManager.getUserAssets();
     }
 
     public MutableLiveData<String> getReceiverAddress() {

@@ -24,13 +24,10 @@ import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.model.requests.AddWalletAddressRequest;
 import io.multy.model.responses.AuthResponse;
-import io.multy.model.responses.ExchangePriceResponse;
 import io.multy.model.responses.UserAssetsResponse;
 import io.multy.storage.DatabaseHelper;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -41,6 +38,7 @@ import retrofit2.Response;
  * ihar.paliashchuk@gmail.com
  */
 
+@Deprecated
 public class DataManager {
 
     private static DatabaseHelper databaseHelper;
@@ -70,18 +68,6 @@ public class DataManager {
             public void onFailure(Call<AuthResponse> call, Throwable t) {
             }
         });
-        ;
-    }
-
-    public Observable<ExchangePriceResponse> getExchangePrice(String originalCurrency, String currency) {
-        return MultyApi.INSTANCE.getExchangePrice(originalCurrency, currency)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .doOnNext(exchangePriceResponse -> databaseHelper.saveExchangePrice(new ExchangePrice(exchangePriceResponse.getUSD())));
-    }
-
-    public Observable<UserAssetsResponse> getUserAssets() {
-        return MultyApi.INSTANCE.getUserAssets();
     }
 
     public Observable<UserAssetsResponse> getWalletAddresses(int walletId) {

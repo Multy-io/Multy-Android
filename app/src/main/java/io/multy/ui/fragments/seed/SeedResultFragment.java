@@ -21,6 +21,7 @@ import com.samwolfand.oneprefs.Prefs;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.multy.Multy;
 import io.multy.R;
 import io.multy.ui.fragments.BaseSeedFragment;
 import io.multy.util.Constants;
@@ -66,12 +67,14 @@ public class SeedResultFragment extends BaseSeedFragment {
         } else {
             if (getActivity().getIntent().hasCategory(Constants.EXTRA_RESTORE)) {
                 textViewTitle.setText(R.string.seed_congrats_restore);
+                if (!Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
+                    Multy.makeInitialized();
+                }
             }
 
             setBrickColor(BRICK_GREEN);
             buttonCancel.setVisibility(View.GONE);
             buttonNext.setText(R.string.great);
-            Prefs.putBoolean(Constants.PREF_APP_INITIALIZED, true);
         }
     }
 

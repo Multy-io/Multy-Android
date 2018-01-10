@@ -35,19 +35,16 @@ public class FirstLaunchHelper {
     }
 
     public static boolean isLockModeEnabled() {
-        return Prefs.contains(Constants.IS_LOCK_MODE_ENABLED);
+        return Prefs.contains(Constants.PREF_LOCK);
     }
 
     public static boolean isFingerprintEnabled() {
-        return Prefs.contains(Constants.IS_FINGERPRINT_ENABLED);
-    }
-
-    public static boolean isFingerprintAttemptsAppropriate() {
-        return Prefs.getInt(Constants.FINGERPRINT_COUNTER) <= 6;
+        return Prefs.contains(Constants.PREF_IS_FINGERPRINT_ENABLED);
     }
 
     public static boolean isPinAttemptsAppropriate() {
-        return Prefs.getInt(Constants.PIN_COUNTER) <= 6;
+        return true;
+//        return Prefs.getInt(Constants.PIN_COUNTER) <= 6;
     }
 
     public static void setCredentials(String seedPhrase) throws JniException {

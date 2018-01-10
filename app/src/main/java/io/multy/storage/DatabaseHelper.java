@@ -11,7 +11,6 @@ import android.content.Context;
 import java.util.List;
 
 import io.multy.api.socket.CurrenciesRate;
-import io.multy.encryption.MasterKeyGenerator;
 import io.multy.model.entities.ByteSeed;
 import io.multy.model.entities.DeviceId;
 import io.multy.model.entities.ExchangePrice;
@@ -21,33 +20,20 @@ import io.multy.model.entities.Token;
 import io.multy.model.entities.UserId;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.entities.wallet.WalletRealmObject;
-import io.multy.util.MyRealmMigration;
 import io.realm.Realm;
-import io.realm.RealmConfiguration;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 
+@Deprecated
 public class DatabaseHelper {
 
     private Realm realm;
 
     public DatabaseHelper(Context context) {
         try {
-            realm = Realm.getInstance(getRealmConfiguration(context));
+            realm = Realm.getInstance(RealmManager.getConfiguration(context));
         } catch (Exception exception) {
             exception.printStackTrace();
-        }
-    }
-
-    private RealmConfiguration getRealmConfiguration(Context context) throws Exception {
-        if (MasterKeyGenerator.generateKey(context) != null) {
-            return new RealmConfiguration.Builder()
-                    .encryptionKey(MasterKeyGenerator.generateKey(context))
-                    .schemaVersion(2)
-                    .migration(new MyRealmMigration())
-                    .build();
-        } else {
-            return new RealmConfiguration.Builder().build();
         }
     }
 

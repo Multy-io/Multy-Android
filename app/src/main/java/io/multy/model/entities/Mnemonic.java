@@ -7,8 +7,12 @@
 package io.multy.model.entities;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 public class Mnemonic extends RealmObject {
+
+    @PrimaryKey
+    private int id = 0;
 
     private String mnemonic;
 

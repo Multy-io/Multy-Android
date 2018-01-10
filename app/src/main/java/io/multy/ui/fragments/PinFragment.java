@@ -28,7 +28,7 @@ import io.multy.R;
 import io.multy.ui.adapters.PinDotsAdapter;
 import io.multy.ui.adapters.PinNumbersAdapter;
 
-public class PinFragment extends DialogFragment implements PinNumbersAdapter.OnFingerPrintClickListener, PinNumbersAdapter.OnNumberClickListener {
+public class PinFragment extends DialogFragment implements PinNumbersAdapter.OnFingerPrintClickListener, PinNumbersAdapter.OnNumberClickListener, View.OnClickListener {
 
     private static final int COUNT = 6;
 
@@ -75,7 +75,7 @@ public class PinFragment extends DialogFragment implements PinNumbersAdapter.OnF
         recyclerViewDots.setLayoutManager(dotsLayoutManager);
         recyclerViewDots.setHasFixedSize(true);
 
-        recyclerViewNumbers.setAdapter(new PinNumbersAdapter(this, this, true));
+        recyclerViewNumbers.setAdapter(new PinNumbersAdapter(this, this, this, true));
         recyclerViewNumbers.setLayoutManager(new GridLayoutManager(getActivity(), 3));
         recyclerViewNumbers.setHasFixedSize(true);
 
@@ -98,5 +98,10 @@ public class PinFragment extends DialogFragment implements PinNumbersAdapter.OnF
         if (stringBuilder.toString().length() == COUNT) {
             dismiss();
         }
+    }
+
+    @Override
+    public void onClick(View view) {
+
     }
 }
