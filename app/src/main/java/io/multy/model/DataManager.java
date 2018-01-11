@@ -189,4 +189,5 @@ public class DataManager {
     public WalletAddress getWalletAddress(int id) {
         return databaseHelper.getWalletAddress(id);
     }
+
 }

@@ -127,7 +127,7 @@
     <string name="security">Security</string>
     <string name="my_private_key">My Private Key</string>
     <string name="delete_wallet">Delete Wallet</string>
-    <string name="delete_confirm">Are you shure wont to delete this wallet?</string>
+    <string name="delete_confirm">Are you sure want to delete this wallet?</string>
     <string name="save">Save</string>
 
     <string name="about_private_key">
@@ -171,6 +171,7 @@
     <string name="graph_title">24h BTC to USD graph</string>
     <string name="logo_title">Blockchain\nopen source wallet</string>
     <string name="backup_is_not_executed">Backup is not executed</string>
+    <string name="wallet_removed">Wallet removed</string>
     <string name="something_went_wrong">Something went wrong</string>
     <string name="zero_zero">0.0</string>
     <string name="show_all_addresses">Show All Addresses</string>

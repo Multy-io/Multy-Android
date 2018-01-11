@@ -147,6 +147,10 @@ public enum MultyApi implements MultyApiInterface {
         }
 
         @Override
+        public Call<ResponseBody> removeWallet(int walletIndex) {
+            return api.removeWallet(walletIndex);
+        }
+      
         public Call<TransactionHistoryResponse> getTransactionHistory(int walletIndex) {
             return api.getTransactionHistory(walletIndex);
         }
@@ -154,6 +158,7 @@ public enum MultyApi implements MultyApiInterface {
         @Override
         public Call<ServerConfigResponse> getServerConfig() {
             return api.getServerConfig();
+
         }
     }
 }

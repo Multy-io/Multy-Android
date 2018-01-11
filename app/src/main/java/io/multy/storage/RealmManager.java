@@ -11,7 +11,6 @@ import android.util.Base64;
 import android.util.Log;
 
 import com.samwolfand.oneprefs.Prefs;
-
 import javax.annotation.Nullable;
 
 import io.multy.util.Constants;

@@ -121,14 +121,17 @@ public class AssetsFragment extends BaseFragment {
         MultyApi.INSTANCE.getWalletsVerbose().enqueue(new Callback<WalletsResponse>() {
             @Override
             public void onResponse(@NonNull Call<WalletsResponse> call, @NonNull Response<WalletsResponse> response) {
-                if (response.body() != null && response.body().getWallets() != null && response.body().getWallets().size() != 0) {
-                    DataManager dataManager = DataManager.getInstance();
-                    for (WalletRealmObject wallet : response.body().getWallets()) {
-                        dataManager.saveWallet(wallet);
+                if (response.body() != null) {
+                    Prefs.putInt(Constants.PREF_WALLET_TOP_INDEX, response.body().getTopIndex());
+                    if (response.body().getWallets() != null && response.body().getWallets().size() != 0) {
+                        DataManager dataManager = DataManager.getInstance();
+                        for (WalletRealmObject wallet : response.body().getWallets()) {
+                            dataManager.saveWallet(wallet);
+                        }
+                        walletsAdapter.setData(dataManager.getWallets());
+                    } else {
+                        groupCreateDescription.setVisibility(View.VISIBLE);
                     }
-                    walletsAdapter.setData(dataManager.getWallets());
-                } else {
-                    groupCreateDescription.setVisibility(View.VISIBLE);
                 }
             }
 

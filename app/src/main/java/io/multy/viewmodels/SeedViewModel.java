@@ -71,6 +71,7 @@ public class SeedViewModel extends BaseViewModel {
                 @Override
                 public void onResponse(Call<WalletsResponse> call, Response<WalletsResponse> response) {
                     if (response.isSuccessful() && response.body() != null) {
+                        Prefs.putInt(Constants.PREF_WALLET_TOP_INDEX, response.body().getTopIndex());
                         if (response.body().getWallets() != null && response.body().getWallets().size() > 0) {
                             DataManager dataManager = DataManager.getInstance();
                             for (WalletRealmObject walletRealmObject : response.body().getWallets()) {

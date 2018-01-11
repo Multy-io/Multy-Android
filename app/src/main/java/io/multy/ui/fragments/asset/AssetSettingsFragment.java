@@ -6,17 +6,21 @@
 
 package io.multy.ui.fragments.asset;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
+import io.multy.viewmodels.WalletViewModel;
 
 /**
  * Created by anschutz1927@gmail.com on 07.12.17.
@@ -33,12 +37,16 @@ public class AssetSettingsFragment extends BaseFragment {
         return fragment;
     }
 
+    private WalletViewModel viewModel;
+
     public AssetSettingsFragment() {
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        viewModel = ViewModelProviders.of(getActivity()).get(WalletViewModel.class);
+        setBaseViewModel(viewModel);
     }
 
     @Nullable
@@ -67,6 +75,12 @@ public class AssetSettingsFragment extends BaseFragment {
     }
 
     private void deleteWallet() {
+        viewModel.removeWallet().observe(this, isRemoved -> {
+            if (isRemoved != null && isRemoved) {
+                Toast.makeText(getActivity(), R.string.wallet_removed, Toast.LENGTH_SHORT).show();
+                getActivity().finish();
+            }
+        });
     }
 
     @OnClick(R.id.button_cancel)

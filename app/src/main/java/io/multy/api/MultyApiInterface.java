@@ -37,7 +37,10 @@ public interface MultyApiInterface {
 
     Call<WalletsResponse> restore();
 
+    Call<ResponseBody> removeWallet(int walletIndex);
+
     Call<TransactionHistoryResponse> getTransactionHistory(int walletIndex);
 
     Call<ServerConfigResponse> getServerConfig();
+
 }

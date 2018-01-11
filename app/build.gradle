@@ -21,6 +21,7 @@ android {
                 cppFlags "-std=c++11"
                 arguments "-DWITH_TESTS=1"
                 arguments "-DPATH_TO_JNI_WRAPPER=C:\\workspace\\Multy-android\\app\\src\\main\\cpp\\scratch.cpp"
+//                arguments "-DPATH_TO_JNI_WRAPPER=/Users/appscrunch/AndroidStudioProjects/Multy-android/app/src/main/cpp/scratch.cpp"
                 arguments "-DANDROID_STL=c++_shared"
             }
         }

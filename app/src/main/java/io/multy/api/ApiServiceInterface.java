@@ -24,6 +24,7 @@ import io.reactivex.Observable;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
@@ -59,6 +60,9 @@ public interface ApiServiceInterface {
 
     @GET("api/v1/wallets/{walletIndex}/verbose")
     Call<ResponseBody> getWalletVerboseByIndex(@Path ("walletIndex") int walletIndex);
+
+    @DELETE("api/v1/wallet/{walletIndex}")
+    Call<ResponseBody> removeWallet(@Path ("walletIndex") int walletIndex);
 
     @GET("api/v1/wallets/verbose")
     Call<WalletsResponse> getWalletsVerbose();

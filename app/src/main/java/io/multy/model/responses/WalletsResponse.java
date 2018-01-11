@@ -20,6 +20,12 @@ public class WalletsResponse {
     private String message;
     @SerializedName("wallets")
     private List<WalletRealmObject> wallets;
+    /**
+     *  Counter of wallets.
+     *  Returned total count even if wallets were deleted.
+     */
+    @SerializedName("topindex")
+    private int topIndex;
 
     public int getCode() {
         return code;
@@ -43,5 +49,9 @@ public class WalletsResponse {
 
     public void setWallets(List<WalletRealmObject> wallets) {
         this.wallets = wallets;
+    }
+
+    public int getTopIndex() {
+        return topIndex;
     }
 }
