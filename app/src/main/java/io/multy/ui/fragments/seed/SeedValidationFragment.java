@@ -41,6 +41,8 @@ import io.multy.viewmodels.SeedViewModel;
 
 public class SeedValidationFragment extends BaseSeedFragment {
 
+    private static final long SEED_WORD_DURATION = 250;
+
     @BindView(R.id.input_word)
     AutoCompleteTextView inputWord;
 
@@ -64,6 +66,8 @@ public class SeedValidationFragment extends BaseSeedFragment {
     private int count = 1;
     private int maxCount = 0;
     private Handler handler = new Handler();
+    private boolean isProceedRunning = false;
+    private String currentSeedWord;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -138,12 +142,15 @@ public class SeedValidationFragment extends BaseSeedFragment {
                             }
                         }
                     }
+                    currentSeedWord = null;
                     if (suggestions.size() == 1) {
                         buttonNext.setText(suggestions.get(0));
+                        currentSeedWord = suggestions.get(0);
                     } else if (suggestions.size() > 1) {
                         buttonNext.setText(editable);
                         if (isFullCoincidence) {
                             buttonNext.append(getString(R.string._or_) + editable);
+                            currentSeedWord = inputWord.getText().toString();
                         }
                         buttonNext.append(getString(R.string.tree_dots));
                     } else {
@@ -177,18 +184,13 @@ public class SeedValidationFragment extends BaseSeedFragment {
     }
 
     private void proceedNext() {
-        if ((buttonNext.getText().toString().equals(getString(R.string.next_word)) ||
-                buttonNext.getText().toString().contains(getString(R.string.tree_dots))) &&
-                !buttonNext.getText().toString().contains(getString(R.string._or_))) {
+        if (isProceedRunning || currentSeedWord == null || currentSeedWord.isEmpty()) {
             return;
         }
-        if (buttonNext.getText().toString().contains(getString(R.string._or_))) {
-            phrase.append(buttonNext.getText().toString().split(" ")[0]);
-            inputWord.setText(buttonNext.getText().toString().split(" ")[0]);
-        } else {
-            phrase.append(buttonNext.getText());
-            inputWord.setText(buttonNext.getText());
-        }
+        isProceedRunning = true;
+        phrase.append(currentSeedWord);
+        inputWord.setText(currentSeedWord);
+        inputWord.setSelection(inputWord.getText().toString().length());
         handler.postDelayed(() -> {
             if (count == maxCount) {
                 inputWord.animate().alpha(0).setDuration(BrickView.ANIMATION_DURATION / 2).start();
@@ -214,8 +216,9 @@ public class SeedValidationFragment extends BaseSeedFragment {
                 count++;
                 refreshCounter();
             }
+            isProceedRunning = false;
             handler.postDelayed(() -> buttonNext.setEnabled(true), BrickView.ANIMATION_DURATION);
-        }, 500);
+        }, SEED_WORD_DURATION);
     }
 
 }
