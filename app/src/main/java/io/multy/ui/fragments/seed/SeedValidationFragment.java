@@ -21,10 +21,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
+import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 
 import com.samwolfand.oneprefs.Prefs;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -39,7 +41,7 @@ import io.multy.viewmodels.SeedViewModel;
 public class SeedValidationFragment extends BaseSeedFragment {
 
     @BindView(R.id.input_word)
-    EditText inputWord;
+    AutoCompleteTextView inputWord;
 
     @BindView(R.id.button_next)
     TextView buttonNext;
@@ -102,6 +104,7 @@ public class SeedValidationFragment extends BaseSeedFragment {
         buttonNext.setText(R.string.next_word);
         setRedrawPosition(0);
         recyclerView.post(() -> redrawOne(true));
+        String[] seedWords = getResources().getStringArray(R.array.seed_words);
         inputWord.setImeOptions(EditorInfo.IME_ACTION_NEXT);
         inputWord.addTextChangedListener(new TextWatcher() {
             @Override
@@ -116,8 +119,39 @@ public class SeedValidationFragment extends BaseSeedFragment {
             public void afterTextChanged(Editable editable) {
                 if (editable.toString().length() == 0) {
                     inputWord.setGravity(Gravity.LEFT);
+                    buttonNext.setText(R.string.next_word);
+                    return;
                 } else if (editable.toString().length() == 1) {
                     inputWord.setGravity(Gravity.CENTER_HORIZONTAL);
+                }
+                if (editable.length() > 0) {
+                    ArrayList<String> suggestions = new ArrayList<>();
+                    boolean isFullCoincidence = false;
+                    for (String s : seedWords) {
+                        if (s.startsWith(editable.toString())) {
+                            suggestions.add(s);
+                            if (s.equals(editable.toString())) {
+                                isFullCoincidence = true;
+                            }
+                        }
+                    }
+                    if (suggestions.size() == 1) {
+                        buttonNext.setText(suggestions.get(0));
+                    }
+                    else if (suggestions.size() > 1) {
+                        buttonNext.setText(editable);
+                        if (isFullCoincidence) {
+                            buttonNext.append(getString(R.string._or_) + editable);
+                        }
+                        buttonNext.append(getString(R.string.tree_dots));
+                    }
+                    else {
+                        inputWord.setText(editable.subSequence(0, editable.length() - 1));
+                        inputWord.setSelection(inputWord.getText().toString().length());
+                    }
+                }
+                else {
+                    buttonNext.setText(R.string.next_word);
                 }
             }
         });
@@ -143,15 +177,21 @@ public class SeedValidationFragment extends BaseSeedFragment {
     }
 
     private void proceedNext() {
-        if (inputWord.getText().toString().equals("") || inputWord.getText().toString().length() < 3) {
+        if ((buttonNext.getText().toString().equals(getString(R.string.next_word)) ||
+                buttonNext.getText().toString().contains(getString(R.string.tree_dots))) &&
+                !buttonNext.getText().toString().contains(getString(R.string._or_))) {
             return;
         }
-        phrase.append(inputWord.getText().toString());
+        if (buttonNext.getText().toString().contains(getString(R.string._or_))) {
+            phrase.append(buttonNext.getText().toString().split(" ")[0]);
+        }
+        else {
+            phrase.append(buttonNext.getText());
+        }
         if (count == maxCount) {
             inputWord.animate().alpha(0).setDuration(BrickView.ANIMATION_DURATION / 2).start();
-        } else {
-            inputWord.setText("");
         }
+        inputWord.setText("");
         redrawOne(false);
         buttonNext.setEnabled(false);
         if (count == maxCount) {

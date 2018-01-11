@@ -180,4 +180,7 @@
     <string name="please_update">Please update your version</string>
     <string name="error_config_error">Unable to get config</string>
 
+    <string name="tree_dots">…</string>
+    <string name="_or_">" or "</string>
+
 </resources>
