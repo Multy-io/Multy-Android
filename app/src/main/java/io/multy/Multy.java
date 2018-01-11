@@ -3,6 +3,8 @@ package io.multy;
 import android.app.Application;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.util.Base64;
 
 import com.samwolfand.oneprefs.Prefs;
@@ -48,6 +50,17 @@ public class Multy extends Application {
                 String vector = new String(Base64.encode(iv, Base64.NO_WRAP));
                 Prefs.putString(Constants.PREF_IV, vector);
             } catch (GeneralSecurityException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (Prefs.contains(Constants.PREF_VERSION)) {
+            PackageInfo pInfo = null;
+            try {
+                pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+                int versionCode = pInfo.versionCode;
+                Prefs.putInt(Constants.PREF_VERSION, versionCode);
+            } catch (PackageManager.NameNotFoundException e) {
                 e.printStackTrace();
             }
         }

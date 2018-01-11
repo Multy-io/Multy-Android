@@ -40,10 +40,11 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
 
     private static final String TAG = BaseActivity.class.getSimpleName();
 
-    private int count;
+    private int count = 6;
 
     private RecyclerView.LayoutManager dotsLayoutManager;
     private StringBuilder stringBuilder;
+    boolean isLockVisible = false;
 
     public void hideKeyboard(Activity activity) {
         if (activity != null && activity.getWindow() != null && activity.getWindow().getDecorView() != null) {
@@ -78,7 +79,11 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
             RealmManager.open(this);
-            count = Integer.parseInt(SecurePreferencesHelper.getString(this, Constants.PIN_COUNTER));
+//            final String counter = SecurePreferencesHelper.getString(this, Constants.PIN_COUNTER);
+//            if (counter == null || counter.equals("")) {
+                count = 6;
+//                SecurePreferencesHelper.putString(this, Constants.PIN_COUNTER, String.valueOf(6));
+//            }
         }
         super.onCreate(savedInstanceState);
     }
@@ -130,6 +135,8 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
 
             stringBuilder = new StringBuilder();
             viewGroup.addView(convertView);
+
+            isLockVisible = true;
         }
     }
 
@@ -147,6 +154,7 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
         if (viewGroup != null) {
             View locker = findViewById(R.id.container_pin);
             viewGroup.removeViewInLayout(locker);
+            isLockVisible = false;
         }
     }
 
@@ -157,33 +165,35 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
 
     @Override
     public void onNumberClick(int number) {
-        final long time = SecurePreferencesHelper.getLong(this, Constants.PREF_LOCK_DATE);
-        if (time != 0 && time > System.currentTimeMillis()) {
-            final long dif = time - System.currentTimeMillis();
-            Toast.makeText(this, "Please try again in " + (dif / 1000) + " seconds", Toast.LENGTH_SHORT).show();
-            return;
-        }
+//        final long time = SecurePreferencesHelper.getLong(this, Constants.PREF_LOCK_DATE);
+//        if (time != 0 && time > System.currentTimeMillis()) {
+//            final long dif = time - System.currentTimeMillis();
+//            Toast.makeText(this, "Please try again in " + (dif / 1000) + " seconds", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
 
         stringBuilder.append(String.valueOf(number));
 
         ImageView dot = (ImageView) dotsLayoutManager.getChildAt(stringBuilder.toString().length() - 1);
         dot.setBackgroundResource(R.drawable.circle_white);
 
-        if (stringBuilder.toString().length() == count) {
+        if (stringBuilder.toString().length() == 6) {
             if (!SecurePreferencesHelper.getString(this, Constants.PREF_PIN).equals(stringBuilder.toString())) {
                 if (count != 1) {
                     count--;
-                    SecurePreferencesHelper.putString(this, Constants.PIN_COUNTER, String.valueOf(count));
+//                    SecurePreferencesHelper.putString(this, Constants.PIN_COUNTER, String.valueOf(count));
                     showLock();
                     Toast.makeText(this, count + " number of tries remain", Toast.LENGTH_LONG).show();
                 } else {
-                    final String multiplierString = SecurePreferencesHelper.getString(this, Constants.PREF_LOCK_MULTIPLIER);
-                    final int multiplier = multiplierString == null ? 3 : Integer.valueOf(multiplierString) * 2;
-
-                    SecurePreferencesHelper.putString(this, Constants.PREF_LOCK_MULTIPLIER, String.valueOf(multiplier));
-                    SecurePreferencesHelper.putString(this, Constants.PREF_LOCK_DATE, String.valueOf(System.currentTimeMillis() + (multiplier * 1000)));
-                    Toast.makeText(this, "Try again in " + multiplier + " seconds", Toast.LENGTH_LONG).show();
-                    showLock();
+//                    final String multiplierString = SecurePreferencesHelper.getString(this, Constants.PREF_LOCK_MULTIPLIER);
+//                    final int multiplier = multiplierString == null ? 3 : Integer.valueOf(multiplierString) * 2;
+//
+//                    SecurePreferencesHelper.putString(this, Constants.PREF_LOCK_MULTIPLIER, String.valueOf(multiplier));
+//                    SecurePreferencesHelper.putString(this, Constants.PREF_LOCK_DATE, String.valueOf(System.currentTimeMillis() + (multiplier * 1000)));
+//                    Toast.makeText(this, "Try again in " + multiplier + " seconds", Toast.LENGTH_LONG).show();
+//                    SecurePreferencesHelper.putString(this, Constants.PIN_COUNTER, String.valueOf(6));
+                    Toast.makeText(this, count + "You reached maximu, number of tries", Toast.LENGTH_LONG).show();
+                    finish();
 //                    RealmManager.clear();
 //                    Prefs.clear();
 //                    this.finish();
@@ -191,7 +201,7 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
                 }
             } else {
                 hideLock();
-                SecurePreferencesHelper.putString(this, Constants.PREF_LOCK_DATE, String.valueOf(0));
+//                SecurePreferencesHelper.putString(this, Constants.PREF_LOCK_DATE, String.valueOf(0));
                 SecurePreferencesHelper.putString(this, Constants.PIN_COUNTER, String.valueOf(6));
             }
         }

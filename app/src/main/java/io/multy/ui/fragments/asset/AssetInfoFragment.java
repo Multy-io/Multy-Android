@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,7 +19,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.samwolfand.oneprefs.Prefs;
+
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -27,7 +31,9 @@ import io.multy.R;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.ui.activities.AssetActivity;
+import io.multy.ui.activities.SeedActivity;
 import io.multy.ui.adapters.AssetTransactionsAdapter;
+import io.multy.ui.adapters.EmptyTransactionsAdapter;
 import io.multy.ui.fragments.AddressesFragment;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
@@ -53,6 +59,10 @@ public class AssetInfoFragment extends BaseFragment {
     TextView textAddress;
     @BindView(R.id.refresh_layout)
     SwipeRefreshLayout refreshLayout;
+    @BindView(R.id.group_empty_state)
+    View groupEmptyState;
+    @BindView(R.id.button_warn)
+    FloatingActionButton buttonWarn;
 
     private WalletViewModel viewModel;
 
@@ -65,7 +75,7 @@ public class AssetInfoFragment extends BaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        transactionsAdapter = new AssetTransactionsAdapter();
+        transactionsAdapter = new AssetTransactionsAdapter(new ArrayList<>());
     }
 
     @Nullable
@@ -92,12 +102,19 @@ public class AssetInfoFragment extends BaseFragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(transactionsAdapter);
         if (transactionsAdapter.getItemCount() == 0) {
-            recyclerView.setVisibility(View.GONE);
-//            emptyAsset.setVisibility(View.VISIBLE);
-//            setToolbarScrollFlag(0);
+            refreshLayout.setEnabled(false);
+            recyclerView.setAdapter(new EmptyTransactionsAdapter());
+            groupEmptyState.setVisibility(View.VISIBLE);
+            setToolbarScrollFlag(0);
         } else {
-//            emptyAsset.setVisibility(View.GONE);
-//            setToolbarScrollFlag(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL);
+            refreshLayout.setEnabled(true);
+            groupEmptyState.setVisibility(View.GONE);
+            setToolbarScrollFlag(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL);
+        }
+
+        if (Prefs.getBoolean(Constants.PREF_BACKUP_SEED)) {
+            buttonWarn.setVisibility(View.GONE);
+            buttonWarn.getLayoutParams().height = 0;
         }
     }
 
@@ -178,5 +195,10 @@ public class AssetInfoFragment extends BaseFragment {
     @OnClick(R.id.close)
     void onClickClose() {
         getActivity().finish();
+    }
+
+    @OnClick(R.id.button_warn)
+    void onClickWarn() {
+        startActivity(new Intent(getActivity(), SeedActivity.class));
     }
 }

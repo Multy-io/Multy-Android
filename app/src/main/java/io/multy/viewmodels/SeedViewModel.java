@@ -16,6 +16,7 @@ import com.samwolfand.oneprefs.Prefs;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import io.multy.Multy;
 import io.multy.api.MultyApi;
 import io.multy.model.DataManager;
 import io.multy.model.entities.Mnemonic;
@@ -29,10 +30,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import timber.log.Timber;
-
-/**
- * Created by andre on 08.11.2017.
- */
 
 public class SeedViewModel extends BaseViewModel {
 
@@ -68,6 +65,7 @@ public class SeedViewModel extends BaseViewModel {
     public void restore(String phrase, Context context, Runnable callback) {
         try {
             isLoading.setValue(true);
+            Multy.makeInitialized();
             FirstLaunchHelper.setCredentials(phrase);
             MultyApi.INSTANCE.restore().enqueue(new Callback<WalletsResponse>() {
                 @Override

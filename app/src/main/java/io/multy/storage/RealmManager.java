@@ -10,6 +10,8 @@ import android.content.Context;
 import android.util.Base64;
 import android.util.Log;
 
+import com.samwolfand.oneprefs.Prefs;
+
 import javax.annotation.Nullable;
 
 import io.multy.util.Constants;
@@ -46,6 +48,9 @@ public class RealmManager {
                     .build();
         } catch (Exception e) {
             e.printStackTrace();
+            clear();
+            Prefs.clear();
+            System.exit(0);
         }
 
         return realmConfiguration;

@@ -174,5 +174,9 @@
     <string name="something_went_wrong">Something went wrong</string>
     <string name="zero_zero">0.0</string>
     <string name="show_all_addresses">Show All Addresses</string>
+    <string name="operations_empty">You didn\'t have\noperations</string>
+    <string name="operations_create">You can create\nfirst operation\nhere</string>
+    <string name="please_update">Please update your version</string>
+    <string name="error_config_error">Unable to get config</string>
 
 </resources>

@@ -16,6 +16,8 @@ import io.multy.model.responses.AuthResponse;
 import io.multy.model.responses.FeeRatesResponse;
 import io.multy.model.responses.OutputsResponse;
 import io.multy.model.responses.RestoreResponse;
+import io.multy.model.responses.ServerConfigResponse;
+import io.multy.model.responses.TransactionHistoryResponse;
 import io.multy.model.responses.UserAssetsResponse;
 import io.multy.model.responses.WalletsResponse;
 import io.reactivex.Observable;
@@ -63,4 +65,10 @@ public interface ApiServiceInterface {
 
     @GET("api/v1/wallets/restore")
     Observable<RestoreResponse> restore();
+
+    @GET("api/v1/wallets/transactions/{walletIndex}")
+    Call<TransactionHistoryResponse> getTransactionHistory(@Path ("walletIndex") int walletIndex);
+
+    @GET("/server/config")
+    Call<ServerConfigResponse> getServerConfig();
 }

@@ -35,7 +35,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/text_description"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_date"
-        app:srcCompat="@drawable/ic_send" />
+        android:src="@drawable/ic_recieve" />
 
     <TextView
         android:id="@+id/text_name"

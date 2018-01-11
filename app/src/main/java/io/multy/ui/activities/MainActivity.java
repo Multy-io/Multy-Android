@@ -79,7 +79,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         super.onResume();
         initBranchIO();
 
-        if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
+        if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED) && !isLockVisible) {
             tabLayout.getLayoutParams().height = getResources().getDimensionPixelSize(R.dimen.tab_layout_height);
             buttonOperations.setVisibility(View.VISIBLE);
         } else {

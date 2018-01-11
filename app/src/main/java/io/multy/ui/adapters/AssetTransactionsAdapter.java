@@ -7,16 +7,22 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.multy.R;
-import io.multy.model.entities.Transaction;
+import io.multy.model.entities.TransactionHistory;
 
 public class AssetTransactionsAdapter extends RecyclerView.Adapter<AssetTransactionsAdapter.Holder> {
 
-    private List<Transaction> transactions;
+    private List<TransactionHistory> data;
+
+    public AssetTransactionsAdapter(List<TransactionHistory> data) {
+        this.data = data;
+    }
 
     @Override
     public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -25,13 +31,17 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<AssetTransact
 
     @Override
     public void onBindViewHolder(Holder holder, int position) {
-
+        DecimalFormat fiatFormat = new DecimalFormat("#.##");
+        TransactionHistory transactionHistory = data.get(position);
+        ArrayList<TransactionHistory.StockExchangeRate> stockRates = transactionHistory.getStockExchangeRates();
+        String amountBtc = transactionHistory.getTxOutAmount();
+        double amountFiat = stockRates != null && stockRates.size() > 0 ? stockRates.get(0).getBtcUsd() : 16.000;
+        String amountFiatString = fiatFormat.format(amountFiat) + " USD";
     }
 
     @Override
     public int getItemCount() {
-        return 15;
-//        return transactions.size();
+        return data.size();
     }
 
     class Holder extends RecyclerView.ViewHolder {

@@ -26,6 +26,8 @@ import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.model.requests.AddWalletAddressRequest;
 import io.multy.model.responses.AuthResponse;
 import io.multy.model.responses.OutputsResponse;
+import io.multy.model.responses.ServerConfigResponse;
+import io.multy.model.responses.TransactionHistoryResponse;
 import io.multy.model.responses.UserAssetsResponse;
 import io.multy.model.responses.WalletsResponse;
 import io.multy.storage.RealmManager;
@@ -47,7 +49,7 @@ public enum MultyApi implements MultyApiInterface {
     INSTANCE {
 
 
-//        static final String BASE_URL = "http://192.168.0.121:7778/";  // local
+        //        static final String BASE_URL = "http://192.168.0.121:7778/";  // local
         static final String BASE_URL = "http://88.198.47.112:7778/";  // remote
 
 
@@ -142,6 +144,16 @@ public enum MultyApi implements MultyApiInterface {
         @Override
         public Call<WalletsResponse> restore() {
             return api.getWalletsVerbose();
+        }
+
+        @Override
+        public Call<TransactionHistoryResponse> getTransactionHistory(int walletIndex) {
+            return api.getTransactionHistory(walletIndex);
+        }
+
+        @Override
+        public Call<ServerConfigResponse> getServerConfig() {
+            return api.getServerConfig();
         }
     }
 }

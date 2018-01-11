@@ -6,11 +6,6 @@
 
 package io.multy.util;
 
-/**
- * Created by Ihar Paliashchuk on 09.11.2017.
- * ihar.paliashchuk@gmail.com
- */
-
 public class Constants {
 
     public static final String DEVICE_NAME = "Andrdoid " + " " + android.os.Build.MANUFACTURER + " " + android.os.Build.PRODUCT;
@@ -38,6 +33,7 @@ public class Constants {
     public static final String PREF_KEY = "PREF_KEY";
     public static final String PREF_LOCK_DATE = "PREF_LOCK_DATE";
     public static final String PREF_LOCK_MULTIPLIER = "PREF_LOCK_MULTIPLIER";
+    public static final String PREF_VERSION = "PREF_VERSION";
 
 
     public static final int CAMERA_REQUEST_CODE = 328;
