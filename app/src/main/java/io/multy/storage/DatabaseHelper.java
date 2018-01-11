@@ -161,4 +161,9 @@ public class DatabaseHelper {
     public WalletAddress getWalletAddress(int id) {
         return realm.where(WalletAddress.class).equalTo("index", id).findFirst();
     }
+
+    public void removeWallet(int id) {
+        WalletRealmObject wallet = getWalletById(id);
+        realm.executeTransaction(realm -> wallet.deleteFromRealm());
+    }
 }

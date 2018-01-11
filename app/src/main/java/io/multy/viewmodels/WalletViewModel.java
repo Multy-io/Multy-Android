@@ -7,7 +7,6 @@
 package io.multy.viewmodels;
 
 import android.arch.lifecycle.MutableLiveData;
-import android.content.Intent;
 import android.support.annotation.NonNull;
 
 import com.samwolfand.oneprefs.Prefs;
@@ -15,12 +14,10 @@ import com.samwolfand.oneprefs.Prefs;
 import java.util.List;
 
 import io.multy.Multy;
+import io.multy.api.MultyApi;
 import io.multy.model.DataManager;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.entities.wallet.WalletRealmObject;
-import io.multy.storage.AssetsDao;
-import io.multy.storage.RealmManager;
-import io.multy.ui.activities.AssetActivity;
 import io.multy.storage.RealmManager;
 import io.multy.util.Constants;
 import io.multy.util.FirstLaunchHelper;
@@ -28,8 +25,11 @@ import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
-import io.realm.Realm;
 import io.realm.RealmList;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import timber.log.Timber;
 
 public class WalletViewModel extends BaseViewModel {
@@ -105,38 +105,13 @@ public class WalletViewModel extends BaseViewModel {
             walletRealmObject.setCurrency(Constants.ZERO);
             walletRealmObject.setAddressIndex(Constants.ZERO);
             walletRealmObject.setCreationAddress(creationAddress);
-            walletRealmObject.setWalletIndex(walletCount);
+            walletRealmObject.setWalletIndex(walletIndex);
         } catch (JniException e) {
             e.printStackTrace();
             isLoading.setValue(false);
             errorMessage.setValue(e.getLocalizedMessage());
             errorMessage.call();
         }
-    }
-
-    private void saveWallet(Activity activity, WalletRealmObject walletRealmObject) {
-        Call<ResponseBody> responseBodyCall = MultyApi.INSTANCE.addWallet(activity, walletRealmObject);
-        responseBodyCall.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                isLoading.setValue(false);
-                if (response.isSuccessful()) {
-                    DataManager.getInstance().saveWallet(walletRealmObject);
-                    Prefs.putBoolean(Constants.PREF_APP_INITIALIZED, true);
-                    Prefs.putInt(Constants.PREF_WALLET_TOP_INDEX, walletRealmObject.getWalletIndex());
-
-                    Intent intent = new Intent(activity, AssetActivity.class);
-                    if (walletRealmObject != null) {
-                        intent.putExtra(Constants.EXTRA_WALLET_ID, walletRealmObject.getWalletIndex());
-                    }
-
-                    activity.startActivity(intent);
-                    activity.finish();
-                } else {
-                    errorMessage.call();
-                }
-            }
-
         return walletRealmObject;
     }
 

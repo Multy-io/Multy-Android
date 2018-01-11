@@ -26,7 +26,6 @@ public class Constants {
     public static final String PREF_EXCHANGE_PRICE = "pref_exchange_price";
     public static final String PREF_LOCK ="pref_lock";
     public static final String PREF_WALLET_TOP_INDEX = "pref_wallet_top_index";
-    public static final String PREF_LOCK = "pref_lock";
     public static final String PREF_IS_FINGERPRINT_ENABLED = "PREF_IS_FINGERPRINT_ENABLED";
     public static final String PIN_COUNTER = "PIN_COUNTER";
     public static final String ANDROID_PACKAGE = "android.webkit.";
