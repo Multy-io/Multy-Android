@@ -1,6 +1,5 @@
 package io.multy.ui.fragments.asset;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -14,6 +13,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,17 +23,17 @@ import android.widget.Toast;
 import com.samwolfand.oneprefs.Prefs;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
-
+import io.multy.api.MultyApi;
 import io.multy.api.socket.CurrenciesRate;
-import io.multy.model.entities.TransactionHistory;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.entities.wallet.WalletRealmObject;
+import io.multy.model.responses.WalletsResponse;
+import io.multy.storage.AssetsDao;
 import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetActivity;
 import io.multy.ui.activities.SeedActivity;
@@ -44,15 +44,18 @@ import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
 import io.multy.viewmodels.WalletViewModel;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import timber.log.Timber;
 
-public class AssetInfoFragment extends BaseFragment {
+public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOffsetChangedListener {
 
     public static final String TAG = AssetInfoFragment.class.getSimpleName();
 
     @BindView(R.id.collapsing_toolbar)
     CollapsingToolbarLayout collapsingToolbarLayout;
-    @BindView(R.id.recycler_transactions)
+    @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
     @BindView(R.id.text_value)
     TextView textBalanceOriginal;
@@ -62,8 +65,8 @@ public class AssetInfoFragment extends BaseFragment {
     TextView textWalletName;
     @BindView(R.id.text_address)
     TextView textAddress;
-    @BindView(R.id.refresh_layout)
-    SwipeRefreshLayout refreshLayout;
+    @BindView(R.id.swipe_refresh_layout)
+    SwipeRefreshLayout swipeRefreshLayout;
     @BindView(R.id.group_empty_state)
     View groupEmptyState;
     @BindView(R.id.button_warn)
@@ -74,7 +77,10 @@ public class AssetInfoFragment extends BaseFragment {
     TextView textAvailableValue;
     @BindView(R.id.text_available_fiat)
     TextView textAvailableFiat;
-
+    @BindView(R.id.appbar_layout)
+    AppBarLayout appBarLayout;
+    @BindView(R.id.container_info)
+    View containerInfo;
 
     private WalletViewModel viewModel;
     private final static DecimalFormat format = new DecimalFormat("#.##");
@@ -98,33 +104,78 @@ public class AssetInfoFragment extends BaseFragment {
 
         viewModel = ViewModelProviders.of(getActivity()).get(WalletViewModel.class);
         viewModel.rates.observe(this, currenciesRate -> updateBalanceViews(currenciesRate));
+        swipeRefreshLayout.setOnRefreshListener(() -> refreshWallet());
 
         WalletRealmObject wallet = viewModel.getWallet(getActivity().getIntent().getIntExtra(Constants.EXTRA_WALLET_ID, 0));
-        if (wallet != null) {
-            setupWalletInfo(wallet);
-        } else {
-            viewModel.getWalletLive().observe(this, this::setupWalletInfo);
-        }
-
-        initialize();
-        requestTransactions();
+        viewModel.getWalletLive().observe(this, this::setupWalletInfo);
+        viewModel.getWalletLive().setValue(wallet);
         return view;
+    }
+
+    private void refreshWallet() {
+        //TODO move to viewmodel
+        swipeRefreshLayout.setRefreshing(false);
+        viewModel.isLoading.setValue(true);
+
+        final int walletIndex = viewModel.getWalletLive().getValue().getWalletIndex();
+        MultyApi.INSTANCE.getWalletVerbose(walletIndex).enqueue(new Callback<WalletsResponse>() {
+            @Override
+            public void onResponse(Call<WalletsResponse> call, Response<WalletsResponse> response) {
+                viewModel.isLoading.setValue(false);
+                if (response.isSuccessful() && response.body().getWallets() != null && response.body().getWallets().size() > 0) {
+                    AssetsDao assetsDao = RealmManager.getAssetsDao();
+                    assetsDao.saveWallet(response.body().getWallets().get(0));
+                    viewModel.getWalletLive().setValue(assetsDao.getWalletById(walletIndex));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<WalletsResponse> call, Throwable t) {
+                viewModel.isLoading.setValue(false);
+                t.printStackTrace();
+            }
+        });
     }
 
     @Override
     public void onResume() {
         super.onResume();
         viewModel.subscribeSocketsUpdate();
+        appBarLayout.addOnOffsetChangedListener(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
         viewModel.unsubscribeSocketsUpdate();
+        appBarLayout.removeOnOffsetChangedListener(this);
+    }
+
+    @Override
+    public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
+        final int total = appBarLayout.getTotalScrollRange();
+        final int offset = Math.abs(i);
+        final int percentage = offset == 0 ? 0 : offset / total;
+//        containerInfo.setBackgroundColor((Integer) argbEvaluator.evaluate(colorOffset, colorTransparent, colorPrimaryDark));
+        swipeRefreshLayout.setEnabled(i == 0);
+        if (i != 0) {
+            containerInfo.setAlpha(0.5f - percentage);
+        }
     }
 
     private void initialize() {
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(transactionsAdapter);
+        if (transactionsAdapter.getItemCount() == 0) {
+            swipeRefreshLayout.setEnabled(false);
+            recyclerView.setAdapter(new EmptyTransactionsAdapter());
+            groupEmptyState.setVisibility(View.VISIBLE);
+            setToolbarScrollFlag(0);
+        } else {
+            swipeRefreshLayout.setEnabled(true);
+            groupEmptyState.setVisibility(View.GONE);
+            setToolbarScrollFlag(3);
+        }
 
         if (Prefs.getBoolean(Constants.PREF_BACKUP_SEED)) {
             buttonWarn.setVisibility(View.GONE);
@@ -134,18 +185,21 @@ public class AssetInfoFragment extends BaseFragment {
 
     private void setTransactionsState() {
         if (transactionsAdapter.getItemCount() == 0) {
-            refreshLayout.setEnabled(false);
+            swipeRefreshLayout.setEnabled(false);
             recyclerView.setAdapter(new EmptyTransactionsAdapter());
             groupEmptyState.setVisibility(View.VISIBLE);
-//            setToolbarScrollFlag(0);
+            setToolbarScrollFlag(0);
         } else {
-            refreshLayout.setEnabled(true);
+            swipeRefreshLayout.setEnabled(true);
             groupEmptyState.setVisibility(View.GONE);
-            setToolbarScrollFlag(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL);
+            setToolbarScrollFlag(3);
         }
     }
 
     private void setupWalletInfo(WalletRealmObject wallet) {
+        initialize();
+        requestTransactions();
+
         Timber.i("wallet %s", wallet.toString());
         if (wallet.getAddresses() != null && !wallet.getAddresses().isEmpty()) {
             for (WalletAddress address : wallet.getAddresses()) {
@@ -169,17 +223,22 @@ public class AssetInfoFragment extends BaseFragment {
         double balance = wallet.getBalance();
         double pending = wallet.getPendingBalance() + balance;
 
+        Log.i("wise", "balance " + balance);
+        Log.i("Wise", "pending " + pending);
+
+        if (pending == 0) {
+            hideAvailableAmount();
+        }
+
         final double formatBalance = balance / Math.pow(10, 8);
         final double formatPending = pending / Math.pow(10, 8);
         final double exchangePrice = rate == null ? RealmManager.getSettingsDao().getCurrenciesRate().getBtcToUsd() : rate.getBtcToUsd();
 
-        textAvailableValue.setText(balance == 0 ? "0.0$" : format.format(exchangePrice * formatBalance) + "$");
+        textAvailableFiat.setText(balance == 0 ? "0.0$" : format.format(exchangePrice * formatBalance) + "$");
         textBalanceFiat.setText(pending == 0 ? "0.0$" : format.format(exchangePrice * formatPending) + "$");
 
-        textAvailableValue.setText(pending != 0 ? CryptoFormatUtils.satoshiToBtc(pending) : String.valueOf(pending));
-        textBalanceOriginal.setText(balance != 0 ? CryptoFormatUtils.satoshiToBtc(balance) : String.valueOf(balance));
-
-        //TODO calculating available and original balance depending on history
+        textBalanceOriginal.setText(pending != 0 ? CryptoFormatUtils.satoshiToBtc(pending) : String.valueOf(pending));
+        textAvailableValue.setText(balance != 0 ? CryptoFormatUtils.satoshiToBtc(balance) : String.valueOf(balance));
     }
 
     private void showAvailableAmount() {
@@ -194,6 +253,7 @@ public class AssetInfoFragment extends BaseFragment {
         viewModel.getTransactionsHistory().observe(this, transactions -> {
             if (transactions != null && !transactions.isEmpty()) {
                 transactionsAdapter.setTransactions(transactions);
+                recyclerView.setAdapter(new AssetTransactionsAdapter(transactions));
             }
             setTransactionsState();
         });

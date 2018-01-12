@@ -142,7 +142,7 @@
                 android:layout_height="match_parent"
                 android:background="?attr/selectableItemBackground"
                 android:padding="20dp"
-                app:srcCompat="@drawable/ic_cancel_blue" />
+                android:src="@drawable/ic_cancel_blue" />
         </android.support.v7.widget.CardView>
     </android.support.constraint.ConstraintLayout>
 </android.support.constraint.ConstraintLayout>

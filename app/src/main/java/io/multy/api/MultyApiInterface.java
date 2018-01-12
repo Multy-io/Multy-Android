@@ -31,7 +31,7 @@ public interface MultyApiInterface {
 
     Observable<Object> addWalletAddress(AddWalletAddressRequest addWalletAddressRequest);
 
-    Call<ResponseBody> getWalletVerbose(int walletIndex);
+    Call<WalletsResponse> getWalletVerbose(int walletIndex);
 
     Call<WalletsResponse> getWalletsVerbose();
 

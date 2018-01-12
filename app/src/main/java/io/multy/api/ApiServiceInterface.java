@@ -58,8 +58,8 @@ public interface ApiServiceInterface {
     @POST("api/v1/address")
     Observable<Object> addWalletAddress(@Body AddWalletAddressRequest addWalletAddressRequest);
 
-    @GET("api/v1/wallets/{walletIndex}/verbose")
-    Call<ResponseBody> getWalletVerboseByIndex(@Path ("walletIndex") int walletIndex);
+    @GET("api/v1/wallet/{walletIndex}/verbose")
+    Call<WalletsResponse> getWalletVerboseByIndex(@Path ("walletIndex") int walletIndex);
 
     @DELETE("api/v1/wallet/{walletIndex}")
     Call<ResponseBody> removeWallet(@Path ("walletIndex") int walletIndex);

@@ -33,7 +33,6 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import timber.log.Timber;
 
 public class WalletViewModel extends BaseViewModel {
 
@@ -59,10 +58,6 @@ public class WalletViewModel extends BaseViewModel {
         if (socketManager != null) {
             socketManager.disconnect();
         }
-    }
-
-    public Double getApiExchangePrice() {
-        return RealmManager.getSettingsDao().getExchangePrice().getExchangePrice();
     }
 
     public MutableLiveData<List<WalletAddress>> getAddresses() {

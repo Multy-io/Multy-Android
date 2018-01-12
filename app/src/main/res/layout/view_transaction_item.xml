@@ -49,7 +49,6 @@
         tools:text="3DA28W4 ∙ ∙ ∙ ∙ XJSP9L"
         android:textColor="#363636"
         android:textSize="14sp"
-        android:layout_marginEnd="@dimen/transaction_item_address_margin_right"
         app:layout_constraintStart_toEndOf="@+id/image_operation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_date" />
@@ -123,7 +122,6 @@
         android:background="#e0e3ea"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/text_description"
         app:layout_constraintTop_toBottomOf="@+id/text_comment" />
 
 </android.support.constraint.ConstraintLayout>

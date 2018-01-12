@@ -1,6 +1,5 @@
 package io.multy.ui.adapters;
 
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -12,25 +11,24 @@ import android.widget.TextView;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.multy.R;
-import io.multy.model.DataManager;
 import io.multy.model.entities.TransactionHistory;
 import io.multy.model.entities.wallet.CurrencyCode;
-import io.multy.ui.activities.AssetActivity;
 import io.multy.util.Constants;
-import io.multy.util.CryptoFormatUtils;
-import io.multy.util.NativeDataHelper;
 import timber.log.Timber;
 
 public class AssetTransactionsAdapter extends RecyclerView.Adapter<AssetTransactionsAdapter.Holder> {
 
     private List<TransactionHistory> transactionHistoryList;
+
+    public AssetTransactionsAdapter(List<TransactionHistory> transactionHistoryList) {
+        this.transactionHistoryList = transactionHistoryList;
+    }
 
     public AssetTransactionsAdapter() {
         transactionHistoryList = new ArrayList<>();
@@ -45,7 +43,7 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<AssetTransact
     public void onBindViewHolder(Holder holder, int position) {
         DecimalFormat fiatFormat = new DecimalFormat("#.##");
         TransactionHistory transactionHistory = transactionHistoryList.get(position);
-        boolean isInput = true;
+        boolean isInput;
 
         if (transactionHistory.getTxStatus().equals(Constants.TX_STATUS_IN_MEMPOOL_INCOMING) ||
                 transactionHistory.getTxStatus().equals(Constants.TX_STATUS_IN_BLOCK_INCOMING) ||

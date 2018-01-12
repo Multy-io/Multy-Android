@@ -86,7 +86,4 @@
     <dimen name="amount_size_huge">42sp</dimen>
     <dimen name="tab_layout_height">56dp</dimen>
 
-    <dimen name="transactions_margin_top">20dp</dimen>
-    <dimen name="transaction_item_address_margin_right">110dp</dimen>
-
 </resources>
