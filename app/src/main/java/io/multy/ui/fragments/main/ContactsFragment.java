@@ -17,7 +17,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.ui.fragments.BaseFragment;
-import io.multy.ui.fragments.PinFragment;
+import io.multy.ui.fragments.PinSetupFragment;
 import io.multy.viewmodels.ContactsViewModel;
 
 /**
@@ -44,6 +44,6 @@ public class ContactsFragment extends BaseFragment {
 
     @OnClick(R.id.image_address)
     public void onClickAddresses() {
-        new PinFragment().show(getFragmentManager(), "");
+        new PinSetupFragment().show(getFragmentManager(), "");
     }
 }

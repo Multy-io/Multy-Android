@@ -1,5 +1,6 @@
 package io.multy.ui.fragments.asset;
 
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -28,7 +29,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
+
 import io.multy.api.socket.CurrenciesRate;
+import io.multy.model.entities.TransactionHistory;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.storage.RealmManager;
@@ -84,7 +87,7 @@ public class AssetInfoFragment extends BaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        transactionsAdapter = new AssetTransactionsAdapter(new ArrayList<>());
+        transactionsAdapter = new AssetTransactionsAdapter();
     }
 
     @Nullable
@@ -104,6 +107,7 @@ public class AssetInfoFragment extends BaseFragment {
         }
 
         initialize();
+        requestTransactions();
         return view;
     }
 
@@ -120,22 +124,24 @@ public class AssetInfoFragment extends BaseFragment {
     }
 
     private void initialize() {
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(transactionsAdapter);
-        if (transactionsAdapter.getItemCount() == 0) {
-            refreshLayout.setEnabled(false);
-            recyclerView.setAdapter(new EmptyTransactionsAdapter());
-            groupEmptyState.setVisibility(View.VISIBLE);
-            setToolbarScrollFlag(0);
-        } else {
-            refreshLayout.setEnabled(true);
-            groupEmptyState.setVisibility(View.GONE);
-            setToolbarScrollFlag(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL);
-        }
 
         if (Prefs.getBoolean(Constants.PREF_BACKUP_SEED)) {
             buttonWarn.setVisibility(View.GONE);
             buttonWarn.getLayoutParams().height = 0;
+        }
+    }
+
+    private void setTransactionsState() {
+        if (transactionsAdapter.getItemCount() == 0) {
+            refreshLayout.setEnabled(false);
+            recyclerView.setAdapter(new EmptyTransactionsAdapter());
+            groupEmptyState.setVisibility(View.VISIBLE);
+//            setToolbarScrollFlag(0);
+        } else {
+            refreshLayout.setEnabled(true);
+            groupEmptyState.setVisibility(View.GONE);
+            setToolbarScrollFlag(AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL);
         }
     }
 
@@ -182,6 +188,15 @@ public class AssetInfoFragment extends BaseFragment {
 
     private void hideAvailableAmount() {
         containerAvailableBalance.setVisibility(View.GONE);
+    }
+
+    private void requestTransactions() {
+        viewModel.getTransactionsHistory().observe(this, transactions -> {
+            if (transactions != null && !transactions.isEmpty()) {
+                transactionsAdapter.setTransactions(transactions);
+            }
+            setTransactionsState();
+        });
     }
 
     private void setToolbarScrollFlag(int flag) {

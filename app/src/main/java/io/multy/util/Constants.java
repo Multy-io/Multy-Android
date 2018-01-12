@@ -59,6 +59,15 @@ public class Constants {
     public static final int ZERO = 0;
     public static final int ONE = 1;
 
-    public static final String NOTIFICATION_CHANNEL = "Multy wallet";
+    public static final String TX_STATUS_IN_MEMPOOL_INCOMING = "incoming in mempool"; //input
+    public static final String TX_STATUS_IN_BLOCK_INCOMING = "incoming in block"; //input
+    public static final String TX_STATUS_IN_MEMPOOL_OUTCOMING = "spend in mempool";
+    public static final String TX_STATUS_IN_BLOCK_OUTCOMING = "spend in block";
+    public static final String TX_STATUS_IN_BLOCK_CONFIRMED = "in block confirmed"; //input
+    public static final String TX_STATUS_REJECTED = "rejected block";
 
+    public static final String BULLETS_FIVE = " • • • ∙ ";
+
+    public static final int TRANSACTIONS_EMPTY_SIZE = 0;
+    public static final int ADDRESS_PART = 9;
 }

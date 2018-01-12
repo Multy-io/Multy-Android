@@ -15,9 +15,9 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/montserrat"
-        android:text="Today"
         android:textColor="#9ca7ab"
         android:textStyle="bold"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -32,38 +32,40 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
         android:scaleType="centerInside"
-        app:layout_constraintBottom_toBottomOf="@+id/text_description"
+        app:layout_constraintBottom_toBottomOf="@+id/text_time"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_date"
         android:src="@drawable/ic_recieve" />
 
     <TextView
-        android:id="@+id/text_name"
+        android:id="@+id/text_address"
         style="@style/BlackMediumText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="21dp"
         android:layout_marginTop="27dp"
         android:fontFamily="@font/montserrat"
-        android:maxLines="1"
-        android:text="3DA28W ∙ ∙ ∙ ∙ XJSP9L "
+        android:maxLines="2"
+        tools:text="3DA28W4 ∙ ∙ ∙ ∙ XJSP9L"
         android:textColor="#363636"
         android:textSize="14sp"
+        android:layout_marginEnd="@dimen/transaction_item_address_margin_right"
         app:layout_constraintStart_toEndOf="@+id/image_operation"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_date" />
 
     <TextView
-        android:id="@+id/text_description"
+        android:id="@+id/text_time"
         style="@style/TransactionTextBlue"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:fontFamily="@font/montserrat"
         android:maxLines="1"
-        android:text="18:30"
+        tools:text="18:30"
         android:textColor="#87a1c5"
         android:textSize="12sp"
-        app:layout_constraintStart_toStartOf="@+id/text_name"
-        app:layout_constraintTop_toBottomOf="@+id/text_name" />
+        app:layout_constraintStart_toStartOf="@+id/text_address"
+        app:layout_constraintTop_toBottomOf="@+id/text_address" />
 
     <TextView
         android:id="@+id/text_amount"
@@ -74,27 +76,26 @@
         android:layout_marginStart="8dp"
         android:fontFamily="@font/montserrat"
         android:maxLines="1"
-        android:text="0.052509 BTC"
         android:textAlignment="textEnd"
         android:textColor="#363636"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/text_name"
-        app:layout_constraintTop_toTopOf="@+id/text_name"
+        app:layout_constraintStart_toEndOf="@+id/text_address"
+        app:layout_constraintTop_toTopOf="@+id/text_address"
         tools:text="0.052509 BTC" />
 
     <TextView
-        android:id="@+id/text_time"
+        android:id="@+id/text_fiat"
         style="@style/TransactionTextBlue"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="200.34 USD"
+        tools:text="200.34 USD"
         android:textAlignment="textEnd"
         app:layout_constraintEnd_toEndOf="@+id/text_amount"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/text_description"
+        app:layout_constraintStart_toEndOf="@+id/text_time"
         app:layout_constraintTop_toBottomOf="@+id/text_amount" />
 
     <TextView
@@ -106,12 +107,12 @@
         android:layout_marginTop="6dp"
         android:fontFamily="@font/montserrat"
         android:maxLines="1"
-        android:text="From SuperHero with Best wishes!"
         android:textColor="#87a1c5"
         android:textSize="12sp"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/text_description"
-        app:layout_constraintTop_toBottomOf="@+id/text_description"
+        app:layout_constraintStart_toStartOf="@+id/text_time"
+        app:layout_constraintTop_toBottomOf="@+id/text_time"
         tools:text="From SuperHero with Best wishes!" />
 
     <View

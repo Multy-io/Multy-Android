@@ -296,6 +296,8 @@
                 android:id="@+id/recycler_transactions"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:paddingTop="@dimen/transactions_margin_top"
+                app:layoutManager="android.support.v7.widget.LinearLayoutManager"
                 tools:listitem="@layout/view_transaction_item" />
         </android.support.v4.widget.SwipeRefreshLayout>
 
