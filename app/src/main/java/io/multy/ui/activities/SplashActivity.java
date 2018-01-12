@@ -30,6 +30,7 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+
 //        FirstLaunchHelper.preventRootIfDetected(this);
 
         MultyApi.INSTANCE.getServerConfig().enqueue(new Callback<ServerConfigResponse>() {
@@ -41,7 +42,10 @@ public class SplashActivity extends AppCompatActivity {
                         PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
                         int versionCode = pInfo.versionCode;
                         if (versionCode < androidConfig.getSoftVersion()) {
-                            showUpdateDialog();
+                            //we can still use soft version
+                            //leave this clause for future possible purposes
+//                            showUpdateDialog();
+                            showMainActivity();
                         } else if (versionCode < androidConfig.getHardVersion()) {
                             showUpdateDialog();
                         } else {
@@ -51,13 +55,15 @@ public class SplashActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 } else {
-                    showError(R.string.error_config_error);
+//                    showError(R.string.error_config_error);
+                    showMainActivity();
                 }
             }
 
             @Override
             public void onFailure(Call<ServerConfigResponse> call, Throwable t) {
-                showError(R.string.error_config_error);
+//                showError(R.string.error_config_error);
+                showMainActivity();
             }
         });
     }

@@ -15,6 +15,8 @@ import java.util.List;
 
 import io.multy.Multy;
 import io.multy.api.MultyApi;
+import io.multy.api.socket.CurrenciesRate;
+import io.multy.api.socket.SocketManager;
 import io.multy.model.DataManager;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.entities.wallet.WalletRealmObject;
@@ -23,42 +25,35 @@ import io.multy.util.Constants;
 import io.multy.util.FirstLaunchHelper;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 import io.realm.RealmList;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import timber.log.Timber;
 
 public class WalletViewModel extends BaseViewModel {
 
     private MutableLiveData<WalletRealmObject> wallet = new MutableLiveData<>();
-    private MutableLiveData<Double> exchangePrice = new MutableLiveData<>();
     public MutableLiveData<String> chainCurrency = new MutableLiveData<>();
     public MutableLiveData<String> fiatCurrency = new MutableLiveData<>();
     private MutableLiveData<List<WalletAddress>> addresses = new MutableLiveData<>();
     private MutableLiveData<Boolean> isRemoved = new MutableLiveData<>();
+    public MutableLiveData<CurrenciesRate> rates = new MutableLiveData<>();
+
+    private SocketManager socketManager;
 
     public WalletViewModel() {
     }
 
-    public void getWalletAddresses(int walletId) {
-        DataManager.getInstance().getWalletAddresses(walletId)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(response -> {
-                    Timber.e("addresses %s", response);
-                }, Throwable::printStackTrace);
+    public void subscribeSocketsUpdate() {
+        socketManager = new SocketManager();
+        socketManager.connect(rates, null);
     }
 
-    public Double getApiExchangePrice() {
-        return RealmManager.getSettingsDao().getExchangePrice().getExchangePrice();
-    }
-
-    public MutableLiveData<Double> getExchangePrice() {
-        return exchangePrice;
+    public void unsubscribeSocketsUpdate() {
+        if (socketManager != null) {
+            socketManager.disconnect();
+        }
     }
 
     public MutableLiveData<List<WalletAddress>> getAddresses() {
@@ -66,7 +61,7 @@ public class WalletViewModel extends BaseViewModel {
     }
 
     public WalletRealmObject getWallet(int index) {
-        WalletRealmObject wallet = DataManager.getInstance().getWallet(index);
+        WalletRealmObject wallet = RealmManager.getAssetsDao().getWalletById(index);
         this.wallet.setValue(wallet);
         return wallet;
     }

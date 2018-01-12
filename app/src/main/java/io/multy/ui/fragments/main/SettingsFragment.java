@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -74,7 +75,7 @@ public class SettingsFragment extends BaseFragment {
 
         final boolean finger = Prefs.getBoolean(Constants.PREF_IS_FINGERPRINT_ENABLED);
         textViewLock.setText(lock ? "Enabled" : "Disabled");
-        checkBoxLock.setChecked(finger);
+        checkBoxFinger.setChecked(finger);
 
         return view;
     }
@@ -86,6 +87,7 @@ public class SettingsFragment extends BaseFragment {
 
         final boolean lock = checkBoxLock.isChecked();
         textViewLock.setText(lock ? "Enabled" : "Disabled");
+        Log.i("wise", "LOCK = " + lock);
     }
 
     @OnClick(R.id.button_fingerprint)
@@ -102,6 +104,7 @@ public class SettingsFragment extends BaseFragment {
     public void onClickSavePin() {
         final String pin = inputPin.getText().toString();
         SecurePreferencesHelper.putString(getActivity(), Constants.PREF_PIN, pin);
+        Log.i("wise", "saved pin " + pin);
     }
 
     @OnClick(R.id.button_backup)

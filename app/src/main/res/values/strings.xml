@@ -28,7 +28,7 @@
     <string name="seed_congrats">Congratulations!\nYour wallet is secure!</string>
     <string name="seed_congrats_restore">Congratulations!\nYour wallet is restored!</string>
     <string name="great">Great!</string>
-    <string name="try_again">Try again</string>
+    <string name="check_connection">Check Connection</string>
     <string name="seed_result_fail">Wrong seed phrase!</string>
     <string name="seed_writing">Seed phrase validation</string>
     <string name="next_word">Next word</string>
@@ -179,6 +179,8 @@
     <string name="operations_create">You can create\nfirst operation\nhere</string>
     <string name="please_update">Please update your version</string>
     <string name="error_config_error">Unable to get config</string>
+    <string name="no_internet_connection">No internet connection</string>
+    <string name="no_internet_connection_message">Unfortunately you are not conencted\nto the network now. Multy needs\nconstant connection to provide it’s\nwork correctly</string>
 
     <string name="tree_dots">…</string>
     <string name="_or_">" or "</string>

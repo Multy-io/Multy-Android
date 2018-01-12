@@ -80,7 +80,7 @@ public class SettingsDao {
     public ExchangePrice getExchangePrice() {
         ExchangePrice exchangePrice = realm.where(ExchangePrice.class).findFirst();
         if (exchangePrice == null) {
-            exchangePrice = new ExchangePrice(15.000);
+            exchangePrice = new ExchangePrice(15000.00);
         }
         return exchangePrice;
     }
@@ -90,6 +90,11 @@ public class SettingsDao {
     }
 
     public CurrenciesRate getCurrenciesRate() {
-        return realm.where(CurrenciesRate.class).findFirst();
+        CurrenciesRate currenciesRate = realm.where(CurrenciesRate.class).findFirst();
+        if (currenciesRate == null) {
+            currenciesRate = new CurrenciesRate();
+            currenciesRate.setBtcToUsd(15000.00);
+        }
+        return currenciesRate;
     }
 }

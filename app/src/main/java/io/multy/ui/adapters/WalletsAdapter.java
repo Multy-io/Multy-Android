@@ -2,6 +2,7 @@ package io.multy.ui.adapters;
 
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,8 +17,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.multy.R;
 import io.multy.api.socket.CurrenciesRate;
-import io.multy.model.DataManager;
 import io.multy.model.entities.wallet.WalletRealmObject;
+import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetActivity;
 import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
@@ -45,6 +46,7 @@ public class WalletsAdapter extends RecyclerView.Adapter<WalletsAdapter.Holder> 
     public void updateRates(CurrenciesRate rates) {
         this.rates = rates;
         notifyDataSetChanged();
+        Log.i("wise", "got rates " + rates);
     }
 
     @Override
@@ -56,7 +58,7 @@ public class WalletsAdapter extends RecyclerView.Adapter<WalletsAdapter.Holder> 
 
         final double formatBalance = balance / Math.pow(10, 8);
         final double formatPending = pending / Math.pow(10, 8);
-        final double exchangePrice = rates != null ? rates.getBtcToUsd() : DataManager.getInstance().getExchangePriceDB();
+        final double exchangePrice = rates != null ? rates.getBtcToUsd() : RealmManager.getSettingsDao().getCurrenciesRate().getBtcToUsd();
 
         holder.equals.setText(balance == 0 ? "0.0$" : format.format(exchangePrice * formatBalance) + "$");
         holder.pendingFiat.setText(pending == 0 ? "0.0$" : format.format(exchangePrice * formatPending) + "$");

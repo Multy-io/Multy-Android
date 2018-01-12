@@ -14,15 +14,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.samwolfand.oneprefs.Prefs;
+
+import net.khirr.library.foreground.Foreground;
 
 import io.multy.R;
 import io.multy.storage.RealmManager;
@@ -31,17 +31,12 @@ import io.multy.ui.adapters.PinDotsAdapter;
 import io.multy.ui.adapters.PinNumbersAdapter;
 import io.multy.util.Constants;
 
-/**
- * Created by Ihar Paliashchuk on 02.11.2017.
- * ihar.paliashchuk@gmail.com
- */
-
 public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter.OnFingerPrintClickListener, PinNumbersAdapter.OnNumberClickListener, View.OnClickListener {
 
     private static final String TAG = BaseActivity.class.getSimpleName();
 
     private int count = 6;
-
+    private Foreground.Listener foregroundListener;
     private RecyclerView.LayoutManager dotsLayoutManager;
     private StringBuilder stringBuilder;
     boolean isLockVisible = false;
@@ -54,61 +49,53 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
     }
 
     @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        View v = getCurrentFocus();
-
-        if (v != null && (ev.getAction() == MotionEvent.ACTION_UP || ev.getAction() == MotionEvent.ACTION_MOVE) &&
-                v instanceof EditText && !v.getClass().getName().startsWith(Constants.ANDROID_PACKAGE)) {
-            int scrcoords[] = new int[2];
-            v.getLocationOnScreen(scrcoords);
-            float x = ev.getRawX() + v.getLeft() - scrcoords[Constants.ZERO];
-            float y = ev.getRawY() + v.getTop() - scrcoords[Constants.ONE];
-
-            if (x < v.getLeft() || x > v.getRight() || y < v.getTop() || y > v.getBottom())
-                hideKeyboard(this);
-        }
-        return super.dispatchTouchEvent(ev);
-    }
-
-    @Override
-    public void onPointerCaptureChanged(boolean hasCapture) {
-
-    }
-
-    @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
-            RealmManager.open(this);
-//            final String counter = SecurePreferencesHelper.getString(this, Constants.PIN_COUNTER);
-//            if (counter == null || counter.equals("")) {
-                count = 6;
-//                SecurePreferencesHelper.putString(this, Constants.PIN_COUNTER, String.valueOf(6));
-//            }
+            if (!isLockVisible) {
+                RealmManager.open(this);
+            }
+            count = 6;
         }
+
+        foregroundListener = new Foreground.Listener() {
+            @Override
+            public void background() {
+                if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
+                    RealmManager.close();
+                }
+
+                if (Prefs.getBoolean(Constants.PREF_LOCK)) {
+                    showLock();
+                }
+            }
+
+            @Override
+            public void foreground() {
+                if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED) && !Prefs.getBoolean(Constants.PREF_LOCK)) {
+                    RealmManager.open(BaseActivity.this);
+                }
+
+
+            }
+        };
+
+        Foreground.Companion.addListener(foregroundListener);
         super.onCreate(savedInstanceState);
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        showLock();
-    }
-
-    @Override
     protected void onDestroy() {
-        if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
-            RealmManager.close();
-        }
+        Foreground.Companion.removeListener(foregroundListener);
         super.onDestroy();
     }
 
-    private void showLock() {
+    void showLock() {
         if (!Prefs.getBoolean(Constants.PREF_LOCK)) {
+            return;
+        }
+
+        if (Prefs.getBoolean(Constants.PREF_SELF_CLICKED)) {
+            Prefs.putBoolean(Constants.PREF_SELF_CLICKED, false);
             return;
         }
 
@@ -120,6 +107,11 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
         ViewGroup viewGroup = findViewById(R.id.container_main);
         if (viewGroup != null) {
             View convertView = getLayoutInflater().inflate(R.layout.fragment_pin, viewGroup, false);
+
+            View previousView = viewGroup.findViewById(R.id.container_pin);
+            if (previousView != null) {
+                viewGroup.removeViewInLayout(previousView);
+            }
 
             RecyclerView recyclerViewDots = convertView.findViewById(R.id.recycler_view_dots);
             RecyclerView recyclerViewNumbers = convertView.findViewById(R.id.recycler_view_numbers);
@@ -137,6 +129,7 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
             viewGroup.addView(convertView);
 
             isLockVisible = true;
+            RealmManager.open(this);
         }
     }
 
@@ -165,44 +158,23 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
 
     @Override
     public void onNumberClick(int number) {
-//        final long time = SecurePreferencesHelper.getLong(this, Constants.PREF_LOCK_DATE);
-//        if (time != 0 && time > System.currentTimeMillis()) {
-//            final long dif = time - System.currentTimeMillis();
-//            Toast.makeText(this, "Please try again in " + (dif / 1000) + " seconds", Toast.LENGTH_SHORT).show();
-//            return;
-//        }
-
         stringBuilder.append(String.valueOf(number));
 
         ImageView dot = (ImageView) dotsLayoutManager.getChildAt(stringBuilder.toString().length() - 1);
         dot.setBackgroundResource(R.drawable.circle_white);
 
-        if (stringBuilder.toString().length() == 6) {
+        if (stringBuilder.toString().length() >= 6) {
             if (!SecurePreferencesHelper.getString(this, Constants.PREF_PIN).equals(stringBuilder.toString())) {
                 if (count != 1) {
                     count--;
-//                    SecurePreferencesHelper.putString(this, Constants.PIN_COUNTER, String.valueOf(count));
                     showLock();
                     Toast.makeText(this, count + " number of tries remain", Toast.LENGTH_LONG).show();
                 } else {
-//                    final String multiplierString = SecurePreferencesHelper.getString(this, Constants.PREF_LOCK_MULTIPLIER);
-//                    final int multiplier = multiplierString == null ? 3 : Integer.valueOf(multiplierString) * 2;
-//
-//                    SecurePreferencesHelper.putString(this, Constants.PREF_LOCK_MULTIPLIER, String.valueOf(multiplier));
-//                    SecurePreferencesHelper.putString(this, Constants.PREF_LOCK_DATE, String.valueOf(System.currentTimeMillis() + (multiplier * 1000)));
-//                    Toast.makeText(this, "Try again in " + multiplier + " seconds", Toast.LENGTH_LONG).show();
-//                    SecurePreferencesHelper.putString(this, Constants.PIN_COUNTER, String.valueOf(6));
-                    Toast.makeText(this, count + "You reached maximu, number of tries", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, count + "You reached maximum, number of tries", Toast.LENGTH_LONG).show();
                     finish();
-//                    RealmManager.clear();
-//                    Prefs.clear();
-//                    this.finish();
-//                    System.exit(0);
                 }
             } else {
                 hideLock();
-//                SecurePreferencesHelper.putString(this, Constants.PREF_LOCK_DATE, String.valueOf(0));
-                SecurePreferencesHelper.putString(this, Constants.PIN_COUNTER, String.valueOf(6));
             }
         }
     }
@@ -214,5 +186,11 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
             dot.setBackgroundResource(R.drawable.circle_border_white);
             stringBuilder.deleteCharAt(stringBuilder.length() - 1);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Prefs.putBoolean(Constants.PREF_SELF_CLICKED, true);
+        super.onBackPressed();
     }
 }

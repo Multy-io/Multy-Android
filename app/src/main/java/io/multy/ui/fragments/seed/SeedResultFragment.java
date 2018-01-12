@@ -60,7 +60,7 @@ public class SeedResultFragment extends BaseSeedFragment {
     private void showResult() {
         if (isFailure()) {
             setBrickColor(BRICK_RED);
-            buttonNext.setText(R.string.try_again);
+            buttonNext.setText(R.string.check_connection);
             imageViewResult.setImageResource(R.drawable.ic_fail);
             textViewTitle.setText(R.string.seed_result_fail);
         } else {

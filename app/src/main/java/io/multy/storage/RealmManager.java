@@ -6,13 +6,16 @@
 
 package io.multy.storage;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Base64;
 import android.util.Log;
 
-import com.samwolfand.oneprefs.Prefs;
+import java.io.File;
+
 import javax.annotation.Nullable;
 
+import io.multy.Multy;
 import io.multy.util.Constants;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -46,10 +49,8 @@ public class RealmManager {
                     .schemaVersion(1)
                     .build();
         } catch (Exception e) {
+            Multy.systemClear((Activity) context);
             e.printStackTrace();
-            clear();
-            Prefs.clear();
-            System.exit(0);
         }
 
         return realmConfiguration;
@@ -78,6 +79,26 @@ public class RealmManager {
     private static void isRealmAvailable() {
         if (realm == null || realm.isClosed()) {
             Log.e(TAG, "ERROR DB IS CLOSED OR NULL");
+        }
+    }
+
+//    public static void deleteRealm() {
+//        if (realm == null) {
+//            open(Multy.getContext());
+//        }
+//
+//        if (!realm.isClosed()){
+//            realm.close();
+//        }
+//
+//        Realm.deleteRealm()
+//    }
+
+    public static void removeDatabase(Context context){
+        for (File file : context.getFilesDir().listFiles()) {
+            if (file.getAbsolutePath().contains("realm")) {
+                file.delete();
+            }
         }
     }
 }

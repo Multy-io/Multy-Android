@@ -10,6 +10,7 @@ package io.multy.model.entities;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
+@Deprecated
 public class ExchangePrice extends RealmObject {
 
     @PrimaryKey

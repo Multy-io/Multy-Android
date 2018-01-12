@@ -6,6 +6,7 @@
 
 package io.multy.ui.fragments.main;
 
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,6 +28,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.api.MultyApi;
+import io.multy.api.socket.CurrenciesRate;
 import io.multy.model.DataManager;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.model.responses.WalletsResponse;
@@ -75,7 +77,15 @@ public class AssetsFragment extends BaseFragment {
 
         if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)){
             if (RealmManager.getSettingsDao().getUserId() != null) {
-                viewModel.rates.observe(this, currenciesRate -> walletsAdapter.updateRates(currenciesRate));
+                viewModel.rates.observe(this, new Observer<CurrenciesRate>() {
+                    @Override
+                    public void onChanged(@Nullable CurrenciesRate currenciesRate) {
+                        RealmManager.getSettingsDao().saveCurrenciesRate(currenciesRate);
+                        if (walletsAdapter != null) {
+                            walletsAdapter.updateRates(currenciesRate);
+                        }
+                    }
+                });
                 viewModel.init(getLifecycle());
             }
         }

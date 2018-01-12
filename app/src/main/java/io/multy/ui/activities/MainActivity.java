@@ -72,6 +72,10 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
                 FirebaseMessaging.getInstance().subscribeToTopic("btcTransactionUpdate-" + userId.getUserId());
             }
         }
+
+        if (Prefs.getBoolean(Constants.PREF_LOCK)){
+            showLock();
+        }
     }
 
     @Override
@@ -79,9 +83,11 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         super.onResume();
         initBranchIO();
 
-        if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED) && !isLockVisible) {
+        if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
             tabLayout.getLayoutParams().height = getResources().getDimensionPixelSize(R.dimen.tab_layout_height);
-            buttonOperations.setVisibility(View.VISIBLE);
+            if (!isLockVisible) {
+                buttonOperations.setVisibility(View.VISIBLE);
+            }
         } else {
             tabLayout.getLayoutParams().height = 0;
             buttonOperations.setVisibility(View.GONE);

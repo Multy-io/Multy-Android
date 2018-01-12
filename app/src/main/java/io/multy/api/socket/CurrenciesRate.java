@@ -15,7 +15,7 @@ public class CurrenciesRate extends RealmObject {
 
     @PrimaryKey
     private int id = 0;
-    @SerializedName("BTCtoUSD")
+    @SerializedName("btc_usd")
     private double btcToUsd;
     @SerializedName("BTCtoEUR")
     private double btcToEur;

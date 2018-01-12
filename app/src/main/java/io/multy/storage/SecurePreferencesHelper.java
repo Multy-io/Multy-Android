@@ -6,6 +6,7 @@
 
 package io.multy.storage;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Base64;
 
@@ -14,6 +15,7 @@ import com.samwolfand.oneprefs.Prefs;
 import javax.annotation.Nullable;
 import javax.crypto.SecretKey;
 
+import io.multy.Multy;
 import io.multy.encryption.CryptoUtils;
 import io.multy.encryption.MasterKeyGenerator;
 import io.multy.util.Constants;
@@ -37,6 +39,7 @@ public class SecurePreferencesHelper {
             Prefs.putString(key, encodedString);
         } catch (Exception e) {
             e.printStackTrace();
+            Multy.systemClear((Activity) context);
         }
     }
 
@@ -56,6 +59,7 @@ public class SecurePreferencesHelper {
             return result;
         } catch (Exception e) {
             e.printStackTrace();
+            Multy.systemClear((Activity) context);
         }
         return null;
     }

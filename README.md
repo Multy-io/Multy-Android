@@ -1,4 +1,4 @@
-# Mylty-android
+# Multy-android
 
 Multi cryptocurrency and assets open-source wallet
 

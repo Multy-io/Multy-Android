@@ -39,7 +39,7 @@
     <color name="text_grey">#87a1c5</color>
     <color name="text_grey_transparent_50">#7d87a1c5</color>
     <color name="grey_light">#e5e5e5</color>
-
+    <color name="white_transparent">#66FFFFFF</color>
     <color name="blue_transparent">#b3007aff</color>
 
 </resources>

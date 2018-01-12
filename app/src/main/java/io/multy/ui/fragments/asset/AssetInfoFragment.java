@@ -28,8 +28,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
+import io.multy.api.socket.CurrenciesRate;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.entities.wallet.WalletRealmObject;
+import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetActivity;
 import io.multy.ui.activities.SeedActivity;
 import io.multy.ui.adapters.AssetTransactionsAdapter;
@@ -63,9 +65,16 @@ public class AssetInfoFragment extends BaseFragment {
     View groupEmptyState;
     @BindView(R.id.button_warn)
     FloatingActionButton buttonWarn;
+    @BindView(R.id.container_available)
+    View containerAvailableBalance;
+    @BindView(R.id.text_available_value)
+    TextView textAvailableValue;
+    @BindView(R.id.text_available_fiat)
+    TextView textAvailableFiat;
+
 
     private WalletViewModel viewModel;
-
+    private final static DecimalFormat format = new DecimalFormat("#.##");
     private AssetTransactionsAdapter transactionsAdapter;
 
     public static AssetInfoFragment newInstance() {
@@ -85,7 +94,7 @@ public class AssetInfoFragment extends BaseFragment {
         ButterKnife.bind(this, view);
 
         viewModel = ViewModelProviders.of(getActivity()).get(WalletViewModel.class);
-        viewModel.getApiExchangePrice();
+        viewModel.rates.observe(this, currenciesRate -> updateBalanceViews(currenciesRate));
 
         WalletRealmObject wallet = viewModel.getWallet(getActivity().getIntent().getIntExtra(Constants.EXTRA_WALLET_ID, 0));
         if (wallet != null) {
@@ -96,6 +105,18 @@ public class AssetInfoFragment extends BaseFragment {
 
         initialize();
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        viewModel.subscribeSocketsUpdate();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        viewModel.unsubscribeSocketsUpdate();
     }
 
     private void initialize() {
@@ -134,22 +155,33 @@ public class AssetInfoFragment extends BaseFragment {
             textAddress.setText(wallet.getCreationAddress());
         }
 
-        double balance = wallet.calculateBalance();
+        updateBalanceViews(null);
+    }
 
-        if (balance != 0) {
-            try {
-                double formatBalance = balance / Math.pow(10, 8);
-                String fiatBalance = new DecimalFormat("#.##").format(viewModel.getExchangePrice().getValue() * formatBalance);
-                textBalanceFiat.setText(fiatBalance);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else {
-            textBalanceFiat.setText("0");
-        }
+    private void updateBalanceViews(CurrenciesRate rate) {
+        WalletRealmObject wallet = viewModel.getWalletLive().getValue();
+        double balance = wallet.getBalance();
+        double pending = wallet.getPendingBalance() + balance;
 
+        final double formatBalance = balance / Math.pow(10, 8);
+        final double formatPending = pending / Math.pow(10, 8);
+        final double exchangePrice = rate == null ? RealmManager.getSettingsDao().getCurrenciesRate().getBtcToUsd() : rate.getBtcToUsd();
 
+        textAvailableValue.setText(balance == 0 ? "0.0$" : format.format(exchangePrice * formatBalance) + "$");
+        textBalanceFiat.setText(pending == 0 ? "0.0$" : format.format(exchangePrice * formatPending) + "$");
+
+        textAvailableValue.setText(pending != 0 ? CryptoFormatUtils.satoshiToBtc(pending) : String.valueOf(pending));
         textBalanceOriginal.setText(balance != 0 ? CryptoFormatUtils.satoshiToBtc(balance) : String.valueOf(balance));
+
+        //TODO calculating available and original balance depending on history
+    }
+
+    private void showAvailableAmount() {
+        containerAvailableBalance.setVisibility(View.VISIBLE);
+    }
+
+    private void hideAvailableAmount() {
+        containerAvailableBalance.setVisibility(View.GONE);
     }
 
     private void setToolbarScrollFlag(int flag) {
@@ -159,7 +191,7 @@ public class AssetInfoFragment extends BaseFragment {
 
     @OnClick(R.id.options)
     void onClickOptions() {
-        ((AssetActivity)getActivity()).setFragment(R.id.frame_container, AssetSettingsFragment.newInstance());
+        ((AssetActivity) getActivity()).setFragment(R.id.frame_container, AssetSettingsFragment.newInstance());
     }
 
     @OnClick(R.id.card_addresses)
