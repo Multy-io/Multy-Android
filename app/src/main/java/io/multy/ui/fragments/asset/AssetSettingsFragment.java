@@ -6,15 +6,16 @@
 
 package io.multy.ui.fragments.asset;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.Toast;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
@@ -30,14 +31,17 @@ public class AssetSettingsFragment extends BaseFragment {
 
     public static final String TAG = AssetSettingsFragment.class.getSimpleName();
 
+    @BindView(R.id.edit_name)
+    EditText inputName;
+
+    private WalletViewModel viewModel;
+
     public static AssetSettingsFragment newInstance() {
         Bundle args = new Bundle();
         AssetSettingsFragment fragment = new AssetSettingsFragment();
         fragment.setArguments(args);
         return fragment;
     }
-
-    private WalletViewModel viewModel;
 
     public AssetSettingsFragment() {
     }
@@ -55,6 +59,11 @@ public class AssetSettingsFragment extends BaseFragment {
                              @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.view_asset_settings, container, false);
         ButterKnife.bind(this, v);
+        viewModel.getWalletLive().observe(this, walletRealmObject -> {
+            if (walletRealmObject != null && walletRealmObject.getName() != null) {
+                inputName.setText(walletRealmObject.getName());
+            }
+        });
         return v;
     }
 
@@ -63,10 +72,32 @@ public class AssetSettingsFragment extends BaseFragment {
         super.onResume();
     }
 
-    private void saveSettings() {
+    @Override
+    public void onDestroy() {
+        viewModel.isLoading.setValue(false);
+        super.onDestroy();
     }
 
-    private void choiceCurrencyToConvert() {
+    private void saveSettings() {
+        if (inputName.getText().toString().isEmpty() || viewModel.getWalletLive() == null ||
+                viewModel.getWalletLive().getValue() == null ||
+                inputName.getText().toString().equals(viewModel.getWalletLive().getValue().getName())) {
+            return;
+        }
+        inputName.setEnabled(false);
+        viewModel.updateWalletSetting(inputName.getText().toString()).observe(this, isUpdated -> {
+            if (isUpdated == null || !isUpdated) {
+                Toast.makeText(getActivity(), "Error, changes not applied!", Toast.LENGTH_SHORT).show();
+                inputName.setEnabled(true);
+                return;
+            }
+            if (getActivity() != null) {
+                getActivity().onBackPressed();
+            }
+        });
+    }
+
+    private void chooseCurrencyToConvert() {
 
     }
 
@@ -80,22 +111,29 @@ public class AssetSettingsFragment extends BaseFragment {
                 Toast.makeText(getActivity(), R.string.wallet_removed, Toast.LENGTH_SHORT).show();
                 getActivity().finish();
             }
+            else if (isRemoved != null) {
+                Toast.makeText(getActivity(), "Error, changes not applied!", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
     @OnClick(R.id.button_cancel)
     void onClickCancel() {
-        getActivity().onBackPressed();
+        if (getActivity() != null) {
+            getActivity().onBackPressed();
+        }
     }
 
     @OnClick(R.id.button_save)
-    void onClickSave() {
+    void onClickSave(View v) {
+        v.setEnabled(false);
         saveSettings();
+        v.postDelayed(() -> v.setEnabled(true), 500);
     }
 
     @OnClick(R.id.button_currency)
     void onClickCurrency() {
-        choiceCurrencyToConvert();
+        chooseCurrencyToConvert();
     }
 
     @OnClick(R.id.button_key)
@@ -104,7 +142,9 @@ public class AssetSettingsFragment extends BaseFragment {
     }
 
     @OnClick(R.id.button_delete)
-    void onClickDelete() {
+    void onClickDelete(View view) {
+        view.setEnabled(false);
+        view.postDelayed(() -> view.setEnabled(true), 500);
         SimpleDialogFragment dialogConfirmation = SimpleDialogFragment
                 .newInstance(R.string.delete_wallet, R.string.delete_confirm, v -> deleteWallet());
         dialogConfirmation.show(getChildFragmentManager(), SimpleDialogFragment.class.getSimpleName());

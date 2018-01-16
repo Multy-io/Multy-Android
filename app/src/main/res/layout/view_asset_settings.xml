@@ -138,6 +138,7 @@
                     style="@style/InputEdit"
                     android:hint="@string/wallet_name"
                     android:inputType="textCapSentences"
+                    android:text="@string/personal"
                     tools:text="Personal" />
             </android.support.design.widget.TextInputLayout>
 

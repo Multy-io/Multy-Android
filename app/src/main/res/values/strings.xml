@@ -184,6 +184,7 @@
 
     <string name="tree_dots">…</string>
     <string name="_or_">" or "</string>
+    <string name="personal">Personal</string>
     <string name="locked_funds">Locked funds</string>
     <string name="pending_continue">Pending...</string>
     <string name="rejected_send">Unable to send transaction</string>

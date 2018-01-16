@@ -24,6 +24,7 @@ import io.multy.model.entities.TransactionRequestEntity;
 import io.multy.model.entities.UserId;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.model.requests.AddWalletAddressRequest;
+import io.multy.model.requests.UpdateWalletNameRequest;
 import io.multy.model.responses.AuthResponse;
 import io.multy.model.responses.OutputsResponse;
 import io.multy.model.responses.ServerConfigResponse;
@@ -144,6 +145,11 @@ public enum MultyApi implements MultyApiInterface {
         @Override
         public Call<WalletsResponse> restore() {
             return api.getWalletsVerbose();
+        }
+
+        @Override
+        public Call<ResponseBody> updateWalletName(int id, UpdateWalletNameRequest updateWalletName) {
+            return api.updateWalletName(id, updateWalletName);
         }
 
         @Override

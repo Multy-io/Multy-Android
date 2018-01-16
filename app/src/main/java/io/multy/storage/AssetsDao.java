@@ -6,18 +6,6 @@
 
 package io.multy.storage;
 
-import android.content.Context;
-
-import java.util.List;
-
-import io.multy.Multy;
-import io.multy.encryption.MasterKeyGenerator;
-import io.multy.model.entities.wallet.WalletAddress;
-import io.multy.model.entities.wallet.WalletRealmObject;
-import io.multy.util.MyRealmMigration;
-import io.reactivex.annotations.NonNull;
-import io.realm.Realm;
-import io.realm.RealmConfiguration;
 import java.util.List;
 
 import io.multy.model.entities.wallet.WalletAddress;
@@ -90,6 +78,14 @@ public class AssetsDao {
 
     public WalletRealmObject getWalletById(int id) {
         return realm.where(WalletRealmObject.class).equalTo("walletIndex", id).findFirst();
+    }
+
+    public void updateWalletName(int id, String newName) {
+        realm.executeTransaction(realm1 -> {
+            WalletRealmObject wallet = getWalletById(id);
+            wallet.setName(newName);
+            realm1.insertOrUpdate(wallet);
+        });
     }
 
     public void removeWallet(int id) {

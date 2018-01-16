@@ -12,10 +12,14 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.model.responses.ServerConfigResponse;
@@ -27,13 +31,40 @@ import retrofit2.Response;
 
 public class SplashActivity extends AppCompatActivity {
 
+    private final static int DURATION_EMERGENCY = 500;
+    private final static int DURATION_LEAVE = 1000;
+
+    @BindView(R.id.icon)
+    ImageView icon;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        ButterKnife.bind(this);
 
         FirstLaunchHelper.preventRootIfDetected(this);
 
+        Animation emergency = AnimationUtils.loadAnimation(this, R.anim.splash_emergency);
+        emergency.setDuration(DURATION_EMERGENCY);
+        emergency.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                getServerConfig();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
+        icon.startAnimation(emergency);
+    }
+
+    private void getServerConfig() {
         MultyApi.INSTANCE.getServerConfig().enqueue(new Callback<ServerConfigResponse>() {
             @Override
             public void onResponse(Call<ServerConfigResponse> call, Response<ServerConfigResponse> response) {
@@ -83,9 +114,12 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void showMainActivity() {
-        new Handler().postDelayed(() -> {
-            startActivity(new Intent(SplashActivity.this, MainActivity.class));
-            finish();
-        }, 500);
+//        Animation leave = AnimationUtils.loadAnimation(this, R.anim.splash_leave);
+//        leave.setInterpolator(new FastOutLinearInInterpolator());
+//        leave.setFillAfter(true);
+//        icon.startAnimation(leave);
+        finish();
+        overridePendingTransition(R.anim.alpha_250, R.anim.splash_leave);
+        startActivity(new Intent(SplashActivity.this, MainActivity.class));
     }
 }

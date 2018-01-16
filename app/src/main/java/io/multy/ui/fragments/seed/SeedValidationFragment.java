@@ -209,6 +209,7 @@ public class SeedValidationFragment extends BaseSeedFragment {
                 inputWord.animate().alpha(0).setDuration(BrickView.ANIMATION_DURATION / 2).start();
             }
             inputWord.setText("");
+            currentSeedWord = null;
             redrawOne(false);
             buttonNext.setEnabled(false);
             if (count == maxCount) {

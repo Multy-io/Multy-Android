@@ -5,6 +5,7 @@ import android.content.Context;
 
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.model.requests.AddWalletAddressRequest;
+import io.multy.model.requests.UpdateWalletNameRequest;
 import io.multy.model.responses.AuthResponse;
 import io.multy.model.responses.OutputsResponse;
 import io.multy.model.responses.ServerConfigResponse;
@@ -36,6 +37,8 @@ public interface MultyApiInterface {
     Call<WalletsResponse> getWalletsVerbose();
 
     Call<WalletsResponse> restore();
+
+    Call<ResponseBody> updateWalletName(int id, UpdateWalletNameRequest updateWalletName);
 
     Call<ResponseBody> removeWallet(int walletIndex);
 

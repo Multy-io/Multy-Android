@@ -11,6 +11,7 @@ import io.multy.model.entities.AuthEntity;
 import io.multy.model.entities.TransactionRequestEntity;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.model.requests.AddWalletAddressRequest;
+import io.multy.model.requests.UpdateWalletNameRequest;
 import io.multy.model.responses.AddressBalanceResponse;
 import io.multy.model.responses.AuthResponse;
 import io.multy.model.responses.FeeRatesResponse;
@@ -60,6 +61,9 @@ public interface ApiServiceInterface {
 
     @GET("api/v1/wallet/{walletIndex}/verbose")
     Call<WalletsResponse> getWalletVerboseByIndex(@Path ("walletIndex") int walletIndex);
+
+    @POST("api/v1/wallet/name/{id}")
+    Call<ResponseBody> updateWalletName(@Path("id") int id, @Body UpdateWalletNameRequest updateWalletName);
 
     @DELETE("api/v1/wallet/{walletIndex}")
     Call<ResponseBody> removeWallet(@Path ("walletIndex") int walletIndex);
