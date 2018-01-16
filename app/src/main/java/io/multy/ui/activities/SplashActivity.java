@@ -14,9 +14,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -24,18 +24,14 @@ import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.model.responses.ServerConfigResponse;
 import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
-import io.multy.util.FirstLaunchHelper;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private final static int DURATION_EMERGENCY = 500;
-    private final static int DURATION_LEAVE = 1000;
-
-    @BindView(R.id.icon)
-    ImageView icon;
+    @BindView(R.id.container)
+    View container;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -43,25 +39,25 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
         ButterKnife.bind(this);
 
-        FirstLaunchHelper.preventRootIfDetected(this);
+//        FirstLaunchHelper.preventRootIfDetected(this);
 
         Animation emergency = AnimationUtils.loadAnimation(this, R.anim.splash_emergency);
-        emergency.setDuration(DURATION_EMERGENCY);
+        emergency.setDuration(350);
         emergency.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
+                getServerConfig();
             }
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                getServerConfig();
             }
 
             @Override
             public void onAnimationRepeat(Animation animation) {
             }
         });
-        icon.startAnimation(emergency);
+        container.startAnimation(emergency);
     }
 
     private void getServerConfig() {
@@ -100,6 +96,12 @@ public class SplashActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        overridePendingTransition(0, 0);
+    }
+
     private void showError(int message) {
         SimpleDialogFragment.newInstanceNegative(R.string.error, message, view -> {
             finish();
@@ -114,12 +116,20 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void showMainActivity() {
-//        Animation leave = AnimationUtils.loadAnimation(this, R.anim.splash_leave);
-//        leave.setInterpolator(new FastOutLinearInInterpolator());
-//        leave.setFillAfter(true);
-//        icon.startAnimation(leave);
-        finish();
-        overridePendingTransition(R.anim.alpha_250, R.anim.splash_leave);
-        startActivity(new Intent(SplashActivity.this, MainActivity.class));
+        Thread background = new Thread() {
+            public void run() {
+                try {
+                    sleep(500);
+                    startActivity(new Intent(SplashActivity.this, MainActivity.class)
+                            .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION));
+                    finish();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Intent i=new Intent(getBaseContext(), MainActivity.class);
+                    startActivity(i);
+                }
+            }
+        };
+        background.start();
     }
 }

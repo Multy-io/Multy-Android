@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
@@ -55,6 +56,9 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
     @BindView(R.id.fast_operations)
     View buttonOperations;
 
+    @BindView(R.id.splash)
+    View splash;
+
     private int lastTabPosition = 0;
 
     @Override
@@ -81,6 +85,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
     @Override
     protected void onResume() {
         super.onResume();
+        overridePendingTransition(0, 0);
         initBranchIO();
 
         if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
@@ -92,6 +97,9 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
             tabLayout.getLayoutParams().height = 0;
             buttonOperations.setVisibility(View.GONE);
         }
+
+        new Handler(getMainLooper()).postDelayed(() -> splash.animate().alpha(0).scaleY(4)
+                .scaleX(4).setDuration(400).start(), 300);
     }
 
     private void initBranchIO() {
