@@ -31,6 +31,7 @@
     <color name="gray_middle">#55a6b1c6</color>
     <color name="orange">#ff9500</color>
     <color name="gray_light_transparent">#6687a1c5</color>
+    <color name="pink">#f94877</color>
 
     <color name="primary_dark_opacity10">#19007aff</color>
 
@@ -41,5 +42,6 @@
     <color name="grey_light">#e5e5e5</color>
     <color name="white_transparent">#66FFFFFF</color>
     <color name="blue_transparent">#b3007aff</color>
+    <color name="blue_lightest">#e6ecf3</color>
 
 </resources>

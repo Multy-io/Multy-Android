@@ -12,13 +12,6 @@ import io.realm.RealmObject;
 
 public class Output extends RealmObject{
 
-    public static final String ICOMCING_MEMPOOL = "incoming in mempool";
-    public static final String INCOMING_BLOCK = "incoming in block";
-    public static final String OUTCOMING_MEMPOOL = "spend in mempool";
-    public static final String OUTCOMING_BLOCK = "spend in block";
-    public static final String IN_BLOCK_CONFIRMED = "in block confirmed";
-    public static final String REJECTED_FROM_BLOCK = "rejected block";
-
     private int addressId;
     @SerializedName("txid")
     private String txId;
@@ -29,7 +22,7 @@ public class Output extends RealmObject{
     @SerializedName("txoutscript")
     private String txOutScript;
     @SerializedName("txstatus")
-    private String status;
+    private int status;
     @SerializedName("addressindex")
     private String addressIndex;
 
@@ -83,11 +76,11 @@ public class Output extends RealmObject{
         this.addressId = addressId;
     }
 
-    public String getStatus() {
+    public int getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(int status) {
         this.status = status;
     }
 

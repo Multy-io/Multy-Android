@@ -24,6 +24,7 @@ import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.model.DataManager;
 import io.multy.model.entities.wallet.CurrencyCode;
+import io.multy.storage.RealmManager;
 import io.multy.ui.activities.MainActivity;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
@@ -119,7 +120,7 @@ public class SendSummaryFragment extends BaseFragment {
         textReceiverBalanceOriginal.setText(NumberFormatter.getInstance().format(viewModel.getAmount()));
         textReceiverBalanceOriginal.append(Constants.SPACE);
         textReceiverBalanceOriginal.append(CurrencyCode.BTC.name());
-        textReceiverBalanceCurrency.setText(NumberFormatter.getInstance().format(viewModel.getAmount() * viewModel.getExchangePrice().getValue()));
+        textReceiverBalanceCurrency.setText(NumberFormatter.getInstance().format(viewModel.getAmount() * RealmManager.getSettingsDao().getCurrenciesRate().getBtcToUsd()));
         textReceiverBalanceCurrency.append(Constants.SPACE);
         textReceiverBalanceCurrency.append(CurrencyCode.USD.name());
 //        textReceiverAddress.setText(viewModel.getReceiverAddress().getValue());
@@ -127,7 +128,7 @@ public class SendSummaryFragment extends BaseFragment {
         textWalletName.setText(viewModel.getWallet().getName());
         double balance = viewModel.getWallet().getBalance();
         textSenderBalanceOriginal.setText(balance != 0 ? CryptoFormatUtils.satoshiToBtc(balance) : String.valueOf(balance));
-        textSenderBalanceCurrency.setText(viewModel.getWallet().getBalanceFiatWithCode(viewModel.getExchangePrice().getValue(), CurrencyCode.USD));
+//        textSenderBalanceCurrency.setText(viewModel.getWallet().getBalanceFiatWithCode(viewModel.getExchangePrice().getValue(), CurrencyCode.USD));
         textFeeSpeed.setText(viewModel.getFee().getTime());
         textFeeAmount.setText(String.valueOf(viewModel.getFee().getCost()));
     }

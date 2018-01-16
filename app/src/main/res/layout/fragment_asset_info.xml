@@ -58,7 +58,8 @@
                     <LinearLayout
                         android:id="@+id/holder_toolbar"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent">
+                        android:layout_height="match_parent"
+                        android:background="@color/colorPrimaryDark">
 
                         <ImageView
                             android:id="@+id/close"
@@ -107,6 +108,7 @@
                 android:id="@+id/recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:paddingTop="16dp"
                 app:layoutManager="android.support.v7.widget.LinearLayoutManager"
                 tools:listitem="@layout/view_transaction_item" />
 

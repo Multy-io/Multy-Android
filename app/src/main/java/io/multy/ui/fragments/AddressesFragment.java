@@ -16,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import butterknife.BindInt;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -37,9 +36,6 @@ public class AddressesFragment extends BaseFragment {
 
     @BindView(R.id.text_title)
     TextView textViewTitle;
-
-    @BindInt(R.integer.one_negative)
-    int oneNegative;
 
     public static AddressesFragment newInstance(int walletIndex) {
         AddressesFragment addressesFragment = new AddressesFragment();
@@ -65,8 +61,8 @@ public class AddressesFragment extends BaseFragment {
     @Override
     public void onStart() {
         super.onStart();
-        if (getArguments().getInt(Constants.EXTRA_WALLET_ID) != oneNegative) {
-            WalletRealmObject wallet = RealmManager.getAssetsDao().getWalletById(getArguments().getInt(Constants.EXTRA_WALLET_ID, oneNegative));
+        if (getArguments().getInt(Constants.EXTRA_WALLET_ID) != -1) {
+            WalletRealmObject wallet = RealmManager.getAssetsDao().getWalletById(getArguments().getInt(Constants.EXTRA_WALLET_ID, -1));
             textViewTitle.setText(wallet.getName());
             recyclerView.setAdapter(new AddressesAdapter(wallet.getAddresses()));
         } else {

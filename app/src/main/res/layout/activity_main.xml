@@ -80,7 +80,6 @@
         android:foreground="?attr/selectableItemBackgroundBorderless"
         android:padding="8dp"
         android:scaleType="centerInside"
-        android:src="@drawable/ic_fast_operation"
-        android:stateListAnimator="@drawable/z_animation" />
+        android:src="@drawable/ic_fast_operation"/>
 
 </android.support.design.widget.CoordinatorLayout>

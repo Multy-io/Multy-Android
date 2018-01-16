@@ -25,10 +25,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.Locale;
-
 import butterknife.BindDimen;
 import butterknife.BindInt;
 import butterknife.BindString;
@@ -199,8 +195,8 @@ public class AmountChooserFragment extends BaseFragment {
                 if (!isAmountSwapped) { // if currency input is main
                     if (!TextUtils.isEmpty(charSequence)) {
                         if (isParsable(charSequence.toString())) {
-                            inputCurrency.setText(NumberFormatter.getInstance()
-                                    .format(viewModel.getExchangePrice().getValue() * Double.parseDouble(charSequence.toString())));
+//                            inputCurrency.setText(NumberFormatter.getInstance()
+//                                    .format(viewModel.getExchangePrice().getValue() * Double.parseDouble(charSequence.toString())));
                             setTotalAmountForInput();
                         }
                     } else {

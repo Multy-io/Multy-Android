@@ -23,9 +23,9 @@ public class TransactionHistory {
     @SerializedName("address")
     private String address;
     @SerializedName("txstatus")
-    private String txStatus;
+    private int txStatus;
     @SerializedName("txoutamount")
-    private String txOutAmount;
+    private double txOutAmount;
     @SerializedName("txoutid")
     private int txOutId;
     @SerializedName("walletindex")
@@ -36,6 +36,10 @@ public class TransactionHistory {
     private int blockHeight;
     @SerializedName("txfee")
     private long txFee;
+
+    //exchange price while transaction happen
+    @SerializedName("btctousd")
+    private double btcToUsd;
 
     @SerializedName("stockexchangerate")
     ArrayList<StockExchangeRate> stockExchangeRates;
@@ -60,11 +64,11 @@ public class TransactionHistory {
         return address;
     }
 
-    public String getTxStatus() {
+    public int getTxStatus() {
         return txStatus;
     }
 
-    public String getTxOutAmount() {
+    public double getTxOutAmount() {
         return txOutAmount;
     }
 
@@ -86,6 +90,10 @@ public class TransactionHistory {
 
     public long getTxFee() {
         return txFee;
+    }
+
+    public double getBtcToUsd() {
+        return btcToUsd;
     }
 
     public ArrayList<WalletAddress> getInputs() {

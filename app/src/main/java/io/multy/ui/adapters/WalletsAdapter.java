@@ -2,7 +2,6 @@ package io.multy.ui.adapters;
 
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,10 +23,6 @@ import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
 import io.multy.util.NativeDataHelper;
 
-/**
- * Created by appscrunch on 16.11.17.
- */
-
 public class WalletsAdapter extends RecyclerView.Adapter<WalletsAdapter.Holder> {
 
     private final static DecimalFormat format = new DecimalFormat("#.##");
@@ -46,7 +41,6 @@ public class WalletsAdapter extends RecyclerView.Adapter<WalletsAdapter.Holder> 
     public void updateRates(CurrenciesRate rates) {
         this.rates = rates;
         notifyDataSetChanged();
-        Log.i("wise", "got rates " + rates);
     }
 
     @Override

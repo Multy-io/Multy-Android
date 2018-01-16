@@ -13,7 +13,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -113,7 +112,6 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     }
 
     private void refreshWallet() {
-        //TODO move to viewmodel
         swipeRefreshLayout.setRefreshing(false);
         viewModel.isLoading.setValue(true);
 
@@ -125,8 +123,10 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
                 if (response.isSuccessful() && response.body().getWallets() != null && response.body().getWallets().size() > 0) {
                     AssetsDao assetsDao = RealmManager.getAssetsDao();
                     assetsDao.saveWallet(response.body().getWallets().get(0));
-                    viewModel.getWalletLive().setValue(assetsDao.getWalletById(walletIndex));
+                    viewModel.wallet.setValue(assetsDao.getWalletById(walletIndex));
                 }
+
+                requestTransactions();
             }
 
             @Override
@@ -153,14 +153,12 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
 
     @Override
     public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
-        final int total = appBarLayout.getTotalScrollRange();
-        final int offset = Math.abs(i);
-        final int percentage = offset == 0 ? 0 : offset / total;
+//        final int total = appBarLayout.getTotalScrollRange();
+//        final int offset = Math.abs(i);
+//        final int percentage = offset == 0 ? 0 : offset / total;
 //        containerInfo.setBackgroundColor((Integer) argbEvaluator.evaluate(colorOffset, colorTransparent, colorPrimaryDark));
         swipeRefreshLayout.setEnabled(i == 0);
-        if (i != 0) {
-            containerInfo.setAlpha(0.5f - percentage);
-        }
+//        containerInfo.setAlpha(1 - percentage);
     }
 
     private void initialize() {
@@ -223,10 +221,7 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         double balance = wallet.getBalance();
         double pending = wallet.getPendingBalance() + balance;
 
-        Log.i("wise", "balance " + balance);
-        Log.i("Wise", "pending " + pending);
-
-        if (pending == 0) {
+        if (pending == 0 || balance == pending) {
             hideAvailableAmount();
         }
 
@@ -253,7 +248,7 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         viewModel.getTransactionsHistory().observe(this, transactions -> {
             if (transactions != null && !transactions.isEmpty()) {
                 transactionsAdapter.setTransactions(transactions);
-                recyclerView.setAdapter(new AssetTransactionsAdapter(transactions));
+                recyclerView.setAdapter(new AssetTransactionsAdapter(transactions, viewModel.wallet.getValue().getWalletIndex()));
             }
             setTransactionsState();
         });

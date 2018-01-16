@@ -58,10 +58,16 @@ public class WalletRealmObject extends RealmObject {
             if (walletAddress.getOutputs() != null) {
                 for (Output output : walletAddress.getOutputs()) {
                     switch (output.getStatus()) {
-                        case Output.IN_BLOCK_CONFIRMED:
+                        case Constants.TX_IN_BLOCK_INCOMING:
                             calculatedBalance += Double.valueOf(output.getTxOutAmount());
                             break;
-                        case Output.INCOMING_BLOCK:
+                        case Constants.TX_IN_BLOCK_OUTCMOING:
+                            calculatedBalance += Double.valueOf(output.getTxOutAmount());
+                            break;
+                        case Constants.TX_CONFIRMED_INCOMING:
+                            calculatedBalance += Double.valueOf(output.getTxOutAmount());
+                            break;
+                        case Constants.TX_CONFIRMED_OUTCOMING:
                             calculatedBalance += Double.valueOf(output.getTxOutAmount());
                             break;
                     }
@@ -78,10 +84,10 @@ public class WalletRealmObject extends RealmObject {
             if (walletAddress.getOutputs() != null) {
                 for (Output output : walletAddress.getOutputs()) {
                     switch (output.getStatus()) {
-                        case Output.ICOMCING_MEMPOOL:
+                        case Constants.TX_MEMPOOL_INCOMING:
                             pendingBalance += Double.valueOf(output.getTxOutAmount());
                             break;
-                        case Output.OUTCOMING_MEMPOOL:
+                        case Constants.TX_MEMPOOL_OUTCOMING:
                             pendingBalance -= Double.valueOf(output.getTxOutAmount());
                             break;
                     }

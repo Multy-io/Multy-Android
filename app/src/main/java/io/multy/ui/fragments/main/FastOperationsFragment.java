@@ -164,35 +164,4 @@ public class FastOperationsFragment extends BaseFragment {
     public void setRevealY(int revealY) {
         this.revealY = revealY;
     }
-
-    //    public void showScanScreen() {
-//        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
-//                != PackageManager.PERMISSION_GRANTED) {
-//            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, Constants.CAMERA_REQUEST_CODE);
-//        } else {
-//            startActivityForResult(new Intent(getContext(), ScanActivity.class), Constants.CAMERA_REQUEST_CODE);
-//        }
-//    }
-//
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        if (requestCode == Constants.CAMERA_REQUEST_CODE) {
-//            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                showScanScreen();
-//            }
-//        }
-//    }
-//
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        if (requestCode == Constants.CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-//            if (data.hasExtra(Constants.EXTRA_QR_CONTENTS)) {
-//                startActivity(new Intent(getContext(), AssetSendActivity.class)
-//                        .putExtra(Constants.EXTRA_ADDRESS, data.getStringExtra(Constants.EXTRA_QR_CONTENTS))
-//                        .putExtra(Constants.EXTRA_AMOUNT, data.getStringExtra(Constants.EXTRA_AMOUNT)));
-//            }
-//        }
-//        super.onActivityResult(requestCode, resultCode, data);
-//    }
 }

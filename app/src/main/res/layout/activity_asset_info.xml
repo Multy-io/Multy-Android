@@ -50,7 +50,7 @@
         android:layout_height="56dp"
         android:background="?attr/selectableItemBackground"
         android:drawableTint="@color/blue_light"
-        android:drawableTop="@drawable/ic_recieve"
+        android:drawableTop="@drawable/ic_receive"
         android:gravity="center"
         android:paddingTop="9dp"
         android:text="Receive"

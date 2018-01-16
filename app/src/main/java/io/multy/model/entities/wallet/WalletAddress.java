@@ -23,6 +23,8 @@ public class WalletAddress extends RealmObject {
     private long amount;
     @SerializedName("spendableoutputs")
     private RealmList<Output> outputs;
+    @SerializedName("lastActionTime")
+    private long date;
 
     public WalletAddress() {
     }
@@ -64,13 +66,7 @@ public class WalletAddress extends RealmObject {
         this.outputs = outputs;
     }
 
-    @Override
-    public String toString() {
-        return "WalletAddress{" +
-                "index=" + index +
-                ", address='" + address + '\'' +
-                ", amount=" + amount +
-                ", outputs=" + outputs +
-                '}';
+    public long getDate() {
+        return date;
     }
 }

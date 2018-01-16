@@ -20,6 +20,7 @@ import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.model.responses.ServerConfigResponse;
 import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
+import io.multy.util.FirstLaunchHelper;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -31,7 +32,7 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-//        FirstLaunchHelper.preventRootIfDetected(this);
+        FirstLaunchHelper.preventRootIfDetected(this);
 
         MultyApi.INSTANCE.getServerConfig().enqueue(new Callback<ServerConfigResponse>() {
             @Override
