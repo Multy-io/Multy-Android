@@ -9,6 +9,7 @@ package io.multy.ui.fragments;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.IntentFilter;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -18,18 +19,48 @@ import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 
 import io.multy.R;
+import io.multy.ui.fragments.dialogs.NoConnectionDialogFragment;
 import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
+import io.multy.util.ConnectionReceiver;
 import io.multy.viewmodels.BaseViewModel;
+import timber.log.Timber;
 
-public class BaseFragment extends Fragment {
+public class BaseFragment extends Fragment implements ConnectionReceiver.ConnectionReceiverListener {
 
     private BaseViewModel baseViewModel;
     private Dialog progressDialog;
+    private NoConnectionDialogFragment noConnectionDialog;
+    private ConnectionReceiver receiver;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (receiver == null) {
+            receiver = new ConnectionReceiver();
+        }
+    }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         subscribeToErrors();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        setConnectionListener(this);
+        if (getActivity() != null) {
+            getActivity().registerReceiver(receiver, new IntentFilter(android.net.ConnectivityManager.CONNECTIVITY_ACTION));
+        }
+    }
+
+    @Override
+    public void onStop() {
+        if (getActivity() != null) {
+            getActivity().unregisterReceiver(receiver);
+        }
+        super.onStop();
     }
 
     protected BaseViewModel getBaseViewModel() {
@@ -98,5 +129,28 @@ public class BaseFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+        if (!isConnected) {
+            showNoConnectionDialog();
+        } else {
+            if (noConnectionDialog != null) {
+                noConnectionDialog.dismiss();
+            }
+        }
+    }
 
+    protected void showNoConnectionDialog() {
+        if (noConnectionDialog == null) {
+            noConnectionDialog = new NoConnectionDialogFragment();
+            noConnectionDialog.setCancelable(false);
+        }
+        if (!noConnectionDialog.isAdded()) {
+            noConnectionDialog.show(getFragmentManager(), NoConnectionDialogFragment.class.getSimpleName());
+        }
+    }
+
+    public void setConnectionListener(ConnectionReceiver.ConnectionReceiverListener listener) {
+        ConnectionReceiver.connectionReceiverListener = listener;
+    }
 }
