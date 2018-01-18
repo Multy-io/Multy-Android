@@ -46,12 +46,14 @@ public class WalletsAdapter extends RecyclerView.Adapter<WalletsAdapter.Holder> 
     public void onBindViewHolder(Holder holder, int position) {
         NativeDataHelper.Currency chain = NativeDataHelper.Currency.values()[data.get(position).getCurrency()];
         holder.name.setText(data.get(position).getName());
+
         double balance = data.get(position).getBalance();
         double pending = data.get(position).getPendingBalance() + balance;
+        final boolean isPending = pending != 0 && balance != pending;
 
-        holder.imagePending.setVisibility(pending == 0 || balance == pending ? View.GONE : View.VISIBLE);
-        holder.equals.setText(balance == 0 ? "0.0$" : CryptoFormatUtils.satoshiToUsd(balance) + "$");
-        holder.amount.setText(balance != 0 ? CryptoFormatUtils.satoshiToBtc(pending) : String.valueOf(pending));
+        holder.imagePending.setVisibility(isPending ? View.VISIBLE : View.GONE);
+        holder.equals.setText(isPending && pending > 0 ? CryptoFormatUtils.satoshiToUsd(pending) + "$" : "0.0$" );
+        holder.amount.setText(pending != 0 ? CryptoFormatUtils.satoshiToBtc(pending) : String.valueOf(pending));
         holder.currency.setText(String.valueOf(NativeDataHelper.Currency.values()[data.get(position).getCurrency()]));
         holder.imageChain.setImageResource(chain == NativeDataHelper.Currency.BTC ? R.drawable.ic_btc_huge : R.drawable.ic_eth_medium_icon);
         holder.itemView.setOnClickListener(view -> {

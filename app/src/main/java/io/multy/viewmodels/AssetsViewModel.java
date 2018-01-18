@@ -13,12 +13,11 @@ import android.arch.lifecycle.OnLifecycleEvent;
 
 import com.samwolfand.oneprefs.Prefs;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.multy.api.socket.CurrenciesRate;
-import io.multy.api.socket.GraphPoint;
 import io.multy.api.socket.SocketManager;
+import io.multy.api.socket.TransactionUpdateEntity;
 import io.multy.model.DataManager;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.util.Constants;
@@ -30,7 +29,7 @@ public class AssetsViewModel extends BaseViewModel implements LifecycleObserver 
 
     public MutableLiveData<List<WalletRealmObject>> wallets = new MutableLiveData<>();
     public MutableLiveData<CurrenciesRate> rates = new MutableLiveData<>();
-    public SingleLiveEvent<ArrayList<GraphPoint>> graphPoints = new SingleLiveEvent<>();
+    public SingleLiveEvent<TransactionUpdateEntity> transactionUpdate = new SingleLiveEvent<>();
 
     public void init(Lifecycle lifecycle) {
         initRates();
@@ -49,7 +48,7 @@ public class AssetsViewModel extends BaseViewModel implements LifecycleObserver 
     void onCreate() {
         if (socketManager != null) {
             socketManager = new SocketManager();
-            socketManager.connect(rates, graphPoints);
+            socketManager.connect(rates, transactionUpdate);
         }
     }
 

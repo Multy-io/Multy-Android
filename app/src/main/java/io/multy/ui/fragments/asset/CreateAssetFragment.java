@@ -20,8 +20,6 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -31,9 +29,7 @@ import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetActivity;
 import io.multy.ui.fragments.BaseFragment;
-import io.multy.ui.fragments.dialogs.ListDialogFragment;
 import io.multy.util.Constants;
-import io.multy.util.CurrencyType;
 import io.multy.viewmodels.WalletViewModel;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -126,18 +122,18 @@ public class CreateAssetFragment extends BaseFragment {
 
     @OnClick(R.id.button_chain)
     public void onClickChain() {
-        ArrayList<String> chains = new ArrayList<>(2);
-        chains.add(Constants.BTC);
-        chains.add(Constants.ETH);
-        ListDialogFragment.newInstance(chains, CurrencyType.CHAIN).show(getFragmentManager(), "");
+//        ArrayList<String> chains = new ArrayList<>(2);
+//        chains.add(Constants.BTC);
+//        chains.add(Constants.ETH);
+//        ListDialogFragment.newInstance(chains, CurrencyType.CHAIN).show(getFragmentManager(), "");
     }
 
     @OnClick(R.id.button_fiat)
     public void onClickFiat() {
-        ArrayList<String> chains = new ArrayList<>(3);
-        chains.add(Constants.USD);
-        chains.add(Constants.EUR);
-        ListDialogFragment.newInstance(chains, CurrencyType.FIAT).show(getFragmentManager(), "");
+//        ArrayList<String> chains = new ArrayList<>(3);
+//        chains.add(Constants.USD);
+//        chains.add(Constants.EUR);
+//        ListDialogFragment.newInstance(chains, CurrencyType.FIAT).show(getFragmentManager(), "");
     }
 
     @OnClick(R.id.text_create)

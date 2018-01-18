@@ -13,7 +13,6 @@ import com.google.gson.Gson;
 import com.samwolfand.oneprefs.Prefs;
 
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +22,6 @@ import io.multy.util.Constants;
 import io.socket.client.IO;
 import io.socket.client.Manager;
 import io.socket.client.Socket;
-import io.socket.emitter.Emitter;
 import io.socket.engineio.client.Transport;
 import io.socket.engineio.client.transports.WebSocket;
 
@@ -57,7 +55,7 @@ public class SocketManager {
 //        }
     }
 
-    public void connect(MutableLiveData<CurrenciesRate> rates, MutableLiveData<ArrayList<GraphPoint>> graphPoints) {
+    public void connect(MutableLiveData<CurrenciesRate> rates, MutableLiveData<TransactionUpdateEntity> transactionUpdateEntity) {
         try {
             IO.Options options = new IO.Options();
             options.forceNew = true;
@@ -88,10 +86,11 @@ public class SocketManager {
                         rates.postValue(gson.fromJson(String.valueOf(args[0]), CurrenciesRate.class));
                     })
                     .on(Socket.EVENT_DISCONNECT, args -> log("Disconnected"))
-                    .on(EVENT_RECEIVE, new Emitter.Listener() {
-                        @Override
-                        public void call(Object... args) {
-                            Log.i("wise", "ON RECEIVE " + String.valueOf(args[0]));
+                    .on(EVENT_RECEIVE, args -> {
+                        try {
+                            transactionUpdateEntity.postValue(gson.fromJson(String.valueOf(args[0]), TransactionUpdateResponse.class).getEntity());
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
                     });
             socket.connect();

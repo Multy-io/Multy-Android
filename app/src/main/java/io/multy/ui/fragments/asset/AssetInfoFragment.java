@@ -104,6 +104,9 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
 
         viewModel = ViewModelProviders.of(getActivity()).get(WalletViewModel.class);
         viewModel.rates.observe(this, currenciesRate -> updateBalanceViews(currenciesRate));
+        viewModel.transactionUpdate.observe(this, transactionUpdateEntity -> {
+            refreshWallet();
+        });
         swipeRefreshLayout.setOnRefreshListener(() -> refreshWallet());
 
         WalletRealmObject wallet = viewModel.getWallet(getActivity().getIntent().getIntExtra(Constants.EXTRA_WALLET_ID, 0));
@@ -115,6 +118,7 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     private void refreshWallet() {
         swipeRefreshLayout.setRefreshing(false);
         viewModel.isLoading.setValue(true);
+        viewModel.isLoading.call();
 
         final int walletIndex = viewModel.getWalletLive().getValue().getWalletIndex();
         MultyApi.INSTANCE.getWalletVerbose(walletIndex).enqueue(new Callback<WalletsResponse>() {

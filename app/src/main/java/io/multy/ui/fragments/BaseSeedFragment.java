@@ -105,6 +105,7 @@ public class BaseSeedFragment extends BaseFragment {
     }
 
     public void showNext(Fragment fragment) {
+        hideKeyboard(getActivity());
         showFragment(fragment, "");
     }
 

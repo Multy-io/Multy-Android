@@ -18,6 +18,7 @@ import io.multy.Multy;
 import io.multy.api.MultyApi;
 import io.multy.api.socket.CurrenciesRate;
 import io.multy.api.socket.SocketManager;
+import io.multy.api.socket.TransactionUpdateEntity;
 import io.multy.model.DataManager;
 import io.multy.model.entities.TransactionHistory;
 import io.multy.model.entities.wallet.WalletAddress;
@@ -29,6 +30,7 @@ import io.multy.util.Constants;
 import io.multy.util.FirstLaunchHelper;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
+import io.multy.util.SingleLiveEvent;
 import io.realm.RealmList;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -45,6 +47,7 @@ public class WalletViewModel extends BaseViewModel {
     public MutableLiveData<Boolean> isRemoved = new MutableLiveData<>();
     public MutableLiveData<CurrenciesRate> rates = new MutableLiveData<>();
     public MutableLiveData<ArrayList<TransactionHistory>> transactions = new MutableLiveData<>();
+    public SingleLiveEvent<TransactionUpdateEntity> transactionUpdate = new SingleLiveEvent<>();
 
     private SocketManager socketManager;
 
@@ -53,7 +56,7 @@ public class WalletViewModel extends BaseViewModel {
 
     public void subscribeSocketsUpdate() {
         socketManager = new SocketManager();
-        socketManager.connect(rates, null);
+        socketManager.connect(rates, transactionUpdate);
     }
 
     public void unsubscribeSocketsUpdate() {

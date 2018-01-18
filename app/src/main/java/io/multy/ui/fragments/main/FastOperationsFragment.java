@@ -56,6 +56,7 @@ public class FastOperationsFragment extends BaseFragment {
 
     private int revealX;
     private int revealY;
+    private boolean isCanceling = false;
 
     public static FastOperationsFragment newInstance(int revealX, int revealY) {
         FastOperationsFragment fragment = new FastOperationsFragment();
@@ -156,19 +157,22 @@ public class FastOperationsFragment extends BaseFragment {
 
     @OnClick(R.id.button_cancel)
     void onCancelClick(View v) {
+        isCanceling = true;
         AnimationUtils.createConceal(getView(), revealX, revealY, colorWhite, colorBlue, () -> getActivity().onBackPressed());
-        v.setEnabled(false);
+        if (v != null) {
+            v.setEnabled(false);
+        }
     }
 
     public void cancel() {
-        AnimationUtils.createConceal(getView(), revealX, revealY, colorWhite, colorBlue, new AnimationUtils.OnViewConcealListener() {
-            @Override
-            public void onConcealed() {
-                container.setVisibility(View.GONE);
-                getActivity().getSupportFragmentManager().popBackStack();
-            }
-        });
-        buttonCancel.setEnabled(false);
+        if (!isCanceling) {
+            onCancelClick(null);
+            buttonCancel.setEnabled(false);
+        }
+    }
+
+    public boolean isCanceling() {
+        return isCanceling;
     }
 
     public void setRevealX(int revealX) {

@@ -29,9 +29,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.api.MultyApi;
-import io.multy.model.DataManager;
-import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.model.responses.WalletsResponse;
+import io.multy.storage.AssetsDao;
 import io.multy.storage.RealmManager;
 import io.multy.ui.activities.CreateAssetActivity;
 import io.multy.ui.activities.SeedActivity;
@@ -82,8 +81,12 @@ public class AssetsFragment extends BaseFragment {
                 viewModel.rates.observe(this, currenciesRate -> {
                     RealmManager.getSettingsDao().saveCurrenciesRate(currenciesRate);
                     if (walletsAdapter != null) {
-                        walletsAdapter.updateRates(currenciesRate);
+                        RealmManager.getSettingsDao().saveCurrenciesRate(currenciesRate);
+                        walletsAdapter.notifyDataSetChanged();
                     }
+                });
+                viewModel.transactionUpdate.observe(this, transactionUpdateEntity -> {
+                    updateWallets();
                 });
                 viewModel.init(getLifecycle());
             }
@@ -112,14 +115,12 @@ public class AssetsFragment extends BaseFragment {
             public void onResponse(@NonNull Call<WalletsResponse> call, @NonNull Response<WalletsResponse> response) {
                 if (response.body() != null) {
                     Prefs.putInt(Constants.PREF_WALLET_TOP_INDEX, response.body().getTopIndex());
+                    AssetsDao assetsDao = RealmManager.getAssetsDao();
                     if (response.body().getWallets() != null && response.body().getWallets().size() != 0) {
-                        DataManager dataManager = DataManager.getInstance();
-                        for (WalletRealmObject wallet : response.body().getWallets()) {
-                            dataManager.saveWallet(wallet);
-                        }
-                        walletsAdapter.setData(dataManager.getWallets());
+                        assetsDao.saveWallets(response.body().getWallets());
+                        walletsAdapter.setData(assetsDao.getWallets());
                     } else {
-                        RealmResults realmResults = RealmManager.getAssetsDao().getWallets();
+                        RealmResults realmResults = assetsDao.getWallets();
                         if (realmResults != null && realmResults.size() > 0) {
                             walletsAdapter.setData(realmResults);
                             groupCreateDescription.setVisibility(View.GONE);

@@ -266,7 +266,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
     @Override
     public void onBackPressed() {
         FastOperationsFragment fragment = (FastOperationsFragment) getSupportFragmentManager().findFragmentByTag(FastOperationsFragment.TAG);
-        if (fragment != null) {
+        if (fragment != null && !fragment.isCanceling()) {
             fragment.cancel();
         } else {
             super.onBackPressed();

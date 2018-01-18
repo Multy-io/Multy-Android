@@ -197,5 +197,6 @@
     <string name="none">None</string>
     <string name="about_multy">About multy</string>
     <string name="leave_feedback">Leave feedback</string>
+    <string name="try_again">Try again</string>
 
 </resources>

@@ -251,9 +251,11 @@ public class SeedValidationFragment extends BaseSeedFragment {
                                 assetsDao.saveWallet(walletRealmObject);
                             }
                         }
+                        RealmManager.getSettingsDao().setMnemonic(new Mnemonic(phrase));
+                        Prefs.putBoolean(Constants.PREF_BACKUP_SEED, true);
+                    } else {
+                        clear();
                     }
-                    RealmManager.getSettingsDao().setMnemonic(new Mnemonic(phrase));
-                    Prefs.putBoolean(Constants.PREF_BACKUP_SEED, true);
                     seedModel.isLoading.setValue(false);
                     seedModel.failed.setValue(false);
                     callback.run();
