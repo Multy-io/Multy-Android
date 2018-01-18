@@ -103,6 +103,7 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         ButterKnife.bind(this, view);
 
         viewModel = ViewModelProviders.of(getActivity()).get(WalletViewModel.class);
+        setBaseViewModel(viewModel);
         viewModel.rates.observe(this, currenciesRate -> updateBalanceViews(currenciesRate));
         viewModel.transactionUpdate.observe(this, transactionUpdateEntity -> {
             refreshWallet();

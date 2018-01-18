@@ -70,13 +70,14 @@ public class TransactionFeeFragment extends BaseFragment implements FeeAdapter.O
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_transaction_fee, container, false);
         ButterKnife.bind(this, view);
+        viewModel = ViewModelProviders.of(getActivity()).get(AssetSendViewModel.class);
+        setBaseViewModel(viewModel);
         return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        viewModel = ViewModelProviders.of(getActivity()).get(AssetSendViewModel.class);
         recyclerView.setAdapter(new FeeAdapter(getActivity(), this, viewModel.getFee()));
         setupSwitcher();
         setupInput();

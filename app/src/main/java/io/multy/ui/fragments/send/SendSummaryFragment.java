@@ -75,6 +75,7 @@ public class SendSummaryFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_send_summary, container, false);
         ButterKnife.bind(this, view);
         viewModel = ViewModelProviders.of(getActivity()).get(AssetSendViewModel.class);
+        setBaseViewModel(viewModel);
         setInfo();
         return view;
     }

@@ -19,6 +19,7 @@ import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 
 import io.multy.R;
+import io.multy.ui.activities.MainActivity;
 import io.multy.ui.fragments.dialogs.NoConnectionDialogFragment;
 import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
 import io.multy.util.ConnectionReceiver;
@@ -50,14 +51,14 @@ public class BaseFragment extends Fragment implements ConnectionReceiver.Connect
     public void onStart() {
         super.onStart();
         setConnectionListener(this);
-        if (getActivity() != null) {
+        if (getActivity() != null && !(getActivity() instanceof MainActivity)) {
             getActivity().registerReceiver(receiver, new IntentFilter(android.net.ConnectivityManager.CONNECTIVITY_ACTION));
         }
     }
 
     @Override
     public void onStop() {
-        if (getActivity() != null) {
+        if (getActivity() != null && !(getActivity() instanceof MainActivity)) {
             getActivity().unregisterReceiver(receiver);
         }
         super.onStop();
@@ -128,12 +129,12 @@ public class BaseFragment extends Fragment implements ConnectionReceiver.Connect
 
     @Override
     public void onNetworkConnectionChanged(boolean isConnected) {
+        Timber.e("onNetworkConnectionChanged");
         if (!isConnected) {
-            showNoConnectionDialog();
-        } else {
-            if (noConnectionDialog != null) {
-                noConnectionDialog.dismiss();
+            if (baseViewModel != null && baseViewModel.isConnectionAvailable.getValue() != null) {
+                baseViewModel.isConnectionAvailable.setValue(isConnected);
             }
+            showNoConnectionDialog();
         }
     }
 

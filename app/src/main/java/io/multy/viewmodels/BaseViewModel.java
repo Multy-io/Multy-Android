@@ -20,6 +20,11 @@ public class BaseViewModel extends ViewModel {
     public SingleLiveEvent<String> errorMessage = new SingleLiveEvent<>();
     public SingleLiveEvent<String> criticalMessage = new SingleLiveEvent<>();
     public SingleLiveEvent<Boolean> isLoading = new SingleLiveEvent<>();
+    public SingleLiveEvent<Boolean> isConnectionAvailable = new SingleLiveEvent<>();
+
+    {
+        isConnectionAvailable.setValue(true);
+    }
 
     @NonNull
     private final CompositeDisposable disposables = new CompositeDisposable();

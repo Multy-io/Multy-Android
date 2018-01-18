@@ -6,6 +6,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.text.TextUtils;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
+import timber.log.Timber;
 
 public class SimpleDialogFragment extends DialogFragment {
 
@@ -38,6 +40,7 @@ public class SimpleDialogFragment extends DialogFragment {
     private boolean isNegative = false;
     private String message;
     private String title;
+    private int titleSize;
 
 
     public static SimpleDialogFragment newInstance(int titleResId, int messageResId, View.OnClickListener positiveListener) {
@@ -109,6 +112,10 @@ public class SimpleDialogFragment extends DialogFragment {
             textViewTitle.setText(titleResId);
         }
 
+        if (titleSize != 0) {
+            textViewTitle.setTextSize(TypedValue.COMPLEX_UNIT_DIP, titleSize);
+        }
+
         if (isNegative) {
             buttonNegative.setVisibility(View.GONE);
             buttonPositive.setText(R.string.ok);
@@ -127,6 +134,10 @@ public class SimpleDialogFragment extends DialogFragment {
     @OnClick(R.id.button_negative)
     public void onClickNegative() {
         dismiss();
+    }
+
+    public void setTitleSize(int size) {
+        titleSize = size;
     }
 
     public void setTitleResId(int titleResId) {

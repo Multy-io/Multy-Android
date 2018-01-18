@@ -22,7 +22,7 @@ public class ConnectionReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent arg1) {
         if (connectionReceiverListener != null) {
-            connectionReceiverListener.onNetworkConnectionChanged(NetworkAvailability.isConnected(context));
+            connectionReceiverListener.onNetworkConnectionChanged(NetworkUtils.isConnected(context));
         }
     }
 

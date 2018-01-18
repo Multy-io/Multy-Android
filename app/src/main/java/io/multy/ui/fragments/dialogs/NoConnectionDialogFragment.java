@@ -17,10 +17,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
-import io.multy.util.NetworkAvailability;
+import io.multy.util.NetworkUtils;
 
 public class NoConnectionDialogFragment extends DialogFragment {
 
@@ -51,8 +52,13 @@ public class NoConnectionDialogFragment extends DialogFragment {
 
     @OnClick(R.id.button_try_again)
     public void onClickCheckConnection() {
-        if (NetworkAvailability.isConnected(getContext())) {
+        if (NetworkUtils.isConnected(getContext())) {
             dismiss();
+        } else {
+            SimpleDialogFragment dialog = SimpleDialogFragment.newInstanceNegative(R.string.check_internet_connection,
+                    R.string.no_connection, null);
+            dialog.show(getFragmentManager(), "");
+            dialog.setTitleSize(18);
         }
     }
 }

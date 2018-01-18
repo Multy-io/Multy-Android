@@ -29,6 +29,8 @@
     <string name="seed_congrats_restore">Congratulations!\nYour wallet is restored!</string>
     <string name="great">Great!</string>
     <string name="check_connection">Check Connection</string>
+    <string name="check_internet_connection">Check Internet Connection</string>
+    <string name="no_connection">Please connect your \ndevice to the internet</string>
     <string name="seed_result_fail">Wrong seed phrase!</string>
     <string name="seed_writing">Seed phrase validation</string>
     <string name="next_word">Next word</string>
