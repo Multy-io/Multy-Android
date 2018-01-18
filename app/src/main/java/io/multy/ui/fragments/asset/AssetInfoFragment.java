@@ -43,6 +43,7 @@ import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
 import io.multy.viewmodels.WalletViewModel;
+import io.realm.RealmList;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -259,6 +260,11 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         params.setScrollFlags(flag);
     }
 
+    private String getAddressToShare() {
+        RealmList<WalletAddress> addresses = viewModel.wallet.getValue().getAddresses();
+        return addresses.get(addresses.size() - 1).getAddress();
+    }
+
     @OnClick(R.id.options)
     void onClickOptions() {
         ((AssetActivity) getActivity()).setFragment(R.id.frame_container, AssetSettingsFragment.newInstance());
@@ -280,13 +286,13 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     void onClickShare() {
         Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
         sharingIntent.setType("text/plain");
-        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, viewModel.getWalletLive().getValue().getCreationAddress());
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, getAddressToShare());
         startActivity(Intent.createChooser(sharingIntent, getResources().getString(R.string.send_via)));
     }
 
     @OnClick(R.id.text_address)
     void onClickCopy() {
-        String address = viewModel.getWalletLive().getValue().getCreationAddress();
+        String address = getAddressToShare();
         ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText(address, address);
         assert clipboard != null;

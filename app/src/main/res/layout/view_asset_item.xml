@@ -67,25 +67,6 @@
             app:layout_constraintTop_toBottomOf="@+id/text_name" />
 
         <TextView
-            android:id="@+id/text_amount_pending"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="7dp"
-            android:layout_marginTop="1dp"
-            android:alpha="0.3"
-            android:fontFamily="@font/montserrat"
-            android:textColor="@color/black"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintBaseline_toBaselineOf="@id/text_amount"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintLeft_toRightOf="@id/text_amount"
-            app:layout_constraintTop_toBottomOf="@+id/text_name"
-            app:layout_constraintTop_toTopOf="@id/text_amount"
-            tools:text="0.1234" />
-
-        <TextView
             android:id="@+id/text_currency"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -96,8 +77,8 @@
             android:textColor="#87a1c5"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintBaseline_toBaselineOf="@id/text_amount_pending"
-            app:layout_constraintLeft_toRightOf="@id/text_amount_pending" />
+            app:layout_constraintBaseline_toBaselineOf="@id/text_amount"
+            app:layout_constraintLeft_toRightOf="@id/text_amount" />
 
         <TextView
             android:id="@+id/text_equals"
@@ -112,21 +93,15 @@
             app:layout_constraintTop_toBottomOf="@id/text_amount"
             tools:text="1 233 $" />
 
-        <TextView
-            android:id="@+id/text_equals_pending"
+        <ImageView
+            android:id="@+id/image_pending"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="4dp"
-            android:alpha="0.6"
-            android:fontFamily="@font/montserrat"
-            android:textColor="#87a1c5"
-            android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toRightOf="@id/text_equals"
-            app:layout_constraintTop_toBottomOf="@+id/text_amount"
-            tools:text="1 233 $" />
+            android:src="@drawable/ic_history_pending"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/image_chevron"
+            app:layout_constraintRight_toLeftOf="@id/image_chevron"
+            app:layout_constraintTop_toTopOf="@id/image_chevron" />
 
         <ImageView
             android:id="@+id/image_chevron"
@@ -134,11 +109,10 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:scaleType="center"
-            android:visibility="gone"
+            android:src="@drawable/ic_chevron"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_chevron" />
+            app:layout_constraintTop_toTopOf="parent" />
 
     </android.support.constraint.ConstraintLayout>
 </android.support.v7.widget.CardView>

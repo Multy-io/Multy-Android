@@ -262,4 +262,14 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
+
+    @Override
+    public void onBackPressed() {
+        FastOperationsFragment fragment = (FastOperationsFragment) getSupportFragmentManager().findFragmentByTag(FastOperationsFragment.TAG);
+        if (fragment != null) {
+            fragment.cancel();
+        } else {
+            super.onBackPressed();
+        }
+    }
 }

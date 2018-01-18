@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -155,11 +156,29 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
         boolean isIncoming = txStatus == TX_IN_BLOCK_INCOMING || txStatus == TX_CONFIRMED_INCOMING;
 
         holder.operationImage.setImageResource(isIncoming ? R.drawable.ic_receive : R.drawable.ic_send);
-        holder.address.setText(transactionHistory.getAddress());
         holder.date.setText(DateHelper.DATE_FORMAT_HISTORY.format(transactionHistory.getBlockTime() * 1000));
 
         holder.amount.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(transactionHistory.getTxOutAmount())));
         holder.fiat.setText(String.format("%s USD", CryptoFormatUtils.satoshiToUsd(transactionHistory.getTxOutAmount(), transactionHistory.getBtcToUsd())));
+        holder.containerAddresses.removeAllViews();
+
+        if (isIncoming) {
+            setAddresses(transactionHistory.getInputs(), holder.containerAddresses);
+        } else {
+            setAddress(transactionHistory.getAddress(), holder.containerAddresses);
+        }
+    }
+
+    private void setAddresses(List<WalletAddress> addresses, ViewGroup destination) {
+        for (WalletAddress walletAddress : addresses) {
+            setAddress(walletAddress.getAddress(), destination);
+        }
+    }
+
+    private void setAddress(String text, ViewGroup destination) {
+        TextView textView = (TextView) LayoutInflater.from(destination.getContext()).inflate(R.layout.item_history_address, destination, false);
+        textView.setText(text);
+        destination.addView(textView);
     }
 
     @Override
@@ -180,14 +199,17 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
         @BindView(R.id.image_operation)
         ImageView operationImage;
 
-        @BindView(R.id.text_address)
-        TextView address;
+//        @BindView(R.id.text_address)
+//        TextView address;
 
         @BindView(R.id.text_amount)
         TextView amount;
 
         @BindView(R.id.text_fiat)
         TextView fiat;
+
+        @BindView(R.id.container_addresses)
+        LinearLayout containerAddresses;
 
         Holder(View itemView) {
             super(itemView);

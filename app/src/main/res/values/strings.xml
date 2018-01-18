@@ -9,7 +9,7 @@
     <string name="wallets">wallets</string>
     <string name="feed">activity</string>
     <string name="contacts">contacts</string>
-    <string name="settings">settings</string>
+    <string name="settings">Settings</string>
 
     <string name="receive_btc">Receive BTC</string>
     <string name="send">Send</string>
@@ -189,5 +189,13 @@
     <string name="pending_continue">Pending...</string>
     <string name="rejected_send">Unable to send transaction</string>
     <string name="rejected_receive">Unable to receive transaction</string>
+    <string name="push_notifications">Push Notifications</string>
+    <string name="security_settings">Security Settings</string>
+    <string name="settings_restore_seed_description">If ou already have any wallets in Multy, you’ve changed your device or lost account - you can restore your seed phrase.</string>
+    <string name="restore_seed">Restore Seed</string>
+    <string name="settings_entrance">Entrance settings</string>
+    <string name="none">None</string>
+    <string name="about_multy">About multy</string>
+    <string name="leave_feedback">Leave feedback</string>
 
 </resources>

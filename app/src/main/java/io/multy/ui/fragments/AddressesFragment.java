@@ -70,7 +70,7 @@ public class AddressesFragment extends BaseFragment {
         }
     }
 
-    @OnClick(R.id.text_cancel)
+    @OnClick(R.id.button_back)
     public void onClickCancel() {
         getActivity().onBackPressed();
     }

@@ -23,6 +23,7 @@ import io.multy.util.Constants;
 import io.socket.client.IO;
 import io.socket.client.Manager;
 import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
 import io.socket.engineio.client.Transport;
 import io.socket.engineio.client.transports.WebSocket;
 
@@ -35,7 +36,7 @@ public class SocketManager {
     private static final String HEADER_AUTH = "jwtToken";
     private static final String HEADER_DEVICE_TYPE = "deviceType";
     private static final String HEADER_USER_ID = "userId";
-    private static final String EVENT_RECEIVE = "newTransaction";
+    private static final String EVENT_RECEIVE = "btcTransactionUpdate";
     private static final String EVENT_EXCHANGE_RESPONSE = "exchangePoloniex";
 
     private Socket socket;
@@ -83,10 +84,16 @@ public class SocketManager {
                     .on(Socket.EVENT_CONNECT_TIMEOUT, args -> log("connection timeout"))
                     .on(Socket.EVENT_CONNECT, args -> log("Connected"))
                     .on(EVENT_EXCHANGE_RESPONSE, args -> {
-                            Log.i("wise", "received rate " + String.valueOf(args[0]));
+                        Log.i("wise", "received rate " + String.valueOf(args[0]));
                         rates.postValue(gson.fromJson(String.valueOf(args[0]), CurrenciesRate.class));
                     })
-                    .on(Socket.EVENT_DISCONNECT, args -> log("Disconnected"));
+                    .on(Socket.EVENT_DISCONNECT, args -> log("Disconnected"))
+                    .on(EVENT_RECEIVE, new Emitter.Listener() {
+                        @Override
+                        public void call(Object... args) {
+                            Log.i("wise", "ON RECEIVE " + String.valueOf(args[0]));
+                        }
+                    });
             socket.connect();
         } catch (URISyntaxException e) {
             e.printStackTrace();

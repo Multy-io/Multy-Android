@@ -17,7 +17,6 @@ import butterknife.ButterKnife;
 import io.multy.R;
 import io.multy.api.socket.CurrenciesRate;
 import io.multy.model.entities.wallet.WalletRealmObject;
-import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetActivity;
 import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
@@ -50,15 +49,9 @@ public class WalletsAdapter extends RecyclerView.Adapter<WalletsAdapter.Holder> 
         double balance = data.get(position).getBalance();
         double pending = data.get(position).getPendingBalance() + balance;
 
-        final double formatBalance = balance / Math.pow(10, 8);
-        final double formatPending = pending / Math.pow(10, 8);
-        final double exchangePrice = rates != null ? rates.getBtcToUsd() : RealmManager.getSettingsDao().getCurrenciesRate().getBtcToUsd();
-
-        holder.equals.setText(balance == 0 ? "0.0$" : format.format(exchangePrice * formatBalance) + "$");
-        holder.pendingFiat.setText(pending == 0 ? "0.0$" : format.format(exchangePrice * formatPending) + "$");
-
-        holder.amount.setText(balance != 0 ? CryptoFormatUtils.satoshiToBtc(balance) : String.valueOf(balance));
-        holder.pendingAmount.setText(pending != 0 ? CryptoFormatUtils.satoshiToBtc(pending) : String.valueOf(pending));
+        holder.imagePending.setVisibility(pending == 0 || balance == pending ? View.GONE : View.VISIBLE);
+        holder.equals.setText(balance == 0 ? "0.0$" : CryptoFormatUtils.satoshiToUsd(balance) + "$");
+        holder.amount.setText(balance != 0 ? CryptoFormatUtils.satoshiToBtc(pending) : String.valueOf(pending));
         holder.currency.setText(String.valueOf(NativeDataHelper.Currency.values()[data.get(position).getCurrency()]));
         holder.imageChain.setImageResource(chain == NativeDataHelper.Currency.BTC ? R.drawable.ic_btc_huge : R.drawable.ic_eth_medium_icon);
         holder.itemView.setOnClickListener(view -> {
@@ -103,10 +96,8 @@ public class WalletsAdapter extends RecyclerView.Adapter<WalletsAdapter.Holder> 
         TextView currency;
         @BindView(R.id.image_chain)
         ImageView imageChain;
-        @BindView(R.id.text_amount_pending)
-        TextView pendingAmount;
-        @BindView(R.id.text_equals_pending)
-        TextView pendingFiat;
+        @BindView(R.id.image_pending)
+        ImageView imagePending;
 
         Holder(View itemView) {
             super(itemView);

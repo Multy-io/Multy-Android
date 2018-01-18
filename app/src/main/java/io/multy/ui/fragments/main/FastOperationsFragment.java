@@ -45,6 +45,9 @@ public class FastOperationsFragment extends BaseFragment {
     @BindView(R.id.button_cancel)
     View buttonCancel;
 
+    @BindView(R.id.container)
+    View container;
+
     @BindColor(R.color.colorPrimary)
     int colorBlue;
 
@@ -155,6 +158,17 @@ public class FastOperationsFragment extends BaseFragment {
     void onCancelClick(View v) {
         AnimationUtils.createConceal(getView(), revealX, revealY, colorWhite, colorBlue, () -> getActivity().onBackPressed());
         v.setEnabled(false);
+    }
+
+    public void cancel() {
+        AnimationUtils.createConceal(getView(), revealX, revealY, colorWhite, colorBlue, new AnimationUtils.OnViewConcealListener() {
+            @Override
+            public void onConcealed() {
+                container.setVisibility(View.GONE);
+                getActivity().getSupportFragmentManager().popBackStack();
+            }
+        });
+        buttonCancel.setEnabled(false);
     }
 
     public void setRevealX(int revealX) {

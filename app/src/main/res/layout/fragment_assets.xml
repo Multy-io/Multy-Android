@@ -3,180 +3,196 @@
   ~  Licensed under Multy.io license.
   ~  See LICENSE for details
   -->
-
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="10dp"
-    android:background="@color/background_main"
-    tools:showIn="io.multy.android.MainActivity">
+    android:background="@color/background_main">
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/button_warn"
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar_layout"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:elevation="4dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:background="@drawable/shape_warn"
-        android:clickable="true"
-        android:focusable="true"
-        android:foreground="?attr/selectableItemBackground"
-        android:paddingBottom="8dp"
-        android:paddingLeft="12dp"
-        android:paddingRight="12dp"
-        android:paddingTop="8dp">
+        android:layout_height="wrap_content"
+        android:background="@color/background_main"
+        app:elevation="0dp">
 
-        <ImageView
-            android:id="@+id/image_warn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_warninng_big"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:layout_width="0dp"
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:gravity="center_vertical"
-            android:text="@string/backup_is_not_executed"
-            android:textColor="@android:color/white"
-            app:layout_constraintLeft_toRightOf="@id/image_warn"
-            app:layout_constraintRight_toLeftOf="@id/image_chevron" />
+            android:layout_marginTop="10dp"
+            android:background="@color/background_main"
+            app:layout_scrollFlags="scroll"
+            tools:showIn="io.multy.android.MainActivity">
 
-        <ImageView
-            android:id="@+id/image_chevron"
-            android:layout_width="14dp"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_chevron_white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/button_warn"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:background="@drawable/shape_warn"
+                android:clickable="true"
+                android:elevation="4dp"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:paddingBottom="8dp"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                android:paddingTop="8dp">
 
-    </android.support.constraint.ConstraintLayout>
+                <ImageView
+                    android:id="@+id/image_warn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_warninng_big"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/logo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:src="@drawable/logo_blue"
-        app:layout_constraintBottom_toTopOf="@id/divider_gray"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/backup_is_not_executed"
+                    android:textColor="@android:color/white"
+                    app:layout_constraintLeft_toRightOf="@id/image_warn"
+                    app:layout_constraintRight_toLeftOf="@id/image_chevron" />
 
-    <TextView
-        android:id="@+id/logo_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="@string/logo_title"
-        android:textAllCaps="true"
-        android:gravity="center"
-        android:textColor="@color/blue_light"
-        android:textSize="10sp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/logo" />
+                <ImageView
+                    android:id="@+id/image_chevron"
+                    android:layout_width="14dp"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_chevron_white"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-    <View
-        android:id="@+id/divider_gray"
-        android:layout_width="0dp"
-        android:layout_height="0.5dp"
-        android:layout_marginTop="39dp"
-        android:background="@color/gray_divider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/logo_title" />
+            </android.support.constraint.ConstraintLayout>
 
-    <TextView
-        android:id="@+id/text_wallets"
-        android:layout_width="wrap_content"
-        android:layout_height="41dp"
-        android:layout_marginEnd="221dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="8dp"
-        android:fontFamily="@font/montserrat"
-        android:gravity="center_vertical"
-        android:text="@string/my_wallets"
-        android:textColor="#87a1c5"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/divider_gray" />
+            <ImageView
+                android:id="@+id/logo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/logo_blue"
+                app:layout_constraintBottom_toTopOf="@id/divider_gray"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/logo_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text="@string/logo_title"
+                android:textAllCaps="true"
+                android:textColor="@color/blue_light"
+                android:textSize="10sp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/logo" />
+
+            <View
+                android:id="@+id/divider_gray"
+                android:layout_width="0dp"
+                android:layout_height="0.5dp"
+                android:layout_marginBottom="30dp"
+                android:layout_marginTop="30dp"
+                android:background="@color/gray_divider"
+                app:layout_constraintTop_toBottomOf="@+id/logo_title" />
+
+            <TextView
+                android:id="@+id/text_wallets"
+                android:layout_width="wrap_content"
+                android:layout_height="41dp"
+                android:layout_marginEnd="221dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/montserrat"
+                android:gravity="center_vertical"
+                android:text="@string/my_wallets"
+                android:textColor="#87a1c5"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/divider_gray" />
+
+            <ImageButton
+                android:id="@+id/button_add"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:background="@drawable/shape_circle_white"
+                android:elevation="4dp"
+                android:padding="6dp"
+                android:src="@drawable/ic_add_new_wallet"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/text_wallets" />
+
+            <include
+                android:id="@+id/container_create_restore"
+                layout="@layout/first_launch_create_restore"
+                android:layout_width="@dimen/dp0"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:visibility="gone"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/divider_gray" />
+
+            <TextView
+                android:id="@+id/text_create_wallet_description"
+                android:layout_width="@dimen/dp0"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dimen_20dp"
+                android:layout_marginTop="@dimen/dimen_20dp"
+                android:text="@string/restore_wallet_description"
+                android:textColor="@color/text_grey"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_wallets"
+                app:layout_constraintWidth_default="percent"
+                app:layout_constraintWidth_percent="0.65" />
+
+            <ImageView
+                android:id="@+id/arrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_arrow_round"
+                app:layout_constraintLeft_toRightOf="@+id/text_create_wallet_description"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/text_create_wallet_description" />
+
+            <android.support.constraint.Group
+                android:id="@+id/group_wallets_list"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="recycler_wallets,button_add,text_wallets" />
+
+            <android.support.constraint.Group
+                android:id="@+id/group_create_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:constraint_referenced_ids="text_create_wallet_description, arrow" />
+        </android.support.constraint.ConstraintLayout>
+    </android.support.design.widget.AppBarLayout>
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_wallets"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginTop="6dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_wallets" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/button_add"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:src="@drawable/ic_add_new_wallet"
-        app:backgroundTint="@android:color/white"
-        app:fabSize="mini"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/text_wallets" />
-
-    <include
-        android:id="@+id/container_create_restore"
-        layout="@layout/first_launch_create_restore"
-        android:layout_width="@dimen/dp0"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_wallets" />
-
-    <TextView
-        android:id="@+id/text_create_wallet_description"
-        android:layout_width="@dimen/dp0"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/dimen_20dp"
-        android:layout_marginTop="@dimen/dimen_20dp"
-        android:text="@string/restore_wallet_description"
-        android:textColor="@color/text_grey"
-        android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_wallets"
-        app:layout_constraintWidth_default="percent"
-        app:layout_constraintWidth_percent="0.65" />
-
-    <ImageView
-        android:id="@+id/arrow"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_arrow_round"
-        app:layout_constraintLeft_toRightOf="@+id/text_create_wallet_description"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/text_create_wallet_description" />
-
-    <android.support.constraint.Group
-        android:id="@+id/group_wallets_list"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:constraint_referenced_ids="recycler_wallets,button_add,text_wallets" />
-
-    <android.support.constraint.Group
-        android:id="@+id/group_create_description"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:constraint_referenced_ids="text_create_wallet_description, arrow" />
-</android.support.constraint.ConstraintLayout>
+        app:layout_constraintTop_toBottomOf="@+id/text_wallets" />
+</android.support.design.widget.CoordinatorLayout>

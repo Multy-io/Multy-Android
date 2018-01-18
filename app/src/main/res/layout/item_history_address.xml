@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2017 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/text_address"
+    style="@style/BlackMediumText"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:ellipsize="middle"
+    android:fontFamily="@font/montserrat"
+    android:singleLine="true"
+    android:textColor="@color/blue_light"
+    android:textSize="14sp"
+    tools:text="3DA28W41231231231233XJSP9L" />

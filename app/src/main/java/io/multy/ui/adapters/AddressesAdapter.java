@@ -49,7 +49,6 @@ public class AddressesAdapter extends RecyclerView.Adapter<AddressesAdapter.Hold
         return addresses.size();
     }
 
-
     static class Holder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.root)
@@ -68,7 +67,7 @@ public class AddressesAdapter extends RecyclerView.Adapter<AddressesAdapter.Hold
 
         void bind(final WalletAddress address) {
             textAddress.setText(address.getAddress());
-            textAmount.setText(CryptoFormatUtils.satoshiToBtc(address.getAmount()));
+            textAmount.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(address.getAmount())));
             textDate.setText(DateHelper.DATE_FORMAT_ADDRESSES.format(new Date(address.getDate())));
 //            textName.setText(wallet.getName());
 //            textBalanceOriginal.setText(wallet.getBalanceWithCode());

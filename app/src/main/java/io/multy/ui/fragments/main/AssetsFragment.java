@@ -13,14 +13,16 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.Group;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 import com.samwolfand.oneprefs.Prefs;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,6 +39,7 @@ import io.multy.ui.adapters.WalletsAdapter;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
 import io.multy.viewmodels.AssetsViewModel;
+import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -45,18 +48,19 @@ public class AssetsFragment extends BaseFragment {
 
     public static final String TAG = AssetsFragment.class.getSimpleName();
 
-    @BindView(R.id.recycler_wallets)
+    @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
     @BindView(R.id.group_wallets_list)
     Group groupWalletsList;
     @BindView(R.id.group_create_description)
     Group groupCreateDescription;
     @BindView(R.id.button_add)
-    FloatingActionButton buttonAdd;
+    ImageButton buttonAdd;
     @BindView(R.id.container_create_restore)
     ConstraintLayout containerCreateRestore;
     @BindView(R.id.button_warn)
     View buttonWarn;
+
 
     private AssetsViewModel viewModel;
     private WalletsAdapter walletsAdapter;
@@ -73,7 +77,7 @@ public class AssetsFragment extends BaseFragment {
 
         viewModel = ViewModelProviders.of(getActivity()).get(AssetsViewModel.class);
 
-        if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)){
+        if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
             if (RealmManager.getSettingsDao().getUserId() != null) {
                 viewModel.rates.observe(this, currenciesRate -> {
                     RealmManager.getSettingsDao().saveCurrenciesRate(currenciesRate);
@@ -85,26 +89,6 @@ public class AssetsFragment extends BaseFragment {
             }
         }
         return view;
-    }
-
-    public static float getMaxValue(float[] array) {
-        float maxValue = array[0];
-        for (int i = 1; i < array.length; i++) {
-            if (array[i] > maxValue) {
-                maxValue = array[i];
-            }
-        }
-        return maxValue;
-    }
-
-    public static float getMinValue(float[] array) {
-        float minValue = array[0];
-        for (int i = 1; i < array.length; i++) {
-            if (array[i] < minValue) {
-                minValue = array[i];
-            }
-        }
-        return minValue;
     }
 
     private void checkViewsVisibility() {
@@ -135,8 +119,14 @@ public class AssetsFragment extends BaseFragment {
                         }
                         walletsAdapter.setData(dataManager.getWallets());
                     } else {
-//                        walletsAdapter.setData(new ArrayList<>());
-//                        groupCreateDescription.setVisibility(View.VISIBLE);
+                        RealmResults realmResults = RealmManager.getAssetsDao().getWallets();
+                        if (realmResults != null && realmResults.size() > 0) {
+                            walletsAdapter.setData(realmResults);
+                            groupCreateDescription.setVisibility(View.GONE);
+                        } else {
+                            walletsAdapter.setData(new ArrayList<>());
+                            groupCreateDescription.setVisibility(View.VISIBLE);
+                        }
                     }
                 }
             }
@@ -169,7 +159,6 @@ public class AssetsFragment extends BaseFragment {
 
         walletsAdapter = new WalletsAdapter(null);
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setAdapter(walletsAdapter);
         walletsAdapter.setData(viewModel.getWalletsFromDB());
     }
