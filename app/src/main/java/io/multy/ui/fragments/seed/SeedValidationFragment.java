@@ -23,7 +23,6 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.samwolfand.oneprefs.Prefs;
 
@@ -37,16 +36,16 @@ import butterknife.OnEditorAction;
 import io.multy.Multy;
 import io.multy.R;
 import io.multy.api.MultyApi;
-import io.multy.model.entities.Mnemonic;
-import io.multy.model.entities.wallet.WalletRealmObject;
-import io.multy.model.responses.WalletsResponse;
-import io.multy.storage.AssetsDao;
+import io.multy.model.entities.ByteSeed;
+import io.multy.model.entities.UserId;
+import io.multy.model.responses.AuthResponse;
 import io.multy.storage.RealmManager;
+import io.multy.storage.SettingsDao;
 import io.multy.ui.fragments.BaseSeedFragment;
 import io.multy.util.BrickView;
 import io.multy.util.Constants;
-import io.multy.util.FirstLaunchHelper;
 import io.multy.util.JniException;
+import io.multy.util.NativeDataHelper;
 import io.multy.viewmodels.SeedViewModel;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -238,45 +237,40 @@ public class SeedValidationFragment extends BaseSeedFragment {
     public void restore(String phrase, Context context, Runnable callback) {
         try {
             seedModel.isLoading.setValue(true);
-            Multy.makeInitialized();
-            FirstLaunchHelper.setCredentials(phrase);
-            MultyApi.INSTANCE.restore().enqueue(new Callback<WalletsResponse>() {
+
+            byte[] seed = NativeDataHelper.makeSeed(phrase);
+            final String userId = NativeDataHelper.makeAccountId(seed);
+            MultyApi.INSTANCE.auth(userId).enqueue(new Callback<AuthResponse>() {
                 @Override
-                public void onResponse(Call<WalletsResponse> call, Response<WalletsResponse> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        Prefs.putInt(Constants.PREF_WALLET_TOP_INDEX, response.body().getTopIndex());
-                        if (response.body().getWallets() != null && response.body().getWallets().size() > 0) {
-                            AssetsDao assetsDao = RealmManager.getAssetsDao();
-                            for (WalletRealmObject walletRealmObject : response.body().getWallets()) {
-                                assetsDao.saveWallet(walletRealmObject);
-                            }
-                        }
-                        RealmManager.getSettingsDao().setMnemonic(new Mnemonic(phrase));
-                        Prefs.putBoolean(Constants.PREF_BACKUP_SEED, true);
+                public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
+                    if (response.isSuccessful()) {
+                        Multy.makeInitialized();
+                        SettingsDao settingsDao = RealmManager.getSettingsDao();
+                        settingsDao.setUserId(new UserId(userId));
+                        settingsDao.setByteSeed(new ByteSeed(seed));
+                        seedModel.isLoading.setValue(false);
+                        seedModel.failed.setValue(false);
+                        callback.run();
                     } else {
-                        clear();
+                        onSeedRestoreFailure(callback);
                     }
-                    seedModel.isLoading.setValue(false);
-                    seedModel.failed.setValue(false);
-                    callback.run();
                 }
 
                 @Override
-                public void onFailure(Call<WalletsResponse> call, Throwable t) {
-                    seedModel.isLoading.setValue(false);
-                    seedModel.failed.setValue(true);
-                    clear();
-                    t.printStackTrace();
-                    callback.run();
+                public void onFailure(Call<AuthResponse> call, Throwable t) {
+                    onSeedRestoreFailure(callback);
                 }
             });
         } catch (JniException e) {
-            seedModel.isLoading.setValue(false);
-            seedModel.failed.setValue(true);
-            clear();
-            callback.run();
-            Toast.makeText(context, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+            onSeedRestoreFailure(callback);
         }
+    }
+
+    private void onSeedRestoreFailure(Runnable callback) {
+        seedModel.isLoading.setValue(false);
+        seedModel.failed.setValue(true);
+        callback.run();
     }
 
     private void clear() {

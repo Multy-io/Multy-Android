@@ -20,8 +20,8 @@
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/tab_layout_height"
+        android:background="@drawable/background_tab_bottom"
         android:layout_gravity="bottom"
-        android:background="#f9faff"
         app:tabGravity="fill"
         app:tabIndicatorHeight="0dp"
         app:tabMode="fixed">
@@ -77,17 +77,17 @@
         android:layout_marginBottom="8dp"
         android:background="@drawable/circle_blue"
         android:elevation="4dp"
-        android:foreground="?attr/selectableItemBackgroundBorderless"
         android:padding="8dp"
         android:scaleType="centerInside"
-        android:src="@drawable/ic_fast_operation"/>
+        android:src="@drawable/ic_fast_operation" />
 
     <android.support.constraint.ConstraintLayout
-        android:layout_width="match_parent"
-        android:elevation="12dp"
         android:id="@+id/splash"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorPrimaryDark">
+        android:background="@color/colorPrimaryDark"
+        android:elevation="12dp"
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/icon"

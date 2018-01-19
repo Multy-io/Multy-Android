@@ -13,6 +13,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.Group;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -59,6 +62,8 @@ public class AssetsFragment extends BaseFragment {
     ConstraintLayout containerCreateRestore;
     @BindView(R.id.button_warn)
     View buttonWarn;
+    @BindView(R.id.appbar_layout)
+    AppBarLayout appBarLayout;
 
 
     private AssetsViewModel viewModel;
@@ -91,7 +96,22 @@ public class AssetsFragment extends BaseFragment {
                 viewModel.init(getLifecycle());
             }
         }
+        appBarLayout.post(() -> disableAppBarScrolling());
         return view;
+    }
+
+    private void disableAppBarScrolling() {
+        if (!ViewCompat.isLaidOut(appBarLayout)) {
+            return;
+        }
+        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) appBarLayout.getLayoutParams();
+        AppBarLayout.Behavior behavior = (AppBarLayout.Behavior) params.getBehavior();
+        behavior.setDragCallback(new AppBarLayout.Behavior.DragCallback() {
+            @Override
+            public boolean canDrag(@NonNull AppBarLayout appBarLayout) {
+                return false;
+            }
+        });
     }
 
     private void checkViewsVisibility() {

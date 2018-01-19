@@ -18,7 +18,7 @@ import retrofit2.Call;
 
 public interface MultyApiInterface {
 
-    Call<AuthResponse> auth(String userId, String deviceId, String password);
+    Call<AuthResponse> auth(String userId);
 
     Call<ResponseBody> addWallet(Context context, WalletRealmObject wallet);
 

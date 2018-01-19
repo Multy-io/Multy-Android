@@ -58,7 +58,7 @@ public class DataManager {
     }
 
     public void auth(String userId, String deviceId, String password) {
-        MultyApi.INSTANCE.auth(userId, deviceId, password).enqueue(new Callback<AuthResponse>() {
+        MultyApi.INSTANCE.auth(userId).enqueue(new Callback<AuthResponse>() {
             @Override
             public void onResponse(@NonNull Call<AuthResponse> call, @NonNull Response<AuthResponse> response) {
                 databaseHelper.saveToken(new Token(response.body()));

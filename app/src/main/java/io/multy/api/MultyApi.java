@@ -31,8 +31,6 @@ import io.multy.model.responses.ServerConfigResponse;
 import io.multy.model.responses.TransactionHistoryResponse;
 import io.multy.model.responses.UserAssetsResponse;
 import io.multy.model.responses.WalletsResponse;
-import io.multy.storage.RealmManager;
-import io.multy.storage.SettingsDao;
 import io.multy.util.Constants;
 import io.reactivex.Observable;
 import okhttp3.Authenticator;
@@ -94,11 +92,8 @@ public enum MultyApi implements MultyApiInterface {
                 .build().create(ApiServiceInterface.class);
 
         @Override
-        public Call<AuthResponse> auth(String userIdString, String deviceIdString, String password) {
-            SettingsDao settingsDao = RealmManager.getSettingsDao();
-            final String userId = settingsDao.getUserId().getUserId();
+        public Call<AuthResponse> auth(String userId) {
             final String pushToken = FirebaseInstanceId.getInstance().getToken() == null ? "noPushToken" : FirebaseInstanceId.getInstance().getToken();
-
             return api.auth(new AuthEntity(userId, Constants.DEVICE_NAME, pushToken, 2));
         }
 
@@ -156,7 +151,7 @@ public enum MultyApi implements MultyApiInterface {
         public Call<ResponseBody> removeWallet(int walletIndex) {
             return api.removeWallet(walletIndex);
         }
-      
+
         public Call<TransactionHistoryResponse> getTransactionHistory(int walletIndex) {
             return api.getTransactionHistory(walletIndex);
         }

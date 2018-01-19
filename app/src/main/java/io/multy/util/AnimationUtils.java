@@ -16,7 +16,7 @@ import android.view.ViewAnimationUtils;
 
 public class AnimationUtils {
 
-    public static final int DURATION_MEDIUM = 500;
+    public static final int DURATION_MEDIUM = 400;
 
     public interface OnViewConcealListener {
         void onConcealed();

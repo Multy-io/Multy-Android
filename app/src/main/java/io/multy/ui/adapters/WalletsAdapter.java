@@ -2,6 +2,7 @@ package io.multy.ui.adapters;
 
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +51,9 @@ public class WalletsAdapter extends RecyclerView.Adapter<WalletsAdapter.Holder> 
         double balance = data.get(position).getBalance();
         double pending = data.get(position).getPendingBalance() + balance;
         final boolean isPending = pending != 0 && balance != pending;
+
+        Log.i("wise", "balance = " + balance + ", converted = " + CryptoFormatUtils.satoshiToBtc(balance));
+        Log.i("wise", "pending = " + pending + ", converted = " + CryptoFormatUtils.satoshiToBtc(pending));
 
         holder.imagePending.setVisibility(isPending ? View.VISIBLE : View.GONE);
         holder.equals.setText(isPending && pending > 0 ? CryptoFormatUtils.satoshiToUsd(pending) + "$" : "0.0$" );

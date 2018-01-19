@@ -7,9 +7,12 @@
 package io.multy.model.entities;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 public class DeviceId extends RealmObject {
 
+    @PrimaryKey
+    private int index = 0;
     private String deviceId;
 
     public DeviceId() {

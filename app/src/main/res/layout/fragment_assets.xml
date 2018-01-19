@@ -15,6 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/background_main"
+        app:layout_behavior="io.multy.util.IdleAbleAppBarLayoutBehaviour"
         app:elevation="0dp">
 
         <android.support.constraint.ConstraintLayout
@@ -189,6 +190,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
+        android:overScrollMode="never"
         android:layout_marginTop="6dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layout_constraintBottom_toBottomOf="parent"

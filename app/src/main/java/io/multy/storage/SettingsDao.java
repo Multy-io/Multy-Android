@@ -77,6 +77,18 @@ public class SettingsDao {
         realm.executeTransaction(realm -> realm.insertOrUpdate(exchangePrice));
     }
 
+    public void setUserId(UserId userId) {
+        realm.executeTransaction(realm -> realm.insertOrUpdate(userId));
+    }
+
+    public void setByteSeed(ByteSeed byteSeed) {
+        realm.executeTransaction(realm -> realm.insertOrUpdate(byteSeed));
+    }
+
+    public ByteSeed getByteSeed() {
+        return realm.where(ByteSeed.class).findFirst();
+    }
+
     public ExchangePrice getExchangePrice() {
         ExchangePrice exchangePrice = realm.where(ExchangePrice.class).findFirst();
         if (exchangePrice == null) {

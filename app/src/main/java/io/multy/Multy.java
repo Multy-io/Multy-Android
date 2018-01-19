@@ -51,17 +51,7 @@ public class Multy extends Application {
 
         context = getApplicationContext();
 
-        if (Prefs.getString(Constants.PREF_IV, "").equals("")) {
-            try {
-                byte[] iv = AesCbcWithIntegrity.generateIv();
-                String vector = new String(Base64.encode(iv, Base64.NO_WRAP));
-                Prefs.putString(Constants.PREF_IV, vector);
-            } catch (GeneralSecurityException e) {
-                e.printStackTrace();
-            }
-        }
-
-        if (Prefs.contains(Constants.PREF_VERSION)) {
+        if (!Prefs.contains(Constants.PREF_VERSION)) {
             PackageInfo pInfo = null;
             try {
                 pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
@@ -70,11 +60,6 @@ public class Multy extends Application {
             } catch (PackageManager.NameNotFoundException e) {
                 e.printStackTrace();
             }
-        }
-
-        final String counter = SecurePreferencesHelper.getString(this, Constants.PIN_COUNTER);
-        if (counter.equals("")) {
-            SecurePreferencesHelper.putString(this, Constants.PIN_COUNTER, String.valueOf(6));
         }
 
         Foreground.Companion.init(this);
@@ -90,6 +75,16 @@ public class Multy extends Application {
      * only after generating key we can access the DB
      */
     public static void makeInitialized() {
+        if (!Prefs.contains(Constants.PREF_IV)) {
+            try {
+                byte[] iv = AesCbcWithIntegrity.generateIv();
+                String vector = new String(Base64.encode(iv, Base64.NO_WRAP));
+                Prefs.putString(Constants.PREF_IV, vector);
+            } catch (GeneralSecurityException e) {
+                e.printStackTrace();
+            }
+        }
+
         Prefs.putBoolean(Constants.PREF_APP_INITIALIZED, true);
         try {
             String key = new String(Base64.encode(EntropyProvider.generateKey(512), Base64.NO_WRAP));

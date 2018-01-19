@@ -16,10 +16,17 @@ public class CryptoFormatUtils {
     private final static DecimalFormat formatUsd = new DecimalFormat("#.##");
 
     public static String satoshiToBtc(double satoshi) {
+        if (satoshi == 0) {
+            return "0.0";
+        }
         return formatBtc.format(satoshi / Math.pow(10, 8));
     }
 
     public static String satoshiToUsd(double satoshi) {
+        if (satoshi == 0) {
+            return "0.0";
+        }
+
         double btc = satoshi / Math.pow(10, 8);
         double fiat = RealmManager.getSettingsDao().getCurrenciesRate().getBtcToUsd() * btc;
         return formatUsd.format(fiat);
@@ -31,6 +38,9 @@ public class CryptoFormatUtils {
      * @return amount in usd
      */
     public static String satoshiToUsd(double satoshi, double price) {
+        if (satoshi == 0) {
+            return "0.0";
+        }
         double btc = (satoshi / Math.pow(10, 8));
         return formatUsd.format(btc * price);
     }

@@ -67,8 +67,8 @@ public class AddressesAdapter extends RecyclerView.Adapter<AddressesAdapter.Hold
 
         void bind(final WalletAddress address) {
             textAddress.setText(address.getAddress());
-            textAmount.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(address.getAmount())));
-            textDate.setText(DateHelper.DATE_FORMAT_ADDRESSES.format(new Date(address.getDate())));
+            textAmount.setText(String.format("%s / %s$", String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(address.getAmount())), CryptoFormatUtils.satoshiToUsd(address.getAmount())));
+            textDate.setText(DateHelper.DATE_FORMAT_ADDRESSES.format(new Date(address.getDate() * 1000L)));
 //            textName.setText(wallet.getName());
 //            textBalanceOriginal.setText(wallet.getBalanceWithCode());
 //            textBalanceUsd.setText(wallet.getBalanceWithCode());
