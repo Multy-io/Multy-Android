@@ -15,6 +15,7 @@ import io.multy.model.entities.RootKey;
 import io.multy.model.entities.Token;
 import io.multy.model.entities.UserId;
 import io.reactivex.annotations.NonNull;
+import io.reactivex.annotations.Nullable;
 import io.realm.Realm;
 
 public class SettingsDao {
@@ -101,12 +102,9 @@ public class SettingsDao {
         realm.executeTransaction(realm -> realm.insertOrUpdate(currenciesRate));
     }
 
+    @Nullable
     public CurrenciesRate getCurrenciesRate() {
         CurrenciesRate currenciesRate = realm.where(CurrenciesRate.class).findFirst();
-        if (currenciesRate == null) {
-            currenciesRate = new CurrenciesRate();
-            currenciesRate.setBtcToUsd(15000.00);
-        }
         return currenciesRate;
     }
 }

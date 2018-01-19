@@ -2,7 +2,6 @@ package io.multy.ui.adapters;
 
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,15 +48,22 @@ public class WalletsAdapter extends RecyclerView.Adapter<WalletsAdapter.Holder> 
         holder.name.setText(data.get(position).getName());
 
         double balance = data.get(position).getBalance();
-        double pending = data.get(position).getPendingBalance() + balance;
-        final boolean isPending = pending != 0 && balance != pending;
+        double pending = data.get(position).getPendingBalance();
+        final boolean isPending = pending != 0;
+        final boolean isIncoming = isPending && pending > balance;
+        final String fiatAmount;
 
-        Log.i("wise", "balance = " + balance + ", converted = " + CryptoFormatUtils.satoshiToBtc(balance));
-        Log.i("wise", "pending = " + pending + ", converted = " + CryptoFormatUtils.satoshiToBtc(pending));
+        if (isPending) {
+            holder.amount.setText(CryptoFormatUtils.satoshiToBtc(pending + balance));
+            fiatAmount = CryptoFormatUtils.satoshiToUsd(balance);
+            holder.equals.setText(fiatAmount.equals("") ? "" : String.format("%s$", CryptoFormatUtils.satoshiToUsd(pending + balance)));
+        } else {
+            holder.amount.setText(CryptoFormatUtils.satoshiToBtc(balance));
+            fiatAmount = CryptoFormatUtils.satoshiToUsd(balance);
+            holder.equals.setText(fiatAmount.equals("") ? "" : String.format("%s$", CryptoFormatUtils.satoshiToUsd(balance)));
+        }
 
         holder.imagePending.setVisibility(isPending ? View.VISIBLE : View.GONE);
-        holder.equals.setText(isPending && pending > 0 ? CryptoFormatUtils.satoshiToUsd(pending) + "$" : "0.0$" );
-        holder.amount.setText(pending != 0 ? CryptoFormatUtils.satoshiToBtc(pending) : String.valueOf(pending));
         holder.currency.setText(String.valueOf(NativeDataHelper.Currency.values()[data.get(position).getCurrency()]));
         holder.imageChain.setImageResource(chain == NativeDataHelper.Currency.BTC ? R.drawable.ic_btc_huge : R.drawable.ic_eth_medium_icon);
         holder.itemView.setOnClickListener(view -> {

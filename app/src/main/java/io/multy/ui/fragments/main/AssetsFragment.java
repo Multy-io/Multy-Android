@@ -119,9 +119,11 @@ public class AssetsFragment extends BaseFragment {
             groupWalletsList.setVisibility(View.GONE);
             containerCreateRestore.setVisibility(View.VISIBLE);
             buttonWarn.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.GONE);
         } else {
             initList();
             updateWallets();
+            recyclerView.setVisibility(View.VISIBLE);
             buttonWarn.setVisibility(Prefs.getBoolean(Constants.PREF_BACKUP_SEED) ? View.GONE : View.VISIBLE);
             groupWalletsList.setVisibility(View.VISIBLE);
             containerCreateRestore.setVisibility(View.GONE);
@@ -144,9 +146,11 @@ public class AssetsFragment extends BaseFragment {
                         if (realmResults != null && realmResults.size() > 0) {
                             walletsAdapter.setData(realmResults);
                             groupCreateDescription.setVisibility(View.GONE);
+                            recyclerView.setVisibility(View.VISIBLE);
                         } else {
                             walletsAdapter.setData(new ArrayList<>());
                             groupCreateDescription.setVisibility(View.VISIBLE);
+                            recyclerView.setVisibility(View.GONE);
                         }
                     }
                 }

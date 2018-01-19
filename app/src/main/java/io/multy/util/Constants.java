@@ -67,7 +67,7 @@ public class Constants {
     public static final int TX_MEMPOOL_INCOMING = 1;
     public static final int TX_MEMPOOL_OUTCOMING = 3;
     public static final int TX_IN_BLOCK_INCOMING = 2;
-    public static final int TX_IN_BLOCK_OUTCMOING = 4;
+    public static final int TX_IN_BLOCK_OUTCOMING = 4;
     public static final int TX_CONFIRMED_INCOMING = 5;
     public static final int TX_CONFIRMED_OUTCOMING = 6;
 }

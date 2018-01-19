@@ -104,7 +104,7 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
 
         viewModel = ViewModelProviders.of(getActivity()).get(WalletViewModel.class);
         setBaseViewModel(viewModel);
-        viewModel.rates.observe(this, currenciesRate -> updateBalanceViews(currenciesRate));
+        viewModel.rates.observe(this, currenciesRate -> updateBalanceViews());
         viewModel.transactionUpdate.observe(this, transactionUpdateEntity -> {
             refreshWallet();
         });
@@ -219,10 +219,10 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
             textAddress.setText(wallet.getCreationAddress());
         }
 
-        updateBalanceViews(null);
+        updateBalanceViews();
     }
 
-    private void updateBalanceViews(CurrenciesRate rate) {
+    private void updateBalanceViews() {
         WalletRealmObject wallet = viewModel.getWalletLive().getValue();
         double balance = wallet.getBalance();
         double pending = wallet.getPendingBalance() + balance;
@@ -233,7 +233,9 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
 
         final double formatBalance = balance / Math.pow(10, 8);
         final double formatPending = pending / Math.pow(10, 8);
-        final double exchangePrice = rate == null ? RealmManager.getSettingsDao().getCurrenciesRate().getBtcToUsd() : rate.getBtcToUsd();
+
+        final CurrenciesRate currenciesRate = RealmManager.getSettingsDao().getCurrenciesRate();
+        final double exchangePrice = currenciesRate != null ? currenciesRate.getBtcToUsd() : 0;
 
         textAvailableFiat.setText(balance == 0 ? "0.0$" : format.format(exchangePrice * formatBalance) + "$");
         textBalanceFiat.setText(pending == 0 ? "0.0$" : format.format(exchangePrice * formatPending) + "$");

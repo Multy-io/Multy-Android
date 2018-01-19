@@ -88,6 +88,7 @@ public class SocketManager {
                     .on(Socket.EVENT_DISCONNECT, args -> log("Disconnected"))
                     .on(EVENT_RECEIVE, args -> {
                         try {
+                            Log.i("wise", "UPDATE " + String.valueOf(args[0]));
                             transactionUpdateEntity.postValue(gson.fromJson(String.valueOf(args[0]), TransactionUpdateResponse.class).getEntity());
                         } catch (Exception e) {
                             e.printStackTrace();

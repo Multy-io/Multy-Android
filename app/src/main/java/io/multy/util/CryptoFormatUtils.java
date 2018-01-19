@@ -8,6 +8,7 @@ package io.multy.util;
 
 import java.text.DecimalFormat;
 
+import io.multy.api.socket.CurrenciesRate;
 import io.multy.storage.RealmManager;
 
 public class CryptoFormatUtils {
@@ -27,8 +28,13 @@ public class CryptoFormatUtils {
             return "0.0";
         }
 
+        final CurrenciesRate currenciesRate = RealmManager.getSettingsDao().getCurrenciesRate();
+        if (currenciesRate == null) {
+            return "";
+        }
+
         double btc = satoshi / Math.pow(10, 8);
-        double fiat = RealmManager.getSettingsDao().getCurrenciesRate().getBtcToUsd() * btc;
+        double fiat = currenciesRate.getBtcToUsd() * btc;
         return formatUsd.format(fiat);
     }
 
@@ -41,6 +47,12 @@ public class CryptoFormatUtils {
         if (satoshi == 0) {
             return "0.0";
         }
+
+        final CurrenciesRate currenciesRate = RealmManager.getSettingsDao().getCurrenciesRate();
+        if (currenciesRate == null) {
+            return "";
+        }
+
         double btc = (satoshi / Math.pow(10, 8));
         return formatUsd.format(btc * price);
     }

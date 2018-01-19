@@ -61,7 +61,7 @@ public class WalletRealmObject extends RealmObject {
                         case Constants.TX_IN_BLOCK_INCOMING:
                             calculatedBalance += Double.valueOf(output.getTxOutAmount());
                             break;
-                        case Constants.TX_IN_BLOCK_OUTCMOING:
+                        case Constants.TX_IN_BLOCK_OUTCOMING:
                             calculatedBalance -= Double.valueOf(output.getTxOutAmount());
                             break;
                         case Constants.TX_CONFIRMED_INCOMING:
