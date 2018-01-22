@@ -86,4 +86,12 @@
     <dimen name="amount_size_huge">42sp</dimen>
     <dimen name="tab_layout_height">56dp</dimen>
 
+    <dimen name="text_size_medium">16sp</dimen>
+    <dimen name="text_size_title">18sp</dimen>
+    <dimen name="entrance_settings_container_height">64dp</dimen>
+    <dimen name="entrance_settings_text_height">63dp</dimen>
+    <dimen name="entrance_settings_text_margin">72dp</dimen>
+    <dimen name="settings_warning_height">60dp</dimen>
+    <dimen name="entrance_settings_container_margin_top">20dp</dimen>
+
 </resources>
