@@ -70,4 +70,6 @@ public class Constants {
     public static final int TX_IN_BLOCK_OUTCOMING = 4;
     public static final int TX_CONFIRMED_INCOMING = 5;
     public static final int TX_CONFIRMED_OUTCOMING = 6;
+
+    public static final int REQUEST_CODE_RESTORE = 22;
 }

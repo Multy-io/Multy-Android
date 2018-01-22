@@ -55,7 +55,7 @@ public class WalletsAdapter extends RecyclerView.Adapter<WalletsAdapter.Holder> 
 
         if (isPending) {
             holder.amount.setText(CryptoFormatUtils.satoshiToBtc(pending + balance));
-            fiatAmount = CryptoFormatUtils.satoshiToUsd(balance);
+            fiatAmount = CryptoFormatUtils.satoshiToUsd(pending + balance);
             holder.equals.setText(fiatAmount.equals("") ? "" : String.format("%s$", CryptoFormatUtils.satoshiToUsd(pending + balance)));
         } else {
             holder.amount.setText(CryptoFormatUtils.satoshiToBtc(balance));
@@ -64,7 +64,9 @@ public class WalletsAdapter extends RecyclerView.Adapter<WalletsAdapter.Holder> 
         }
 
         holder.imagePending.setVisibility(isPending ? View.VISIBLE : View.GONE);
+
         holder.currency.setText(String.valueOf(NativeDataHelper.Currency.values()[data.get(position).getCurrency()]));
+
         holder.imageChain.setImageResource(chain == NativeDataHelper.Currency.BTC ? R.drawable.ic_btc_huge : R.drawable.ic_eth_medium_icon);
         holder.itemView.setOnClickListener(view -> {
             Intent intent = new Intent(view.getContext(), AssetActivity.class);

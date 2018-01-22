@@ -6,6 +6,7 @@
 
 package io.multy.ui.fragments.seed;
 
+import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -63,12 +64,14 @@ public class SeedResultFragment extends BaseSeedFragment {
             buttonNext.setText(R.string.try_again);
             imageViewResult.setImageResource(R.drawable.ic_fail);
             textViewTitle.setText(R.string.seed_result_fail);
+            getActivity().setResult(Activity.RESULT_CANCELED);
         } else {
             if (getActivity().getIntent().hasCategory(Constants.EXTRA_RESTORE)) {
                 textViewTitle.setText(R.string.seed_congrats_restore);
                 if (!Prefs.getBoolean(Constants.PREF_BACKUP_SEED)) {
                     Prefs.putBoolean(Constants.PREF_BACKUP_SEED, true);
                 }
+                getActivity().setResult(Activity.RESULT_OK);
             }
 
             setBrickColor(BRICK_GREEN);

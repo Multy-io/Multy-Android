@@ -6,6 +6,7 @@
 
 package io.multy.ui.fragments.main;
 
+import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
@@ -78,9 +79,12 @@ public class AssetsFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_assets, container, false);
         ButterKnife.bind(this, view);
-
         viewModel = ViewModelProviders.of(getActivity()).get(AssetsViewModel.class);
+        initialize();
+        return view;
+    }
 
+    private void initialize() {
         if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
             if (RealmManager.getSettingsDao().getUserId() != null) {
                 viewModel.rates.observe(this, currenciesRate -> {
@@ -97,7 +101,6 @@ public class AssetsFragment extends BaseFragment {
             }
         }
         appBarLayout.post(() -> disableAppBarScrolling());
-        return view;
     }
 
     private void disableAppBarScrolling() {
@@ -225,11 +228,20 @@ public class AssetsFragment extends BaseFragment {
 
     @OnClick(R.id.button_restore)
     void onClickRestore() {
-        startActivity(new Intent(getActivity(), SeedActivity.class).addCategory(Constants.EXTRA_RESTORE));
+        startActivityForResult(new Intent(getActivity(), SeedActivity.class).addCategory(Constants.EXTRA_RESTORE), Constants.REQUEST_CODE_RESTORE);
     }
 
     @OnClick(R.id.button_warn)
     void onClickWarn() {
         startActivity(new Intent(getActivity(), SeedActivity.class));
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == Constants.REQUEST_CODE_RESTORE && resultCode == Activity.RESULT_OK) {
+            checkViewsVisibility();
+            initialize();
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

@@ -248,6 +248,7 @@ public class SeedValidationFragment extends BaseSeedFragment {
                         SettingsDao settingsDao = RealmManager.getSettingsDao();
                         settingsDao.setUserId(new UserId(userId));
                         settingsDao.setByteSeed(new ByteSeed(seed));
+                        Prefs.putString(Constants.PREF_AUTH, response.body().getToken());
                         seedModel.isLoading.setValue(false);
                         seedModel.failed.setValue(false);
                         callback.run();

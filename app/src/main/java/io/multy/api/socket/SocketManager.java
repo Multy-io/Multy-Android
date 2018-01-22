@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import io.multy.model.DataManager;
+import io.multy.storage.RealmManager;
 import io.multy.util.Constants;
 import io.socket.client.IO;
 import io.socket.client.Manager;
@@ -63,6 +63,10 @@ public class SocketManager {
             options.transports = new String[]{WebSocket.NAME};
             options.path = "/socket.io";
 
+            final String userId = RealmManager.getSettingsDao().getUserId().getUserId();
+
+            Log.i(TAG, "auth header " + Prefs.getString(Constants.PREF_AUTH));
+            Log.i(TAG, "userId " + userId);
 
             socket = IO.socket(SOCKET_URL, options);
             socket.io().on(Manager.EVENT_TRANSPORT, args -> {
@@ -70,10 +74,9 @@ public class SocketManager {
                 transport.on(Transport.EVENT_REQUEST_HEADERS, args1 -> {
                     @SuppressWarnings("unchecked")
                     Map<String, List<String>> headers = (Map<String, List<String>>) args1[0];
-                    DataManager dataManager = DataManager.getInstance();
                     headers.put(HEADER_AUTH, Arrays.asList(Prefs.getString(Constants.PREF_AUTH)));
                     headers.put(HEADER_DEVICE_TYPE, Arrays.asList(DEVICE_TYPE));
-                    headers.put(HEADER_USER_ID, Arrays.asList(dataManager.getUserId().getUserId()));
+                    headers.put(HEADER_USER_ID, Arrays.asList(userId));
                 });
             });
 
