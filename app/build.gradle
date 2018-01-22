@@ -52,7 +52,7 @@ android {
         }
         externalNativeBuild {
             cmake {
-                path "C:\\workspace\\Multy-Core\\CMakeLists.txt"
+                path "/Users/vadimicus/work/CppProjects/Multy-Core/CMakeLists.txt"
             }
         }
     }
