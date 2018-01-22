@@ -6,7 +6,6 @@
 
 package io.multy.ui.activities;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -14,8 +13,11 @@ import android.view.WindowManager;
 
 import butterknife.ButterKnife;
 import io.multy.R;
+import io.multy.ui.fragments.BaseSeedFragment;
 import io.multy.ui.fragments.seed.HelloSeedFragment;
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+import io.multy.ui.fragments.seed.SeedValidationFragment;
+import io.multy.util.Constants;
+
 
 public class SeedActivity extends AppCompatActivity {
 
@@ -26,14 +28,17 @@ public class SeedActivity extends AppCompatActivity {
         setContentView(R.layout.activity_seed);
         ButterKnife.bind(this);
 
-        getSupportFragmentManager()
-                .beginTransaction()
-                .add(R.id.container, new HelloSeedFragment(), HelloSeedFragment.class.getSimpleName())
-                .commit();
+        if (getIntent().hasCategory(Constants.EXTRA_RESTORE)) {
+            setFragment(new SeedValidationFragment());
+        } else {
+            setFragment(new HelloSeedFragment());
+        }
     }
 
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    private void setFragment(BaseSeedFragment fragment){
+        getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.container, fragment, fragment.getClass().getSimpleName())
+                .commit();
     }
 }

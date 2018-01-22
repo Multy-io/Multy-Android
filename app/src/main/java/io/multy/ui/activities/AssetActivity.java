@@ -12,24 +12,23 @@ import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.widget.Toast;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
-import io.multy.model.DataManager;
 import io.multy.model.entities.wallet.WalletRealmObject;
+import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.asset.AssetInfoFragment;
 import io.multy.util.Constants;
-import io.multy.viewmodels.AssetSendViewModel;
-import io.multy.viewmodels.AssetsViewModel;
+import io.multy.viewmodels.WalletViewModel;
 
 public class AssetActivity extends BaseActivity {
 
     private boolean isFirstFragmentCreation;
 
-    private WalletRealmObject walletRealmObject;
+    private WalletRealmObject wallet;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -38,7 +37,7 @@ public class AssetActivity extends BaseActivity {
         ButterKnife.bind(this);
         isFirstFragmentCreation = true;
 
-//        walletRealmObject = new DataManager(this).getWalletLive(getIntent().getExtras().getInt(Constants.EXTRA_WALLET_ID, 0));
+        wallet = RealmManager.getAssetsDao().getWalletById(getIntent().getExtras().getInt(Constants.EXTRA_WALLET_ID, 0));
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
@@ -49,30 +48,33 @@ public class AssetActivity extends BaseActivity {
 
     @Override
     protected void onDestroy() {
-        ViewModelProviders.of(this).get(AssetsViewModel.class).destroy();
+        ViewModelProviders.of(this).get(WalletViewModel.class).destroy();
         super.onDestroy();
     }
 
     @OnClick(R.id.send)
     void onClickSend() {
-        startActivity(new Intent(this, AssetSendActivity.class));
+        if (wallet != null && wallet.getAddresses().size() > 0) {
+            String address = wallet.getAddresses().get(wallet.getAddresses().size() - 1).getAddress();
+        }
+
+        startActivity(new Intent(this, AssetSendActivity.class)
+                .addCategory(Constants.EXTRA_SENDER_ADDRESS)
+                .putExtra(Constants.EXTRA_WALLET_ID, getIntent().getIntExtra(Constants.EXTRA_WALLET_ID, 0)));
     }
 
     @OnClick(R.id.receive)
     void onClickReceive() {
-        startActivity(new Intent(this, AssetRequestActivity.class));
+        startActivity(new Intent(this, AssetRequestActivity.class)
+                .putExtra(Constants.EXTRA_WALLET_ID, getIntent().getIntExtra(Constants.EXTRA_WALLET_ID, 0)));
     }
 
     @OnClick(R.id.exchange)
     void onClickExchange() {
-        startActivity(new Intent(this, AssetSendActivity.class));
+        Toast.makeText(this, R.string.not_implemented, Toast.LENGTH_SHORT).show();
     }
 
-    public WalletRealmObject getWalletRealmObject() {
-        return walletRealmObject;
-    }
-
-    public void setFragment(@IdRes int container, Fragment fragment){
+    public void setFragment(@IdRes int container, Fragment fragment) {
         FragmentTransaction transaction = getSupportFragmentManager()
                 .beginTransaction()
                 .replace(container, fragment);
@@ -82,7 +84,8 @@ public class AssetActivity extends BaseActivity {
         }
 
         isFirstFragmentCreation = false;
-
         transaction.commit();
     }
+
+
 }

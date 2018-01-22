@@ -11,20 +11,27 @@
     <color name="gray">#FF516874</color>
     <color name="gray_dark">#363636</color>
     <color name="gray_light">#EFEFF4</color>
-    <color name="green">#5FCC7D</color>
+    <color name="gray_divider">#7887a1c5</color>
+    <color name="green">#4CAF50</color>
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
     <color name="red">#F44336</color>
     <color name="blue_light">#87a1c5</color>
     <color name="blue">#007aff</color>
-
-    <color name="grey_divider">#afafaf</color>
+    <color name="red_warn">#eb153b</color>
+    <color name="color_gray_status">#515a67</color>
 
     <color name="disabled">#D1D1D6</color>
     <color name="background_main">#F9FAFF</color>
     <color name="gradient_blue_start">#00b2ff</color>
     <color name="gradient_blue_center">#008FFF</color>
     <color name="gradient_blue_end">#007aff</color>
+    <color name="blue_light_bright">#72c8ff</color>
+    <color name="blue_dark">#007dff</color>
     <color name="gray_middle">#55a6b1c6</color>
     <color name="orange">#ff9500</color>
+    <color name="gray_light_transparent">#6687a1c5</color>
+    <color name="pink">#f94877</color>
 
     <color name="primary_dark_opacity10">#19007aff</color>
 
@@ -33,6 +40,8 @@
     <color name="text_grey">#87a1c5</color>
     <color name="text_grey_transparent_50">#7d87a1c5</color>
     <color name="grey_light">#e5e5e5</color>
-
+    <color name="white_transparent">#66FFFFFF</color>
     <color name="blue_transparent">#b3007aff</color>
+    <color name="blue_lightest">#e6ecf3</color>
+
 </resources>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2017 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraint_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="16dp">
+
+    <ImageView
+        android:id="@+id/image_rejected_direction"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:src="@drawable/ic_receive_gray"
+        app:layout_constraintBottom_toBottomOf="@+id/text_rejected"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/text_address" />
+
+    <TextView
+        android:id="@+id/text_address"
+        style="@style/BlackMediumText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="16dp"
+        android:ellipsize="end"
+        android:fontFamily="@font/montserrat"
+        android:maxLines="1"
+        android:textColor="@color/blue_light"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toStartOf="@+id/text_amount"
+        app:layout_constraintStart_toEndOf="@+id/image_rejected_direction"
+        tools:text="3DA28W4 ∙ ∙ ∙ ∙ XJSP9L" />
+
+    <ImageView
+        android:id="@+id/image_rejected"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:src="@drawable/ic_warning_rejected"
+        app:layout_constraintBottom_toBottomOf="@id/text_rejected"
+        app:layout_constraintStart_toStartOf="@+id/text_address"
+        app:layout_constraintTop_toBottomOf="@+id/text_address"
+        app:layout_constraintTop_toTopOf="@id/text_rejected" />
+
+    <TextView
+        android:id="@+id/text_rejected"
+        style="@style/TransactionTextBlue"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="6dp"
+        android:fontFamily="@font/montserrat"
+        android:maxLines="1"
+        android:text="@string/rejected_receive"
+        android:textColor="@color/pink"
+        android:textSize="12sp"
+        app:layout_constraintStart_toEndOf="@+id/image_rejected"
+        app:layout_constraintTop_toBottomOf="@+id/text_address" />
+
+    <TextView
+        android:id="@+id/text_amount"
+        style="@style/BlackMediumText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:layout_marginStart="8dp"
+        android:fontFamily="@font/montserrat"
+        android:maxLines="1"
+        android:textAlignment="textEnd"
+        android:textColor="#363636"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/text_address"
+        tools:text="0.052509 BTC" />
+
+    <TextView
+        android:id="@+id/text_fiat"
+        style="@style/TransactionTextBlue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textAlignment="textEnd"
+        app:layout_constraintEnd_toEndOf="@+id/text_amount"
+        app:layout_constraintTop_toBottomOf="@+id/text_amount"
+        app:layout_constraintTop_toTopOf="@id/text_rejected"
+        tools:text="200.34 USD" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        android:background="@color/gray_light_transparent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/text_address"
+        app:layout_constraintTop_toBottomOf="@id/text_rejected" />
+
+</android.support.constraint.ConstraintLayout>

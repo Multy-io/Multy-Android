@@ -1,69 +1,53 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2017 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/constraint_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:layout_editor_absoluteY="25dp">
-
-    <TextView
-        android:id="@+id/text_date"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="24dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="16dp"
-        android:fontFamily="@font/montserrat"
-        android:text="Today"
-        android:textColor="#9ca7ab"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Today" />
+    android:paddingTop="16dp">
 
     <ImageView
         android:id="@+id/image_operation"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
-        android:scaleType="centerInside"
-        app:layout_constraintBottom_toBottomOf="@+id/text_description"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:src="@drawable/ic_send"
+        app:layout_constraintBottom_toBottomOf="@+id/text_date"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_date"
-        app:srcCompat="@drawable/ic_send" />
+        app:layout_constraintTop_toTopOf="@id/container_addresses" />
 
-    <TextView
-        android:id="@+id/text_name"
-        style="@style/BlackMediumText"
+    <LinearLayout
+        android:id="@+id/container_addresses"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="21dp"
-        android:layout_marginTop="27dp"
-        android:fontFamily="@font/montserrat"
-        android:maxLines="1"
-        android:text="3DA28W ∙ ∙ ∙ ∙ XJSP9L "
-        android:textColor="#363636"
-        android:textSize="14sp"
-        app:layout_constraintStart_toEndOf="@+id/image_operation"
-        app:layout_constraintTop_toBottomOf="@+id/text_date" />
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="16dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toStartOf="@+id/text_amount"
+        app:layout_constraintStart_toEndOf="@+id/image_operation">
+
+    </LinearLayout>
 
     <TextView
-        android:id="@+id/text_description"
+        android:id="@+id/text_date"
         style="@style/TransactionTextBlue"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
         android:fontFamily="@font/montserrat"
         android:maxLines="1"
-        android:text="18:30"
-        android:textColor="#87a1c5"
+        android:textColor="@color/blue_light"
         android:textSize="12sp"
-        app:layout_constraintStart_toStartOf="@+id/text_name"
-        app:layout_constraintTop_toBottomOf="@+id/text_name" />
+        app:layout_constraintStart_toStartOf="@+id/container_addresses"
+        app:layout_constraintTop_toBottomOf="@+id/container_addresses"
+        tools:text="16 january 2018 14:00" />
 
     <TextView
         android:id="@+id/text_amount"
@@ -74,55 +58,33 @@
         android:layout_marginStart="8dp"
         android:fontFamily="@font/montserrat"
         android:maxLines="1"
-        android:text="0.052509 BTC"
         android:textAlignment="textEnd"
         android:textColor="#363636"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/text_name"
-        app:layout_constraintTop_toTopOf="@+id/text_name"
+        app:layout_constraintTop_toTopOf="@+id/container_addresses"
         tools:text="0.052509 BTC" />
 
     <TextView
-        android:id="@+id/text_time"
+        android:id="@+id/text_fiat"
         style="@style/TransactionTextBlue"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="200.34 USD"
         android:textAlignment="textEnd"
         app:layout_constraintEnd_toEndOf="@+id/text_amount"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/text_description"
-        app:layout_constraintTop_toBottomOf="@+id/text_amount" />
-
-    <TextView
-        android:id="@+id/text_comment"
-        style="@style/TransactionTextBlue"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="24dp"
-        android:layout_marginTop="6dp"
-        android:fontFamily="@font/montserrat"
-        android:maxLines="1"
-        android:text="From SuperHero with Best wishes!"
-        android:textColor="#87a1c5"
-        android:textSize="12sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/text_description"
-        app:layout_constraintTop_toBottomOf="@+id/text_description"
-        tools:text="From SuperHero with Best wishes!" />
+        app:layout_constraintTop_toBottomOf="@+id/text_amount"
+        app:layout_constraintTop_toTopOf="@id/text_date"
+        tools:text="200.34 USD" />
 
     <View
-        android:id="@+id/devider"
+        android:id="@+id/divider"
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:layout_marginTop="18dp"
-        android:background="#e0e3ea"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="16dp"
+        android:background="@color/gray_light_transparent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/text_description"
-        app:layout_constraintTop_toBottomOf="@+id/text_comment" />
+        app:layout_constraintStart_toStartOf="@+id/container_addresses"
+        app:layout_constraintTop_toBottomOf="@id/text_date" />
 
 </android.support.constraint.ConstraintLayout>

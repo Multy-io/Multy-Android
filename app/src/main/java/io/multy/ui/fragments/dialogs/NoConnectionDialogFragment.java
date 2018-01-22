@@ -1,0 +1,64 @@
+/*
+ * Copyright 2017 Idealnaya rabota LLC
+ * Licensed under Multy.io license.
+ * See LICENSE for details
+ */
+
+package io.multy.ui.fragments.dialogs;
+
+
+import android.app.Dialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import io.multy.R;
+import io.multy.util.NetworkUtils;
+
+public class NoConnectionDialogFragment extends DialogFragment {
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        Dialog dialog = super.onCreateDialog(savedInstanceState);
+        dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        return dialog;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.dialog_no_internet, container, false);
+        ButterKnife.bind(this, view);
+        return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Dialog dialog = getDialog();
+        if (dialog != null) {
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+    }
+
+    @OnClick(R.id.button_try_again)
+    public void onClickCheckConnection() {
+        if (NetworkUtils.isConnected(getContext())) {
+            dismiss();
+        } else {
+            SimpleDialogFragment dialog = SimpleDialogFragment.newInstanceNegative(R.string.check_internet_connection,
+                    R.string.no_connection, null);
+            dialog.show(getFragmentManager(), "");
+            dialog.setTitleSize(18);
+        }
+    }
+}

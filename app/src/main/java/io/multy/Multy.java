@@ -1,26 +1,32 @@
 package io.multy;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.util.Base64;
 
-import com.crashlytics.android.Crashlytics;
 import com.samwolfand.oneprefs.Prefs;
+import com.tozny.crypto.android.AesCbcWithIntegrity;
 
-import java.util.UUID;
+import net.khirr.library.foreground.Foreground;
+
+import java.security.GeneralSecurityException;
+import java.security.NoSuchAlgorithmException;
 
 import io.branch.referral.Branch;
-import io.multy.model.DataManager;
-import io.multy.model.entities.ByteSeed;
-import io.multy.model.entities.DeviceId;
-import io.multy.model.entities.Mnemonic;
-import io.multy.model.entities.UserId;
+import io.multy.storage.RealmManager;
+import io.multy.storage.SecurePreferencesHelper;
+import io.multy.ui.activities.SplashActivity;
 import io.multy.util.Constants;
-import io.multy.util.JniException;
-import io.multy.util.NativeDataHelper;
+import io.multy.util.EntropyProvider;
 import io.realm.Realm;
 import timber.log.Timber;
-import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 public class Multy extends Application {
 
@@ -29,7 +35,6 @@ public class Multy extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
         Realm.init(this);
         Branch.getAutoInstance(this);
         Timber.plant(new Timber.DebugTree());
@@ -44,36 +49,82 @@ public class Multy extends Application {
                 .setDefaultStringValue("")
                 .build();
 
-        if (Prefs.getBoolean(Constants.PREF_FIRST_SUCCESSFUL_START, true)) {
+        context = getApplicationContext();
+
+        if (!Prefs.contains(Constants.PREF_VERSION)) {
+            PackageInfo pInfo = null;
             try {
-                final String mnemonic = NativeDataHelper.makeMnemonic();
-                final byte[] seed = NativeDataHelper.makeSeed(mnemonic);
-                final String userId = NativeDataHelper.makeAccountId(seed);
-                final String deviceId = UUID.randomUUID().toString();
-
-                DataManager dataManager = new DataManager(this);
-                dataManager.saveSeed(new ByteSeed(seed));
-                dataManager.saveUserId(new UserId(userId));
-                dataManager.setMnemonic(new Mnemonic(mnemonic));
-                dataManager.setDeviceId(new DeviceId(deviceId));
-
-                Prefs.putBoolean(Constants.PREF_FIRST_SUCCESSFUL_START, false);
-            } catch (JniException e) {
+                pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+                int versionCode = pInfo.versionCode;
+                Prefs.putInt(Constants.PREF_VERSION, versionCode);
+            } catch (PackageManager.NameNotFoundException e) {
                 e.printStackTrace();
-                Crashlytics.logException(e);
-                //TODO show CRITICAL EXCEPTION HERE. Can the app work without seed?
             }
         }
 
-        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                .setDefaultFontPath("montseratt_regular.ttf")
-                .setFontAttrId(R.attr.fontPath)
-                .build());
-
-        context = getApplicationContext();
+        Foreground.Companion.init(this);
     }
 
     public static Context getContext() {
         return context;
+    }
+
+    /**
+     * This method is extra dangerous and useful
+     * Generates unique new key for our DATABASE and writes it to our secure encrypted preferences
+     * only after generating key we can access the DB
+     */
+    public static void makeInitialized() {
+        if (!Prefs.contains(Constants.PREF_IV)) {
+            try {
+                byte[] iv = AesCbcWithIntegrity.generateIv();
+                String vector = new String(Base64.encode(iv, Base64.NO_WRAP));
+                Prefs.putString(Constants.PREF_IV, vector);
+            } catch (GeneralSecurityException e) {
+                e.printStackTrace();
+            }
+        }
+
+        Prefs.putBoolean(Constants.PREF_APP_INITIALIZED, true);
+        try {
+            String key = new String(Base64.encode(EntropyProvider.generateKey(512), Base64.NO_WRAP));
+            SecurePreferencesHelper.putString(getContext(), Constants.PREF_KEY, key);
+            RealmManager.open(getContext());
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void systemClear(Activity activity) {
+        try {
+            RealmManager.removeDatabase(activity);
+            Prefs.clear();
+            Multy.makeInitialized();
+            Realm.init(activity);
+        } catch (Exception exc) {
+//            System.exit(0);
+            exc.printStackTrace();
+        }
+
+        activity.startActivity(new Intent(activity, SplashActivity.class).setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY));
+        activity.finish();
+    }
+
+    public static boolean isConnected(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = connectivityManager.getActiveNetworkInfo();
+
+        if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+            android.net.NetworkInfo wifi = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            android.net.NetworkInfo mobile = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+
+            if ((mobile != null && mobile.isConnectedOrConnecting()) || (wifi != null && wifi.isConnectedOrConnecting())) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 }

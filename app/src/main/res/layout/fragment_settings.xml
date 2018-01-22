@@ -1,27 +1,175 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~  Copyright 2017 Idealnaya rabota LLC
   ~  Licensed under Multy.io license.
   ~  See LICENSE for details
   -->
 
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background_main"
     tools:showIn="io.multy.android.MainActivity">
 
     <TextView
+        android:id="@+id/text_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:text="SettingsFragment"
-        />
+        android:padding="16dp"
+        android:text="@string/settings"
+        android:textColor="@color/black"
+        android:textSize="18sp" />
 
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/container_push"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:foreground="?attr/selectableItemBackground"
+        app:layout_constraintTop_toBottomOf="@id/text_title">
+
+        <ImageView
+            android:id="@+id/image_push"
+            style="@style/ImageSettings"
+            android:src="@drawable/ic_settings_notifications"
+            app:layout_constraintBottom_toBottomOf="@id/text_push"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="@id/text_push" />
+
+        <TextView
+            android:id="@+id/text_push"
+            style="@style/TitleSettings"
+            android:text="@string/push_notifications"
+            app:layout_constraintLeft_toRightOf="@id/image_push" />
+
+        <Switch
+            android:id="@+id/switch_push"
+            style="@style/ControlSettings"
+            app:layout_constraintBottom_toBottomOf="@id/text_push"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@id/text_push" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0.5dp"
+            android:background="@color/gray_light_transparent"
+            app:layout_constraintLeft_toLeftOf="@id/text_push"
+            app:layout_constraintTop_toBottomOf="@id/text_push" />
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/container_security"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:foreground="?attr/selectableItemBackground"
+        app:layout_constraintTop_toBottomOf="@id/container_push">
+
+        <ImageView
+            android:id="@+id/image_security"
+            style="@style/ImageSettings"
+            android:src="@drawable/ic_settings_security"
+            app:layout_constraintBottom_toBottomOf="@id/text_security"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="@id/text_security" />
+
+        <TextView
+            android:id="@+id/text_security"
+            style="@style/TitleSettings"
+            android:text="@string/security_settings"
+            app:layout_constraintLeft_toRightOf="@id/image_security" />
+
+        <ImageView
+            android:id="@+id/chevron_security"
+            style="@style/ControlSettings"
+            android:src="@drawable/ic_chevron"
+            app:layout_constraintBottom_toBottomOf="@id/text_security"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@id/text_security" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0.5dp"
+            android:background="@color/gray_light_transparent"
+            app:layout_constraintLeft_toLeftOf="@id/text_security"
+            app:layout_constraintTop_toBottomOf="@id/text_security" />
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/container_about"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:foreground="?attr/selectableItemBackground"
+        app:layout_constraintTop_toBottomOf="@id/container_security">
+
+        <ImageView
+            android:id="@+id/image_about"
+            style="@style/ImageSettings"
+            android:src="@drawable/ic_settings_about"
+            app:layout_constraintBottom_toBottomOf="@id/text_about"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="@id/text_about" />
+
+        <TextView
+            android:id="@+id/text_about"
+            style="@style/TitleSettings"
+            android:text="@string/about_multy"
+            app:layout_constraintLeft_toRightOf="@id/image_about" />
+
+        <ImageView
+            android:id="@+id/chevron_about"
+            style="@style/ControlSettings"
+            android:src="@drawable/ic_chevron"
+            app:layout_constraintBottom_toBottomOf="@id/text_about"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@id/text_about" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0.5dp"
+            android:background="@color/gray_light_transparent"
+            app:layout_constraintLeft_toLeftOf="@id/text_about"
+            app:layout_constraintTop_toBottomOf="@id/text_about" />
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/container_feedback"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:foreground="?attr/selectableItemBackground"
+        app:layout_constraintTop_toBottomOf="@id/container_about">
+
+        <ImageView
+            android:id="@+id/image_feedback"
+            style="@style/ImageSettings"
+            android:src="@drawable/ic_settings_feedback"
+            app:layout_constraintBottom_toBottomOf="@id/text_feedback"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="@id/text_feedback" />
+
+        <TextView
+            android:id="@+id/text_feedback"
+            style="@style/TitleSettings"
+            android:text="@string/leave_feedback"
+            app:layout_constraintLeft_toRightOf="@id/image_feedback" />
+
+        <ImageView
+            android:id="@+id/chevron_feedback"
+            style="@style/ControlSettings"
+            android:src="@drawable/ic_chevron"
+            app:layout_constraintBottom_toBottomOf="@id/text_feedback"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@id/text_feedback" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0.5dp"
+            android:background="@color/gray_light_transparent"
+            app:layout_constraintLeft_toLeftOf="@id/text_feedback"
+            app:layout_constraintTop_toBottomOf="@id/text_feedback" />
+    </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>

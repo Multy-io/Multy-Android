@@ -18,8 +18,8 @@ public class NativeDataHelper {
     }
 
     public enum Currency {
-        BITCOIN(0),
-        ETHEREUM(1);
+        BTC(0),
+        ETH(1);
 
         private final int value;
 
@@ -51,25 +51,16 @@ public class NativeDataHelper {
 
     public static native byte[] makeSeed(String mnemonic) throws JniException;
 
-    public static native String makeAccountAddress(byte[] seed, int index, int currency) throws JniException;
+    public static native String makeAccountAddress(byte[] seed, int walletIndex, int addressIndex, int currency) throws JniException;
 
     public static native String makeAccountId(byte[] seed) throws JniException;
 
-    /**
-     * @param seed
-     * @param txHash             hash of prev. transaction. should be given from api
-     * @param txPubKey           should be given from api
-     * @param txOutIndex         should be given from api
-     * @param sum                all sum which is now on address
-     * @param amount             amount to spend
-     * @param fee
-     * @param destinationAddress where money should arrive
-     * @param sendAddress        from which address money should depart
-     * @return hex of transaction
-     * @throws JniException
-     */
-    public static native byte[] makeTransaction(byte[] seed, String txHash, String txPubKey, int txOutIndex, String sum, String amount, String fee, String destinationAddress, String sendAddress) throws JniException;
+    public static native byte[] makeTransaction(
+            byte[] seed, String[] amounts, String[] scriptPubKeys,
+            String[] hashes, int[] outIds, String donateAmount, String fee, String destinationAddress, String amountToSpend) throws JniException;
 
     public static native int runTest();
+
+    public static native byte[] makeTransaction(byte[] seed, int walletIndex, String amountToSpend, String feePerByte, String donationAmount, String destinationAddress);
 
 }

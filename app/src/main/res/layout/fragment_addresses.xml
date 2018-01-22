@@ -24,15 +24,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <FrameLayout
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/button_back"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:src="@drawable/ic_back" />
 
             <TextView
                 android:id="@+id/text_title"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left|center_vertical|start"
+                android:layout_height="match_parent"
                 android:fontFamily="@font/montserrat"
                 android:gravity="center"
                 android:paddingEnd="16dp"
@@ -43,25 +50,9 @@
                 android:textAlignment="center"
                 android:textColor="#000000"
                 android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/text_cancel"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="right|center_vertical|end"
-                android:background="?android:attr/selectableItemBackground"
-                android:fontFamily="@font/montserrat"
-                android:gravity="center"
-                android:paddingEnd="16dp"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:paddingStart="16dp"
-                android:text="@string/cancel"
-                android:textColor="#FF000000"
-                android:textSize="16sp" />
-
-        </FrameLayout>
+                android:textStyle="bold"
+                app:layout_constraintLeft_toRightOf="@id/button_back" />
+        </android.support.constraint.ConstraintLayout>
     </android.support.v7.widget.Toolbar>
 
     <TextView
@@ -83,9 +74,9 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-        app:layout_constraintTop_toBottomOf="@id/label"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@id/label" />
 
 </android.support.constraint.ConstraintLayout>

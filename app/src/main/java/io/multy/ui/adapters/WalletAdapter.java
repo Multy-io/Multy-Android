@@ -14,34 +14,24 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.multy.R;
-import io.multy.model.entities.wallet.BitcoinWallet;
-import io.multy.model.entities.wallet.Wallet;
+import io.multy.model.entities.wallet.CurrencyCode;
+import io.multy.model.entities.wallet.WalletRealmObject;
 
 
 public class WalletAdapter extends RecyclerView.Adapter<WalletAdapter.WalletHolder> {
 
-    private List<Wallet> wallets;
+    private List<WalletRealmObject> wallets;
     private OnWalletClickListener listener;
+    private Double exchangePrice;
 
-    public WalletAdapter(OnWalletClickListener listener) {
+    public WalletAdapter(Double exchangePrice, OnWalletClickListener listener) {
         this.listener = listener;
-        wallets = new ArrayList<>();
-
-        // TODO remove with real data
-        for (int i = 0; i < 4; i++){
-            wallets.add(new BitcoinWallet("My Wallet " + i, "address - " + i, i * 1000));
-        }
-    }
-
-    public WalletAdapter(List<Wallet> wallets, OnWalletClickListener listener) {
-        this.listener = listener;
-        this.wallets = wallets;
+        this.exchangePrice = exchangePrice;
     }
 
     @Override
@@ -58,6 +48,16 @@ public class WalletAdapter extends RecyclerView.Adapter<WalletAdapter.WalletHold
     @Override
     public int getItemCount() {
         return wallets.size();
+    }
+
+    public void setWallets(List<WalletRealmObject> wallets){
+        this.wallets = wallets;
+        notifyDataSetChanged();
+    }
+
+    public void setExchangePrice(Double exchangePrice){
+        this.exchangePrice = exchangePrice;
+        notifyDataSetChanged();
     }
 
 
@@ -79,15 +79,17 @@ public class WalletAdapter extends RecyclerView.Adapter<WalletAdapter.WalletHold
             ButterKnife.bind(this, itemView);
         }
 
-        void bind(final Wallet wallet) {
+        void bind(final WalletRealmObject wallet) {
             textName.setText(wallet.getName());
-            textBalanceOriginal.setText(wallet.getBalanceWithCode());
-            textBalanceUsd.setText(wallet.getBalanceWithCode());
+            textBalanceOriginal.setText(wallet.getBalanceWithCode(CurrencyCode.BTC));
+            if (exchangePrice != null) {
+                textBalanceUsd.setText(wallet.getBalanceFiatWithCode(exchangePrice, CurrencyCode.USD));
+            }
             root.setOnClickListener(view -> listener.onWalletClick(wallet));
         }
     }
 
     public interface OnWalletClickListener{
-        void onWalletClick(Wallet wallet);
+        void onWalletClick(WalletRealmObject wallet);
     }
 }

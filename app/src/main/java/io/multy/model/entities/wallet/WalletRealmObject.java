@@ -9,28 +9,28 @@ package io.multy.model.entities.wallet;
 
 import com.google.gson.annotations.SerializedName;
 
+import io.multy.model.entities.Output;
+import io.multy.util.Constants;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 
 public class WalletRealmObject extends RealmObject {
 
+    @SerializedName("walletname")
     private String name;
-    @SerializedName("addresses")
-    private String creationAddress;
     @SerializedName("address")
+    private String creationAddress;
+    @SerializedName("addresses")
     private RealmList<WalletAddress> addresses;
     private double balance;
-    @SerializedName("currency")
+    @SerializedName("currencyID")
     private int currency;
-    @SerializedName("addressID")
+    @SerializedName("addressindex")
     private int addressIndex;
-    @SerializedName("walletID")
+    @SerializedName("walletindex")
     private int walletIndex;
-    @SerializedName("Chain")
-    private int chain;
-
-    private String chainCurrency;
-    private String fiatCurrency;
+    private double pendingBalance;
+    private boolean isEnabled;
 
     public WalletRealmObject() {
     }
@@ -50,6 +50,52 @@ public class WalletRealmObject extends RealmObject {
         this.currency = currency;
         this.addressIndex = addressIndex;
         this.walletIndex = walletIndex;
+    }
+
+    public double calculateBalance() {
+        double calculatedBalance = 0;
+        for (WalletAddress walletAddress : addresses) {
+            if (walletAddress.getOutputs() != null) {
+                for (Output output : walletAddress.getOutputs()) {
+                    switch (output.getStatus()) {
+                        case Constants.TX_IN_BLOCK_INCOMING:
+                            calculatedBalance += Double.valueOf(output.getTxOutAmount());
+                            break;
+                        case Constants.TX_IN_BLOCK_OUTCOMING:
+                            calculatedBalance -= Double.valueOf(output.getTxOutAmount());
+                            break;
+                        case Constants.TX_CONFIRMED_INCOMING:
+                            calculatedBalance += Double.valueOf(output.getTxOutAmount());
+                            break;
+                        case Constants.TX_CONFIRMED_OUTCOMING:
+                            calculatedBalance -= Double.valueOf(output.getTxOutAmount());
+                            break;
+                    }
+                }
+            }
+        }
+
+        return calculatedBalance;
+    }
+
+    public double calculatePendingBalance() {
+        double pendingBalance = 0;
+        for (WalletAddress walletAddress : addresses) {
+            if (walletAddress.getOutputs() != null) {
+                for (Output output : walletAddress.getOutputs()) {
+                    switch (output.getStatus()) {
+                        case Constants.TX_MEMPOOL_INCOMING:
+                            pendingBalance += Double.valueOf(output.getTxOutAmount());
+                            break;
+                        case Constants.TX_MEMPOOL_OUTCOMING:
+                            pendingBalance -= Double.valueOf(output.getTxOutAmount());
+                            break;
+                    }
+                }
+            }
+        }
+
+        return pendingBalance;
     }
 
     public String getName() {
@@ -112,40 +158,42 @@ public class WalletRealmObject extends RealmObject {
         this.walletIndex = walletIndex;
     }
 
-    public int getChain() {
-        return chain;
+    public String getBalanceWithCode(CurrencyCode currencyCode) {
+        return String.valueOf(getCurrency()).concat(Constants.SPACE).concat(currencyCode.name());
     }
 
-    public void setChain(int chain) {
-        this.chain = chain;
+    public String getBalanceFiatWithCode(Double exchangePrice, CurrencyCode currencyCode) {
+        return String.valueOf(getCurrency() * exchangePrice).concat(Constants.SPACE).concat(currencyCode.name());
     }
 
-    public String getChainCurrency() {
-        return chainCurrency;
+    public boolean isEnabled() {
+        return isEnabled;
     }
 
-    public void setChainCurrency(String chainCurrency) {
-        this.chainCurrency = chainCurrency;
+    public void setEnabled(boolean enabled) {
+        isEnabled = enabled;
     }
 
-    public String getFiatCurrency() {
-        return fiatCurrency;
+    public double getPendingBalance() {
+        return pendingBalance;
     }
 
-    public void setFiatCurrency(String fiatCurrency) {
-        this.fiatCurrency = fiatCurrency;
+    public void setPendingBalance(double pendingBalance) {
+        this.pendingBalance = pendingBalance;
     }
 
     @Override
     public String toString() {
-        return "Wallet{" +
+        return "WalletRealmObject{" +
                 "name='" + name + '\'' +
                 ", creationAddress='" + creationAddress + '\'' +
                 ", addresses=" + addresses +
                 ", balance=" + balance +
                 ", currency=" + currency +
-                ", addressIndex='" + addressIndex + '\'' +
-                ", walletIndex='" + walletIndex + '\'' +
+                ", addressIndex=" + addressIndex +
+                ", walletIndex=" + walletIndex +
+                ", pendingBalance=" + pendingBalance +
+                ", isEnabled=" + isEnabled +
                 '}';
     }
 }

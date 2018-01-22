@@ -7,25 +7,39 @@
 package io.multy.ui.fragments.send;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
+import io.multy.api.MultyApi;
+import io.multy.model.DataManager;
+import io.multy.model.entities.wallet.CurrencyCode;
+import io.multy.storage.RealmManager;
+import io.multy.ui.activities.MainActivity;
 import io.multy.ui.fragments.BaseFragment;
+import io.multy.util.Constants;
+import io.multy.util.CryptoFormatUtils;
+import io.multy.util.NativeDataHelper;
+import io.multy.util.NumberFormatter;
 import io.multy.viewmodels.AssetSendViewModel;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SendSummaryFragment extends BaseFragment {
 
-    public static SendSummaryFragment newInstance(){
-        return new SendSummaryFragment();
-    }
+    private static final String TAG = SendSummaryFragment.class.getSimpleName();
 
     @BindView(R.id.text_receiver_balance_original)
     TextView textReceiverBalanceOriginal;
@@ -44,7 +58,16 @@ public class SendSummaryFragment extends BaseFragment {
     @BindView(R.id.text_fee_amount)
     TextView textFeeAmount;
 
+    @BindString(R.string.donation_format_pattern)
+    String formatPattern;
+    @BindString(R.string.donation_format_pattern_bitcoin)
+    String formatPatternBitcoin;
+
     private AssetSendViewModel viewModel;
+
+    public static SendSummaryFragment newInstance() {
+        return new SendSummaryFragment();
+    }
 
     @Nullable
     @Override
@@ -52,23 +75,61 @@ public class SendSummaryFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_send_summary, container, false);
         ButterKnife.bind(this, view);
         viewModel = ViewModelProviders.of(getActivity()).get(AssetSendViewModel.class);
+        setBaseViewModel(viewModel);
         setInfo();
         return view;
     }
 
     @OnClick(R.id.button_next)
-    void onClickNext(){
-        AssetSendDialogFragment dialog = new AssetSendDialogFragment();
-        dialog.show(getActivity().getFragmentManager(), null);
+    void onClickNext() {
+//        AssetSendDialogFragment dialog = new AssetSendDialogFragment();
+//        dialog.show(getActivity().getFragmentManager(), null);
+
+        double amount = viewModel.getAmount();
+        long amountSatoshi = (long) (amount * Math.pow(10, 8));
+        String addressTo = viewModel.getReceiverAddress().getValue();
+
+        try {
+            byte[] transactionHex = NativeDataHelper.makeTransaction(DataManager.getInstance().getSeed().getSeed(), viewModel.getWallet().getWalletIndex(), String.valueOf(amountSatoshi), "2000", "2000", addressTo);
+            String hex = byteArrayToHex(transactionHex);
+            Log.i(TAG, "hex= " + hex);
+
+            MultyApi.INSTANCE.sendRawTransaction(hex, 1).enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    startActivity(new Intent(getActivity(), MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    private void setInfo(){
-        textReceiverBalanceOriginal.setText(String.valueOf(viewModel.getAmount()));
-        textReceiverBalanceCurrency.setText(String.valueOf(viewModel.getAmount()));
-        textReceiverAddress.setText(viewModel.getReceiverAddress().getValue());
+    public static String byteArrayToHex(byte[] a) {
+        StringBuilder sb = new StringBuilder(a.length * 2);
+        for (byte b : a)
+            sb.append(String.format("%02x", b));
+        return sb.toString();
+    }
+
+    private void setInfo() {
+        textReceiverBalanceOriginal.setText(NumberFormatter.getInstance().format(viewModel.getAmount()));
+        textReceiverBalanceOriginal.append(Constants.SPACE);
+        textReceiverBalanceOriginal.append(CurrencyCode.BTC.name());
+        textReceiverBalanceCurrency.setText(NumberFormatter.getInstance().format(viewModel.getAmount() * RealmManager.getSettingsDao().getCurrenciesRate().getBtcToUsd()));
+        textReceiverBalanceCurrency.append(Constants.SPACE);
+        textReceiverBalanceCurrency.append(CurrencyCode.USD.name());
+//        textReceiverAddress.setText(viewModel.getReceiverAddress().getValue());
+        textReceiverAddress.setText(viewModel.thoseAddress.getValue());
         textWalletName.setText(viewModel.getWallet().getName());
-        textSenderBalanceOriginal.setText(viewModel.getWallet().getBalanceWithCode());
-        textSenderBalanceCurrency.setText(viewModel.getWallet().getBalanceWithCode());
+        double balance = viewModel.getWallet().getBalance();
+        textSenderBalanceOriginal.setText(balance != 0 ? CryptoFormatUtils.satoshiToBtc(balance) : String.valueOf(balance));
+//        textSenderBalanceCurrency.setText(viewModel.getWallet().getBalanceFiatWithCode(viewModel.getExchangePrice().getValue(), CurrencyCode.USD));
         textFeeSpeed.setText(viewModel.getFee().getTime());
         textFeeAmount.setText(String.valueOf(viewModel.getFee().getCost()));
     }

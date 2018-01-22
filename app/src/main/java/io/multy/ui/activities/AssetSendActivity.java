@@ -8,7 +8,6 @@ package io.multy.ui.activities;
 
 import android.Manifest;
 import android.app.Activity;
-import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -20,6 +19,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.MenuItem;
 
 import java.util.List;
@@ -36,6 +36,7 @@ import io.multy.ui.fragments.send.TransactionFeeFragment;
 import io.multy.ui.fragments.send.WalletChooserFragment;
 import io.multy.util.Constants;
 import io.multy.viewmodels.AssetSendViewModel;
+import timber.log.Timber;
 
 
 public class AssetSendActivity extends BaseActivity {
@@ -43,8 +44,12 @@ public class AssetSendActivity extends BaseActivity {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
+    @BindInt(R.integer.one)
+    int one;
     @BindInt(R.integer.zero)
     int zero;
+    @BindInt(R.integer.one_negative)
+    int oneNegative;
 
     private boolean isFirstFragmentCreation;
 
@@ -60,7 +65,7 @@ public class AssetSendActivity extends BaseActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        setFragment(R.string.send_to, R.id.container, AssetSendFragment.newInstance());
+        startFlow();
     }
 
     @Override
@@ -76,13 +81,13 @@ public class AssetSendActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
-        if (getSupportFragmentManager().getBackStackEntryCount() > zero) {
+        if (getSupportFragmentManager().getBackStackEntryCount() >= one) {
             List<Fragment> backStackFragments = getSupportFragmentManager().getFragments();
             for (Fragment backStackFragment : backStackFragments) {
                 if (backStackFragment instanceof SendSummaryFragment) {
-                    toolbar.setTitle(R.string.send);
+                    toolbar.setTitle(R.string.send_amount);
                 } else if (backStackFragment instanceof AmountChooserFragment) {
-                    toolbar.setTitle(R.string.transaction_speed);
+                    toolbar.setTitle(R.string.transaction_fee);
                 } else if (backStackFragment instanceof TransactionFeeFragment) {
                     toolbar.setTitle(R.string.send_from);
                 } else if (backStackFragment instanceof WalletChooserFragment) {
@@ -94,6 +99,26 @@ public class AssetSendActivity extends BaseActivity {
             getSupportFragmentManager().popBackStack();
         } else {
             super.onBackPressed();
+        }
+    }
+
+    private void startFlow(){
+        if (getIntent().hasExtra(Constants.EXTRA_ADDRESS)) {
+            setFragment(R.string.send_to, R.id.container, AssetSendFragment.newInstance());
+            setFragment(R.string.send_from, R.id.container, WalletChooserFragment.newInstance());
+            setTitle(R.string.send_from);
+            AssetSendViewModel viewModel = ViewModelProviders.of(this).get(AssetSendViewModel.class);
+            viewModel.setContext(this);
+            viewModel.setReceiverAddress(getIntent().getStringExtra(Constants.EXTRA_ADDRESS));
+            if (getIntent().hasExtra(Constants.EXTRA_AMOUNT)) {
+                if (!TextUtils.isEmpty(getIntent().getStringExtra(Constants.EXTRA_AMOUNT))) {
+                    Timber.i("amount %s", getIntent().getStringExtra(Constants.EXTRA_AMOUNT));
+                    viewModel.setAmount(Double.parseDouble(getIntent().getStringExtra(Constants.EXTRA_AMOUNT)));
+                    viewModel.setAmountScanned(true);
+                }
+            }
+        } else {
+            setFragment(R.string.send_to, R.id.container, AssetSendFragment.newInstance());
         }
     }
 

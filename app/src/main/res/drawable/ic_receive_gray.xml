@@ -1,0 +1,15 @@
+<!--
+  ~ Copyright 2017 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportHeight="24.0"
+    android:viewportWidth="24.0">
+    <path
+        android:fillColor="#87A1C5"
+        android:pathData="M10.247,22.77l6.033,-7.956a0.7,0.7 0,0 0,-0.558 -1.123h-3.308c0.211,-11.077 7.968,-11.765 8.191,-11.785 0.178,-0.03 0.294,-0.11 0.347,-0.24 0.16,-0.39 -0.091,-0.666 -0.536,-0.666 -1.359,0 -13.16,0.36 -13.442,12.691H3.657a0.7,0.7 0,0 0,-0.558 1.123l6.033,7.956a0.7,0.7 0,0 0,1.115 0z" />
+</vector>

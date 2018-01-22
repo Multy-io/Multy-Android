@@ -37,6 +37,7 @@
         app:layout_constraintTop_toTopOf="parent"
         android:textAppearance="@style/TextAppearance.AppCompat.Menu"
         android:maxLines="@integer/two"
+        android:fontFamily="@font/montserrat"
         />
 
     <View

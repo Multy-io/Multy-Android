@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2017 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="@dimen/margin_5dp">
+
+    <View
+        android:id="@+id/button_create"
+        style="@style/FirstStartCard"
+        android:layout_margin="@dimen/activity_vertical_margin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/text_create"
+        style="@style/FirstStartText"
+        android:drawableStart="@drawable/wallet_create_new_bigger"
+        android:text="@string/create_first_wallet"
+        app:layout_constraintBottom_toBottomOf="@id/button_create"
+        app:layout_constraintEnd_toEndOf="@+id/button_create"
+        app:layout_constraintStart_toStartOf="@+id/button_create"
+        app:layout_constraintTop_toTopOf="@+id/button_create" />
+
+    <View
+        android:id="@+id/button_restore"
+        style="@style/FirstStartCard"
+        android:layout_margin="@dimen/activity_vertical_margin"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/button_create" />
+
+    <TextView
+        android:id="@+id/text_restore"
+        style="@style/FirstStartText"
+        android:drawableStart="@drawable/restore_multy"
+        android:text="@string/restore_multy"
+        app:layout_constraintBottom_toBottomOf="@+id/button_restore"
+        app:layout_constraintEnd_toEndOf="@+id/button_restore"
+        app:layout_constraintStart_toStartOf="@+id/button_restore"
+        app:layout_constraintTop_toTopOf="@+id/button_restore" />
+
+</android.support.constraint.ConstraintLayout>

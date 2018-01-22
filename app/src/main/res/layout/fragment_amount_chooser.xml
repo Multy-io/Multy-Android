@@ -17,7 +17,7 @@
     <android.support.constraint.ConstraintLayout
         android:id="@+id/container_input"
         android:layout_width="@dimen/dp0"
-        android:layout_height="130dp"
+        android:layout_height="140dp"
         app:layout_constraintBottom_toTopOf="@+id/text_fee"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -32,7 +32,7 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <EditText
+            <android.support.design.widget.TextInputEditText
                 android:id="@+id/input_balance_original"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -40,7 +40,7 @@
                 android:background="@null"
                 android:hint="@integer/zero"
                 android:inputType="numberDecimal"
-                android:maxLength="@integer/ten"
+                android:maxLength="8"
                 android:minWidth="@dimen/dimen_20dp"
                 android:selectAllOnFocus="true"
                 android:textColor="@color/text_main"
@@ -51,7 +51,9 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.2"
-                tools:text="234235" />
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                tools:text="234235 asdf asdf " />
 
             <TextView
                 android:id="@+id/text_currency_code_original"
@@ -72,7 +74,7 @@
             android:layout_height="@dimen/divider_height_medium"
             android:layout_marginEnd="@dimen/activity_horizontal_margin"
             android:layout_marginStart="@dimen/activity_horizontal_margin"
-            android:layout_marginTop="@dimen/margin_22dp"
+            android:layout_marginTop="@dimen/dimen_20dp"
             android:background="@color/text_grey_transparent_50"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -106,7 +108,7 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="@dimen/activity_vertical_margin">
+            android:layout_marginBottom="@dimen/margin_12dp">
 
             <EditText
                 android:id="@+id/input_balance_currency"
@@ -115,7 +117,7 @@
                 android:background="@null"
                 android:hint="@integer/zero"
                 android:inputType="numberDecimal"
-                android:maxLength="@integer/ten"
+                android:maxLength="13"
                 android:minWidth="@dimen/dimen_20dp"
                 android:selectAllOnFocus="true"
                 android:textAppearance="@style/TextAppearance.AppCompat.Menu"
@@ -127,7 +129,9 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="234235" />
+                tools:text="234213"
+                android:layout_marginLeft="@dimen/dimen_40dp"
+                android:layout_marginRight="@dimen/dimen_40dp"/>
 
             <TextView
                 android:id="@+id/text_currency"
@@ -183,7 +187,7 @@
         android:layout_height="wrap_content"
         android:text="@string/pay_for_commission"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="@color/grey_divider"
+        android:textColor="@color/text_grey"
         app:layout_constraintBottom_toTopOf="@+id/text_spendable"
         app:layout_constraintEnd_toStartOf="@+id/switcher"
         app:layout_constraintHorizontal_chainStyle="packed"

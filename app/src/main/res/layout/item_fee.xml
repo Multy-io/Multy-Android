@@ -12,6 +12,7 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/fee_height"
     android:background="@drawable/shape_squircle_white"
+    android:foreground="?android:attr/selectableItemBackground"
     >
 
     <android.support.v7.widget.AppCompatImageView

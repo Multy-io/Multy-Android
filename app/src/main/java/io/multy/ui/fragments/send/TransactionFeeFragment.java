@@ -31,12 +31,12 @@ import butterknife.OnClick;
 import io.multy.R;
 import io.multy.model.entities.Fee;
 import io.multy.model.entities.wallet.CurrencyCode;
-import io.multy.model.entities.wallet.Wallet;
 import io.multy.ui.activities.AssetSendActivity;
 import io.multy.ui.adapters.FeeAdapter;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
 import io.multy.viewmodels.AssetSendViewModel;
+import timber.log.Timber;
 
 public class TransactionFeeFragment extends BaseFragment implements FeeAdapter.OnFeeClickListener{
 
@@ -70,13 +70,14 @@ public class TransactionFeeFragment extends BaseFragment implements FeeAdapter.O
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_transaction_fee, container, false);
         ButterKnife.bind(this, view);
+        viewModel = ViewModelProviders.of(getActivity()).get(AssetSendViewModel.class);
+        setBaseViewModel(viewModel);
         return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        viewModel = ViewModelProviders.of(getActivity()).get(AssetSendViewModel.class);
         recyclerView.setAdapter(new FeeAdapter(getActivity(), this, viewModel.getFee()));
         setupSwitcher();
         setupInput();
@@ -90,7 +91,10 @@ public class TransactionFeeFragment extends BaseFragment implements FeeAdapter.O
             } else {
                 viewModel.setDonationAmount(null);
             }
-            ((AssetSendActivity) getActivity()).setFragment(R.string.send, R.id.container, AmountChooserFragment.newInstance());
+            ((AssetSendActivity) getActivity()).setFragment(R.string.send_amount, R.id.container, AmountChooserFragment.newInstance());
+            if (viewModel.isAmountScanned()) {
+                ((AssetSendActivity) getActivity()).setFragment(R.string.send_summary, R.id.container, SendSummaryFragment.newInstance());
+            }
         } else {
             Toast.makeText(getActivity(), R.string.choose_transaction_speed, Toast.LENGTH_SHORT).show();
         }
@@ -109,6 +113,7 @@ public class TransactionFeeFragment extends BaseFragment implements FeeAdapter.O
             } else {
                 textDonationAllow.setBackground(getResources().getDrawable(R.drawable.shape_squircle_white, null));
                 groupDonation.setVisibility(View.GONE);
+                hideKeyboard(getActivity());
             }
         });
     }

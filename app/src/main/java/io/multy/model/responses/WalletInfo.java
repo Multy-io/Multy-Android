@@ -8,14 +8,9 @@ package io.multy.model.responses;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.text.ParseException;
-import java.util.Date;
 import java.util.List;
 
-import javax.annotation.Nullable;
-
 import io.multy.model.entities.wallet.WalletAddress;
-import io.multy.util.DateHelper;
 
 public class WalletInfo {
 

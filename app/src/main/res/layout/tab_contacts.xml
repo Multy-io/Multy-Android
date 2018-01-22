@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~  Copyright 2017 Idealnaya rabota LLC
+  ~  Licensed under Multy.io license.
+  ~  See LICENSE for details
+  -->
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/title"
+    style="@style/TabInactiveText"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:clickable="false"
+    android:drawableTop="@drawable/ic_address_book_tab"
+    android:fontFamily="@font/montserrat"
+    android:text="@string/contacts" />

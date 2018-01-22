@@ -1,0 +1,60 @@
+<!--
+  ~ Copyright 2017 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<vector
+    android:height="24dp"
+    android:viewportHeight="86.0"
+    android:viewportWidth="86.0"
+    android:width="24dp"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <path
+        android:fillType="evenOdd"
+        android:pathData="M42.5,43.5m-37.5,0a37.5,37.5 0,1 1,75 0a37.5,37.5 0,1 1,-75 0">
+
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:endX="69.26899999999999"
+                android:endY="24.27825"
+                android:startX="5.0"
+                android:startY="81.0"
+                android:type="linear">
+
+                <item android:color="#FF00B2FF" android:offset="0.0"/>
+                <item android:color="#FF007AFF" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+    <path
+        android:strokeColor="#FFF"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:pathData="M34.503 29H28v6.483M34.503 57.483H28V51M50 29h6.503v6.483" />
+    <path
+        android:strokeColor="#FFF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:pathData="M24.5 44.5h36M24.5 44.5h36" />
+    <path
+        android:fillColor="#FFF"
+        android:fillAlpha=".5"
+        android:strokeAlpha=".5"
+        android:strokeWidth="1"
+        android:pathData="M41 47v-2h4v2h-2v2h-2v-2zm-8-1h5v5h-5v-5zm16 1h4v4h-4v-4zm-3-2h2v2h-2v-2z" />
+    <path
+        android:fillAlpha=".3"
+        android:strokeColor="#FFF"
+        android:strokeAlpha=".3"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"
+        android:pathData="M25.996 43.5h33.008" />
+    <path
+        android:strokeColor="#FFF"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:pathData="M50 57.483h6.503V51" />
+</vector>

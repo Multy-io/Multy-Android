@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2017 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_main"
+    tools:showIn="io.multy.android.MainActivity">
+
+    <ImageButton
+        android:id="@+id/button_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="16dp"
+        android:src="@drawable/ic_back" />
+
+    <TextView
+        android:id="@+id/text_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="@string/security_settings"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        app:layout_constraintLeft_toRightOf="@id/button_back" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/container_restore_seed"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:foreground="?attr/selectableItemBackground"
+        app:layout_constraintTop_toBottomOf="@id/text_title">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0.5dp"
+            android:background="@color/gray_light_transparent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/text_push"
+            style="@style/TitleSettings"
+            android:paddingStart="16dp"
+            android:text="@string/restore_seed"
+            app:layout_constraintLeft_toRightOf="@id/image_push" />
+
+        <ImageView
+            android:id="@+id/switch_push"
+            style="@style/ControlSettings"
+            android:src="@drawable/ic_chevron"
+            app:layout_constraintBottom_toBottomOf="@id/text_push"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@id/text_push" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0.5dp"
+            android:background="@color/gray_light_transparent"
+            app:layout_constraintTop_toBottomOf="@id/text_push" />
+    </android.support.constraint.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/text_hint_seed"
+        style="@style/SettingsTextHint"
+        android:text="@string/settings_restore_seed_description"
+        app:layout_constraintTop_toBottomOf="@id/container_restore_seed" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/container_entrance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:foreground="?attr/selectableItemBackground"
+        app:layout_constraintTop_toBottomOf="@id/text_hint_seed">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0.5dp"
+            android:background="@color/gray_light_transparent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/text_entrance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            android:text="@string/settings_entrance" />
+
+        <ImageView
+            android:id="@+id/image_warning"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:src="@drawable/ic_warning_small"
+            app:layout_constraintBottom_toBottomOf="@id/text_state_entrance"
+            app:layout_constraintTop_toTopOf="@id/text_state_entrance" />
+
+        <TextView
+            android:id="@+id/text_state_entrance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:text="@string/none"
+            android:textColor="@color/red"
+            android:textSize="12sp"
+            app:layout_constraintLeft_toRightOf="@id/image_warning"
+            app:layout_constraintTop_toBottomOf="@id/text_entrance" />
+
+        <ImageView
+            android:id="@+id/chevron_entrance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_chevron"
+            app:layout_constraintBottom_toBottomOf="@id/text_state_entrance"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@id/text_entrance" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0.5dp"
+            android:background="@color/gray_light_transparent"
+            app:layout_constraintTop_toBottomOf="parent" />
+    </android.support.constraint.ConstraintLayout>
+</android.support.constraint.ConstraintLayout>

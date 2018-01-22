@@ -8,7 +8,7 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 <item>
     <shape android:shape="rectangle">
-        <solid android:color="@color/grey_divider" />
+        <solid android:color="@color/grey_light" />
         <corners
             android:bottomLeftRadius="12dp"
             android:bottomRightRadius="12dp"/>

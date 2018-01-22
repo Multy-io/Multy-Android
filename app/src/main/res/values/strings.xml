@@ -9,7 +9,7 @@
     <string name="wallets">wallets</string>
     <string name="feed">activity</string>
     <string name="contacts">contacts</string>
-    <string name="settings">settings</string>
+    <string name="settings">Settings</string>
 
     <string name="receive_btc">Receive BTC</string>
     <string name="send">Send</string>
@@ -26,8 +26,11 @@
     <string name="seed_tip_spy">Check that no one is behind you</string>
     <string name="seed_validation_hint">Type word here</string>
     <string name="seed_congrats">Congratulations!\nYour wallet is secure!</string>
+    <string name="seed_congrats_restore">Congratulations!\nYour wallet is restored!</string>
     <string name="great">Great!</string>
-    <string name="try_again">Try again</string>
+    <string name="check_connection">Check Connection</string>
+    <string name="check_internet_connection">Check Internet Connection</string>
+    <string name="no_connection">Please connect your \ndevice to the internet</string>
     <string name="seed_result_fail">Wrong seed phrase!</string>
     <string name="seed_writing">Seed phrase validation</string>
     <string name="next_word">Next word</string>
@@ -92,7 +95,7 @@
     <string name="send_to">Send to</string>
     <string name="send_from">Send from</string>
     <string name="send_formatted" formatted="false">Send %s</string>
-    <string name="transaction_speed">Transaction speed</string>
+    <string name="transaction_fee">Transaction fee</string>
     <string name="ready_to_send">Ready to send</string>
     <string name="donation_default">0.0001</string>
     <string name="donation_format_pattern">##.##</string>
@@ -114,5 +117,88 @@
     <string name="select_chain">Select chain</string>
     <string name="select_currency">Select currency</string>
     <string name="wallet_name">Wallet Name</string>
+    <string name="no_contacts">No contacts yet</string>
+    <string name="no_contacts_message">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
+    <string name="no_activity">No activity yet</string>
+    <string name="no_activity_message">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
+    <string name="multy_name_long">Multi cryptocurrency and\nassets open-source wallet</string>
+
+    <string name="address_copied">Address was copied to clipboard</string>
+    <string name="wallet_settings">Wallet Settings</string>
+    <string name="general">General</string>
+    <string name="security">Security</string>
+    <string name="my_private_key">My Private Key</string>
+    <string name="delete_wallet">Delete Wallet</string>
+    <string name="delete_confirm">Are you sure want to delete this wallet?</string>
+    <string name="save">Save</string>
+
+    <string name="about_private_key">
+        Private key – A donation is a gift given by physical or legal persons, typically for
+        charitable purposes and/or to benefit a cause. A donation may take various forms, including
+        cash offering, services
+    </string>
+    <string name="about_delete_wallet">
+        Delete wallet – A donation is a gift given by physical or legal persons, typically for
+        charitable purposes and/or to benefit a cause. A donation may take various forms, including
+        cash offering, services
+    </string>
+    <string name="us_dollars_usd">US Dollars ∙ USD</string>
+    <string name="fast_operations">Fast Operations</string>
+    <string name="nfc">NFC</string>
+    <string name="scan">Scan</string>
+    <string name="error">An error occurred</string>
+    <string name="not_implemented">Sorry, this feature is not implemented</string>
+    <string name="addresses_empty">There are no addresses</string>
+    <string name="receive_summ">Receive Summ</string>
+    <string name="receive_amount">Receive Amount</string>
+    <string name="send_amount">Send Amount</string>
+    <string name="input_symbols">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890</string>
+    <string name="point">.</string>
+    <string name="receive_summary">Receive summary</string>
+    <string name="send_summary">Send summary</string>
+    <string name="done">Done</string>
+
+    <string name="create_first_wallet">Create First Wallet</string>
+    <string name="restore_multy">Restore Multy</string>
+    <string name="restore_wallet_description">
+        You do not have any wallet yet. You can <b>create new</b>
+        one or <b>import</b> any your existing wallet into Multy application.
+    </string>
+
+
+    <string name="pending">Pending</string>
+    <string name="outputs">Outputs</string>
+    <string name="enter_pin">Enter PIN</string>
+    <string name="channel_id">Multy wallet</string>
+    <string name="graph_title">24h BTC to USD graph</string>
+    <string name="logo_title">Blockchain\nopen source wallet</string>
+    <string name="backup_is_not_executed">Backup is not executed</string>
+    <string name="wallet_removed">Wallet removed</string>
+    <string name="something_went_wrong">Something went wrong</string>
+    <string name="zero_zero">0.0</string>
+    <string name="show_all_addresses">Show All Addresses</string>
+    <string name="operations_empty">You didn\'t have\noperations</string>
+    <string name="operations_create">You can create\nfirst operation\nhere</string>
+    <string name="please_update">Please update your version</string>
+    <string name="error_config_error">Unable to get config</string>
+    <string name="no_internet_connection">No internet connection</string>
+    <string name="no_internet_connection_message">Unfortunately you are not conencted\nto the network now. Multy needs\nconstant connection to provide it’s\nwork correctly</string>
+
+    <string name="tree_dots">…</string>
+    <string name="_or_">" or "</string>
+    <string name="personal">Personal</string>
+    <string name="locked_funds">Locked funds</string>
+    <string name="pending_continue">Pending...</string>
+    <string name="rejected_send">Unable to send transaction</string>
+    <string name="rejected_receive">Unable to receive transaction</string>
+    <string name="push_notifications">Push Notifications</string>
+    <string name="security_settings">Security Settings</string>
+    <string name="settings_restore_seed_description">If ou already have any wallets in Multy, you’ve changed your device or lost account - you can restore your seed phrase.</string>
+    <string name="restore_seed">Restore Seed</string>
+    <string name="settings_entrance">Entrance settings</string>
+    <string name="none">None</string>
+    <string name="about_multy">About multy</string>
+    <string name="leave_feedback">Leave feedback</string>
+    <string name="try_again">Try again</string>
 
 </resources>

@@ -19,7 +19,7 @@ import io.multy.util.BrickView;
 import io.multy.util.RandomSpanWidthLookup;
 
 
-public class BaseSeedFragment extends Fragment {
+public class BaseSeedFragment extends BaseFragment {
 
     public static final int BRICK_BLUE = 0;
     public static final int BRICK_RED = 1;
@@ -105,6 +105,7 @@ public class BaseSeedFragment extends Fragment {
     }
 
     public void showNext(Fragment fragment) {
+        hideKeyboard(getActivity());
         showFragment(fragment, "");
     }
 

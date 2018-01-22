@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2017 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="14dp"
+    android:layout_height="14dp"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp"
+    android:src="@drawable/circle_border_white" />

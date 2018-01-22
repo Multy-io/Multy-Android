@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -24,6 +25,7 @@ import butterknife.OnClick;
 import io.multy.R;
 import io.multy.ui.activities.AssetSendActivity;
 import io.multy.ui.fragments.BaseFragment;
+import io.multy.util.Constants;
 import io.multy.viewmodels.AssetSendViewModel;
 
 public class AssetSendFragment extends BaseFragment {
@@ -45,12 +47,26 @@ public class AssetSendFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_asset_send, container, false);
         ButterKnife.bind(this, view);
         viewModel = ViewModelProviders.of(getActivity()).get(AssetSendViewModel.class);
+        setBaseViewModel(viewModel);
         viewModel.setContext(getActivity());
-        viewModel.auth();
-        viewModel.getReceiverAddress().observe(this, s -> inputAddress.setText(s));
-        viewModel.getUserAssetsApi();
+        viewModel.getApiExchangePrice();
+        if (!TextUtils.isEmpty(viewModel.getReceiverAddress().getValue())) {
+            inputAddress.setText(viewModel.getReceiverAddress().getValue()); // to set address from scanning qr or wallet
+        }
+        viewModel.getReceiverAddress().observe(getActivity(), s -> inputAddress.setText(s));
+//        viewModel.getUserAssetsApi(); //TODO maybe I deleted something more :E
         setupInputAddress();
         return view;
+    }
+
+    @OnClick(R.id.button_address)
+    void onClickAddressBook(){
+        Toast.makeText(getActivity(), R.string.not_implemented, Toast.LENGTH_SHORT).show();
+    }
+
+    @OnClick(R.id.button_scan_wireless)
+    void onClickWirelessScan(){
+        Toast.makeText(getActivity(), R.string.not_implemented, Toast.LENGTH_SHORT).show();
     }
 
     @OnClick(R.id.button_scan_qr)
@@ -61,7 +77,12 @@ public class AssetSendFragment extends BaseFragment {
     @OnClick(R.id.button_next)
     void onClickNext(){
         viewModel.setReceiverAddress(inputAddress.getText().toString());
+        viewModel.thoseAddress.setValue(inputAddress.getText().toString());
         ((AssetSendActivity) getActivity()).setFragment(R.string.send_from, R.id.container, WalletChooserFragment.newInstance());
+        if (getActivity().getIntent().hasCategory(Constants.EXTRA_SENDER_ADDRESS)) {
+            viewModel.getWalletFromDB(getActivity().getIntent().getIntExtra(Constants.EXTRA_WALLET_ID, 0));
+            ((AssetSendActivity) getActivity()).setFragment(R.string.transaction_fee, R.id.container, TransactionFeeFragment.newInstance());
+        }
     }
 
     private void setupInputAddress(){

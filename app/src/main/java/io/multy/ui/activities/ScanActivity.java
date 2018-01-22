@@ -11,16 +11,23 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import butterknife.BindInt;
 import butterknife.ButterKnife;
 import io.multy.R;
 import io.multy.util.Constants;
+import me.dm7.barcodescanner.zbar.BarcodeFormat;
 import me.dm7.barcodescanner.zbar.Result;
 import me.dm7.barcodescanner.zbar.ZBarScannerView;
+import timber.log.Timber;
 
 
 public class ScanActivity extends AppCompatActivity implements ZBarScannerView.ResultHandler {
 
+    @BindInt(R.integer.one)
+    int one;
     @BindInt(R.integer.zero)
     int zero;
 
@@ -37,6 +44,9 @@ public class ScanActivity extends AppCompatActivity implements ZBarScannerView.R
     @Override
     public void onResume() {
         super.onResume();
+        List<BarcodeFormat> formats = new ArrayList<>();
+        formats.add(BarcodeFormat.QRCODE);
+        scannerView.setFormats(formats);
         scannerView.setResultHandler(this);
         scannerView.startCamera();
     }
@@ -64,6 +74,10 @@ public class ScanActivity extends AppCompatActivity implements ZBarScannerView.R
                 if (schemeSpecificPart.contains(Constants.QUESTION_MARK)) {
                     addressIntent.putExtra(Constants.EXTRA_QR_CONTENTS,
                             schemeSpecificPart.substring(zero, schemeSpecificPart.indexOf(Constants.QUESTION_MARK)));
+                    if (schemeSpecificPart.indexOf(Constants.EQUAL) + one <= schemeSpecificPart.length()) {
+                        Timber.e("amount54 %s", schemeSpecificPart.substring(schemeSpecificPart.indexOf(Constants.EQUAL) + one, schemeSpecificPart.length()));
+                        addressIntent.putExtra(Constants.EXTRA_AMOUNT, schemeSpecificPart.substring(schemeSpecificPart.indexOf(Constants.EQUAL) + one, schemeSpecificPart.length()));
+                    }
                 } else {
                     addressIntent.putExtra(Constants.EXTRA_QR_CONTENTS, uri.getSchemeSpecificPart());
                 }

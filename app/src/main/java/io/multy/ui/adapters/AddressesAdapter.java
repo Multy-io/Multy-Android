@@ -12,16 +12,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.multy.R;
-import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.entities.wallet.WalletAddress;
+import io.multy.util.CryptoFormatUtils;
+import io.multy.util.DateHelper;
 
 public class AddressesAdapter extends RecyclerView.Adapter<AddressesAdapter.Holder> {
 
@@ -48,8 +49,7 @@ public class AddressesAdapter extends RecyclerView.Adapter<AddressesAdapter.Hold
         return addresses.size();
     }
 
-
-    public class Holder extends RecyclerView.ViewHolder {
+    static class Holder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.root)
         ConstraintLayout root;
@@ -60,14 +60,15 @@ public class AddressesAdapter extends RecyclerView.Adapter<AddressesAdapter.Hold
         @BindView(R.id.text_amount)
         TextView textAmount;
 
-        public Holder(View itemView) {
+        Holder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
 
         void bind(final WalletAddress address) {
             textAddress.setText(address.getAddress());
-            textAmount.setText(String.valueOf(address.getAmount()));
+            textAmount.setText(String.format("%s / %s$", String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(address.getAmount())), CryptoFormatUtils.satoshiToUsd(address.getAmount())));
+            textDate.setText(DateHelper.DATE_FORMAT_ADDRESSES.format(new Date(address.getDate() * 1000L)));
 //            textName.setText(wallet.getName());
 //            textBalanceOriginal.setText(wallet.getBalanceWithCode());
 //            textBalanceUsd.setText(wallet.getBalanceWithCode());

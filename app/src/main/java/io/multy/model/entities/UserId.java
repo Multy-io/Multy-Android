@@ -7,9 +7,13 @@
 package io.multy.model.entities;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 
 public class UserId extends RealmObject {
+
+    @PrimaryKey
+    private int index = 0;
 
     private String userId;
 
@@ -26,12 +30,5 @@ public class UserId extends RealmObject {
 
     public void setUserId(String userId) {
         this.userId = userId;
-    }
-
-    @Override
-    public String toString() {
-        return "UserId{" +
-                "userId='" + userId + '\'' +
-                '}';
     }
 }

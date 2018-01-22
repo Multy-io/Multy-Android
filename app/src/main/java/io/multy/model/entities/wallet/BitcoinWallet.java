@@ -6,8 +6,6 @@
 
 package io.multy.model.entities.wallet;
 
-import io.multy.model.entities.wallet.CurrencyCode;
-import io.multy.model.entities.wallet.Wallet;
 import io.multy.util.Constants;
 
 

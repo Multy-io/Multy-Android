@@ -11,8 +11,6 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-import io.realm.RealmObject;
-
 public abstract class Wallet {
 
     private String name;

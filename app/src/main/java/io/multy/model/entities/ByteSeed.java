@@ -7,11 +7,13 @@
 package io.multy.model.entities;
 
 
-import java.util.Arrays;
-
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 public class ByteSeed extends RealmObject {
+
+    @PrimaryKey
+    private int id = 0;
 
     private byte[] seed;
 
@@ -28,12 +30,5 @@ public class ByteSeed extends RealmObject {
 
     public void setSeed(byte[] seed) {
         this.seed = seed;
-    }
-
-    @Override
-    public String toString() {
-        return "ByteSeed{" +
-                "seed=" + Arrays.toString(seed) +
-                '}';
     }
 }

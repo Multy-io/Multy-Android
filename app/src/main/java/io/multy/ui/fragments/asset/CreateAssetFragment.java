@@ -20,28 +20,21 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.multy.Multy;
 import io.multy.R;
 import io.multy.api.MultyApi;
-import io.multy.model.DataManager;
 import io.multy.model.entities.wallet.WalletRealmObject;
+import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetActivity;
 import io.multy.ui.fragments.BaseFragment;
-import io.multy.ui.fragments.dialogs.ListDialogFragment;
-import io.multy.util.CurrencyType;
-import io.multy.util.JniException;
-import io.multy.util.NativeDataHelper;
+import io.multy.util.Constants;
 import io.multy.viewmodels.WalletViewModel;
-
-/**
- * Created by anschutz1927@gmail.com on 23.11.17.
- */
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class CreateAssetFragment extends BaseFragment {
 
@@ -68,8 +61,7 @@ public class CreateAssetFragment extends BaseFragment {
         View v = inflater.inflate(R.layout.view_assets_action_add, container, false);
         ButterKnife.bind(this, v);
         if (getActivity().getWindow() != null) {
-            getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE |
-                    WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+            getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         }
         initialize();
         subscribeToCurrencyUpdate();
@@ -78,6 +70,7 @@ public class CreateAssetFragment extends BaseFragment {
 
     private void subscribeToCurrencyUpdate() {
         walletViewModel = ViewModelProviders.of(getActivity()).get(WalletViewModel.class);
+        setBaseViewModel(walletViewModel);
         walletViewModel.fiatCurrency.observe(this, s -> {
             //TODO update wallet fiat currency
             textViewFiatCurrency.setText(s);
@@ -117,44 +110,54 @@ public class CreateAssetFragment extends BaseFragment {
         };
     }
 
+    private void showWalletInfoActivity(WalletRealmObject walletRealmObject) {
+        Intent intent = new Intent(getActivity(), AssetActivity.class);
+        if (walletRealmObject != null) {
+            intent.putExtra(Constants.EXTRA_WALLET_ID, walletRealmObject.getWalletIndex());
+        }
+
+        getActivity().startActivity(intent);
+        getActivity().finish();
+    }
+
     @OnClick(R.id.button_chain)
     public void onClickChain() {
-        ArrayList<String> chains = new ArrayList<>(2);
-        chains.add("Bitcoin");
-        chains.add("Ethereum");
-        ListDialogFragment.newInstance(chains, CurrencyType.CHAIN).show(getFragmentManager(), "");
+//        ArrayList<String> chains = new ArrayList<>(2);
+//        chains.add(Constants.BTC);
+//        chains.add(Constants.ETH);
+//        ListDialogFragment.newInstance(chains, CurrencyType.CHAIN).show(getFragmentManager(), "");
     }
 
     @OnClick(R.id.button_fiat)
     public void onClickFiat() {
-        ArrayList<String> chains = new ArrayList<>(3);
-        chains.add("USD");
-        chains.add("EUR");
-        chains.add("BYN");
-        ListDialogFragment.newInstance(chains, CurrencyType.FIAT).show(getFragmentManager(), "");
+//        ArrayList<String> chains = new ArrayList<>(3);
+//        chains.add(Constants.USD);
+//        chains.add(Constants.EUR);
+//        ListDialogFragment.newInstance(chains, CurrencyType.FIAT).show(getFragmentManager(), "");
     }
 
     @OnClick(R.id.text_create)
     public void onClickCreate() {
-        try {
-            List<WalletRealmObject> wallets = new DataManager(Multy.getContext()).getWallets();
-            final int index = wallets != null && wallets.size() > 0 ? wallets.size() : 0;
-            final int currency = NativeDataHelper.Currency.BITCOIN.getValue(); //TODO implement choosing crypto currency using enum NativeDataHelper.CURRENCY
-            String creationAddress = NativeDataHelper.makeAccountAddress(new DataManager(getActivity()).getSeed().getSeed(), index, currency);
-            WalletRealmObject walletRealmObject = new WalletRealmObject();
-            walletRealmObject.setName(editTextWalletName.getText().toString());
-            walletRealmObject.setCurrency(0);
-            walletRealmObject.setAddressIndex(0);
-            walletRealmObject.setCreationAddress(creationAddress);
-            walletRealmObject.setWalletIndex(index);
-            MultyApi.INSTANCE.addWallet(getActivity(), walletRealmObject);
-            walletViewModel.setWallet(walletRealmObject);
-        } catch (JniException e) {
-            e.printStackTrace();
-        }
+        WalletRealmObject walletRealmObject = walletViewModel.createWallet(editTextWalletName.getText().toString());
+        MultyApi.INSTANCE.addWallet(getActivity(), walletRealmObject).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                walletViewModel.isLoading.setValue(false);
+                if (response.isSuccessful()) {
+                    RealmManager.getAssetsDao().saveWallet(walletRealmObject);
+                    showWalletInfoActivity(walletRealmObject);
+                } else {
+                    walletViewModel.errorMessage.setValue(getString(R.string.something_went_wrong));
+                }
+            }
 
-        startActivity(new Intent(getContext(), AssetActivity.class));
-        getActivity().finish();
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                walletViewModel.isLoading.setValue(false);
+                walletViewModel.errorMessage.setValue(t.getLocalizedMessage());
+                t.printStackTrace();
+            }
+        });
     }
 
     @OnClick(R.id.text_cancel)

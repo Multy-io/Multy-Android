@@ -7,13 +7,19 @@
 package io.multy.ui.activities;
 
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.IdRes;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
@@ -22,19 +28,24 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.scottyab.rootbeer.RootBeer;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.samwolfand.oneprefs.Prefs;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.branch.referral.Branch;
 import io.multy.R;
-import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
+import io.multy.model.entities.UserId;
+import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.main.AssetsFragment;
 import io.multy.ui.fragments.main.ContactsFragment;
+import io.multy.ui.fragments.main.FastOperationsFragment;
 import io.multy.ui.fragments.main.FeedFragment;
 import io.multy.ui.fragments.main.SettingsFragment;
+import io.multy.util.AnimationUtils;
 import io.multy.util.Constants;
+import timber.log.Timber;
 
 
 public class MainActivity extends BaseActivity implements TabLayout.OnTabSelectedListener {
@@ -42,7 +53,12 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
     @BindView(R.id.tabLayout)
     TabLayout tabLayout;
 
-    private boolean isFirstFragmentCreation;
+    @BindView(R.id.fast_operations)
+    View buttonOperations;
+
+    @BindView(R.id.splash)
+    View splash;
+
     private int lastTabPosition = 0;
 
     @Override
@@ -50,30 +66,44 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        isFirstFragmentCreation = true;
         setupFooter();
-        setFragment(R.id.container_frame, AssetsFragment.newInstance());
+        onTabSelected(tabLayout.getTabAt(0));
 
-//        preventRootIfDetected();
-    }
+        if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
+            UserId userId = RealmManager.getSettingsDao().getUserId();
+            if (userId != null) {
+                Log.i("wise", "subscribing to topic " + userId.getUserId());
+                FirebaseMessaging.getInstance().subscribeToTopic("btcTransactionUpdate-" + userId.getUserId());
+            }
+        }
 
-    private void preventRootIfDetected() {
-        RootBeer rootBeer = new RootBeer(this);
-        if (rootBeer.isRootedWithoutBusyBoxCheck()) {
-            SimpleDialogFragment.newInstanceNegative(R.string.root_title, R.string.root_message, view -> finish())
-                    .show(getSupportFragmentManager(), "");
+        if (Prefs.getBoolean(Constants.PREF_LOCK)) {
+            showLock();
         }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        overridePendingTransition(0, 0);
         initBranchIO();
+
+        if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
+            tabLayout.getLayoutParams().height = getResources().getDimensionPixelSize(R.dimen.tab_layout_height);
+            if (!isLockVisible) {
+                buttonOperations.setVisibility(View.VISIBLE);
+            }
+        } else {
+            tabLayout.getLayoutParams().height = 0;
+            buttonOperations.setVisibility(View.GONE);
+        }
+
+        new Handler(getMainLooper()).postDelayed(() -> splash.animate().alpha(0).scaleY(4)
+                .scaleX(4).setDuration(400).start(), 300);
     }
 
     private void initBranchIO() {
         Branch branch = Branch.getInstance(getApplicationContext());
-
         branch.initSession((referringParams, error) -> {
             Log.i(getClass().getSimpleName(), "branch io link");
             if (error == null) {
@@ -82,14 +112,6 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
                     Log.i(getClass().getSimpleName(), "branch io link exist");
                     getIntent().putExtra(Constants.DEEP_LINK_QR_CODE, qrCode);
                 }
-
-//                {"session_id":"465086124545736122","identity_id":"465073643500779705","link":"https://zn0o.test-app.link?%24identity_id=465073643500779705",
-//                  "data":"{\"$og_title\":\"QR_CODE\",\"$publicly_indexable\":\"true\",\"~creation_source\":2,\"$og_description\":\"Multi cryptocurrency and assets open-source wallet\",
-//                  \"+referrer\":\"com.skype.raider\",\"+click_timestamp\":1512122667,\"QR_CODE\":\"bitcoin:1GLY7sDe7a6xsewDdUNA6F8CEoAxQsHV37\",
-//                  \"source\":\"android\",\"$identity_id\":\"465073643500779705\",\"$og_image_url\":\"http://multy.io/wp-content/uploads/2017/11/logo-1.png\",
-//                  \"~feature\":\"Share\",\"+match_guaranteed\":false,\"$desktop_url\":\"http://multy.io\",\"~tags\":[\"bitcoin:1GLY7sDe7a6xsewDdUNA6F8CEoAxQsHV37\"],
-//                  \"$canonical_identifier\":\"QR_CODE/bitcoin:1GLY7sDe7a6xsewDdUNA6F8CEoAxQsHV37\",\"+clicked_branch_link\":true,\"$one_time_use\":false,
-//                  \"~id\":\"465075453422808951\",\"+is_first_session\":false,\"~referring_link\":\"https://zn0o.test-app.link/7kshikidwI\"}","device_fingerprint_id":"465073643483986343"}
             } else {
                 Log.i(getClass().getSimpleName(), error.getMessage());
             }
@@ -97,22 +119,10 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
     }
 
     private void setFragment(@IdRes int container, Fragment fragment) {
-        FragmentTransaction transaction = getSupportFragmentManager()
+        getSupportFragmentManager()
                 .beginTransaction()
-                .replace(container, fragment);
-
-        if (!isFirstFragmentCreation) {
-            transaction.addToBackStack(fragment.getClass().getName());
-        }
-
-        isFirstFragmentCreation = false;
-        transaction.commit();
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        unCheckAllTabs();
+                .replace(container, fragment)
+                .commit();
     }
 
     @Override
@@ -204,22 +214,62 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
     }
 
     @OnClick(R.id.fast_operations)
-    void onFastOperationsClick() {
-//        MultyApi.INSTANCE.getSpendableOutputs();
-//        MultyApi.INSTANCE.getUserAssets();
-//        MultyApi.INSTANCE.getTransactionSpeed();
-//        try {
-////            Log.i("wise", "to " + (NativeDataHelper.makeAccountAddress(, 0, 0)));
-//
-//            byte[] seed = new DataManager(this).getSeed().getSeed();
-//            final String txHash = "6e26d2fb53983051172a2714838fab9c3241d5dcdb022926b834e254e7ae2034";
-//            final String pubKey = "76a9149543b205596749495eae1d6305434c2c8084b25a88ac";
-//            final String address = "mu8C5CGtmSn3eUhMFEmU2CvRse7rLKgYUN";
-//            byte[] hexTx = NativeDataHelper.makeTransaction(seed, txHash, pubKey, 0, "200000000","150000000", "1000000", "mzqiDnETWkunRDZxjUQ34JzN1LDevh5DpU", address);
-//            String hex = byteArrayToHex(hexTx);
-//            Log.i("multy", "raw transaction generated successfully " + hex);
-//        } catch (JniException e) {
-//            e.printStackTrace();
-//        }
+    void onFastOperationsClick(final View v) {
+        v.setEnabled(false);
+        v.postDelayed(() -> v.setEnabled(true), AnimationUtils.DURATION_MEDIUM * 2);
+        Fragment fastOperationsFragment = getSupportFragmentManager().findFragmentByTag(FastOperationsFragment.TAG);
+
+        if (fastOperationsFragment == null) {
+            fastOperationsFragment = FastOperationsFragment.newInstance(
+                    (int) buttonOperations.getX() + buttonOperations.getWidth() / 2,
+                    (int) buttonOperations.getY() + buttonOperations.getHeight() / 2);
+        }
+
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.full_container, fastOperationsFragment, FastOperationsFragment.TAG)
+                .addToBackStack(FastOperationsFragment.TAG)
+                .commit();
+    }
+
+    public void showScanScreen() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, Constants.CAMERA_REQUEST_CODE);
+        } else {
+            startActivityForResult(new Intent(this, ScanActivity.class), Constants.CAMERA_REQUEST_CODE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == Constants.CAMERA_REQUEST_CODE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                showScanScreen();
+            }
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == Constants.CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            if (data.hasExtra(Constants.EXTRA_QR_CONTENTS)) {
+                startActivity(new Intent(this, AssetSendActivity.class)
+                        .putExtra(Constants.EXTRA_ADDRESS, data.getStringExtra(Constants.EXTRA_QR_CONTENTS))
+                        .putExtra(Constants.EXTRA_AMOUNT, data.getStringExtra(Constants.EXTRA_AMOUNT)));
+                Timber.i("amount34 %s", getIntent().getStringExtra(Constants.EXTRA_AMOUNT));
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onBackPressed() {
+        FastOperationsFragment fragment = (FastOperationsFragment) getSupportFragmentManager().findFragmentByTag(FastOperationsFragment.TAG);
+        if (fragment != null && !fragment.isCanceling()) {
+            fragment.cancel();
+        } else {
+            super.onBackPressed();
+        }
     }
 }

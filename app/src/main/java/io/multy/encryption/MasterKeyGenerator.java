@@ -12,11 +12,11 @@ import android.provider.Settings;
 
 import com.google.android.gms.iid.InstanceID;
 
+import org.spongycastle.jcajce.provider.digest.SHA3;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.security.MessageDigest;
-
-import io.multy.R;
+import java.nio.ByteBuffer;
 
 /**
  * Created by Ihar Paliashchuk on 10.11.2017.
@@ -25,47 +25,40 @@ import io.multy.R;
 
 public class MasterKeyGenerator {
 
-    private static byte[] getInstanceID(Context context){
+    private static byte[] getInstanceID(Context context) {
         return InstanceID.getInstance(context).getId().getBytes();
     }
 
     @SuppressLint("HardwareIds")
-    private static byte[] getSecureID(Context context){
+    private static byte[] getSecureID(Context context) {
         return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID).getBytes();
     }
 
-//    @SuppressLint("PackageManagerGetSignatures")
-//    private static byte[] getKeystoreFingerprint(Context context){
-//        PackageInfo info;
-//        try {
-//            info = context.getPackageManager().getPackageInfo(
-//                    context.getPackageName(), PackageManager.GET_SIGNATURES);
-//
-//            for (Signature signature : info.signatures) {
-//                MessageDigest md = MessageDigest.getInstance(context.getString(R.string.sha));
-//                md.update(signature.toByteArray());
-//                return md.digest();
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
+    /**
+     * Provide PIN or password if user set it. Method will be used after alpha release
+     * for better secure protection, but it returns empty value for now.
+     *
+     * @return zero if no password or PIN, otherwise bytes of password or PIN.
+     */
+    private static byte[] getUserSecret() {
+        return new byte[0];
+    }
 
-    public static byte[] generateKey(Context context){
+    public static byte[] generateKey(Context context) {
         ByteArrayOutputStream outputStream = null;
         try {
             outputStream = new ByteArrayOutputStream();
             outputStream.write(getInstanceID(context));
-//            outputStream.write(getKeystoreFingerprint(context));
+            outputStream.write(getUserSecret());
             outputStream.write(getSecureID(context));
-            MessageDigest md = MessageDigest.getInstance(context.getString(R.string.sha_256));
-            md.update(outputStream.toByteArray());
-            return md.digest();
+            return ByteBuffer.allocate(calculateSHA3256(outputStream.toByteArray()).length * 2)
+                    .put(calculateSHA3256(outputStream.toByteArray()))
+                    .put(calculateSHA3256(outputStream.toByteArray()))
+                    .array();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            if (outputStream != null){
+            if (outputStream != null) {
                 try {
                     outputStream.close();
                 } catch (IOException e) {
@@ -76,4 +69,8 @@ public class MasterKeyGenerator {
         return null;
     }
 
+    private static byte[] calculateSHA3256(byte[] input) {
+        SHA3.DigestSHA3 digestSHA3 = new SHA3.Digest256();
+        return digestSHA3.digest(input);
+    }
 }

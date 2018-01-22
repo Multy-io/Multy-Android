@@ -55,7 +55,15 @@ public class SeedFragment extends BaseSeedFragment {
         setRedrawPosition(0);
         recyclerView.post(() -> redrawTriplet(true));
         buttonNext.setText(R.string.next);
+
+        disableButton();
+        showKeyboard(getActivity());
         return convertView;
+    }
+
+    private void disableButton() {
+        buttonNext.setEnabled(false);
+        handler.postDelayed(() -> buttonNext.setEnabled(true), BrickView.ANIMATION_DURATION);
     }
 
     private void initViewModel() {

@@ -9,16 +9,22 @@ package io.multy.model.entities.wallet;
 
 import com.google.gson.annotations.SerializedName;
 
+import io.multy.model.entities.Output;
+import io.realm.RealmList;
 import io.realm.RealmObject;
 
 public class WalletAddress extends RealmObject {
 
-    @SerializedName("AddressID")
+    @SerializedName("addressindex")
     private int index;
-    @SerializedName("Address")
+    @SerializedName("address")
     private String address;
-    @SerializedName("Amount")
-    private int amount;
+    @SerializedName("amount")
+    private long amount;
+    @SerializedName("spendableoutputs")
+    private RealmList<Output> outputs;
+    @SerializedName("lastActionTime")
+    private long date;
 
     public WalletAddress() {
     }
@@ -44,20 +50,23 @@ public class WalletAddress extends RealmObject {
         this.address = address;
     }
 
-    public int getAmount() {
+    public long getAmount() {
         return amount;
     }
 
-    public void setAmount(int amount) {
+    public void setAmount(long amount) {
         this.amount = amount;
     }
 
-    @Override
-    public String toString() {
-        return "WalletAddress{" +
-                "index=" + index +
-                ", address='" + address + '\'' +
-                ", amount=" + amount +
-                '}';
+    public RealmList<Output> getOutputs() {
+        return outputs;
+    }
+
+    public void setOutputs(RealmList<Output> outputs) {
+        this.outputs = outputs;
+    }
+
+    public long getDate() {
+        return date;
     }
 }

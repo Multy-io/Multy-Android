@@ -7,10 +7,15 @@
 package io.multy.ui.fragments.receive;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.text.util.Linkify;
+import android.support.constraint.ConstraintLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,9 +31,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
+import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.ui.activities.AssetRequestActivity;
+import io.multy.ui.fragments.AddressesFragment;
 import io.multy.ui.fragments.BaseFragment;
+import io.multy.util.Constants;
 import io.multy.util.DeepLinkShareHelper;
+import io.multy.util.NumberFormatter;
 import io.multy.viewmodels.AssetRequestViewModel;
 
 
@@ -56,78 +65,139 @@ public class RequestSummaryFragment extends BaseFragment {
     TextView textAddress;
     @BindView(R.id.text_wallet_name)
     TextView textWalletName;
+    @BindView(R.id.container_wallet)
+    ConstraintLayout containerWallet;
 
     @BindInt(R.integer.zero)
     int zero;
 
     private AssetRequestViewModel viewModel;
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        viewModel = ViewModelProviders.of(getActivity()).get(AssetRequestViewModel.class);
+        viewModel.setContext(getActivity());
+        viewModel.getExchangePrice();
+        setBaseViewModel(viewModel);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_request_summary, container, false);
         ButterKnife.bind(this, view);
-
-        viewModel = ViewModelProviders.of(getActivity()).get(AssetRequestViewModel.class);
+        if (getActivity().getIntent().hasExtra(Constants.EXTRA_WALLET_ID)) {
+            containerWallet.setEnabled(false);
+        }
 
         return view;
     }
+
 
     @Override
     public void onResume() {
         super.onResume();
 
-        textAddress.setText(viewModel.getWallet().getCreationAddress());
+        textAddress.setText(viewModel.getWalletAddress());
         textWalletName.setText(viewModel.getWallet().getName());
-        textBalanceOriginal.setText(viewModel.getWallet().getBalanceWithCode());
-        textBalanceCurrency.setText(String.valueOf(viewModel.getWallet().getBalance()));
+        textBalanceOriginal.setText(viewModel.getWallet().getBalanceWithCode(CurrencyCode.BTC));
+//        Timber.e("wallet %s", viewModel.getWallet().toString());
+//        for (WalletAddress wal : viewModel.getWallet().getAddresses()){
+//            Timber.e("wallet address %s", wal.toString());
+//        }
+        if (viewModel.getExchangePriceLive().getValue() != null) {
+            textBalanceCurrency.setText(viewModel.getWallet()
+                    .getBalanceFiatWithCode(viewModel.getExchangePriceLive().getValue(), CurrencyCode.USD));
+        } else {
+            textBalanceCurrency.setText(viewModel.getWallet().getBalanceFiatWithCode(viewModel.getExchangePrice(), CurrencyCode.USD));
+        }
 
         if (viewModel.getAmount() != zero){
             textRequestAmount.setVisibility(View.INVISIBLE);
             textBalanceCurrencySend.setVisibility(View.VISIBLE);
             textBalanceOriginalSend.setVisibility(View.VISIBLE);
-            textBalanceCurrencySend.setText(String.valueOf(viewModel.getAmount()));
-            textBalanceOriginalSend.setText(String.valueOf(viewModel.getAmount()));
+            textBalanceCurrencySend.setText(NumberFormatter.getInstance().format(viewModel.getAmount() * viewModel.getExchangePriceLive().getValue()));
+            textBalanceCurrencySend.append(Constants.SPACE);
+            textBalanceCurrencySend.append(CurrencyCode.USD.name());
+            textBalanceOriginalSend.setText(NumberFormatter.getInstance().format(viewModel.getAmount()));
+            textBalanceOriginalSend.append(Constants.SPACE);
+            textBalanceOriginalSend.append(CurrencyCode.BTC.name());
         }
 
-        new Thread(() -> {
-            try {
-                final Bitmap bitmap = viewModel.generateQR(getActivity());
-                getActivity().runOnUiThread(() -> imageQr.setImageBitmap(bitmap));
-            } catch (WriterException e) {
-                e.printStackTrace();
-            }
-        }).start();
+        generateQR();
     }
 
-    @OnClick(R.id.button_request_amount)
+    @OnClick(R.id.image_qr)
+    void onClickQR(){
+        String address = viewModel.getWalletAddress();
+        ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText(address, address);
+        assert clipboard != null;
+        clipboard.setPrimaryClip(clip);
+        Toast.makeText(getActivity(), R.string.address_copied, Toast.LENGTH_SHORT).show();
+    }
+
+    @OnClick(R.id.text_address)
+    void onClickAddress(){
+        ((AssetRequestActivity) getActivity()).setFragment(R.string.all_addresses,
+                AddressesFragment.newInstance(viewModel.getWallet().getWalletIndex()));
+    }
+
+    @OnClick(R.id.container_summ)
     void onClickRequestAmount(){
-        ((AssetRequestActivity) getActivity()).setFragment(R.string.receive, AmountChooserFragment.newInstance());
+        ((AssetRequestActivity) getActivity()).setFragment(R.string.receive_amount, AmountChooserFragment.newInstance());
     }
 
-    @OnClick(R.id.text_balance_original_send)
-    void onClickBalanceOriginalSendAmount(){
-        ((AssetRequestActivity) getActivity()).setFragment(R.string.receive, AmountChooserFragment.newInstance());
+    @OnClick(R.id.container_wallet)
+    void onClickWallet(){
+        ((AssetRequestActivity) getActivity()).setFragment(R.string.receive, WalletChooserFragment.newInstance());
     }
 
-    @OnClick(R.id.text_balance_currency_send)
-    void onClickBalanceUsdSendAmount(){
-        ((AssetRequestActivity) getActivity()).setFragment(R.string.receive, AmountChooserFragment.newInstance());
+    @OnClick(R.id.button_generate_address)
+    void onClickGenerateAddress(){
+        viewModel.addAddress();
+        viewModel.getAddress().observe(this, address -> {
+            textAddress.setText(address);
+            generateQR();
+        });
     }
 
-    @OnClick(R.id.text_balance_currency)
-    void onClickBalanceUsdAmount(){
-        getFragmentManager().popBackStack();
+    @OnClick(R.id.button_address)
+    void onClickAddressBook(){
+        Toast.makeText(getActivity(), R.string.not_implemented, Toast.LENGTH_SHORT).show();
+        viewModel.addAddress();
+        viewModel.getAddress().observe(this, address -> {
+            textAddress.setText(address);
+            generateQR();
+        });
+        Log.i("wise", "generated");
     }
 
-    @OnClick(R.id.text_wallet_name)
-    void onClickWalletName(){
-        Linkify.addLinks(textWalletName, Linkify.WEB_URLS);
+    @OnClick(R.id.button_scan_wireless)
+    void onClickWirelessScan(){
+        Toast.makeText(getActivity(), R.string.not_implemented, Toast.LENGTH_SHORT).show();
     }
 
     @OnClick(R.id.button_options)
     void onClickOptions(){
-        Toast.makeText(getActivity(), DeepLinkShareHelper.getDeepLink(getActivity(),
-                viewModel.getQr()), Toast.LENGTH_LONG ).show();
+        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+        sharingIntent.setType("text/plain");
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT,
+                DeepLinkShareHelper.getDeepLink(getActivity(), viewModel.getStringQr()));
+        startActivity(Intent.createChooser(sharingIntent, getResources().getString(R.string.send_via)));
     }
+
+    private void generateQR(){
+        new Thread(() -> getActivity().runOnUiThread(() -> {
+            final Bitmap bitmap;
+            try {
+                bitmap = viewModel.generateQR(getActivity());
+                imageQr.setImageBitmap(bitmap);
+            } catch (WriterException e) {
+                e.printStackTrace();
+            }
+        })).start();
+    }
+
 }
