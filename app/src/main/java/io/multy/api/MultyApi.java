@@ -49,7 +49,8 @@ public enum MultyApi implements MultyApiInterface {
 
 
         //        static final String BASE_URL = "http://192.168.0.121:7778/";  // local
-        static final String BASE_URL = "http://88.198.47.112:7778/";  // remote
+//        static final String BASE_URL = "http://88.198.47.112:7778/";  // remote
+        static final String BASE_URL = "http://88.198.47.112:5578/";  // Special for Jack Bolt!
 
 
         private ApiServiceInterface api = new Retrofit.Builder()
@@ -128,8 +129,8 @@ public enum MultyApi implements MultyApiInterface {
         }
 
         @Override
-        public Call<WalletsResponse> getWalletVerbose(int walletIndex) {
-            return api.getWalletVerboseByIndex(walletIndex);
+        public Call<WalletsResponse> getWalletVerbose(int currencyId, int walletIndex) {
+            return api.getWalletVerboseByIndex(currencyId, walletIndex);
         }
 
         @Override
@@ -143,8 +144,8 @@ public enum MultyApi implements MultyApiInterface {
         }
 
         @Override
-        public Call<ResponseBody> updateWalletName(int id, UpdateWalletNameRequest updateWalletName) {
-            return api.updateWalletName(id, updateWalletName);
+        public Call<ResponseBody> updateWalletName(int currencyId, int id, UpdateWalletNameRequest updateWalletName) {
+            return api.updateWalletName(currencyId, id, updateWalletName);
         }
 
         @Override
@@ -152,8 +153,8 @@ public enum MultyApi implements MultyApiInterface {
             return api.removeWallet(walletIndex);
         }
 
-        public Call<TransactionHistoryResponse> getTransactionHistory(int walletIndex) {
-            return api.getTransactionHistory(walletIndex);
+        public Call<TransactionHistoryResponse> getTransactionHistory(int currencyId, int walletIndex) {
+            return api.getTransactionHistory(currencyId, walletIndex);
         }
 
         @Override

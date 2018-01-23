@@ -119,7 +119,7 @@ public class WalletViewModel extends BaseViewModel {
     }
 
     public MutableLiveData<ArrayList<TransactionHistory>> getTransactionsHistory() {
-        MultyApi.INSTANCE.getTransactionHistory(wallet.getValue().getWalletIndex()).enqueue(new Callback<TransactionHistoryResponse>() {
+        MultyApi.INSTANCE.getTransactionHistory(wallet.getValue().getCurrency(), wallet.getValue().getWalletIndex()).enqueue(new Callback<TransactionHistoryResponse>() {
             @Override
             public void onResponse(@NonNull Call<TransactionHistoryResponse> call, @NonNull Response<TransactionHistoryResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
@@ -138,8 +138,9 @@ public class WalletViewModel extends BaseViewModel {
     public MutableLiveData<Boolean> updateWalletSetting(String newName) {
         isLoading.setValue(true);
         int id = wallet.getValue().getWalletIndex();
+        int currencyId = wallet.getValue().getCurrency();
         UpdateWalletNameRequest updateWalletName = new UpdateWalletNameRequest(newName);
-        MultyApi.INSTANCE.updateWalletName(id, updateWalletName).enqueue(new Callback<ResponseBody>() {
+        MultyApi.INSTANCE.updateWalletName(currencyId, id, updateWalletName).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.code() == 200) {

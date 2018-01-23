@@ -59,11 +59,11 @@ public interface ApiServiceInterface {
     @POST("api/v1/address")
     Observable<Object> addWalletAddress(@Body AddWalletAddressRequest addWalletAddressRequest);
 
-    @GET("api/v1/wallet/{walletIndex}/verbose")
-    Call<WalletsResponse> getWalletVerboseByIndex(@Path ("walletIndex") int walletIndex);
+    @GET("api/v1/wallet/{walletIndex}/verbose/{currencyId}")
+    Call<WalletsResponse> getWalletVerboseByIndex(@Path ("currencyId") int currencyId, @Path ("walletIndex") int walletIndex);
 
-    @POST("api/v1/wallet/name/{id}")
-    Call<ResponseBody> updateWalletName(@Path("id") int id, @Body UpdateWalletNameRequest updateWalletName);
+    @POST("api/v1/wallet/name/{currencyId}/{id}")
+    Call<ResponseBody> updateWalletName(@Path("currencyId") int currencyId, @Path("id") int id, @Body UpdateWalletNameRequest updateWalletName);
 
     @DELETE("api/v1/wallet/{walletIndex}")
     Call<ResponseBody> removeWallet(@Path ("walletIndex") int walletIndex);
@@ -74,8 +74,8 @@ public interface ApiServiceInterface {
     @GET("api/v1/wallets/restore")
     Observable<RestoreResponse> restore();
 
-    @GET("api/v1/wallets/transactions/{walletIndex}")
-    Call<TransactionHistoryResponse> getTransactionHistory(@Path ("walletIndex") int walletIndex);
+    @GET("api/v1/wallets/transactions/{currencyid}/{walletIndex}")
+    Call<TransactionHistoryResponse> getTransactionHistory(@Path ("currencyid") int currencyId, @Path ("walletIndex") int walletIndex);
 
     @GET("/server/config")
     Call<ServerConfigResponse> getServerConfig();

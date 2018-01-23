@@ -32,17 +32,17 @@ public interface MultyApiInterface {
 
     Observable<Object> addWalletAddress(AddWalletAddressRequest addWalletAddressRequest);
 
-    Call<WalletsResponse> getWalletVerbose(int walletIndex);
+    Call<WalletsResponse> getWalletVerbose(int currencyId, int walletIndex);
 
     Call<WalletsResponse> getWalletsVerbose();
 
     Call<WalletsResponse> restore();
 
-    Call<ResponseBody> updateWalletName(int id, UpdateWalletNameRequest updateWalletName);
+    Call<ResponseBody> updateWalletName(int currencyId, int id, UpdateWalletNameRequest updateWalletName);
 
     Call<ResponseBody> removeWallet(int walletIndex);
 
-    Call<TransactionHistoryResponse> getTransactionHistory(int walletIndex);
+    Call<TransactionHistoryResponse> getTransactionHistory(int currencyId, int walletIndex);
 
     Call<ServerConfigResponse> getServerConfig();
 

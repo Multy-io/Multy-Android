@@ -122,7 +122,8 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         viewModel.isLoading.call();
 
         final int walletIndex = viewModel.getWalletLive().getValue().getWalletIndex();
-        MultyApi.INSTANCE.getWalletVerbose(walletIndex).enqueue(new Callback<WalletsResponse>() {
+        final int currencyId = viewModel.getWalletLive().getValue().getCurrency();
+        MultyApi.INSTANCE.getWalletVerbose(currencyId, walletIndex).enqueue(new Callback<WalletsResponse>() {
             @Override
             public void onResponse(Call<WalletsResponse> call, Response<WalletsResponse> response) {
                 viewModel.isLoading.setValue(false);

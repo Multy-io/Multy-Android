@@ -94,7 +94,8 @@ public class SendSummaryFragment extends BaseFragment {
             String hex = byteArrayToHex(transactionHex);
             Log.i(TAG, "hex= " + hex);
 
-            MultyApi.INSTANCE.sendRawTransaction(hex, 1).enqueue(new Callback<ResponseBody>() {
+            //TODO REMOVE THIS HARDCODE of the currency ID from this awesome Api request
+            MultyApi.INSTANCE.sendRawTransaction(hex, 0).enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     startActivity(new Intent(getActivity(), MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
