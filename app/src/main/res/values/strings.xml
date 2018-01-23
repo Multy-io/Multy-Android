@@ -200,5 +200,10 @@
     <string name="about_multy">About multy</string>
     <string name="leave_feedback">Leave feedback</string>
     <string name="try_again">Try again</string>
+    <string name="make_wallet_backup">Make wallet backup before setting PIN or fingerprint</string>
+    <string name="use_password">Use password</string>
+    <string name="pin_code">PIN-code</string>
+    <string name="fingerprint">Fingerprint</string>
+    <string name="entrance_settings">Entrance Settings</string>
 
 </resources>

@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2017 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_main"
+    tools:showIn="io.multy.android.MainActivity">
+
+    <ImageButton
+        android:id="@+id/button_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="@dimen/activity_vertical_margin"
+        android:src="@drawable/ic_back" />
+
+    <TextView
+        android:id="@+id/text_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/activity_vertical_margin"
+        android:text="@string/entrance_settings"
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_size_title"
+        app:layout_constraintLeft_toRightOf="@id/button_back" />
+
+    <View
+        android:layout_width="@dimen/dp0"
+        android:layout_height="@dimen/divider_height_small"
+        android:background="@color/gray_light_transparent"
+        app:layout_constraintTop_toBottomOf="@+id/text_title" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/button_warn"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/settings_warning_height"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/entrance_settings_container_margin_top"
+        android:background="@drawable/shape_warn"
+        android:clickable="true"
+        android:elevation="@dimen/elevation_4dp"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:paddingBottom="8dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:paddingTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/text_title">
+
+        <ImageView
+            android:id="@+id/image_warn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_warninng_big"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:layout_width="@dimen/dp0"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:gravity="center_vertical"
+            android:text="@string/make_wallet_backup"
+            android:textColor="@android:color/white"
+            app:layout_constraintLeft_toRightOf="@+id/image_warn"
+            app:layout_constraintRight_toLeftOf="@+id/image_chevron" />
+
+        <ImageView
+            android:id="@+id/image_chevron"
+            android:layout_width="14dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_chevron_white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/container_check_password"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/entrance_settings_container_height"
+        android:layout_marginTop="@dimen/entrance_settings_container_margin_top"
+        android:background="@color/white"
+        android:foreground="?attr/selectableItemBackground"
+        app:layout_constraintTop_toBottomOf="@+id/button_warn">
+
+        <View
+            android:layout_width="@dimen/dp0"
+            android:layout_height="@dimen/divider_height_small"
+            android:background="@color/gray_light_transparent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/text_use_password"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/entrance_settings_text_height"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:gravity="center_vertical"
+            android:text="@string/use_password"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_medium"
+            app:layout_constraintLeft_toLeftOf="parent" />
+
+        <Switch
+            android:id="@+id/switch_password"
+            style="@style/ControlSettings"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:layout_width="@dimen/dp0"
+            android:layout_height="@dimen/divider_height_small"
+            android:background="@color/gray_light_transparent"
+            app:layout_constraintTop_toBottomOf="@id/text_use_password" />
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/container_pin"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/entrance_settings_container_height"
+        android:layout_marginTop="@dimen/entrance_settings_container_margin_top"
+        android:background="@color/white"
+        android:foreground="?attr/selectableItemBackground"
+        app:layout_constraintTop_toBottomOf="@id/container_check_password">
+
+        <View
+            android:layout_width="@dimen/dp0"
+            android:layout_height="@dimen/divider_height_small"
+            android:background="@color/gray_light_transparent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/image_pin"
+            style="@style/ImageSettings"
+            android:src="@drawable/ic_checkmark"
+            app:layout_constraintBottom_toBottomOf="@id/text_pin"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="@id/text_pin" />
+
+        <TextView
+            android:id="@+id/text_pin"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/entrance_settings_text_height"
+            android:layout_marginStart="@dimen/entrance_settings_text_margin"
+            android:gravity="center_vertical"
+            android:text="@string/pin_code"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_medium"
+            app:layout_constraintLeft_toLeftOf="parent" />
+
+        <ImageView
+            android:id="@+id/image_edit_pin"
+            style="@style/ControlSettings"
+            android:src="@drawable/ic_edit"
+            app:layout_constraintBottom_toBottomOf="@id/text_pin"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@id/text_pin" />
+
+        <View
+            android:layout_width="@dimen/dp0"
+            android:layout_height="@dimen/divider_height_small"
+            android:background="@color/gray_light_transparent"
+            app:layout_constraintLeft_toLeftOf="@id/text_pin"
+            app:layout_constraintTop_toBottomOf="@id/text_pin" />
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/container_feedback"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/entrance_settings_container_height"
+        android:background="@color/white"
+        android:foreground="?attr/selectableItemBackground"
+        app:layout_constraintTop_toBottomOf="@id/container_pin">
+
+        <ImageView
+            android:id="@+id/image_feedback"
+            style="@style/ImageSettings"
+            android:src="@drawable/ic_checkmark"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/text_feedback"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="@id/text_feedback" />
+
+        <TextView
+            android:id="@+id/text_feedback"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/entrance_settings_text_height"
+            android:layout_marginStart="@dimen/entrance_settings_text_margin"
+            android:gravity="center_vertical"
+            android:text="@string/fingerprint"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_medium"
+            app:layout_constraintLeft_toLeftOf="parent" />
+
+        <ImageView
+            android:id="@+id/image_edit_fingerprint"
+            style="@style/ControlSettings"
+            android:src="@drawable/ic_edit"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/text_feedback"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@id/text_feedback" />
+
+        <View
+            android:layout_width="@dimen/dp0"
+            android:layout_height="@dimen/divider_height_small"
+            android:background="@color/gray_light_transparent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+
+</android.support.constraint.ConstraintLayout>
