@@ -58,7 +58,12 @@ public class SettingsFragment extends BaseFragment {
 
     @OnClick(R.id.container_security)
     public void onClickSettings() {
-        startActivity(new Intent(getActivity(), PinSetupActivity.class));
+        if (getActivity() != null) {
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.settings_container, SecuritySettingsFragment.newInstance())
+                    .addToBackStack(SecuritySettingsFragment.class.getSimpleName())
+                    .commit();
+        }
     }
 
     @OnClick(R.id.container_about)

@@ -29,6 +29,13 @@
         android:foreground="?attr/selectableItemBackground"
         app:layout_constraintTop_toBottomOf="@id/text_title">
 
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0.5dp"
+            android:background="@color/gray_light_transparent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <ImageView
             android:id="@+id/image_push"
             style="@style/ImageSettings"
@@ -92,7 +99,7 @@
             android:layout_width="0dp"
             android:layout_height="0.5dp"
             android:background="@color/gray_light_transparent"
-            app:layout_constraintLeft_toLeftOf="@id/text_security"
+            app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/text_security" />
     </android.support.constraint.ConstraintLayout>
 
@@ -101,6 +108,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
+        android:visibility="gone"
         android:foreground="?attr/selectableItemBackground"
         app:layout_constraintTop_toBottomOf="@id/container_security">
 
@@ -139,6 +147,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
+        android:visibility="gone"
         android:foreground="?attr/selectableItemBackground"
         app:layout_constraintTop_toBottomOf="@id/container_about">
 

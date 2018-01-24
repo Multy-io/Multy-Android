@@ -210,5 +210,7 @@
     <string name="reset_data">By resetting all your data you will lose all your wallets and accounts on this device</string>
     <string name="are_you_sure">Are you sure?</string>
     <string name="reset_all_data">reset all data</string>
+    <string name="entranse_settings_description">Make your entrance safe by selecting any secure entrance type.</string>
+    <string name="reset_data_description">By reseting your current data all your wallets will be removed. Make sure that you remember your seed phrase to restore it anytime.</string>
 
 </resources>
