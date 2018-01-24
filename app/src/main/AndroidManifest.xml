@@ -86,6 +86,9 @@
             android:name=".ui.activities.ExchangingActivity"
             android:label="@string/exchange"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activities.PinSetupActivity"
+            android:screenOrientation="portrait" />
         <activity android:name=".ui.activities.ScanActivity" />
 
         <!-- Branch install referrer tracking -->

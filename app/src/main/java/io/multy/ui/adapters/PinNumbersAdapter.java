@@ -25,6 +25,10 @@ public class PinNumbersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         void onNumberClick(int number);
     }
 
+    public interface OnBackSpaceClickListener {
+        void onBackSpaceClick();
+    }
+
     private static final int COUNT = 12;
     private static final int TYPE_NUMBER = 202;
     private static final int TYPE_IMAGE = 203;
@@ -33,13 +37,14 @@ public class PinNumbersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     private OnNumberClickListener numberClickListener;
     private OnFingerPrintClickListener fingerPrintClickListener;
-    private View.OnClickListener backSpaceClickListener;
+    private OnBackSpaceClickListener backSpaceClickListener;
     private boolean isFingerprintAllowed = true;
 
-    public PinNumbersAdapter(OnNumberClickListener numberClickListener, OnFingerPrintClickListener fingerPrintClickListener, View.OnClickListener backSpaceClickListener, boolean isFingerprintAllowed) {
+    public PinNumbersAdapter(OnNumberClickListener numberClickListener, OnFingerPrintClickListener fingerPrintClickListener, OnBackSpaceClickListener backSpaceClickListener, boolean isFingerprintAllowed) {
         this.numberClickListener = numberClickListener;
         this.fingerPrintClickListener = fingerPrintClickListener;
 //        this.isFingerprintAllowed = FingerprintManagerCompat.from(context).isHardwareDetected() && Prefs.getBoolean(Constants.PREF_IS_FINGERPRINT_ENABLED);
+        this.isFingerprintAllowed = false;
         this.backSpaceClickListener = backSpaceClickListener;
     }
 
@@ -64,7 +69,7 @@ public class PinNumbersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     ((ImageHolder) holder).image.setOnClickListener(view -> fingerPrintClickListener.onFingerprintClick());
                     ((ImageHolder) holder).image.setImageResource(R.drawable.ic_fingerprint_white);
                 } else {
-                    ((ImageHolder) holder).image.setOnClickListener(view -> backSpaceClickListener.onClick(null));
+                    ((ImageHolder) holder).image.setOnClickListener(view -> backSpaceClickListener.onBackSpaceClick());
                     ((ImageHolder) holder).image.setImageResource(R.drawable.ic_remove_symbol);
                 }
                 break;

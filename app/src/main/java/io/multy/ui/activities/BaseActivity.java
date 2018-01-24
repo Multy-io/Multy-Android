@@ -31,7 +31,7 @@ import io.multy.ui.adapters.PinDotsAdapter;
 import io.multy.ui.adapters.PinNumbersAdapter;
 import io.multy.util.Constants;
 
-public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter.OnFingerPrintClickListener, PinNumbersAdapter.OnNumberClickListener, View.OnClickListener {
+public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter.OnFingerPrintClickListener, PinNumbersAdapter.OnNumberClickListener, PinNumbersAdapter.OnBackSpaceClickListener {
 
     private static final String TAG = BaseActivity.class.getSimpleName();
 
@@ -106,7 +106,7 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
 
         ViewGroup viewGroup = findViewById(R.id.container_main);
         if (viewGroup != null) {
-            View convertView = getLayoutInflater().inflate(R.layout.fragment_pin, viewGroup, false);
+            View convertView = getLayoutInflater().inflate(R.layout.layout_pin, viewGroup, false);
 
             View previousView = viewGroup.findViewById(R.id.container_pin);
             if (previousView != null) {
@@ -180,17 +180,17 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
     }
 
     @Override
-    public void onClick(View view) {
+    public void onBackPressed() {
+        Prefs.putBoolean(Constants.PREF_SELF_CLICKED, true);
+        super.onBackPressed();
+    }
+
+    @Override
+    public void onBackSpaceClick() {
         if (stringBuilder.length() > 0) {
             ImageView dot = (ImageView) dotsLayoutManager.getChildAt(stringBuilder.toString().length() - 1);
             dot.setBackgroundResource(R.drawable.circle_border_white);
             stringBuilder.deleteCharAt(stringBuilder.length() - 1);
         }
-    }
-
-    @Override
-    public void onBackPressed() {
-        Prefs.putBoolean(Constants.PREF_SELF_CLICKED, true);
-        super.onBackPressed();
     }
 }
