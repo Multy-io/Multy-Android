@@ -23,21 +23,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/text_address" />
 
-    <TextView
-        android:id="@+id/text_address"
-        style="@style/BlackMediumText"
+    <LinearLayout
+        android:id="@+id/container_addresses"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="16dp"
-        android:ellipsize="middle"
-        android:fontFamily="@font/montserrat"
-        android:singleLine="true"
-        android:textColor="@color/blue_light"
-        android:textSize="14sp"
+        android:orientation="vertical"
         app:layout_constraintEnd_toStartOf="@+id/text_amount"
-        app:layout_constraintStart_toEndOf="@+id/image_operation"
-        tools:text="3DA28W4 ∙ ∙ ∙ ∙ XJSP9L" />
+        app:layout_constraintStart_toEndOf="@+id/image_operation">
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/text_pending"
@@ -50,8 +46,8 @@
         android:text="@string/pending_continue"
         android:textColor="@color/blue_light"
         android:textSize="12sp"
-        app:layout_constraintStart_toStartOf="@+id/text_address"
-        app:layout_constraintTop_toBottomOf="@+id/text_address" />
+        app:layout_constraintStart_toStartOf="@+id/container_addresses"
+        app:layout_constraintTop_toBottomOf="@+id/container_addresses" />
 
     <TextView
         android:id="@+id/text_amount"
@@ -66,7 +62,7 @@
         android:textColor="#363636"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/text_address"
+        app:layout_constraintTop_toTopOf="@+id/container_addresses"
         tools:text="0.052509 BTC" />
 
     <TextView
@@ -92,7 +88,7 @@
         android:paddingRight="16dp"
         android:paddingTop="16dp"
         app:layout_constraintBottom_toTopOf="@id/divider"
-        app:layout_constraintLeft_toLeftOf="@id/text_address"
+        app:layout_constraintLeft_toLeftOf="@id/container_addresses"
         app:layout_constraintRight_toRightOf="@id/text_fiat"
         app:layout_constraintTop_toBottomOf="@id/text_pending">
 
@@ -135,7 +131,7 @@
         android:layout_marginTop="16dp"
         android:background="@color/gray_light_transparent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/text_address"
+        app:layout_constraintStart_toStartOf="@+id/container_addresses"
         app:layout_constraintTop_toBottomOf="@id/container_locked" />
 
 </android.support.constraint.ConstraintLayout>

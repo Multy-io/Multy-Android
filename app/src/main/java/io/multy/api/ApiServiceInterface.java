@@ -15,8 +15,6 @@ import io.multy.model.requests.UpdateWalletNameRequest;
 import io.multy.model.responses.AddressBalanceResponse;
 import io.multy.model.responses.AuthResponse;
 import io.multy.model.responses.FeeRatesResponse;
-import io.multy.model.responses.OutputsResponse;
-import io.multy.model.responses.RestoreResponse;
 import io.multy.model.responses.ServerConfigResponse;
 import io.multy.model.responses.TransactionHistoryResponse;
 import io.multy.model.responses.UserAssetsResponse;
@@ -44,9 +42,6 @@ public interface ApiServiceInterface {
     @GET("api/v1/transaction/feerate")
     Call<FeeRatesResponse> getFeeRates();
 
-    @GET("api/v1/outputs/spendable/{net}/{address}")
-    Call<OutputsResponse> getSpendableOutputs(@Path("net") int net, @Path("address") String address);
-  
     @GET("api/v1/getwalletaddresses/{walletId}")
     Observable<UserAssetsResponse> getWalletAddresses(@Path("walletId") int walletId);
 
@@ -68,11 +63,8 @@ public interface ApiServiceInterface {
     @DELETE("api/v1/wallet/{walletIndex}")
     Call<ResponseBody> removeWallet(@Path ("walletIndex") int walletIndex);
 
-    @GET("api/v1/wallets/verbose")
+    @GET("api/v1/wallets/verbose/")
     Call<WalletsResponse> getWalletsVerbose();
-
-    @GET("api/v1/wallets/restore")
-    Observable<RestoreResponse> restore();
 
     @GET("api/v1/wallets/transactions/{currencyid}/{walletIndex}")
     Call<TransactionHistoryResponse> getTransactionHistory(@Path ("currencyid") int currencyId, @Path ("walletIndex") int walletIndex);

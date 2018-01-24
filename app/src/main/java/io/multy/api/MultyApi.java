@@ -26,7 +26,6 @@ import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.model.requests.AddWalletAddressRequest;
 import io.multy.model.requests.UpdateWalletNameRequest;
 import io.multy.model.responses.AuthResponse;
-import io.multy.model.responses.OutputsResponse;
 import io.multy.model.responses.ServerConfigResponse;
 import io.multy.model.responses.TransactionHistoryResponse;
 import io.multy.model.responses.UserAssetsResponse;
@@ -109,18 +108,13 @@ public enum MultyApi implements MultyApiInterface {
         }
 
         @Override
-        public Call<OutputsResponse> getSpendableOutputs(int net, String address) {
-            return api.getSpendableOutputs(net, address);
-        }
-
-        @Override
         public Observable<UserAssetsResponse> getWalletAddresses(int walletId) {
             return api.getWalletAddresses(walletId);
         }
 
         @Override
         public Call<ResponseBody> sendRawTransaction(String transactionHex, int currencyId) {
-            return api.sendRawTransaction(new TransactionRequestEntity(transactionHex, false), 1);
+            return api.sendRawTransaction(new TransactionRequestEntity(transactionHex, false), currencyId);
         }
 
         @Override
@@ -135,11 +129,6 @@ public enum MultyApi implements MultyApiInterface {
 
         @Override
         public Call<WalletsResponse> getWalletsVerbose() {
-            return api.getWalletsVerbose();
-        }
-
-        @Override
-        public Call<WalletsResponse> restore() {
             return api.getWalletsVerbose();
         }
 

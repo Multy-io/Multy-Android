@@ -20,8 +20,8 @@ public class TransactionHistory {
     private String txHash;
     @SerializedName("txoutscript")
     private String txOutScript;
-    @SerializedName("address")
-    private String address;
+    @SerializedName("addresses")
+    ArrayList<String> addresses;
     @SerializedName("txstatus")
     private int txStatus;
     @SerializedName("txoutamount")
@@ -36,6 +36,8 @@ public class TransactionHistory {
     private int blockHeight;
     @SerializedName("txfee")
     private long txFee;
+    @SerializedName("confirmations")
+    private int confirmations;
 
     //exchange price while transaction happen
     @SerializedName("btctousd")
@@ -60,8 +62,12 @@ public class TransactionHistory {
         return txOutScript;
     }
 
-    public String getAddress() {
-        return address;
+    public ArrayList<String> getAddresses() {
+        return addresses;
+    }
+
+    public int getConfirmations() {
+        return confirmations;
     }
 
     public int getTxStatus() {

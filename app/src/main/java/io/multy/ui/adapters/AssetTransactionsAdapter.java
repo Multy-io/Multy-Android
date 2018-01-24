@@ -94,12 +94,13 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
         final String amountFiat;
         final String address;
 
+        holder.containerAddresses.removeAllViews();
         if (isIncoming) {
             lockedAmount = CryptoFormatUtils.satoshiToBtc(transactionHistory.getTxOutAmount());
             lockedFiat = CryptoFormatUtils.satoshiToUsd(transactionHistory.getTxOutAmount());
             amount = lockedAmount;
             amountFiat = String.valueOf(CryptoFormatUtils.satoshiToUsd(transactionHistory.getTxOutAmount(), transactionHistory.getBtcToUsd()));
-            address = transactionHistory.getAddress();
+            setAddresses(transactionHistory.getInputs(), holder.containerAddresses);
         } else {
             RealmList<WalletAddress> addresses = RealmManager.getAssetsDao().getWalletById(walletIndex).getAddresses();
 //            List<WalletAddress> inputs = transactionHistory.getInputs();
@@ -127,10 +128,9 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
             lockedFiat = CryptoFormatUtils.satoshiToUsd(userChangeAddress.getAmount());
             amount = CryptoFormatUtils.satoshiToBtc(transactionHistory.getTxOutAmount());
             amountFiat = String.valueOf(CryptoFormatUtils.satoshiToUsd(transactionHistory.getTxOutAmount(), transactionHistory.getBtcToUsd()));
-            address = userChangeAddress.getAddress();
+            setAddresses(transactionHistory.getOutputs(), holder.containerAddresses);
         }
 
-        holder.address.setText(address);
         holder.amount.setText(String.format("%s BTC", amount));
         holder.amountLocked.setText(String.format("%s BTC", lockedAmount));
         holder.fiat.setText(String.format("%s USD", amountFiat));
@@ -165,7 +165,7 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
         if (isIncoming) {
             setAddresses(transactionHistory.getInputs(), holder.containerAddresses);
         } else {
-            setAddress(transactionHistory.getAddress(), holder.containerAddresses);
+            setAddresses(transactionHistory.getOutputs(), holder.containerAddresses);
         }
     }
 
@@ -219,8 +219,8 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
 
     static class BlockedHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.text_address)
-        TextView address;
+//        @BindView(R.id.text_address)
+//        TextView address;
 
         @BindView(R.id.text_amount)
         TextView amount;
@@ -233,6 +233,9 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
 
         @BindView(R.id.text_locked_fiat)
         TextView fiatLocked;
+
+        @BindView(R.id.container_addresses)
+        LinearLayout containerAddresses;
 
         BlockedHolder(View itemView) {
             super(itemView);

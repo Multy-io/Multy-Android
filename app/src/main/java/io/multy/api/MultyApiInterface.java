@@ -7,7 +7,6 @@ import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.model.requests.AddWalletAddressRequest;
 import io.multy.model.requests.UpdateWalletNameRequest;
 import io.multy.model.responses.AuthResponse;
-import io.multy.model.responses.OutputsResponse;
 import io.multy.model.responses.ServerConfigResponse;
 import io.multy.model.responses.TransactionHistoryResponse;
 import io.multy.model.responses.UserAssetsResponse;
@@ -24,8 +23,6 @@ public interface MultyApiInterface {
 
     void getTransactionInfo(String transactionId);
 
-    Call<OutputsResponse> getSpendableOutputs(int net, String address);
-
     Observable<UserAssetsResponse> getWalletAddresses(int walletId);
 
     Call<ResponseBody> sendRawTransaction(String transactionHex, int currencyId);
@@ -35,8 +32,6 @@ public interface MultyApiInterface {
     Call<WalletsResponse> getWalletVerbose(int currencyId, int walletIndex);
 
     Call<WalletsResponse> getWalletsVerbose();
-
-    Call<WalletsResponse> restore();
 
     Call<ResponseBody> updateWalletName(int currencyId, int id, UpdateWalletNameRequest updateWalletName);
 
