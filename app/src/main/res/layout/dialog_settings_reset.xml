@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2017 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_black_transparent">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="@dimen/reset_data_dialog_width"
+        android:layout_height="@dimen/reset_data_dialog_height"
+        android:background="@drawable/shape_white_rounded"
+        android:elevation="@dimen/elevation_12dp"
+        android:paddingBottom="@dimen/reset_data_dialog_padding_bottom"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <View
+            android:id="@+id/background_top"
+            android:layout_width="@dimen/dp0"
+            android:layout_height="@dimen/reset_data_dialog_header_height"
+            android:background="@drawable/shape_red_rounded_top" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/reset_icon_margin_top"
+            android:src="@drawable/ic_reset_data"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/text_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/reset_data_dialog_margin"
+            android:layout_marginTop="@dimen/reset_data_dialog_title_margin_top"
+            android:text="@string/are_you_sure"
+            android:textColor="@color/gray_dark"
+            android:textSize="@dimen/text_size_head"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/background_top" />
+
+        <TextView
+            android:id="@+id/text_message"
+            android:layout_width="@dimen/dp0"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/text_title"
+            android:layout_marginLeft="@dimen/reset_data_dialog_margin"
+            android:layout_marginRight="@dimen/reset_data_dialog_margin"
+            android:layout_marginTop="10dp"
+            android:text="@string/reset_data"
+            android:textColor="@color/gray"
+            android:textSize="@dimen/text_size_body"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_title" />
+
+        <Button
+            android:id="@+id/button_neutral"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/dialog_button_padding"
+            android:background="?selectableItemBackground"
+            android:minHeight="0dp"
+            android:minWidth="0dp"
+            android:padding="@dimen/dialog_button_padding"
+            android:text="@string/cancel"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_body"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent" />
+
+        <Button
+            android:id="@+id/button_positive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:background="?selectableItemBackground"
+            android:minHeight="0dp"
+            android:minWidth="0dp"
+            android:padding="@dimen/dialog_button_padding"
+            android:text="@string/reset_all_data"
+            android:textColor="@color/red_warn"
+            android:textSize="@dimen/text_size_body"
+            app:layout_constraintBaseline_toBaselineOf="@+id/button_neutral"
+            app:layout_constraintRight_toLeftOf="@+id/button_neutral" />
+
+    </android.support.constraint.ConstraintLayout>
+
+</android.support.constraint.ConstraintLayout>

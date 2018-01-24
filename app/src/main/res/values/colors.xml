@@ -43,5 +43,6 @@
     <color name="white_transparent">#66FFFFFF</color>
     <color name="blue_transparent">#b3007aff</color>
     <color name="blue_lightest">#e6ecf3</color>
+    <color name="background_black_transparent">#ca20060b</color>
 
 </resources>

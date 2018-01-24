@@ -205,5 +205,8 @@
     <string name="pin_code">PIN-code</string>
     <string name="fingerprint">Fingerprint</string>
     <string name="entrance_settings">Entrance Settings</string>
+    <string name="reset_data">By resetting all your data you will lose all your wallets and accounts on this device</string>
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="reset_all_data">reset all data</string>
 
 </resources>
