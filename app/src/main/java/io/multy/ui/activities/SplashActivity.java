@@ -102,6 +102,11 @@ public class SplashActivity extends AppCompatActivity {
         overridePendingTransition(0, 0);
     }
 
+    @Override
+    public void onBackPressed() {
+
+    }
+
     private void showError(int message) {
         SimpleDialogFragment.newInstanceNegative(R.string.error, message, view -> {
             finish();
@@ -120,8 +125,10 @@ public class SplashActivity extends AppCompatActivity {
             public void run() {
                 try {
                     sleep(500);
-                    startActivity(new Intent(SplashActivity.this, MainActivity.class)
-                            .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION));
+                    Intent mainActivityIntent = new Intent(SplashActivity.this, MainActivity.class)
+                            .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                    mainActivityIntent.putExtra(MainActivity.IS_ANIMATION_MUST_SHOW, true);
+                    startActivity(mainActivityIntent);
                     finish();
                 } catch (Exception e) {
                     e.printStackTrace();

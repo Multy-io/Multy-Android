@@ -23,22 +23,20 @@
         android:layout_height="@dimen/input_address_height"
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:background="@drawable/shape_squircle_white"
+        android:elevation="@dimen/elevation_10dp"
+        android:fontFamily="@font/montserrat"
         android:gravity="center"
         android:hint="@string/hint_search_or_enter_address"
+        android:maxLines="@integer/two"
+        android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
         android:paddingEnd="@dimen/activity_horizontal_margin"
         android:paddingStart="@dimen/activity_horizontal_margin"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:textAppearance="@style/TextAppearance.AppCompat.Menu"
         android:textColor="@color/text_main"
         android:textColorHint="@color/text_grey"
-        android:elevation="@dimen/elevation_10dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:textAppearance="@style/TextAppearance.AppCompat.Menu"
-        android:maxLines="@integer/two"
-        android:fontFamily="@font/montserrat"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <View
         android:layout_width="@dimen/dp0"

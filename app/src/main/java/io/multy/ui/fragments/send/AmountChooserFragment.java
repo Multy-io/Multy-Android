@@ -243,7 +243,7 @@ public class AmountChooserFragment extends BaseFragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (isAmountSwapped) {
+                if (isAmountSwapped && viewModel.getExchangePrice().getValue() != null) {
                     if (!TextUtils.isEmpty(charSequence)) {
                         if (isParsable(charSequence.toString())) {
                             inputOriginal.setText(NumberFormatter.getInstance()
@@ -300,37 +300,41 @@ public class AmountChooserFragment extends BaseFragment {
     }
 
     private void setTotalAmountForInput() {
-        if (isAmountSwapped) {                                  // if currency input is main we set total balance in currency (usd, eur, etc.)
-            if (!TextUtils.isEmpty(inputCurrency.getText())) {  // checks input for value to not parse null
-                if (switcher.isChecked()) {                     // if pay for commission is checked we add fee and donation to total amount
-                    textTotal.setText(NumberFormatter.getInstance()
-                            .format(Double.parseDouble(inputCurrency.getText().toString())
-                                    + (viewModel.getFee().getAmount()
-                                    + (viewModel.getDonationAmount() == null ? zero : Double.parseDouble(viewModel.getDonationAmount())))
-                                    * viewModel.getExchangePrice().getValue()));
-                } else {                                        // if pay for commission is unchecked we add just value from input to total amount
-                    textTotal.setText(NumberFormatter.getInstance().format(Double.parseDouble(inputCurrency.getText().toString())));
+        try {
+            if (isAmountSwapped) {                                  // if currency input is main we set total balance in currency (usd, eur, etc.)
+                if (!TextUtils.isEmpty(inputCurrency.getText())) {  // checks input for value to not parse null
+                    if (switcher.isChecked()) {                     // if pay for commission is checked we add fee and donation to total amount
+                        textTotal.setText(NumberFormatter.getInstance()
+                                .format(Double.parseDouble(inputCurrency.getText().toString())
+                                        + (viewModel.getFee().getAmount()
+                                        + (viewModel.getDonationAmount() == null ? zero : Double.parseDouble(viewModel.getDonationAmount())))
+                                        * viewModel.getExchangePrice().getValue()));
+                    } else {                                        // if pay for commission is unchecked we add just value from input to total amount
+                        textTotal.setText(NumberFormatter.getInstance().format(Double.parseDouble(inputCurrency.getText().toString())));
+                    }
+                    textTotal.append(Constants.SPACE);
+                    textTotal.append(CurrencyCode.USD.name());
+                } else {
+                    setEmptyTotalWithFee();
                 }
-                textTotal.append(Constants.SPACE);
-                textTotal.append(CurrencyCode.USD.name());
             } else {
-                setEmptyTotalWithFee();
-            }
-        } else {
-            if (!TextUtils.isEmpty(inputOriginal.getText())) { // checks input for value to not parse null
-                if (switcher.isChecked()) {                    // if pay for commission is checked we add fee and donation to total amount
-                    textTotal.setText(NumberFormatter.getInstance()
-                            .format(Double.parseDouble(inputOriginal.getText().toString())
-                                    + viewModel.getFee().getAmount()
-                                    + (viewModel.getDonationAmount() == null ? zero : Double.parseDouble(viewModel.getDonationAmount()))));
-                } else {                                       // if pay for commission is unchecked we add just value from input to total amount
-                    textTotal.setText(inputOriginal.getText());
+                if (!TextUtils.isEmpty(inputOriginal.getText())) { // checks input for value to not parse null
+                    if (switcher.isChecked()) {                    // if pay for commission is checked we add fee and donation to total amount
+                        textTotal.setText(NumberFormatter.getInstance()
+                                .format(Double.parseDouble(inputOriginal.getText().toString())
+                                        + viewModel.getFee().getAmount()
+                                        + (viewModel.getDonationAmount() == null ? zero : Double.parseDouble(viewModel.getDonationAmount()))));
+                    } else {                                       // if pay for commission is unchecked we add just value from input to total amount
+                        textTotal.setText(inputOriginal.getText());
+                    }
+                    textTotal.append(Constants.SPACE);
+                    textTotal.append(CurrencyCode.BTC.name());
+                } else {
+                    setEmptyTotalWithFee();
                 }
-                textTotal.append(Constants.SPACE);
-                textTotal.append(CurrencyCode.BTC.name());
-            } else {
-                setEmptyTotalWithFee();
             }
+        } catch (Throwable t) {
+            t.printStackTrace();
         }
     }
 

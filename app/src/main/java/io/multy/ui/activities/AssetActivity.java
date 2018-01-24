@@ -54,10 +54,6 @@ public class AssetActivity extends BaseActivity {
 
     @OnClick(R.id.send)
     void onClickSend() {
-        if (wallet != null && wallet.getAddresses().size() > 0) {
-            String address = wallet.getAddresses().get(wallet.getAddresses().size() - 1).getAddress();
-        }
-
         startActivity(new Intent(this, AssetSendActivity.class)
                 .addCategory(Constants.EXTRA_SENDER_ADDRESS)
                 .putExtra(Constants.EXTRA_WALLET_ID, getIntent().getIntExtra(Constants.EXTRA_WALLET_ID, 0)));

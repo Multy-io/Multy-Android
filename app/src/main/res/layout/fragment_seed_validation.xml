@@ -38,7 +38,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:digits="abcdefghijklmnopqrstuvwxyz"
+        android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
         android:gravity="left"
         android:hint="@string/seed_validation_hint"
         android:imeOptions="actionDone"

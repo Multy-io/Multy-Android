@@ -140,10 +140,45 @@ public class SeedValidationFragment extends BaseSeedFragment {
                     inputWord.setGravity(Gravity.LEFT);
                     buttonNext.setText(R.string.next_word);
                     return;
-                } else if (editable.toString().length() == 1) {
+                } else if (editable.length() > 0) {
                     inputWord.setGravity(Gravity.CENTER_HORIZONTAL);
+                    ArrayList<String> suggestions = new ArrayList<>();
+                    boolean isFullCoincidence = false;
+                    String inputEditable = editable.toString().toLowerCase();
+                    for (String s : seedWords) {
+                        if (s.startsWith(inputEditable)) {
+                            suggestions.add(s);
+                            if (s.equals(inputEditable)) {
+                                isFullCoincidence = true;
+                            }
+                        }
+                    }
+                    currentSeedWord = null;
+                    if (suggestions.size() == 1) {
+                        buttonNext.setText(suggestions.get(0));
+                        currentSeedWord = suggestions.get(0);
+                        if (!editable.toString().equals(inputEditable)) {
+                            inputWord.setText(inputEditable);
+                            inputWord.setSelection(inputWord.getText().toString().length());
+                        }
+                    } else if (suggestions.size() > 1) {
+                        buttonNext.setText(inputEditable);
+                        if (isFullCoincidence) {
+                            buttonNext.append(getString(R.string._or_) + inputEditable);
+                            currentSeedWord = inputWord.getText().toString();
+                        }
+                        buttonNext.append(getString(R.string.tree_dots));
+                        if (!editable.toString().equals(inputEditable)) {
+                            inputWord.setText(inputEditable);
+                            inputWord.setSelection(inputWord.getText().toString().length());
+                        }
+                    } else {
+                        inputWord.setText(inputEditable.subSequence(0, inputEditable.length() - 1));
+                        inputWord.setSelection(inputWord.getText().toString().length());
+                    }
                 }
-                if (editable.length() > 0) {
+
+                /*if (editable.length() > 0) {
                     ArrayList<String> suggestions = new ArrayList<>();
                     boolean isFullCoincidence = false;
                     for (String s : seedWords) {
@@ -171,7 +206,7 @@ public class SeedValidationFragment extends BaseSeedFragment {
                     }
                 } else {
                     buttonNext.setText(R.string.next_word);
-                }
+                }*/
             }
         });
     }

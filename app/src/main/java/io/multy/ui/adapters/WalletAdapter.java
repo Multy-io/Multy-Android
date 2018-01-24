@@ -21,6 +21,7 @@ import butterknife.ButterKnife;
 import io.multy.R;
 import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.model.entities.wallet.WalletRealmObject;
+import io.multy.util.CryptoFormatUtils;
 
 
 public class WalletAdapter extends RecyclerView.Adapter<WalletAdapter.WalletHolder> {
@@ -47,6 +48,9 @@ public class WalletAdapter extends RecyclerView.Adapter<WalletAdapter.WalletHold
 
     @Override
     public int getItemCount() {
+        if (wallets == null) {
+            return 0;
+        }
         return wallets.size();
     }
 
@@ -84,6 +88,13 @@ public class WalletAdapter extends RecyclerView.Adapter<WalletAdapter.WalletHold
             textBalanceOriginal.setText(wallet.getBalanceWithCode(CurrencyCode.BTC));
             if (exchangePrice != null) {
                 textBalanceUsd.setText(wallet.getBalanceFiatWithCode(exchangePrice, CurrencyCode.USD));
+            } else {
+                double balance = wallet.getBalance();
+                double pending = wallet.getPendingBalance();
+                CryptoFormatUtils.satoshiToBtc(pending + balance);
+                String fiatAmount = CryptoFormatUtils.satoshiToUsd(pending + balance);
+                textBalanceUsd.setText(fiatAmount.equals("") ?
+                        "" : String.format("%s$", CryptoFormatUtils.satoshiToUsd(pending + balance)));
             }
             root.setOnClickListener(view -> listener.onWalletClick(wallet));
         }

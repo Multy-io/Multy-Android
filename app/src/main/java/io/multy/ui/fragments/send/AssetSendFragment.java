@@ -59,6 +59,12 @@ public class AssetSendFragment extends BaseFragment {
         return view;
     }
 
+    @Override
+    public void onDestroyView() {
+        hideKeyboard(getActivity());
+        super.onDestroyView();
+    }
+
     @OnClick(R.id.button_address)
     void onClickAddressBook(){
         Toast.makeText(getActivity(), R.string.not_implemented, Toast.LENGTH_SHORT).show();

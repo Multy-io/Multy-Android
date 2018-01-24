@@ -19,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,7 +37,6 @@ import io.multy.ui.adapters.FeeAdapter;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
 import io.multy.viewmodels.AssetSendViewModel;
-import timber.log.Timber;
 
 public class TransactionFeeFragment extends BaseFragment implements FeeAdapter.OnFeeClickListener{
 
@@ -44,6 +44,8 @@ public class TransactionFeeFragment extends BaseFragment implements FeeAdapter.O
         return new TransactionFeeFragment();
     }
 
+    @BindView(R.id.scrollview)
+    ScrollView scrollView;
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
     @BindView(R.id.switcher)
@@ -72,6 +74,11 @@ public class TransactionFeeFragment extends BaseFragment implements FeeAdapter.O
         ButterKnife.bind(this, view);
         viewModel = ViewModelProviders.of(getActivity()).get(AssetSendViewModel.class);
         setBaseViewModel(viewModel);
+        inputDonation.setOnFocusChangeListener((view1, hasFocus) -> {
+            if (hasFocus) {
+                scrollView.postDelayed(() -> scrollView.fullScroll(ScrollView.FOCUS_DOWN), 500);
+            }
+        });
         return view;
     }
 
@@ -81,6 +88,12 @@ public class TransactionFeeFragment extends BaseFragment implements FeeAdapter.O
         recyclerView.setAdapter(new FeeAdapter(getActivity(), this, viewModel.getFee()));
         setupSwitcher();
         setupInput();
+    }
+
+    @Override
+    public void onDestroyView() {
+        hideKeyboard(getActivity());
+        super.onDestroyView();
     }
 
     @OnClick(R.id.button_next)

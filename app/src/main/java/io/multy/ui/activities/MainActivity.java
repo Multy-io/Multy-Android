@@ -50,6 +50,8 @@ import timber.log.Timber;
 
 public class MainActivity extends BaseActivity implements TabLayout.OnTabSelectedListener {
 
+    public static final String IS_ANIMATION_MUST_SHOW = "isanimationmustshow";
+
     @BindView(R.id.tabLayout)
     TabLayout tabLayout;
 
@@ -98,8 +100,14 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
             buttonOperations.setVisibility(View.GONE);
         }
 
-        new Handler(getMainLooper()).postDelayed(() -> splash.animate().alpha(0).scaleY(4)
-                .scaleX(4).setDuration(400).start(), 300);
+        // Sometimes i had have got repeating of animation after press back button without check by intent
+        if (getIntent().getBooleanExtra(IS_ANIMATION_MUST_SHOW, false)) {
+            getIntent().putExtra(IS_ANIMATION_MUST_SHOW, false);
+            splash.setVisibility(View.VISIBLE);
+            new Handler(getMainLooper()).postDelayed(() -> splash.animate().alpha(0).scaleY(4)
+                    .scaleX(4).setDuration(400).withEndAction(() -> splash.setVisibility(View.GONE))
+                    .start(), 300);
+        }
     }
 
     private void initBranchIO() {
