@@ -6,7 +6,6 @@
 
 package io.multy.ui.fragments.main;
 
-import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
@@ -211,7 +210,7 @@ public class AssetsFragment extends BaseFragment {
     }
 
     private void onWalletAddClick() {
-        startActivity(new Intent(getContext(), CreateAssetActivity.class));
+        startActivityForResult(new Intent(getActivity(), CreateAssetActivity.class).addCategory(Constants.EXTRA_RESTORE), Constants.REQUEST_CODE_CREATE);
     }
 
     @OnClick(R.id.button_add)
@@ -238,10 +237,10 @@ public class AssetsFragment extends BaseFragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == Constants.REQUEST_CODE_RESTORE && resultCode == Activity.RESULT_OK) {
+//        if ((requestCode == Constants.REQUEST_CODE_RESTORE || requestCode == Constants.REQUEST_CODE_CREATE) && resultCode == Activity.RESULT_OK) {
             checkViewsVisibility();
             initialize();
-        }
+//        }
         super.onActivityResult(requestCode, resultCode, data);
     }
 }

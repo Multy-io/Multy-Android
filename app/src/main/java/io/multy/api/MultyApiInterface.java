@@ -27,7 +27,7 @@ public interface MultyApiInterface {
 
     Call<ResponseBody> sendRawTransaction(String transactionHex, int currencyId);
 
-    Observable<Object> addWalletAddress(AddWalletAddressRequest addWalletAddressRequest);
+    Call<ResponseBody> addWalletAddress(AddWalletAddressRequest addWalletAddressRequest);
 
     Call<WalletsResponse> getWalletVerbose(int currencyId, int walletIndex);
 

@@ -52,7 +52,7 @@ public interface ApiServiceInterface {
     Call<AddressBalanceResponse> getBalanceByAddress(@Path("currencyId") int currencyId, @Path("address") String address);
 
     @POST("api/v1/address")
-    Observable<Object> addWalletAddress(@Body AddWalletAddressRequest addWalletAddressRequest);
+    Call<ResponseBody> addWalletAddress(@Body AddWalletAddressRequest addWalletAddressRequest);
 
     @GET("api/v1/wallet/{walletIndex}/verbose/{currencyId}")
     Call<WalletsResponse> getWalletVerboseByIndex(@Path ("currencyId") int currencyId, @Path ("walletIndex") int walletIndex);

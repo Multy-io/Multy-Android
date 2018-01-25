@@ -24,6 +24,8 @@ import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.model.DataManager;
 import io.multy.model.entities.wallet.CurrencyCode;
+import io.multy.model.entities.wallet.WalletAddress;
+import io.multy.model.requests.AddWalletAddressRequest;
 import io.multy.storage.RealmManager;
 import io.multy.ui.activities.MainActivity;
 import io.multy.ui.fragments.BaseFragment;
@@ -87,23 +89,43 @@ public class SendSummaryFragment extends BaseFragment {
 
         double amount = viewModel.getAmount();
         long amountSatoshi = (long) (amount * Math.pow(10, 8));
+        long amountDonationSatoshi = (long) (Double.valueOf(viewModel.getDonationAmount()) * Math.pow(10, 8));
         String addressTo = viewModel.getReceiverAddress().getValue();
 
         try {
-            byte[] transactionHex = NativeDataHelper.makeTransaction(DataManager.getInstance().getSeed().getSeed(), viewModel.getWallet().getWalletIndex(), String.valueOf(amountSatoshi), "2000", "2000", addressTo);
+            byte[] seed = RealmManager.getSettingsDao().getSeed().getSeed();
+            final int addressesSize = viewModel.getWallet().getAddresses().size();
+            final String changeAddress = NativeDataHelper.makeAccountAddress(seed, viewModel.getWallet().getWalletIndex(), addressesSize, NativeDataHelper.Currency.BTC.getValue());
+
+
+            byte[] transactionHex = NativeDataHelper.makeTransaction(DataManager.getInstance().getSeed().getSeed(), viewModel.getWallet().getWalletIndex(), String.valueOf(amountSatoshi),
+                    "2000", String.valueOf(amountDonationSatoshi), addressTo, changeAddress);
             String hex = byteArrayToHex(transactionHex);
             Log.i(TAG, "hex= " + hex);
+            Log.i(TAG, "changeAddress = " + changeAddress);
 
             //TODO REMOVE THIS HARDCODE of the currency ID from this awesome Api request
             MultyApi.INSTANCE.sendRawTransaction(hex, 0).enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                    startActivity(new Intent(getActivity(), MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                    MultyApi.INSTANCE.addWalletAddress(new AddWalletAddressRequest(viewModel.getWallet().getWalletIndex(), changeAddress, addressesSize)).enqueue(new Callback<ResponseBody>() {
+                        @Override
+                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                            RealmManager.getAssetsDao().saveAddress(viewModel.getWallet().getWalletIndex(), new WalletAddress(addressesSize, changeAddress));
+                            startActivity(new Intent(getActivity(), MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseBody> call, Throwable t) {
+                            t.printStackTrace();
+                        }
+                    });
+
                 }
 
                 @Override
                 public void onFailure(Call<ResponseBody> call, Throwable t) {
-
+                    t.printStackTrace();
                 }
             });
         } catch (Exception e) {

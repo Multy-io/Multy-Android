@@ -29,6 +29,7 @@ import io.multy.storage.DatabaseHelper;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.realm.RealmResults;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -114,7 +115,7 @@ public class DataManager {
         databaseHelper.saveWallets(wallet);
     }
 
-    public Observable<Object> addWalletAddress(AddWalletAddressRequest addWalletAddressRequest) {
+    public Call<ResponseBody> addWalletAddress(AddWalletAddressRequest addWalletAddressRequest) {
         return MultyApi.INSTANCE.addWalletAddress(addWalletAddressRequest);
     }
 

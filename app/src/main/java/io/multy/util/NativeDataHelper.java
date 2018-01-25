@@ -61,6 +61,6 @@ public class NativeDataHelper {
 
     public static native int runTest();
 
-    public static native byte[] makeTransaction(byte[] seed, int walletIndex, String amountToSpend, String feePerByte, String donationAmount, String destinationAddress);
+    public static native byte[] makeTransaction(byte[] seed, int walletIndex, String amountToSpend, String feePerByte, String donationAmount, String destinationAddress, String changeAddress);
 
 }

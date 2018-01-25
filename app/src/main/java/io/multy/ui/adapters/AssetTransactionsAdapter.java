@@ -18,6 +18,7 @@ import io.multy.R;
 import io.multy.model.entities.TransactionHistory;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.storage.RealmManager;
+import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
 import io.multy.util.DateHelper;
 import io.realm.RealmList;
@@ -102,24 +103,25 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
             amountFiat = String.valueOf(CryptoFormatUtils.satoshiToUsd(transactionHistory.getTxOutAmount(), transactionHistory.getBtcToUsd()));
             setAddresses(transactionHistory.getInputs(), holder.containerAddresses);
         } else {
+            //TODO REMOVE DRY AND OPTIMIZE
             RealmList<WalletAddress> addresses = RealmManager.getAssetsDao().getWalletById(walletIndex).getAddresses();
 //            List<WalletAddress> inputs = transactionHistory.getInputs();
 
             List<WalletAddress> outputs = transactionHistory.getOutputs();
             //user change address must be last, so reversing
             Collections.reverse(outputs);
-
             WalletAddress userChangeAddress = null;
+            String addressTo = "";
 
             for (WalletAddress output : outputs) {
-                if (userChangeAddress != null) {
-                    break;
-                }
 
-                for (WalletAddress walletAddress : addresses) {
-                    if (output.getAddress().equals(walletAddress.getAddress())) {
-                        userChangeAddress = output;
-                        break;
+                if (!output.getAddress().equals(Constants.DONTAION_ADDRESS)) {
+                    for (WalletAddress walletAddress : addresses) {
+                        if (output.getAddress().equals(walletAddress.getAddress())) {
+                            userChangeAddress = output;
+                        } else {
+                            addressTo = output.getAddress();
+                        }
                     }
                 }
             }
@@ -128,7 +130,7 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
             lockedFiat = CryptoFormatUtils.satoshiToUsd(userChangeAddress.getAmount());
             amount = CryptoFormatUtils.satoshiToBtc(transactionHistory.getTxOutAmount());
             amountFiat = String.valueOf(CryptoFormatUtils.satoshiToUsd(transactionHistory.getTxOutAmount(), transactionHistory.getBtcToUsd()));
-            setAddresses(transactionHistory.getOutputs(), holder.containerAddresses);
+            setAddress(addressTo, holder.containerAddresses);
         }
 
         holder.amount.setText(String.format("%s BTC", amount));
@@ -157,15 +159,35 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
 
         holder.operationImage.setImageResource(isIncoming ? R.drawable.ic_receive : R.drawable.ic_send);
         holder.date.setText(DateHelper.DATE_FORMAT_HISTORY.format(transactionHistory.getBlockTime() * 1000));
-
-        holder.amount.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(transactionHistory.getTxOutAmount())));
-        holder.fiat.setText(String.format("%s USD", CryptoFormatUtils.satoshiToUsd(transactionHistory.getTxOutAmount(), transactionHistory.getBtcToUsd())));
         holder.containerAddresses.removeAllViews();
 
         if (isIncoming) {
             setAddresses(transactionHistory.getInputs(), holder.containerAddresses);
+            holder.amount.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(transactionHistory.getTxOutAmount())));
+            holder.fiat.setText(String.format("%s USD", CryptoFormatUtils.satoshiToUsd(transactionHistory.getTxOutAmount(), transactionHistory.getBtcToUsd())));
         } else {
-            setAddresses(transactionHistory.getOutputs(), holder.containerAddresses);
+            //TODO REMOVE DRY AND OPTIMIZE
+            WalletAddress addressTo = null;
+            List<WalletAddress> outputs = transactionHistory.getOutputs();
+            //user change address must be last, so reversing
+            Collections.reverse(outputs);
+            WalletAddress userChangeAddress = null;
+
+            for (WalletAddress output : outputs) {
+                if (!output.getAddress().equals(Constants.DONTAION_ADDRESS)) {
+                    for (WalletAddress walletAddress : RealmManager.getAssetsDao().getWalletById(walletIndex).getAddresses()) {
+                        if (!output.getAddress().equals(walletAddress.getAddress())) {
+                            addressTo = output;
+                        }
+                    }
+                }
+            }
+
+            if (addressTo != null) {
+                setAddress(addressTo.getAddress(), holder.containerAddresses);
+                holder.amount.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(addressTo.getAmount())));
+                holder.fiat.setText(String.format("%s USD", CryptoFormatUtils.satoshiToUsd(addressTo.getAmount(), transactionHistory.getBtcToUsd())));
+            }
         }
     }
 

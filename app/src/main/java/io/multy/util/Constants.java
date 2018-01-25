@@ -10,6 +10,8 @@ public class Constants {
 
     public static final String DEVICE_NAME = "Andrdoid " + " " + android.os.Build.MANUFACTURER + " " + android.os.Build.PRODUCT;
 
+    public static final String DONTAION_ADDRESS = "mzqiDnETWkunRDZxjUQ34JzN1LDevh5DpU";
+
     public static final int POSITION_ASSETS = 0;
     public static final int POSITION_FEED = 1;
     public static final int POSITION_CONTACTS = 3;
@@ -72,4 +74,5 @@ public class Constants {
     public static final int TX_CONFIRMED_OUTCOMING = 6;
 
     public static final int REQUEST_CODE_RESTORE = 22;
+    public static final int REQUEST_CODE_CREATE = 22;
 }

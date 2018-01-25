@@ -42,6 +42,7 @@ public class AssetsDao {
         final double balance = wallet.calculateBalance();
         final double pendingBalance = wallet.calculatePendingBalance();
 
+
         WalletRealmObject savedWallet = getWalletById(index);
         if (savedWallet == null) {
             savedWallet = new WalletRealmObject();
@@ -61,10 +62,11 @@ public class AssetsDao {
         return realm.where(WalletRealmObject.class).findAll();
     }
 
-    public void saveAddress(WalletRealmObject wallet, WalletAddress address) {
+    public void saveAddress(int walletIndex, WalletAddress address) {
         realm.executeTransaction(realm -> {
-            wallet.getAddresses().add(address);
-            realm.insertOrUpdate(wallet);
+            WalletRealmObject walletRealmObject = getWalletById(walletIndex);
+            walletRealmObject.getAddresses().add(realm.copyToRealm(address));
+            realm.insertOrUpdate(walletRealmObject);
         });
     }
 

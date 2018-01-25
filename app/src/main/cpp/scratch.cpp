@@ -192,7 +192,8 @@ Java_io_multy_util_NativeDataHelper_makeAccountId(JNIEnv *env, jobject obj, jbyt
 
 JNIEXPORT jstring JNICALL
 Java_io_multy_util_NativeDataHelper_makeAccountAddress(JNIEnv *env, jobject obj, jbyteArray array,
-                                                       jint walletIndex, jint addressIndex, jint currency) {
+                                                       jint walletIndex, jint addressIndex,
+                                                       jint currency) {
 
     using namespace wallet_core::internal;
 
@@ -206,10 +207,12 @@ Java_io_multy_util_NativeDataHelper_makeAccountAddress(JNIEnv *env, jobject obj,
     ERSOR(make_master_key(&seed, reset_sp(rootKey)), jstring());
 
     HDAccountPtr hdAccount;
-    ERSOR(make_hd_account(rootKey.get(), static_cast<Currency >((int) currency), addressIndex, reset_sp(hdAccount)), jstring());
+    ERSOR(make_hd_account(rootKey.get(), static_cast<Currency >((int) currency), addressIndex,
+                          reset_sp(hdAccount)), jstring());
 
     AccountPtr account;
-    ERSOR(make_hd_leaf_account(hdAccount.get(), ADDRESS_EXTERNAL, walletIndex, reset_sp(account)), jstring());
+    ERSOR(make_hd_leaf_account(hdAccount.get(), ADDRESS_EXTERNAL, walletIndex, reset_sp(account)),
+          jstring());
 
     ConstCharPtr address;
     ERSOR(get_account_address_string(account.get(), reset_sp(address)), jstring());
@@ -224,7 +227,7 @@ JNIEXPORT jbyteArray JNICALL
 Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *jniEnv, jobject obj, jbyteArray jSeed,
                                                     jint jWalletIndex, jstring amountToSpend,
                                                     jstring jFeePerByte, jstring jDonation,
-                                                    jstring jDestinationAddress) {
+                                                    jstring jDestinationAddress, jstring jChangeAddress) {
 
     using namespace wallet_core::internal;
     using namespace multy_transaction::internal;
@@ -236,12 +239,13 @@ Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *jniEnv, jobject obj,
 
     jclass jTransaction = env->FindClass("io/multy/util/SendTransactionModel");
     jmethodID jMethodInit = env->GetMethodID(jTransaction, "<init>", "(ILjava/lang/String;)V");
-    jobject jObjectTransaction = env->NewObject(jTransaction, jMethodInit, jWalletIndex, amountToSpend);
+    jobject jObjectTransaction = env->NewObject(jTransaction, jMethodInit, jWalletIndex,
+                                                amountToSpend);
 
     jmethodID jMidSetup = env->GetMethodID(jTransaction, "setupFields", "(I)V");
     jmethodID jMidAddrIdes = env->GetMethodID(jTransaction, "getAddressesIndexes", "()[I");
     jmethodID jMidIds = env->GetMethodID(jTransaction, "getOutIds", "()[I");
-    jmethodID jMidHashes = env->GetMethodID(jTransaction, "getHashes" , "()[Ljava/lang/String;");
+    jmethodID jMidHashes = env->GetMethodID(jTransaction, "getHashes", "()[Ljava/lang/String;");
     jmethodID jMidKeys = env->GetMethodID(jTransaction, "getPubKeys", "()[Ljava/lang/String;");
     jmethodID jMidAmounts = env->GetMethodID(jTransaction, "getAmounts", "()[Ljava/lang/String;");
 
@@ -256,7 +260,8 @@ Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *jniEnv, jobject obj,
     error.reset(make_master_key(&seed, reset_sp(rootKey)));
 
     HDAccountPtr hdAccount;
-    error.reset(make_hd_account(rootKey.get(), CURRENCY_BITCOIN, jWalletIndex, reset_sp(hdAccount)));
+    error.reset(
+            make_hd_account(rootKey.get(), CURRENCY_BITCOIN, jWalletIndex, reset_sp(hdAccount)));
 
     AccountPtr baseAccount;
     error.reset(make_hd_leaf_account(hdAccount.get(), ADDRESS_EXTERNAL, 0, reset_sp(baseAccount)));
@@ -272,6 +277,7 @@ Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *jniEnv, jobject obj,
 
     const char *destinationAddressStr = env->GetStringUTFChars(jDestinationAddress, nullptr);
     const char *destinationAmountStr = env->GetStringUTFChars(amountToSpend, nullptr);
+    const char *changeAddressStr = env->GetStringUTFChars(jChangeAddress, nullptr);
 
     const Amount destinationAmount(destinationAmountStr);
     const Amount feePerByte(feePerByteStr);
@@ -289,9 +295,11 @@ Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *jniEnv, jobject obj,
             env->CallVoidMethod(jObjectTransaction, jMidSetup, addressId);
 
             jintArray outIds = (jintArray) env->CallObjectMethod(jObjectTransaction, jMidIds);
-            jobjectArray hashes = (jobjectArray) env->CallObjectMethod(jObjectTransaction,jMidHashes);
+            jobjectArray hashes = (jobjectArray) env->CallObjectMethod(jObjectTransaction,
+                                                                       jMidHashes);
             jobjectArray keys = (jobjectArray) env->CallObjectMethod(jObjectTransaction, jMidKeys);
-            jobjectArray amounts = (jobjectArray) env->CallObjectMethod(jObjectTransaction, jMidAmounts);
+            jobjectArray amounts = (jobjectArray) env->CallObjectMethod(jObjectTransaction,
+                                                                        jMidAmounts);
 
             int stringCount = env->GetArrayLength(hashes);
             jint *outIdArr = env->GetIntArrayElements(outIds, nullptr);
@@ -355,7 +363,7 @@ Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *jniEnv, jobject obj,
 
         {
             Properties &change = transaction->add_destination();
-            change.set_property("address", baseAccount->get_address());
+            change.set_property("address", changeAddressStr);
             change.set_property("amount", sum - destinationAmount - donationAmount - total_fee);
         }
 
@@ -364,7 +372,8 @@ Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *jniEnv, jobject obj,
         BinaryDataPtr serialized = transaction->serialize();
 
         jbyteArray resultArray = env->NewByteArray(serialized.get()->len);
-        env->SetByteArrayRegion(resultArray, 0, serialized.get()->len, reinterpret_cast<const jbyte *>(serialized->data));
+        env->SetByteArrayRegion(resultArray, 0, serialized.get()->len,
+                                reinterpret_cast<const jbyte *>(serialized->data));
         return resultArray;
 
     } catch (std::exception const &e) {

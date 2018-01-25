@@ -118,7 +118,7 @@ public enum MultyApi implements MultyApiInterface {
         }
 
         @Override
-        public Observable<Object> addWalletAddress(AddWalletAddressRequest addWalletAddressRequest) {
+        public Call<ResponseBody> addWalletAddress(AddWalletAddressRequest addWalletAddressRequest) {
             return api.addWalletAddress(addWalletAddressRequest);
         }
 

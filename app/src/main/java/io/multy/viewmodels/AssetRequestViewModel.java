@@ -17,6 +17,7 @@ import com.google.zxing.common.BitMatrix;
 
 import java.util.List;
 
+import io.multy.api.MultyApi;
 import io.multy.model.DataManager;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.entities.wallet.WalletRealmObject;
@@ -24,8 +25,10 @@ import io.multy.model.requests.AddWalletAddressRequest;
 import io.multy.storage.RealmManager;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import timber.log.Timber;
 
 /**
@@ -148,26 +151,27 @@ public class AssetRequestViewModel extends BaseViewModel {
             final byte[] seed = dataManager.getSeed().getSeed();
             String creationAddress = NativeDataHelper.makeAccountAddress(seed, wallet.getWalletIndex(), addressIndex, currency);
 
-            // TODO add loading dialog
-            dataManager.addWalletAddress(new AddWalletAddressRequest(wallet.getWalletIndex(), creationAddress, addressIndex))
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeOn(Schedulers.io())
-                    .subscribe(response -> {
-                        dataManager.saveAddress(wallet, new WalletAddress(addressIndex, creationAddress));
-                        address.setValue(creationAddress);
+            MultyApi.INSTANCE.addWalletAddress(new AddWalletAddressRequest(wallet.getWalletIndex(), creationAddress, addressIndex)).enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    RealmManager.getAssetsDao().saveAddress(wallet.getWalletIndex(), new WalletAddress(addressIndex, creationAddress));
+                    address.setValue(creationAddress);
 
-                        for (WalletAddress address : wallet.getAddresses()) { // to view wallet addresses after adding new address
-                            Timber.i("after address %s", address);
-                        }
-                        isLoading.setValue(false);
-                        isLoading.call();
-                    }, throwable -> {
-                        isLoading.setValue(false);
-                        isLoading.call();
-                        errorMessage.setValue("An error occurred while adding new address");
-                        throwable.printStackTrace();
-                        // TODO show error dialog
-                    });
+                    for (WalletAddress address : wallet.getAddresses()) { // to view wallet addresses after adding new address
+                        Timber.i("after address %s", address);
+                    }
+                    isLoading.setValue(false);
+                    isLoading.call();
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    isLoading.setValue(false);
+                    isLoading.call();
+                    errorMessage.setValue("An error occurred while adding new address");
+                    t.printStackTrace();
+                }
+            });
 
         } catch (JniException e) {
             e.printStackTrace();

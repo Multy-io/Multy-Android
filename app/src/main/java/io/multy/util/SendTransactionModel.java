@@ -8,10 +8,10 @@ package io.multy.util;
 
 import java.util.ArrayList;
 
-import io.multy.model.DataManager;
 import io.multy.model.entities.Output;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.entities.wallet.WalletRealmObject;
+import io.multy.storage.RealmManager;
 
 public class SendTransactionModel {
 
@@ -26,22 +26,16 @@ public class SendTransactionModel {
     private int addressIndex;
 
     public SendTransactionModel(int walletIndex, String amount) {
-        wallet = DataManager.getInstance().getWallet(walletIndex);
+        wallet = RealmManager.getAssetsDao().getWalletById(walletIndex);
         initAddresses(Long.valueOf(amount));
     }
 
     public void initAddresses(long amount) {
-        long spendableAmount = 0;
         addresses = new ArrayList<>();
 
         for (WalletAddress walletAddress : wallet.getAddresses()) {
             if (walletAddress.getAmount() != 0) {
-                spendableAmount += walletAddress.getAmount();
                 addresses.add(walletAddress);
-            }
-
-            if (spendableAmount > amount) {
-                break;
             }
         }
     }
