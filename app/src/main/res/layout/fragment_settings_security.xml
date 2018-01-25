@@ -99,13 +99,14 @@
             android:id="@+id/text_entrance_settings"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="11dp"
             android:gravity="center_vertical"
             android:paddingStart="16dp"
             android:text="@string/settings_entrance"
             android:textColor="@color/black"
             android:textSize="16sp"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintBottom_toTopOf="@+id/text_state_entrance"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed" />
 
         <ImageView
             android:id="@+id/image_warning"
@@ -127,7 +128,8 @@
             android:textColor="@color/red"
             android:textSize="12sp"
             app:layout_constraintLeft_toRightOf="@id/image_warning"
-            app:layout_constraintTop_toBottomOf="@id/text_entrance_settings" />
+            app:layout_constraintTop_toBottomOf="@id/text_entrance_settings"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
         <ImageView
             android:id="@+id/chevron_entrance"

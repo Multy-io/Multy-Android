@@ -6,7 +6,9 @@
 
 package io.multy.ui.fragments.dialogs;
 
+import android.app.ActivityManager;
 import android.app.Dialog;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -16,12 +18,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.TextView;
-
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
+
 
 
 public class ResetDataDialogFragment extends DialogFragment {
@@ -53,8 +53,9 @@ public class ResetDataDialogFragment extends DialogFragment {
 
     @OnClick(R.id.button_positive)
     public void onClickPositive() {
-
+        ((ActivityManager)getActivity().getSystemService(Context.ACTIVITY_SERVICE)).clearApplicationUserData();
     }
+
 
     @OnClick(R.id.button_neutral)
     public void onClickNeutral() {

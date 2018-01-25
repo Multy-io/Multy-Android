@@ -90,7 +90,8 @@
         android:layout_height="@dimen/entrance_settings_container_height"
         android:layout_marginTop="@dimen/entrance_settings_container_margin_top"
         android:background="@color/white"
-        android:foreground="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
         app:layout_constraintTop_toBottomOf="@+id/button_warn">
 
         <View
@@ -131,6 +132,7 @@
         android:layout_marginTop="@dimen/entrance_settings_container_margin_top"
         android:background="@color/white"
         android:foreground="?attr/selectableItemBackground"
+        android:clickable="true"
         app:layout_constraintTop_toBottomOf="@id/container_check_password">
 
         <View
@@ -180,6 +182,7 @@
         android:layout_height="@dimen/entrance_settings_container_height"
         android:background="@color/white"
         android:foreground="?attr/selectableItemBackground"
+        android:clickable="true"
         app:layout_constraintTop_toBottomOf="@id/container_pin">
 
         <ImageView
