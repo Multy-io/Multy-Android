@@ -42,6 +42,7 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
     private RecyclerView.LayoutManager dotsLayoutManager;
     private StringBuilder stringBuilder;
     boolean isLockVisible = false;
+    private OnLockCloseListener onLockCLoseListener;
 
     public void hideKeyboard(Activity activity) {
         if (activity != null && activity.getWindow() != null && activity.getWindow().getDecorView() != null) {
@@ -99,7 +100,7 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
         super.onDestroy();
     }
 
-    void showLock() {
+    public void showLock() {
         if (!Prefs.getBoolean(Constants.PREF_LOCK)) {
             return;
         }
@@ -190,6 +191,9 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
                 }
             } else {
                 hideLock();
+                if (onLockCLoseListener != null) {
+                    onLockCLoseListener.onLockClosed();
+                }
             }
         }
     }
@@ -210,5 +214,13 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
             dot.setBackgroundResource(R.drawable.circle_border_white);
             stringBuilder.deleteCharAt(stringBuilder.length() - 1);
         }
+    }
+
+    public void setOnLockCLoseListener(OnLockCloseListener onLockCLoseListener) {
+        this.onLockCLoseListener = onLockCLoseListener;
+    }
+
+    public interface OnLockCloseListener {
+        void onLockClosed();
     }
 }

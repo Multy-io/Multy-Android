@@ -116,7 +116,10 @@
             style="@style/ControlSettings"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:clickable="true"
+            android:focusable="true"
+            />
 
         <View
             android:layout_width="@dimen/dp0"
@@ -172,7 +175,7 @@
             android:layout_width="@dimen/dp0"
             android:layout_height="@dimen/divider_height_small"
             android:background="@color/gray_light_transparent"
-            app:layout_constraintLeft_toLeftOf="@id/text_pin"
+            app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/text_pin" />
     </android.support.constraint.ConstraintLayout>
 
@@ -183,6 +186,7 @@
         android:background="@color/white"
         android:foreground="?attr/selectableItemBackground"
         android:clickable="true"
+        android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/container_setup_pin">
 
         <ImageView
