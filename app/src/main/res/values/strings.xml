@@ -214,5 +214,6 @@
     <string name="reset_data_description">By reseting your current data all your wallets will be removed. Make sure that you remember your seed phrase to restore it anytime.</string>
     <string name="view_seed">View Seed</string>
     <string name="backup_seed">Backup Seed</string>
+    <string name="enter_password">Enter Password</string>
 
 </resources>

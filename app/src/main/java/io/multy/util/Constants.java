@@ -34,6 +34,7 @@ public class Constants {
     public static final String PREF_IV = "PREF_IV";
     public static final String PREF_KEY = "PREF_KEY";
     public static final String PREF_LOCK = "PREF_LOCK";
+    public static final String PREF_UNLOCKED = "PREF_UNLOCKED";
     public static final String PREF_LOCK_DATE = "PREF_LOCK_DATE";
     public static final String PREF_LOCK_MULTIPLIER = "PREF_LOCK_MULTIPLIER";
     public static final String PREF_VERSION = "PREF_VERSION";

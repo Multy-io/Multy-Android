@@ -108,6 +108,13 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
                     .scaleX(4).setDuration(400).withEndAction(() -> splash.setVisibility(View.GONE))
                     .start(), 300);
         }
+
+        if (Prefs.getBoolean(Constants.PREF_LOCK)) {
+            Fragment fastOperations = getSupportFragmentManager().findFragmentByTag(FastOperationsFragment.TAG);
+            if (fastOperations != null) {
+                getSupportFragmentManager().beginTransaction().remove(fastOperations).commit();
+            }
+        }
     }
 
     private void initBranchIO() {

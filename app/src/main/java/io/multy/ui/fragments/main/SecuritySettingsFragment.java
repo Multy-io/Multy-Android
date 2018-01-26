@@ -21,7 +21,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
-import io.multy.ui.activities.BaseActivity;
 import io.multy.ui.activities.SeedActivity;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.dialogs.ResetDataDialogFragment;
@@ -46,7 +45,7 @@ public class SecuritySettingsFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_settings_security, container, false);
         ButterKnife.bind(this, view);
 
-        if (Prefs.getBoolean(Constants.PREF_PIN)) {
+        if (Prefs.contains(Constants.PREF_PIN)) {
             imageWarning.setVisibility(View.GONE);
             textStateEntrance.setVisibility(View.GONE);
         }
@@ -78,16 +77,16 @@ public class SecuritySettingsFragment extends BaseFragment {
 
     @OnClick(R.id.container_entrance_settings)
     public void onClickEntranceSettings() {
-        if (Prefs.getBoolean(Constants.PREF_PIN)) {
-//            showLock()
-        } else {
+//        if (Prefs.getBoolean(Constants.PREF_PIN)) {
+////            showLock()
+//        } else {
             if (getActivity() != null) {
                 getActivity().getSupportFragmentManager().beginTransaction()
                         .replace(R.id.settings_container, EntranceSettingsFragment.newInstance())
                         .addToBackStack(EntranceSettingsFragment.class.getSimpleName())
                         .commit();
             }
-        }
+//        }
     }
 
     @OnClick(R.id.container_reset_data)

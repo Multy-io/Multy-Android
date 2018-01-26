@@ -16,15 +16,26 @@ import io.multy.R;
 
 public class PinDotsAdapter extends RecyclerView.Adapter<PinDotsAdapter.ViewHolder> {
 
-    private static final int COUNT = 6;
-
+    public static final int COUNT = 6;
+    private boolean isWhiteDots = true;
 
     public PinDotsAdapter() {
     }
 
     @Override
+    public int getItemViewType(int position) {
+        return super.getItemViewType(position);
+    }
+
+    @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_pin_dot, parent, false);
+        View convertView;
+        if (isWhiteDots) {
+            convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_pin_dot, parent, false);
+        } else {
+            convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_pin_dot, parent, false);
+            ((ImageView) convertView).setImageResource(R.drawable.circle_border_grey);
+        }
         return new ViewHolder(convertView);
     }
 
@@ -37,6 +48,13 @@ public class PinDotsAdapter extends RecyclerView.Adapter<PinDotsAdapter.ViewHold
         return COUNT;
     }
 
+    public void setupDotsAsGray() {
+        isWhiteDots = false;
+    }
+
+    public boolean isWhiteDots() {
+        return isWhiteDots;
+    }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 

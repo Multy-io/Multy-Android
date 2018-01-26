@@ -6,6 +6,7 @@
 
 package io.multy.ui.fragments.main;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
@@ -19,8 +20,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
+import io.multy.ui.activities.PinSetupActivity;
 import io.multy.ui.fragments.BaseFragment;
-
 import io.multy.util.Constants;
 
 public class EntranceSettingsFragment extends BaseFragment {
@@ -50,4 +51,10 @@ public class EntranceSettingsFragment extends BaseFragment {
         }
     }
 
+    @OnClick(R.id.container_setup_pin)
+    void onClickPin(View view) {
+        view.setEnabled(false);
+        view.postDelayed(() -> view.setEnabled(true), 1500);
+        startActivity(new Intent(getActivity(), PinSetupActivity.class));
+    }
 }

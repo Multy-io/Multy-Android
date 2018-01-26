@@ -126,7 +126,7 @@
     </android.support.constraint.ConstraintLayout>
 
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/container_pin"
+        android:id="@+id/container_setup_pin"
         android:layout_width="match_parent"
         android:layout_height="@dimen/entrance_settings_container_height"
         android:layout_marginTop="@dimen/entrance_settings_container_margin_top"
@@ -183,7 +183,7 @@
         android:background="@color/white"
         android:foreground="?attr/selectableItemBackground"
         android:clickable="true"
-        app:layout_constraintTop_toBottomOf="@id/container_pin">
+        app:layout_constraintTop_toBottomOf="@id/container_setup_pin">
 
         <ImageView
             android:id="@+id/image_feedback"

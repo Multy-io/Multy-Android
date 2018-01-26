@@ -5,8 +5,9 @@
   -->
 
 <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="14dp"
     android:layout_height="14dp"
     android:layout_marginLeft="8dp"
     android:layout_marginRight="8dp"
-    android:src="@drawable/circle_border_white" />
+    app:srcCompat="@drawable/circle_border_white" />

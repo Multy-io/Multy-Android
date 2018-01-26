@@ -7,10 +7,11 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
     android:id="@+id/container_pin"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background_gradient_blue">
+    android:background="@drawable/background_gradient_blue"
+    android:elevation="20dp">
 
     <TextView
         android:id="@+id/text_title"

@@ -14,10 +14,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.samwolfand.oneprefs.Prefs;
@@ -84,6 +86,14 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        if (isLockVisible && Prefs.getBoolean(Constants.PREF_UNLOCKED, false)) {
+            hideLock();
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         Foreground.Companion.removeListener(foregroundListener);
         super.onDestroy();
@@ -94,10 +104,7 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
             return;
         }
 
-        if (Prefs.getBoolean(Constants.PREF_SELF_CLICKED)) {
-            Prefs.putBoolean(Constants.PREF_SELF_CLICKED, false);
-            return;
-        }
+        hideKeyboard(this);
 
         View fastOperation = findViewById(R.id.fast_operations);
         if (fastOperation != null) {
@@ -107,6 +114,9 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
         ViewGroup viewGroup = findViewById(R.id.container_main);
         if (viewGroup != null) {
             View convertView = getLayoutInflater().inflate(R.layout.layout_pin, viewGroup, false);
+            TextView textTitle = convertView.findViewById(R.id.text_title);
+            textTitle.setText(R.string.enter_password);
+            textTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
 
             View previousView = viewGroup.findViewById(R.id.container_pin);
             if (previousView != null) {
@@ -127,9 +137,13 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
 
             stringBuilder = new StringBuilder();
             viewGroup.addView(convertView);
+            if (viewGroup.getVisibility() != View.VISIBLE) {
+                viewGroup.setVisibility(View.VISIBLE);
+            }
 
             isLockVisible = true;
             RealmManager.open(this);
+            Prefs.putBoolean(Constants.PREF_UNLOCKED, false);
         }
     }
 
@@ -149,6 +163,7 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
             viewGroup.removeViewInLayout(locker);
             isLockVisible = false;
         }
+        Prefs.putBoolean(Constants.PREF_UNLOCKED, true);
     }
 
     @Override
@@ -181,8 +196,11 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
 
     @Override
     public void onBackPressed() {
-        Prefs.putBoolean(Constants.PREF_SELF_CLICKED, true);
-        super.onBackPressed();
+        if (!Prefs.getBoolean(Constants.PREF_UNLOCKED, false)) {
+            finish();
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override
