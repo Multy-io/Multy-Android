@@ -169,7 +169,7 @@ public class WalletViewModel extends BaseViewModel {
 
     public MutableLiveData<Boolean> removeWallet() {
         isLoading.setValue(true);
-        MultyApi.INSTANCE.removeWallet(wallet.getValue().getWalletIndex()).enqueue(new Callback<ResponseBody>() {
+        MultyApi.INSTANCE.removeWallet(0, wallet.getValue().getWalletIndex()).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 RealmManager.getAssetsDao().removeWallet(wallet.getValue().getWalletIndex());

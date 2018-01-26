@@ -55,19 +55,19 @@ public interface ApiServiceInterface {
     Call<ResponseBody> addWalletAddress(@Body AddWalletAddressRequest addWalletAddressRequest);
 
     @GET("api/v1/wallet/{walletIndex}/verbose/{currencyId}")
-    Call<WalletsResponse> getWalletVerboseByIndex(@Path ("currencyId") int currencyId, @Path ("walletIndex") int walletIndex);
+    Call<WalletsResponse> getWalletVerboseByIndex(@Path("currencyId") int currencyId, @Path("walletIndex") int walletIndex);
 
     @POST("api/v1/wallet/name/{currencyId}/{id}")
     Call<ResponseBody> updateWalletName(@Path("currencyId") int currencyId, @Path("id") int id, @Body UpdateWalletNameRequest updateWalletName);
 
-    @DELETE("api/v1/wallet/{walletIndex}")
-    Call<ResponseBody> removeWallet(@Path ("walletIndex") int walletIndex);
+    @DELETE("api/v1/wallet/{currencyId}/{walletIndex}")
+    Call<ResponseBody> removeWallet(@Path("currencyId") int currencyId, @Path("walletIndex") int walletIndex);
 
     @GET("api/v1/wallets/verbose/")
     Call<WalletsResponse> getWalletsVerbose();
 
     @GET("api/v1/wallets/transactions/{currencyid}/{walletIndex}")
-    Call<TransactionHistoryResponse> getTransactionHistory(@Path ("currencyid") int currencyId, @Path ("walletIndex") int walletIndex);
+    Call<TransactionHistoryResponse> getTransactionHistory(@Path("currencyid") int currencyId, @Path("walletIndex") int walletIndex);
 
     @GET("/server/config")
     Call<ServerConfigResponse> getServerConfig();
