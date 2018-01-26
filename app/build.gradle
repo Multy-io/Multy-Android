@@ -50,7 +50,7 @@ android {
         externalNativeBuild {
             cmake {
                 path "/Users/vadimicus/work/CppProjects/Multy-Core/CMakeLists.txt"
-//                path "/Users/appscrunch/AndroidStudioProjects/Multy-Core/CMakeLists.txt"
+//                path "C:\\workspace\\KLUBIKMulty-Core\\CMakeLists.txt"
             }
         }
     }
@@ -88,9 +88,9 @@ dependencies {
     }
     implementation 'com.google.firebase:firebase-core:11.8.0'
     implementation 'com.google.firebase:firebase-messaging:11.8.0'
-    implementation 'android.arch.lifecycle:extensions:1.0.0'
+    implementation 'android.arch.lifecycle:extensions:1.1.0'
     testImplementation 'android.arch.core:core-testing:1.0.0'
-    implementation 'android.arch.lifecycle:reactivestreams:1.0.0'
+    implementation 'android.arch.lifecycle:reactivestreams:1.1.0'
     implementation 'com.samwolfand.oneprefs:one-prefs:1.0'
     implementation 'com.google.zxing:core:3.3.0'
     implementation 'com.google.zxing:javase:3.3.0'

@@ -116,7 +116,7 @@ public class BaseSeedFragment extends BaseFragment {
     private void showFragment(Fragment fragment, String tag) {
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.container, fragment)
+                .replace(R.id.container_main, fragment)
                 .addToBackStack(tag)
                 .commit();
     }
