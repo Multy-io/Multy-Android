@@ -7,7 +7,6 @@
 package io.multy.ui.fragments.send;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -27,8 +26,8 @@ import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.requests.AddWalletAddressRequest;
 import io.multy.storage.RealmManager;
-import io.multy.ui.activities.MainActivity;
 import io.multy.ui.fragments.BaseFragment;
+import io.multy.ui.fragments.dialogs.CompleteDialogFragment;
 import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
 import io.multy.util.NativeDataHelper;
@@ -78,7 +77,9 @@ public class SendSummaryFragment extends BaseFragment {
         ButterKnife.bind(this, view);
         viewModel = ViewModelProviders.of(getActivity()).get(AssetSendViewModel.class);
         setBaseViewModel(viewModel);
+        subscribeToErrors();
         setInfo();
+
         return view;
     }
 
@@ -86,21 +87,24 @@ public class SendSummaryFragment extends BaseFragment {
     void onClickNext() {
 //        AssetSendDialogFragment dialog = new AssetSendDialogFragment();
 //        dialog.show(getActivity().getFragmentManager(), null);
+        viewModel.isLoading.setValue(true);
 
         double amount = viewModel.getAmount();
         long amountDonationSatoshi = 0;
         long amountSatoshi = (long) (amount * Math.pow(10, 8));
-        if (viewModel.getDonationAmount() != null){
+        if (viewModel.getDonationAmount() != null) {
             amountDonationSatoshi = (long) (Double.valueOf(viewModel.getDonationAmount()) * Math.pow(10, 8));
         }
         String addressTo = viewModel.getReceiverAddress().getValue();
 
         try {
+            viewModel.isLoading.setValue(true);
+
             byte[] seed = RealmManager.getSettingsDao().getSeed().getSeed();
             final int addressesSize = viewModel.getWallet().getAddresses().size();
             final String changeAddress = NativeDataHelper.makeAccountAddress(seed, viewModel.getWallet().getWalletIndex(), addressesSize, NativeDataHelper.Currency.BTC.getValue());
 
-
+            //TODO make fee per byte
             byte[] transactionHex = NativeDataHelper.makeTransaction(DataManager.getInstance().getSeed().getSeed(), viewModel.getWallet().getWalletIndex(), String.valueOf(amountSatoshi),
                     "2000", String.valueOf(amountDonationSatoshi), addressTo, changeAddress);
             String hex = byteArrayToHex(transactionHex);
@@ -115,12 +119,13 @@ public class SendSummaryFragment extends BaseFragment {
                         @Override
                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                             RealmManager.getAssetsDao().saveAddress(viewModel.getWallet().getWalletIndex(), new WalletAddress(addressesSize, changeAddress));
-                            startActivity(new Intent(getActivity(), MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                            new CompleteDialogFragment().show(getActivity().getSupportFragmentManager(), "");
                         }
 
                         @Override
                         public void onFailure(Call<ResponseBody> call, Throwable t) {
                             t.printStackTrace();
+                            showError();
                         }
                     });
 
@@ -129,11 +134,17 @@ public class SendSummaryFragment extends BaseFragment {
                 @Override
                 public void onFailure(Call<ResponseBody> call, Throwable t) {
                     t.printStackTrace();
+                    showError();
                 }
             });
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void showError() {
+        viewModel.isLoading.postValue(false);
+        viewModel.errorMessage.postValue(getString(R.string.error_sending_tx));
     }
 
     public static String byteArrayToHex(byte[] a) {

@@ -215,5 +215,8 @@
     <string name="view_seed">View Seed</string>
     <string name="backup_seed">Backup Seed</string>
     <string name="enter_password">Enter Password</string>
+    <string name="complete">Complete</string>
+    <string name="completed">Completed</string>
+    <string name="error_sending_tx">Error while sending transaction</string>
 
 </resources>
