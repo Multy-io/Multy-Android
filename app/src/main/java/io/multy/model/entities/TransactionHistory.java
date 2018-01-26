@@ -39,12 +39,8 @@ public class TransactionHistory {
     @SerializedName("confirmations")
     private int confirmations;
 
-    //exchange price while transaction happen
-    @SerializedName("btctousd")
-    private double btcToUsd;
-
     @SerializedName("stockexchangerate")
-    ArrayList<StockExchangeRate> stockExchangeRates;
+    StockExchangeRate stockExchangeRates;
     @SerializedName("txinputs")
     ArrayList<WalletAddress> inputs;
     @SerializedName("txoutputs")
@@ -98,10 +94,6 @@ public class TransactionHistory {
         return txFee;
     }
 
-    public double getBtcToUsd() {
-        return btcToUsd;
-    }
-
     public ArrayList<WalletAddress> getInputs() {
         return inputs;
     }
@@ -110,7 +102,7 @@ public class TransactionHistory {
         return outputs;
     }
 
-    public ArrayList<StockExchangeRate> getStockExchangeRates() {
+    public StockExchangeRate getStockExchangeRates() {
         return stockExchangeRates;
     }
 

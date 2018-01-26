@@ -111,14 +111,15 @@ public class SendSummaryFragment extends BaseFragment {
             Log.i(TAG, "hex= " + hex);
             Log.i(TAG, "changeAddress = " + changeAddress);
 
-            //TODO REMOVE THIS HARDCODE of the currency ID from this awesome Api request
-            MultyApi.INSTANCE.sendRawTransaction(hex, 0).enqueue(new Callback<ResponseBody>() {
+            MultyApi.INSTANCE.addWalletAddress(new AddWalletAddressRequest(viewModel.getWallet().getWalletIndex(), changeAddress, addressesSize)).enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                    MultyApi.INSTANCE.addWalletAddress(new AddWalletAddressRequest(viewModel.getWallet().getWalletIndex(), changeAddress, addressesSize)).enqueue(new Callback<ResponseBody>() {
+                    RealmManager.getAssetsDao().saveAddress(viewModel.getWallet().getWalletIndex(), new WalletAddress(addressesSize, changeAddress));
+                    //TODO REMOVE THIS HARDCODE of the currency ID from this awesome Api request
+                    MultyApi.INSTANCE.sendRawTransaction(hex, 0).enqueue(new Callback<ResponseBody>() {
                         @Override
                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                            RealmManager.getAssetsDao().saveAddress(viewModel.getWallet().getWalletIndex(), new WalletAddress(addressesSize, changeAddress));
+                            viewModel.isLoading.postValue(false);
                             new CompleteDialogFragment().show(getActivity().getSupportFragmentManager(), "");
                         }
 
@@ -128,7 +129,6 @@ public class SendSummaryFragment extends BaseFragment {
                             showError();
                         }
                     });
-
                 }
 
                 @Override
