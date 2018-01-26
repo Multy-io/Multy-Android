@@ -88,8 +88,11 @@ public class SendSummaryFragment extends BaseFragment {
 //        dialog.show(getActivity().getFragmentManager(), null);
 
         double amount = viewModel.getAmount();
+        long amountDonationSatoshi = 0;
         long amountSatoshi = (long) (amount * Math.pow(10, 8));
-        long amountDonationSatoshi = (long) (Double.valueOf(viewModel.getDonationAmount()) * Math.pow(10, 8));
+        if (viewModel.getDonationAmount() != null){
+            amountDonationSatoshi = (long) (Double.valueOf(viewModel.getDonationAmount()) * Math.pow(10, 8));
+        }
         String addressTo = viewModel.getReceiverAddress().getValue();
 
         try {
