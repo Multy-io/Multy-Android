@@ -40,7 +40,7 @@ public class TransactionHistory {
     private int confirmations;
 
     @SerializedName("stockexchangerate")
-    StockExchangeRate stockExchangeRates;
+    ArrayList<StockExchangeRate> stockExchangeRates;
     @SerializedName("txinputs")
     ArrayList<WalletAddress> inputs;
     @SerializedName("txoutputs")
@@ -102,21 +102,38 @@ public class TransactionHistory {
         return outputs;
     }
 
-    public StockExchangeRate getStockExchangeRates() {
+    public ArrayList<StockExchangeRate> getStockExchangeRates() {
         return stockExchangeRates;
     }
 
     public class StockExchangeRate {
+        @SerializedName("timestamp")
+        private long timeStamp;
+
+        @SerializedName("exchanges")
+        private Exchanges exchanges;
+
+        @SerializedName("stock_exchange")
+        private String name;
+
+        public long getTimeStamp() {
+            return timeStamp;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public Exchanges getExchanges() {
+            return exchanges;
+        }
+    }
+
+    public class Exchanges {
         @SerializedName("btc_usd")
         private double btcUsd;
         @SerializedName("eth_usd")
         private double ethUsd;
-
-        @SerializedName("timestamp")
-        private long timeStamp;
-
-        @SerializedName("stock_exchange")
-        private String name;
 
         public double getBtcUsd() {
             return btcUsd;
@@ -126,12 +143,5 @@ public class TransactionHistory {
             return ethUsd;
         }
 
-        public long getTimeStamp() {
-            return timeStamp;
-        }
-
-        public String getName() {
-            return name;
-        }
     }
 }
