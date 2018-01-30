@@ -200,10 +200,10 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
 
     @Override
     public void onBackPressed() {
-        if (!Prefs.getBoolean(Constants.PREF_UNLOCKED, false)) {
-            finish();
-        } else {
+        if (!Prefs.getBoolean(Constants.PREF_LOCK) || Prefs.getBoolean(Constants.PREF_UNLOCKED, true)) {
             super.onBackPressed();
+        } else {
+            finish();
         }
     }
 

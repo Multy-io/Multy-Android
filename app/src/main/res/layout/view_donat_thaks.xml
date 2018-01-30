@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2017 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_panel"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="@id/donat_thanks_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/image_background"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        app:layout_constraintBottom_toBottomOf="@id/card_panel"
+        app:layout_constraintEnd_toEndOf="@id/card_panel"
+        app:layout_constraintStart_toStartOf="@id/card_panel"
+        app:layout_constraintTop_toTopOf="@id/card_panel"
+        app:srcCompat="@drawable/shape_rectangle_orange" />
+
+    <ImageView
+        android:id="@+id/image_like"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="19dp"
+        app:layout_constraintEnd_toEndOf="@id/card_panel"
+        app:layout_constraintStart_toStartOf="@id/card_panel"
+        app:layout_constraintTop_toTopOf="@id/card_panel"
+        app:srcCompat="@drawable/id_donation_icon" />
+
+    <TextView
+        android:id="@+id/donat_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:lineSpacingExtra="8sp"
+        android:paddingEnd="2dp"
+        android:text="@string/zero"
+        android:textAlignment="textEnd"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/donat_coin"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/image_like"
+        tools:text="-0.052509" />
+
+    <TextView
+        android:id="@+id/donat_coin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:lineSpacingExtra="8sp"
+        android:paddingStart="2dp"
+        android:text="@string/btc"
+        android:textColor="@color/blue_light"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/donat_value"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/donat_value"
+        app:layout_constraintTop_toTopOf="@id/donat_value" />
+
+    <TextView
+        android:id="@+id/donat_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:letterSpacing="-0.02"
+        android:lineSpacingExtra="10sp"
+        android:paddingEnd="2dp"
+        android:text="@string/zero"
+        android:textAlignment="textEnd"
+        android:textColor="@color/blue_light"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/donat_money"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/donat_value"
+        tools:text="-393.23" />
+
+    <TextView
+        android:id="@+id/donat_money"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:letterSpacing="-0.02"
+        android:lineSpacingExtra="10sp"
+        android:paddingStart="2dp"
+        android:text="@string/usd"
+        android:textColor="@color/blue_light"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/donat_amount"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/donat_amount"
+        app:layout_constraintTop_toTopOf="@id/donat_amount" />
+
+    <View
+        android:id="@+id/donat_divider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginEnd="63dp"
+        android:layout_marginStart="63dp"
+        android:layout_marginTop="16dp"
+        android:background="@color/grey_light"
+        app:layout_constraintEnd_toEndOf="@id/card_panel"
+        app:layout_constraintStart_toStartOf="@id/card_panel"
+        app:layout_constraintTop_toBottomOf="@id/donat_amount" />
+
+    <TextView
+        android:id="@+id/donat_thanks"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:letterSpacing="-0.02"
+        android:lineSpacingExtra="6sp"
+        android:text="@string/thank_you"
+        android:textAlignment="center"
+        android:textColor="@color/gray_dark"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@id/card_panel"
+        app:layout_constraintStart_toStartOf="@id/card_panel"
+        app:layout_constraintTop_toBottomOf="@id/donat_divider" />
+
+    <TextView
+        android:id="@+id/donat_thanks_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="22dp"
+        android:layout_marginStart="22dp"
+        android:layout_marginTop="8dp"
+        android:letterSpacing="-0.02"
+        android:lineSpacingExtra="5sp"
+        android:paddingBottom="23dp"
+        android:text="@string/multy_item_thanks"
+        android:textAlignment="center"
+        android:textColor="@color/blue_light"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@id/card_panel"
+        app:layout_constraintStart_toStartOf="@id/card_panel"
+        app:layout_constraintTop_toBottomOf="@id/donat_thanks" />
+
+</android.support.constraint.ConstraintLayout>

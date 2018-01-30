@@ -217,7 +217,7 @@
         <item name="android:textSize">12sp</item>
     </style>
 
-    <style name="Devider">
+    <style name="Divider">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">1dp</item>
         <item name="android:background">#dfe0e6</item>
@@ -260,9 +260,7 @@
         <item name="android:textSize">16sp</item>
     </style>
 
-    <style name="DividerCreateWallet">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">1dp</item>
+    <style name="DividerCreateWallet" parent="Divider">
         <item name="android:layout_marginStart">16dp</item>
         <item name="android:background">#e0e3ea</item>
     </style>

@@ -10,7 +10,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#f9faff"
+    android:background="@color/background_main"
     tools:showIn="io.multy.android.MainActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -25,7 +25,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#f9faff"
+            android:background="@color/background_main"
             android:minHeight="?attr/actionBarSize"
             android:theme="?attr/actionBarTheme"
             app:contentInsetEnd="0dp"
@@ -51,7 +51,7 @@
                     android:paddingRight="20dp"
                     android:paddingStart="20dp"
                     android:scaleType="center"
-                    android:tint="#516874"
+                    android:tint="@color/text_grey_dark"
                     app:srcCompat="@drawable/ic_cancel_blue" />
 
                 <TextView
@@ -90,8 +90,8 @@
 
     <View
         android:id="@+id/divider_toolbar"
-        app:layout_constraintTop_toBottomOf="@+id/appbar"
-        style="@style/Divider" />
+        style="@style/Divider"
+        app:layout_constraintTop_toBottomOf="@+id/appbar" />
 
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/scroll"
@@ -284,7 +284,7 @@
                 android:foreground="?attr/selectableItemBackground"
                 android:gravity="center"
                 android:text="@string/delete_wallet"
-                android:textColor="#e72f31"
+                android:textColor="@color/text_red"
                 android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

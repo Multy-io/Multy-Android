@@ -8,4 +8,5 @@ public class DateHelper {
     public static final SimpleDateFormat DATE_FORMAT_AUTH = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz", Locale.getDefault());
     public static final SimpleDateFormat DATE_FORMAT_HISTORY = new SimpleDateFormat("dd MMMM yyyy HH:mm", Locale.getDefault());
     public static final SimpleDateFormat DATE_FORMAT_ADDRESSES = new SimpleDateFormat("dd.MM.yyyy ∙  HH:mm", Locale.getDefault());
+    public static final SimpleDateFormat DATE_FORMAT_TRANSACTION_INFO = new SimpleDateFormat("HH:mm, dd MMMM yyyy", Locale.getDefault());
 }

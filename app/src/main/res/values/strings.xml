@@ -5,7 +5,7 @@
   -->
 
 <resources>
-    <string name="app_name">multy</string>
+    <string name="app_name">Multy</string>
     <string name="wallets">wallets</string>
     <string name="feed">activity</string>
     <string name="contacts">contacts</string>
@@ -198,7 +198,8 @@
     <string name="settings_entrance">Entrance settings</string>
     <string name="none">None</string>
     <string name="about_multy">About multy</string>
-    <string name="leave_feedback">Leave feedback</string>
+    <string name="leave_feedback">Leave feedba
+        ck</string>
     <string name="try_again">Try again</string>
     <string name="make_wallet_backup">Make wallet backup before setting PIN or fingerprint</string>
     <string name="use_password">Use password</string>
@@ -218,5 +219,12 @@
     <string name="complete">Complete</string>
     <string name="completed">Completed</string>
     <string name="error_sending_tx">Error while sending transaction</string>
+    <string name="confirmation">Confirmation</string>
+    <string name="failed_html_page">Failed to loading page!</string>
+    <string name="view_in_blockchain">View in Blockchain</string>
+    <string name="multy_item_thanks">Multy team says thank you for your donation! Thanks to your support, we will constantly improve the application</string>
+    <string name="thank_you">Thank you for donation!</string>
+    <string name="zero">0</string>
+    <string name="in_mempool">In mempool</string>
 
 </resources>

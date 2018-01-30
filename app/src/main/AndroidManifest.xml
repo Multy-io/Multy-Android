@@ -63,11 +63,9 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activities.AssetActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activities.CreateAssetActivity"
-
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activities.SeedActivity"
@@ -152,7 +150,6 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="@string/channel_id" />
-
 
     </application>
 </manifest>

@@ -13,6 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,6 +22,7 @@ import com.samwolfand.oneprefs.Prefs;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.multy.R;
 import io.multy.storage.SecurePreferencesHelper;
 import io.multy.ui.adapters.PinDotsAdapter;
@@ -135,5 +137,11 @@ public class PinSetupActivity extends BaseActivity {
         pin = "";
         textViewTitle.setText(R.string.enter_new_pin);
         inputPin.setText("");
+    }
+
+    @OnClick(R.id.button_back)
+    void onClickBack(View view) {
+        view.setEnabled(false);
+        onBackPressed();
     }
 }

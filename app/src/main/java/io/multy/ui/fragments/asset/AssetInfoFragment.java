@@ -275,7 +275,7 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
 
     @OnClick(R.id.options)
     void onClickOptions() {
-        ((AssetActivity) getActivity()).setFragment(R.id.frame_container, AssetSettingsFragment.newInstance());
+        ((AssetActivity) getActivity()).setFragment(R.id.container_full, AssetSettingsFragment.newInstance());
     }
 
     @OnClick(R.id.card_addresses)

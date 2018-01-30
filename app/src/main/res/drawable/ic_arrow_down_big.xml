@@ -1,0 +1,27 @@
+<!--
+  ~ Copyright 2017 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+        android:width="16dp"
+        android:height="20dp"
+        android:viewportWidth="16.0"
+        android:viewportHeight="20.0">
+    <path
+        android:pathData="M8,1v17z"
+        android:strokeLineCap="round"
+        android:strokeColor="#A8B3B9"
+        android:fillType="evenOdd"
+        android:fillColor="#00000000"
+        android:strokeWidth="2"
+        android:strokeLineJoin="round"/>
+    <path
+        android:pathData="M14.206,15L8,18.57 1.602,15"
+        android:strokeLineCap="round"
+        android:strokeColor="#A8B3B9"
+        android:fillType="evenOdd"
+        android:fillColor="#00000000"
+        android:strokeWidth="2"/>
+</vector>

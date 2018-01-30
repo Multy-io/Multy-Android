@@ -6,12 +6,10 @@
 
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:showIn="io.multy.android.MainActivity">
+    android:fitsSystemWindows="true">
 
     <FrameLayout
         android:id="@+id/frame_container"
@@ -24,14 +22,16 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <View
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0.5dp"
         android:background="@color/gray_light_transparent"
-        app:layout_constraintBottom_toTopOf="@id/send" />
+        app:layout_constraintBottom_toTopOf="@id/send"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/send"
-        android:layout_width="@dimen/dp0"
+        android:layout_width="0dp"
         android:layout_height="56dp"
         android:background="?attr/selectableItemBackground"
         android:drawableTop="@drawable/ic_send_gray"
@@ -41,11 +41,12 @@
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/receive"
+        app:layout_constraintHorizontal_chainStyle="spread"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/receive"
-        android:layout_width="@dimen/dp0"
+        android:layout_width="0dp"
         android:layout_height="56dp"
         android:background="?attr/selectableItemBackground"
         android:drawableTop="@drawable/ic_receive_gray"
@@ -59,7 +60,7 @@
 
     <TextView
         android:id="@+id/exchange"
-        android:layout_width="@dimen/dp0"
+        android:layout_width="0dp"
         android:layout_height="56dp"
         android:background="?attr/selectableItemBackground"
         android:drawableTop="@drawable/ic_exchange"

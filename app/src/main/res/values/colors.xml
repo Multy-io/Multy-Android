@@ -13,6 +13,7 @@
     <color name="gray_light">#EFEFF4</color>
     <color name="gray_divider">#7887a1c5</color>
     <color name="green">#4CAF50</color>
+    <color name="green_light">#5fcc7d</color>
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
     <color name="red">#F44336</color>
@@ -38,11 +39,14 @@
     <color name="text_main">#343434</color>
     <color name="text_main_dark">#363636</color>
     <color name="text_grey">#87a1c5</color>
+    <color name="text_grey_dark">#516874</color>
+    <color name="text_red">#e72f31</color>
     <color name="text_grey_transparent_50">#7d87a1c5</color>
     <color name="grey_light">#e5e5e5</color>
     <color name="white_transparent">#66FFFFFF</color>
     <color name="blue_transparent">#b3007aff</color>
     <color name="blue_lightest">#e6ecf3</color>
     <color name="background_black_transparent">#ca20060b</color>
+    <color name="blue_sky">#00b7ff</color>
 
 </resources>

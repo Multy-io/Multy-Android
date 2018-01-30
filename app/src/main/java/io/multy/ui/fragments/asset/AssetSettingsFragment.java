@@ -57,7 +57,8 @@ public class AssetSettingsFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.view_asset_settings, container, false);
+        View v = inflater.inflate(R.layout.fragment_asset_settings, container, false);
+//        View v = inflater.inflate(R.layout.view_asset_settings, container, false);
         ButterKnife.bind(this, v);
         viewModel.getWalletLive().observe(this, walletRealmObject -> {
             if (walletRealmObject != null && walletRealmObject.getName() != null) {
@@ -73,6 +74,12 @@ public class AssetSettingsFragment extends BaseFragment {
     }
 
     @Override
+    public void onDestroyView() {
+        hideKeyboard(getActivity());
+        super.onDestroyView();
+    }
+
+    @Override
     public void onDestroy() {
         viewModel.isLoading.setValue(false);
         super.onDestroy();
@@ -82,8 +89,10 @@ public class AssetSettingsFragment extends BaseFragment {
         if (inputName.getText().toString().isEmpty() || viewModel.getWalletLive() == null ||
                 viewModel.getWalletLive().getValue() == null ||
                 inputName.getText().toString().equals(viewModel.getWalletLive().getValue().getName())) {
+            getActivity().onBackPressed();
             return;
         }
+        viewModel.isLoading.setValue(true);
         inputName.setEnabled(false);
         viewModel.updateWalletSetting(inputName.getText().toString()).observe(this, isUpdated -> {
             if (isUpdated == null || !isUpdated) {
@@ -91,6 +100,7 @@ public class AssetSettingsFragment extends BaseFragment {
                 inputName.setEnabled(true);
                 return;
             }
+            viewModel.isLoading.setValue(false);
             if (getActivity() != null) {
                 getActivity().onBackPressed();
             }

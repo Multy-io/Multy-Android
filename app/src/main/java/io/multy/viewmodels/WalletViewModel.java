@@ -136,7 +136,6 @@ public class WalletViewModel extends BaseViewModel {
     }
 
     public MutableLiveData<Boolean> updateWalletSetting(String newName) {
-        isLoading.setValue(true);
         int id = wallet.getValue().getWalletIndex();
         int currencyId = wallet.getValue().getCurrency();
         UpdateWalletNameRequest updateWalletName = new UpdateWalletNameRequest(newName);
@@ -145,21 +144,19 @@ public class WalletViewModel extends BaseViewModel {
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.code() == 200) {
                     RealmManager.getAssetsDao().updateWalletName(id, newName);
-                    isLoading.setValue(false);
-                    isWalletUpdated.setValue(true);
+                    wallet.setValue(RealmManager.getAssetsDao().getWalletById(wallet.getValue().getWalletIndex()));
+                    isWalletUpdated.postValue(true);
                 } else {
-                    isWalletUpdated.setValue(false);
                     if (response.message() != null) {
                         errorMessage.setValue(response.message());
                     }
+                    isWalletUpdated.setValue(false);
                 }
-                isLoading.setValue(false);
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 t.printStackTrace();
-                isLoading.setValue(false);
                 isWalletUpdated.setValue(false);
                 errorMessage.setValue(t.getMessage());
             }

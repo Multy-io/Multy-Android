@@ -8,6 +8,7 @@ package io.multy.ui.activities;
 
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -24,6 +25,7 @@ import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.model.responses.ServerConfigResponse;
 import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
+import io.multy.util.Constants;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -65,7 +67,8 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ServerConfigResponse> call, Response<ServerConfigResponse> response) {
                 if (response.isSuccessful()) {
-                    ServerConfigResponse.AndroidConfig androidConfig = response.body().getAndroidConfig();
+                    ServerConfigResponse configResponse = response.body();
+                    ServerConfigResponse.AndroidConfig androidConfig = configResponse.getAndroidConfig();
                     try {
                         PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
                         int versionCode = pInfo.versionCode;
@@ -79,6 +82,11 @@ public class SplashActivity extends AppCompatActivity {
                         } else {
                             showMainActivity();
                         }
+                        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+                        preferences.edit().putString(Constants.PREF_DONATE_ADDRESS_BTC,
+                                configResponse.getDonateInfo().getBtcDonateAddress()).apply();
+                        preferences.edit().putString(Constants.PREF_DONATE_ADDRESS_ETH,
+                                configResponse.getDonateInfo().getEthDonateAddress()).apply();
                     } catch (PackageManager.NameNotFoundException e) {
                         e.printStackTrace();
                     }
@@ -121,6 +129,7 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void showMainActivity() {
+
         Thread background = new Thread() {
             public void run() {
                 try {
