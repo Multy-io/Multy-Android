@@ -69,7 +69,7 @@ public class SecuritySettingsFragment extends BaseFragment {
     @OnClick(R.id.container_restore_seed)
     public void onClickRestoreSeed() {
         if (Prefs.getBoolean(Constants.PREF_BACKUP_SEED)) {
-//            viewSeedPhrase()
+            startActivity(new Intent(getActivity(), SeedActivity.class).setType(Constants.FLAG_VIEW_SEED_PHRASE));
         } else {
             startActivity(new Intent(getActivity(), SeedActivity.class));
         }

@@ -39,6 +39,7 @@ public class Constants {
     public static final String PREF_LOCK_MULTIPLIER = "PREF_LOCK_MULTIPLIER";
     public static final String PREF_VERSION = "PREF_VERSION";
     public static final String PREF_SELF_CLICKED = "PREF_SELF_CLICKED";
+    public static final String FLAG_VIEW_SEED_PHRASE = "view_seed_phrase";
 
 
     public static final int CAMERA_REQUEST_CODE = 328;

@@ -27,6 +27,7 @@ import butterknife.OnClick;
 import io.multy.R;
 import io.multy.ui.fragments.BaseSeedFragment;
 import io.multy.util.BrickView;
+import io.multy.util.Constants;
 import io.multy.viewmodels.SeedViewModel;
 
 public class SeedFragment extends BaseSeedFragment {
@@ -102,7 +103,12 @@ public class SeedFragment extends BaseSeedFragment {
         buttonNext.setEnabled(false);
         if (nextPosition == seedModel.phrase.getValue().size()) {
             redrawTriplet(false);
-            handler.postDelayed(() -> showNext(new SeedSummaryFragment()), BrickView.ANIMATION_DURATION);
+            if (getActivity() != null && getActivity().getIntent().getType() != null
+                    && getActivity().getIntent().getType().equals(Constants.FLAG_VIEW_SEED_PHRASE)) {
+                handler.postDelayed(() -> getActivity().finish(), BrickView.ANIMATION_DURATION);
+            } else {
+                handler.postDelayed(() -> showNext(new SeedSummaryFragment()), BrickView.ANIMATION_DURATION);
+            }
         } else {
             if (nextPosition == seedModel.phrase.getValue().size() - 1) {
                 buttonNext.setText(R.string.seed_continue);
