@@ -7,8 +7,11 @@
 package io.multy.ui.fragments.dialogs;
 
 import android.app.ActivityManager;
+import android.app.AlarmManager;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -18,10 +21,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+
+import com.samwolfand.oneprefs.Prefs;
+
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.multy.Multy;
 import io.multy.R;
-
+import io.multy.storage.RealmManager;
+import io.multy.ui.activities.SplashActivity;
+import io.realm.Realm;
 
 
 public class ResetDataDialogFragment extends DialogFragment {
@@ -53,9 +62,14 @@ public class ResetDataDialogFragment extends DialogFragment {
 
     @OnClick(R.id.button_positive)
     public void onClickPositive() {
-        ((ActivityManager)getActivity().getSystemService(Context.ACTIVITY_SERVICE)).clearApplicationUserData();
-    }
+        RealmManager.removeDatabase(getActivity());
+        Prefs.clear();
+        Realm.init(getActivity());
 
+        startActivity(new Intent(getActivity(), SplashActivity.class).setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY));
+        getActivity().finish();
+        System.exit(2);
+    }
 
     @OnClick(R.id.button_neutral)
     public void onClickNeutral() {

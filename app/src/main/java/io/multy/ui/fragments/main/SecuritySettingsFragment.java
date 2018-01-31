@@ -44,19 +44,13 @@ public class SecuritySettingsFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings_security, container, false);
         ButterKnife.bind(this, view);
-
-        if (Prefs.contains(Constants.PREF_PIN)) {
-            imageWarning.setVisibility(View.GONE);
-            textStateEntrance.setVisibility(View.GONE);
-        }
-
-        if (Prefs.getBoolean(Constants.PREF_BACKUP_SEED)) {
-            textRestoreSeed.setText(R.string.view_seed);
-        } else {
-            textRestoreSeed.setText(R.string.backup_seed);
-        }
-
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        setUI();
     }
 
     @OnClick(R.id.button_back)
@@ -77,16 +71,12 @@ public class SecuritySettingsFragment extends BaseFragment {
 
     @OnClick(R.id.container_entrance_settings)
     public void onClickEntranceSettings() {
-//        if (Prefs.getBoolean(Constants.PREF_PIN)) {
-////            showLock()
-//        } else {
-            if (getActivity() != null) {
-                getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.settings_container, EntranceSettingsFragment.newInstance())
-                        .addToBackStack(EntranceSettingsFragment.class.getSimpleName())
-                        .commit();
-            }
-//        }
+        if (getActivity() != null) {
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.settings_container, EntranceSettingsFragment.newInstance())
+                    .addToBackStack(EntranceSettingsFragment.class.getSimpleName())
+                    .commit();
+        }
     }
 
     @OnClick(R.id.container_reset_data)
@@ -94,6 +84,19 @@ public class SecuritySettingsFragment extends BaseFragment {
         ResetDataDialogFragment resetDataDialog = new ResetDataDialogFragment();
         resetDataDialog.setCancelable(false);
         resetDataDialog.show(getFragmentManager(), null);
+    }
+
+    private void setUI() {
+        if (Prefs.contains(Constants.PREF_PIN)) {
+            imageWarning.setVisibility(View.GONE);
+            textStateEntrance.setVisibility(View.GONE);
+        }
+
+        if (Prefs.getBoolean(Constants.PREF_BACKUP_SEED)) {
+            textRestoreSeed.setText(R.string.view_seed);
+        } else {
+            textRestoreSeed.setText(R.string.backup_seed);
+        }
     }
 
 }

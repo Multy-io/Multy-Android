@@ -7,7 +7,6 @@
 package io.multy.ui.fragments.main;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -15,15 +14,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Switch;
 
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.samwolfand.oneprefs.Prefs;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
-import io.multy.ui.activities.PinSetupActivity;
+import io.multy.model.entities.UserId;
+import io.multy.storage.RealmManager;
+import io.multy.ui.activities.BaseActivity;
 import io.multy.ui.fragments.BaseFragment;
+import io.multy.util.Constants;
 import io.multy.viewmodels.SettingsViewModel;
 
-public class SettingsFragment extends BaseFragment {
+public class SettingsFragment extends BaseFragment implements BaseActivity.OnLockCloseListener {
 
     private final static String TAG = SettingsFragment.class.getSimpleName();
 
@@ -31,6 +36,7 @@ public class SettingsFragment extends BaseFragment {
     Switch notificationsView;
 
     private SettingsViewModel viewModel;
+    private boolean isSettingsClicked;
 
     public static SettingsFragment newInstance() {
         return new SettingsFragment();
@@ -42,27 +48,37 @@ public class SettingsFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
         viewModel = ViewModelProviders.of(this).get(SettingsViewModel.class);
         ButterKnife.bind(this, view);
+        isSettingsClicked = false;
+        setOnCheckedChangeListener();
 
-//        final boolean lock = Prefs.getBoolean(Constants.PREF_LOCK);
-//        notificationsView.setChecked(lock);
+        if (Prefs.getBoolean(Constants.PREF_IS_PUSH_ENABLED, true)) {
+            notificationsView.setChecked(true);
+        } else {
+            notificationsView.setChecked(false);
+        }
 
         return view;
     }
 
-    @OnClick(R.id.container_push)
-    public void onClickPush() {
-//        final boolean lock = !notificationsView.isChecked();
-//        Prefs.putBoolean(Constants.PREF_LOCK, lock);
-//        notificationsView.setChecked(lock);
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((BaseActivity)getActivity()).setOnLockCLoseListener(this);
+    }
+
+    @Override
+    public void onStop() {
+        ((BaseActivity)getActivity()).setOnLockCLoseListener(null);
+        super.onStop();
     }
 
     @OnClick(R.id.container_security)
     public void onClickSettings() {
-        if (getActivity() != null) {
-            getActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.settings_container, SecuritySettingsFragment.newInstance())
-                    .addToBackStack(SecuritySettingsFragment.class.getSimpleName())
-                    .commit();
+        if (Prefs.contains(Constants.PREF_LOCK) && Prefs.getBoolean(Constants.PREF_LOCK)) {
+            isSettingsClicked = true;
+            ((BaseActivity)getActivity()).showLock();
+        } else {
+            showSecuritySettingsFragment();
         }
     }
 
@@ -74,5 +90,35 @@ public class SettingsFragment extends BaseFragment {
     @OnClick(R.id.container_feedback)
     public void onClickFeedback() {
 
+    }
+
+    private void setOnCheckedChangeListener() {
+        notificationsView.setOnCheckedChangeListener((compoundButton, checked) -> {
+            UserId userId = RealmManager.getSettingsDao().getUserId();
+            if (userId != null) {
+                if (checked) {
+                    FirebaseMessaging.getInstance().subscribeToTopic(Constants.PUSH_TOPIC + userId.getUserId());
+                } else {
+                    FirebaseMessaging.getInstance().unsubscribeFromTopic(Constants.PUSH_TOPIC + userId.getUserId());
+                }
+                Prefs.putBoolean(Constants.PREF_IS_PUSH_ENABLED, checked);
+            }
+        });
+    }
+
+    @Override
+    public void onLockClosed() {
+        if (isSettingsClicked) {
+            showSecuritySettingsFragment();
+        }
+    }
+
+    private void showSecuritySettingsFragment() {
+        if (getActivity() != null) {
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.settings_container, SecuritySettingsFragment.newInstance())
+                    .addToBackStack(SecuritySettingsFragment.class.getSimpleName())
+                    .commit();
+        }
     }
 }

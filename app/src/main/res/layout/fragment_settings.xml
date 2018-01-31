@@ -53,6 +53,8 @@
         <Switch
             android:id="@+id/switch_push"
             style="@style/ControlSettings"
+            android:enabled="true"
+            android:clickable="true"
             app:layout_constraintBottom_toBottomOf="@id/text_push"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="@id/text_push" />

@@ -202,7 +202,7 @@
         ck</string>
     <string name="try_again">Try again</string>
     <string name="make_wallet_backup">Make wallet backup before setting PIN or fingerprint</string>
-    <string name="use_password">Use password</string>
+    <string name="use_screen_lock">Use screen lock</string>
     <string name="pin_code">PIN-code</string>
     <string name="fingerprint">Fingerprint</string>
     <string name="entrance_settings">Entrance Settings</string>

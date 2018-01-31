@@ -29,7 +29,7 @@ import io.multy.ui.activities.SeedActivity;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
 
-public class EntranceSettingsFragment extends BaseFragment implements BaseActivity.OnLockCloseListener {
+public class EntranceSettingsFragment extends BaseFragment {
 
     public static EntranceSettingsFragment newInstance() {
         return new EntranceSettingsFragment();
@@ -44,29 +44,18 @@ public class EntranceSettingsFragment extends BaseFragment implements BaseActivi
     @BindView(R.id.image_pin)
     ImageView imagePin;
 
-    private boolean isPasswordClicked;
-    private boolean passwordState;
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings_entrance, container, false);
         ButterKnife.bind(this, view);
-        isPasswordClicked = false;
         return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        ((BaseActivity)getActivity()).setOnLockCLoseListener(this);
         setUI();
-    }
-
-    @Override
-    public void onStop() {
-        ((BaseActivity)getActivity()).setOnLockCLoseListener(null);
-        super.onStop();
     }
 
     @OnClick(R.id.button_back)
@@ -96,26 +85,11 @@ public class EntranceSettingsFragment extends BaseFragment implements BaseActivi
             imagePin.setVisibility(View.VISIBLE);
         } else {
             containerSetupPin.setVisibility(View.GONE);
+            switchPassword.setChecked(false);
+            imagePin.setVisibility(View.GONE);
         }
         switchPassword.setOnCheckedChangeListener((compoundButton, checked) -> {
-            isPasswordClicked = true;
-            passwordState = checked;
-            if (!Prefs.contains(Constants.PREF_PIN)) {
-                setPasswordState();
-            } else {
-                ((BaseActivity)getActivity()).showLock();
-            }
-        });
-    }
-
-    @Override
-    public void onLockClosed() {
-        setPasswordState();
-    }
-
-    private void setPasswordState() {
-        if (isPasswordClicked) {
-            if (passwordState) {
+            if (checked) {
                 containerSetupPin.setVisibility(View.VISIBLE);
                 if (Prefs.contains(Constants.PREF_PIN)) {
                     imagePin.setVisibility(View.VISIBLE);
@@ -124,8 +98,9 @@ public class EntranceSettingsFragment extends BaseFragment implements BaseActivi
                 }
             } else {
                 containerSetupPin.setVisibility(View.GONE);
+                Prefs.remove(Constants.PREF_PIN);
+                Prefs.putBoolean(Constants.PREF_LOCK, false);
             }
-            isPasswordClicked = false;
-        }
+        });
     }
 }

@@ -42,6 +42,7 @@ public class Constants {
     public static final String PREF_DONATE_ADDRESS_BTC = "PREF_DONATE_ADDRESS_BTC";
     public static final String PREF_DONATE_ADDRESS_ETH = "PREF_DONATE_ADDRESS_ETH";
     public static final String FLAG_VIEW_SEED_PHRASE = "view_seed_phrase";
+    public static final String PREF_IS_PUSH_ENABLED = "PREF_IS_PUSH_ENABLED";
 
 
     public static final int CAMERA_REQUEST_CODE = 328;
@@ -81,4 +82,5 @@ public class Constants {
     public static final int REQUEST_CODE_CREATE = 22;
 
     public static final String BLOCKCHAIN_INFO_PATH = "https://testnet.blockchain.info/tx/";
+    public static final String PUSH_TOPIC = "btcTransactionUpdate-";
 }

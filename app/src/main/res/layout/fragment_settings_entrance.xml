@@ -10,6 +10,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_main"
+    android:clickable="true"
     tools:showIn="io.multy.android.MainActivity">
 
     <ImageButton
@@ -106,7 +107,7 @@
             android:layout_height="@dimen/entrance_settings_text_height"
             android:layout_marginStart="@dimen/activity_horizontal_margin"
             android:gravity="center_vertical"
-            android:text="@string/use_password"
+            android:text="@string/use_screen_lock"
             android:textColor="@color/black"
             android:textSize="@dimen/text_size_medium"
             app:layout_constraintLeft_toLeftOf="parent" />

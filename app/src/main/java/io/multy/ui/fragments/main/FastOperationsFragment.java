@@ -158,9 +158,11 @@ public class FastOperationsFragment extends BaseFragment {
     @OnClick(R.id.button_cancel)
     void onCancelClick(View v) {
         isCanceling = true;
-        AnimationUtils.createConceal(getView(), revealX, revealY, colorWhite, colorBlue, () -> getActivity().onBackPressed());
         if (v != null) {
+            AnimationUtils.createConceal(getView(), revealX, revealY, colorWhite, colorBlue, () -> getActivity().onBackPressed());
             v.setEnabled(false);
+        } else {
+            getActivity().onBackPressed();
         }
     }
 

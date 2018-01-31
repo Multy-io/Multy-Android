@@ -75,7 +75,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
             UserId userId = RealmManager.getSettingsDao().getUserId();
             if (userId != null) {
                 Log.i("wise", "subscribing to topic " + userId.getUserId());
-                FirebaseMessaging.getInstance().subscribeToTopic("btcTransactionUpdate-" + userId.getUserId());
+                FirebaseMessaging.getInstance().subscribeToTopic(Constants.PUSH_TOPIC + userId.getUserId());
             }
         }
 

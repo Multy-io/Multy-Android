@@ -100,7 +100,10 @@ public class PinSetupActivity extends BaseActivity {
                     return;
                 }
                 ImageView dot = (ImageView) dotsLayoutManager.getChildAt(editable.length() - 1);
-                dot.setImageResource(R.drawable.circle_blue);
+                if (dot != null) {
+                    dot.setImageResource(R.drawable.circle_blue);
+                }
+
 
                 if (editable.toString().length() == 6) {
                     if (step == STEP_ENTER) {
