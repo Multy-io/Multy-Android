@@ -13,7 +13,7 @@ public class ServerConfigResponse {
     @SerializedName("android")
     private AndroidConfig androidConfig;
 
-    @SerializedName("donateInfo")
+    @SerializedName("donate")
     private Donate donateInfo;
 
     public AndroidConfig getAndroidConfig() {
