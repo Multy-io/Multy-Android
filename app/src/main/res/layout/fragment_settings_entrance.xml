@@ -112,14 +112,12 @@
             android:textSize="@dimen/text_size_medium"
             app:layout_constraintLeft_toLeftOf="parent" />
 
-        <Switch
+        <android.support.v7.widget.SwitchCompat
             android:id="@+id/switch_password"
-            style="@style/ControlSettings"
+            style="@style/SwitchStyle"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:clickable="true"
-            android:focusable="true"
             />
 
         <View

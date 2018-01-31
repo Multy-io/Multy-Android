@@ -50,11 +50,9 @@
             android:text="@string/push_notifications"
             app:layout_constraintLeft_toRightOf="@id/image_push" />
 
-        <Switch
+        <android.support.v7.widget.SwitchCompat
             android:id="@+id/switch_push"
-            style="@style/ControlSettings"
-            android:enabled="true"
-            android:clickable="true"
+            style="@style/SwitchStyle"
             app:layout_constraintBottom_toBottomOf="@id/text_push"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="@id/text_push" />

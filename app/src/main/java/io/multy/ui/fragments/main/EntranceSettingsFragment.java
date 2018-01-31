@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
+import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,7 +41,7 @@ public class EntranceSettingsFragment extends BaseFragment {
     @BindView(R.id.container_setup_pin)
     ConstraintLayout containerSetupPin;
     @BindView(R.id.switch_password)
-    Switch switchPassword;
+    SwitchCompat switchPassword;
     @BindView(R.id.image_pin)
     ImageView imagePin;
 

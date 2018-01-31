@@ -193,7 +193,7 @@
     <string name="rejected_receive">Unable to receive transaction</string>
     <string name="push_notifications">Push Notifications</string>
     <string name="security_settings">Security Settings</string>
-    <string name="settings_restore_seed_description">If ou already have any wallets in Multy, you’ve changed your device or lost account - you can restore your seed phrase.</string>
+    <string name="settings_restore_seed_description">If you already have any wallets in Multy, you’ve changed your device or lost account - you can restore your seed phrase.</string>
     <string name="restore_seed">Restore Seed</string>
     <string name="settings_entrance">Entrance settings</string>
     <string name="none">None</string>
