@@ -52,7 +52,7 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/montserrat"
                 android:lineSpacingExtra="10sp"
-                android:textColor="white"
+                android:textColor="@color/white"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 tools:text="BTC ∙ Personal" />
