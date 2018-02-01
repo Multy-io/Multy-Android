@@ -29,6 +29,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
+import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.send.AmountChooserFragment;
 import io.multy.ui.fragments.send.AssetSendFragment;
 import io.multy.ui.fragments.send.SendSummaryFragment;
@@ -102,13 +103,16 @@ public class AssetSendActivity extends BaseActivity {
         }
     }
 
-    private void startFlow(){
+    private void startFlow() {
+        AssetSendViewModel viewModel = ViewModelProviders.of(this).get(AssetSendViewModel.class);
+        if (getIntent().hasExtra(Constants.EXTRA_WALLET_ID)) {
+            viewModel.setWallet(RealmManager.getAssetsDao().getWalletById(getIntent().getExtras().getInt(Constants.EXTRA_WALLET_ID, -1)));
+        }
+
         if (getIntent().hasExtra(Constants.EXTRA_ADDRESS)) {
             setFragment(R.string.send_to, R.id.container, AssetSendFragment.newInstance());
             setFragment(R.string.send_from, R.id.container, WalletChooserFragment.newInstance());
             setTitle(R.string.send_from);
-            AssetSendViewModel viewModel = ViewModelProviders.of(this).get(AssetSendViewModel.class);
-            viewModel.setContext(this);
             viewModel.setReceiverAddress(getIntent().getStringExtra(Constants.EXTRA_ADDRESS));
             if (getIntent().hasExtra(Constants.EXTRA_AMOUNT)) {
                 if (!TextUtils.isEmpty(getIntent().getStringExtra(Constants.EXTRA_AMOUNT))) {
@@ -146,7 +150,7 @@ public class AssetSendActivity extends BaseActivity {
     }
 
     @OnClick(R.id.button_cancel)
-    void ocLickCancel(){
+    void ocLickCancel() {
         finish();
     }
 
@@ -160,10 +164,10 @@ public class AssetSendActivity extends BaseActivity {
 //                .show();
 //    }
 
-    public void showScanScreen(){
+    public void showScanScreen() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA}, Constants.CAMERA_REQUEST_CODE);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, Constants.CAMERA_REQUEST_CODE);
         } else {
             startActivityForResult(new Intent(this, ScanActivity.class), Constants.CAMERA_REQUEST_CODE);
         }
@@ -182,7 +186,7 @@ public class AssetSendActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == Constants.CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            if (data.hasExtra(Constants.EXTRA_QR_CONTENTS)){
+            if (data.hasExtra(Constants.EXTRA_QR_CONTENTS)) {
                 ViewModelProviders.of(this)
                         .get(AssetSendViewModel.class)
                         .setReceiverAddress(data.getStringExtra(Constants.EXTRA_QR_CONTENTS));

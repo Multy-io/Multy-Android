@@ -18,6 +18,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.multy.R;
 import io.multy.model.entities.wallet.WalletRealmObject;
+import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetSendActivity;
 import io.multy.ui.adapters.WalletAdapter;
 import io.multy.ui.fragments.BaseFragment;
@@ -41,7 +42,7 @@ public class WalletChooserFragment extends BaseFragment implements WalletAdapter
         View view = inflater.inflate(R.layout.fragment_wallet_chooser, container, false);
         ButterKnife.bind(this, view);
         viewModel = ViewModelProviders.of(getActivity()).get(AssetSendViewModel.class);
-        viewModel.getExchangePrice().observe(this, this::setupAdapter);
+        setupAdapter(viewModel.getCurrenciesRate().getBtcToUsd());
         setupAdapter(null);
         return view;
     }
@@ -55,7 +56,7 @@ public class WalletChooserFragment extends BaseFragment implements WalletAdapter
     private void setupAdapter(Double exchangePrice) {
 //        WalletsAdapter walletsAdapter = new WalletsAdapter(new ArrayList<>());
         WalletAdapter walletsAdapter = new WalletAdapter(exchangePrice, this);
-        walletsAdapter.setWallets(viewModel.getWalletsDB());
+        walletsAdapter.setWallets(RealmManager.getAssetsDao().getWallets());
         recyclerView.setAdapter(walletsAdapter);
 //        walletsAdapter.setData(viewModel.getWalletsDB());
     }

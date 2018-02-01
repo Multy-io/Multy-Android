@@ -7,11 +7,8 @@
 package io.multy.viewmodels;
 
 import android.arch.lifecycle.MutableLiveData;
-import android.content.Context;
 
-import java.util.List;
-
-import io.multy.model.DataManager;
+import io.multy.api.socket.CurrenciesRate;
 import io.multy.model.entities.Fee;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.storage.RealmManager;
@@ -23,54 +20,45 @@ import io.multy.storage.RealmManager;
 
 public class AssetSendViewModel extends BaseViewModel {
 
-    private DataManager dataManager;
-    private WalletRealmObject wallet;
+    public MutableLiveData<WalletRealmObject> wallet = new MutableLiveData<>();
     private Fee fee;
     private double amount;
     private boolean isPayForCommission;
     private MutableLiveData<String> receiverAddress = new MutableLiveData<>();
-    private MutableLiveData<Double> exchangePrice = new MutableLiveData<>();
     public MutableLiveData<String> thoseAddress = new MutableLiveData<>();
     private String donationAmount;
     private boolean isAmountScanned = false;
+    private CurrenciesRate currenciesRate;
 
     public AssetSendViewModel() {
+        currenciesRate = RealmManager.getSettingsDao().getCurrenciesRate();
     }
 
-    public void setContext(Context context){
-        dataManager = DataManager.getInstance();
+    public CurrenciesRate getCurrenciesRate() {
+        return currenciesRate;
     }
 
-    public void auth(){
-        dataManager.auth("dsdbsn", "sfgn", "asdfah");
+    public void setWallet(WalletRealmObject wallet) {
+        this.wallet.setValue(wallet);
     }
 
-    @Deprecated
-    public void getApiExchangePrice(){
-        RealmManager.getSettingsDao().getExchangePrice().getExchangePrice();
+    public WalletRealmObject getWallet() {
+        return this.wallet.getValue();
     }
 
-    public void setWallet(WalletRealmObject wallet){
-        this.wallet = wallet;
-    }
-
-    public WalletRealmObject getWallet(){
-        return wallet;
-    }
-
-    public void saveFee(Fee fee){
+    public void saveFee(Fee fee) {
         this.fee = fee;
     }
 
-    public Fee getFee(){
+    public Fee getFee() {
         return fee;
     }
 
-    public void setAmount(double amount){
+    public void setAmount(double amount) {
         this.amount = amount;
     }
 
-    public double getAmount(){
+    public double getAmount() {
         return amount;
     }
 
@@ -80,10 +68,6 @@ public class AssetSendViewModel extends BaseViewModel {
 
     public void setReceiverAddress(String receiverAddress) {
         this.receiverAddress.setValue(receiverAddress);
-    }
-
-    public MutableLiveData<Double> getExchangePrice() {
-        return exchangePrice;
     }
 
     public String getDonationAmount() {
@@ -102,19 +86,11 @@ public class AssetSendViewModel extends BaseViewModel {
         isPayForCommission = payForCommission;
     }
 
-    public List<WalletRealmObject> getWalletsDB(){
-        return dataManager.getWallets();
-    }
-
     public boolean isAmountScanned() {
         return isAmountScanned;
     }
 
     public void setAmountScanned(boolean amountScanned) {
         isAmountScanned = amountScanned;
-    }
-
-    public void getWalletFromDB(int index) {
-        this.wallet = dataManager.getWallet(index);
     }
 }

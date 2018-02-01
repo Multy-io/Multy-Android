@@ -38,9 +38,9 @@ import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
 import io.multy.viewmodels.AssetSendViewModel;
 
-public class TransactionFeeFragment extends BaseFragment implements FeeAdapter.OnFeeClickListener{
+public class TransactionFeeFragment extends BaseFragment implements FeeAdapter.OnFeeClickListener {
 
-    public static TransactionFeeFragment newInstance(){
+    public static TransactionFeeFragment newInstance() {
         return new TransactionFeeFragment();
     }
 
@@ -97,9 +97,9 @@ public class TransactionFeeFragment extends BaseFragment implements FeeAdapter.O
     }
 
     @OnClick(R.id.button_next)
-    void onClickNext(){
+    void onClickNext() {
         if (viewModel.getFee() != null) {
-            if (switcher.isChecked()){
+            if (switcher.isChecked()) {
                 viewModel.setDonationAmount(inputDonation.getText().toString());
             } else {
                 viewModel.setDonationAmount(null);
@@ -118,9 +118,9 @@ public class TransactionFeeFragment extends BaseFragment implements FeeAdapter.O
         viewModel.saveFee(fee);
     }
 
-    private void setupSwitcher(){
+    private void setupSwitcher() {
         switcher.setOnCheckedChangeListener((compoundButton, b) -> {
-            if (b){
+            if (b) {
                 textDonationAllow.setBackground(getResources().getDrawable(R.drawable.shape_top_round_white, null));
                 groupDonation.setVisibility(View.VISIBLE);
             } else {
@@ -131,15 +131,11 @@ public class TransactionFeeFragment extends BaseFragment implements FeeAdapter.O
         });
     }
 
-    private void setupInput(){
-        if (viewModel.getExchangePrice().getValue() != null){
-            textFeeCurrency.setText(new DecimalFormat(formatPattern)
-                    .format(Double.parseDouble(inputDonation.getText().toString()) * viewModel.getExchangePrice().getValue()));
-            textFeeCurrency.append(Constants.SPACE);
-            textFeeCurrency.append(CurrencyCode.USD.name());
-        } else { // this case shouldn't happen
-            viewModel.getApiExchangePrice();
-        }
+    private void setupInput() {
+        textFeeCurrency.setText(new DecimalFormat(formatPattern)
+                .format(Double.parseDouble(inputDonation.getText().toString()) * viewModel.getCurrenciesRate().getBtcToUsd()));
+        textFeeCurrency.append(Constants.SPACE);
+        textFeeCurrency.append(CurrencyCode.USD.name());
 
         inputDonation.addTextChangedListener(new TextWatcher() {
             @Override
@@ -150,13 +146,10 @@ public class TransactionFeeFragment extends BaseFragment implements FeeAdapter.O
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if (!TextUtils.isEmpty(charSequence)) {
-                    viewModel.getExchangePrice()
-                            .observe(TransactionFeeFragment.this, exchangePrice -> {
-                                textFeeCurrency.setText(new DecimalFormat(formatPattern)
-                                        .format(Double.parseDouble(charSequence.toString()) * exchangePrice));
-                                textFeeCurrency.append(Constants.SPACE);
-                                textFeeCurrency.append(CurrencyCode.USD.name());
-                            });
+                    textFeeCurrency.setText(new DecimalFormat(formatPattern)
+                            .format(Double.parseDouble(charSequence.toString()) * viewModel.getCurrenciesRate().getBtcToUsd()));
+                    textFeeCurrency.append(Constants.SPACE);
+                    textFeeCurrency.append(CurrencyCode.USD.name());
                 } else {
                     textFeeCurrency.setText(Constants.SPACE);
                 }

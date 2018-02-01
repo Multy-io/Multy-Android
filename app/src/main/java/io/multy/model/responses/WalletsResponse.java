@@ -8,9 +8,11 @@ package io.multy.model.responses;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.multy.model.entities.wallet.WalletRealmObject;
+import io.multy.util.NativeDataHelper;
 
 public class WalletsResponse {
 
@@ -20,12 +22,22 @@ public class WalletsResponse {
     private String message;
     @SerializedName("wallets")
     private List<WalletRealmObject> wallets;
-    /**
-     *  Counter of wallets.
-     *  Returned total count even if wallets were deleted.
-     */
-    @SerializedName("topindex")
-    private int topIndex;
+
+    @SerializedName("topindexes")
+    private ArrayList<TopIndex> topIndexes;
+
+    public ArrayList<TopIndex> getTopIndexes() {
+        return topIndexes;
+    }
+
+    public int getBtcTopWalletIndex() {
+        for (TopIndex topIndex : topIndexes) {
+            if (topIndex.getCurrencyId() == NativeDataHelper.Currency.BTC.getValue()) {
+                return topIndex.getTopWalletIndex();
+            }
+        }
+        return 0;
+    }
 
     public int getCode() {
         return code;
@@ -51,7 +63,19 @@ public class WalletsResponse {
         this.wallets = wallets;
     }
 
-    public int getTopIndex() {
-        return topIndex;
+    public class TopIndex {
+
+        @SerializedName("currencyid")
+        private int currencyId;
+        @SerializedName("topindex")
+        private int topWalletIndex;
+
+        public int getCurrencyId() {
+            return currencyId;
+        }
+
+        public int getTopWalletIndex() {
+            return topWalletIndex;
+        }
     }
 }

@@ -38,6 +38,8 @@ public class TransactionHistory {
     private long txFee;
     @SerializedName("confirmations")
     private int confirmations;
+    @SerializedName("mempooltime")
+    private long mempoolTime;
 
     @SerializedName("stockexchangerate")
     ArrayList<StockExchangeRate> stockExchangeRates;
@@ -92,6 +94,10 @@ public class TransactionHistory {
 
     public long getTxFee() {
         return txFee;
+    }
+
+    public long getMempoolTime() {
+        return mempoolTime;
     }
 
     public ArrayList<WalletAddress> getInputs() {

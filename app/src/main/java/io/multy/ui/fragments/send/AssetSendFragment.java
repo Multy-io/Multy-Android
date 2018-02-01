@@ -23,6 +23,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
+import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetSendActivity;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
@@ -48,8 +49,6 @@ public class AssetSendFragment extends BaseFragment {
         ButterKnife.bind(this, view);
         viewModel = ViewModelProviders.of(getActivity()).get(AssetSendViewModel.class);
         setBaseViewModel(viewModel);
-        viewModel.setContext(getActivity());
-        viewModel.getApiExchangePrice();
         if (!TextUtils.isEmpty(viewModel.getReceiverAddress().getValue())) {
             inputAddress.setText(viewModel.getReceiverAddress().getValue()); // to set address from scanning qr or wallet
         }
@@ -86,7 +85,7 @@ public class AssetSendFragment extends BaseFragment {
         viewModel.thoseAddress.setValue(inputAddress.getText().toString());
         ((AssetSendActivity) getActivity()).setFragment(R.string.send_from, R.id.container, WalletChooserFragment.newInstance());
         if (getActivity().getIntent().hasCategory(Constants.EXTRA_SENDER_ADDRESS)) {
-            viewModel.getWalletFromDB(getActivity().getIntent().getIntExtra(Constants.EXTRA_WALLET_ID, 0));
+            RealmManager.getAssetsDao().getWalletById(getActivity().getIntent().getIntExtra(Constants.EXTRA_WALLET_ID, 0));
             ((AssetSendActivity) getActivity()).setFragment(R.string.transaction_fee, R.id.container, TransactionFeeFragment.newInstance());
         }
     }

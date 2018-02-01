@@ -45,7 +45,7 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
     public AssetTransactionsAdapter(List<TransactionHistory> transactionHistoryList, int walletIndex) {
         this.transactionHistoryList = transactionHistoryList;
         this.walletIndex = walletIndex;
-        Collections.sort(this.transactionHistoryList, (transactionHistory, t1) -> Long.compare(transactionHistory.getBlockTime(), t1.getBlockTime()));
+        Collections.sort(this.transactionHistoryList, (transactionHistory, t1) -> Long.compare(t1.getMempoolTime(), transactionHistory.getMempoolTime()));
     }
 
     public AssetTransactionsAdapter() {
@@ -217,8 +217,13 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
     }
 
     private void setAddresses(List<WalletAddress> addresses, ViewGroup destination) {
+        ArrayList<String> uniqueAddresses = new ArrayList<>();
         for (WalletAddress walletAddress : addresses) {
+            if (uniqueAddresses.size() > 0 && uniqueAddresses.contains(walletAddress.getAddress())) {
+                continue;
+            }
             setAddress(walletAddress.getAddress(), destination);
+            uniqueAddresses.add(walletAddress.getAddress());
         }
     }
 
