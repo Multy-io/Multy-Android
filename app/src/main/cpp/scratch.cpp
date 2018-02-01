@@ -3,7 +3,9 @@
 #include <sys/types.h>
 #include <cstdio>
 #include <unistd.h>
+#include <array>
 #include <pthread.h>
+#include <memory>
 #include <multy_test/run_tests.h>
 #include <multy_core/common.h>
 #include <multy_core/error.h>
@@ -21,6 +23,7 @@
 #include "multy_transaction/internal/amount.h"
 #include "multy_transaction/internal/transaction.h"
 #include "multy_core/internal/account.h"
+#include "multy_core/sha3.h"
 
 
 JavaVM *gJvm = nullptr;
@@ -81,7 +84,7 @@ static void *thread_func(void *) {
 
 void throw_java_exception_str(JNIEnv *env, const char *message) {
     jclass c = env->FindClass("io/multy/util/JniException");
-//    __android_log_print(ANDROID_LOG_INFO, "log message", "Error: %s", message);
+//    __android_log_print(ANDROID_LOG_INFO, "log message", "!!! Throwing an Error: %s", message);
     env->ThrowNew(c, message);
 }
 
@@ -398,3 +401,33 @@ MULTY_CORE_API Error *seed_to_string(const BinaryData *seed, const char **str);
 #ifdef __cplusplus
 } // extern "C"
 #endif
+
+struct FinallyWrapper
+{
+    ~FinallyWrapper()
+    {
+        finally();
+    }
+    const std::function<void(void)> finally;
+};
+
+#define FINALLY(statement) FinallyWrapper finally_wrapper ## __LINE__{[&](){statement;}}
+
+extern "C"
+JNIEXPORT jbyteArray JNICALL
+Java_io_multy_util_NativeDataHelper_digestSha3256(JNIEnv *env, jclass type, jbyteArray s_) {
+    using namespace wallet_core::internal;
+    jbyte* data = env->GetByteArrayElements(s_, nullptr);
+    FINALLY(env->ReleaseByteArrayElements(s_, data, 0));
+
+    std::array<uint8_t, SHA3_256> hash_buffer;
+    BinaryData output{hash_buffer.data(), hash_buffer.size()};
+
+    const BinaryData input{reinterpret_cast<unsigned char*>(data), static_cast<size_t>(env->GetArrayLength(s_))};
+    ERSOR(sha3(&input, &output), jbyteArray());
+
+    jbyteArray resultArray = env->NewByteArray(output.len);
+    env->SetByteArrayRegion(resultArray, 0, output.len,
+                            reinterpret_cast<const jbyte *>(output.data));
+    return resultArray;
+}

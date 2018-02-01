@@ -12,11 +12,12 @@ import android.provider.Settings;
 
 import com.google.android.gms.iid.InstanceID;
 
-import org.spongycastle.jcajce.provider.digest.SHA3;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+
+import io.multy.util.JniException;
+import io.multy.util.NativeDataHelper;
 
 /**
  * Created by Ihar Paliashchuk on 10.11.2017.
@@ -69,8 +70,7 @@ public class MasterKeyGenerator {
         return null;
     }
 
-    private static byte[] calculateSHA3256(byte[] input) {
-        SHA3.DigestSHA3 digestSHA3 = new SHA3.Digest256();
-        return digestSHA3.digest(input);
+    private static byte[] calculateSHA3256(byte[] input) throws JniException {
+        return NativeDataHelper.digestSha3256(input);
     }
 }
