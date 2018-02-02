@@ -27,8 +27,10 @@ public class WalletsAdapter extends RecyclerView.Adapter<WalletsAdapter.Holder> 
     private final static DecimalFormat format = new DecimalFormat("#.##");
     private List<WalletRealmObject> data;
     private CurrenciesRate rates;
+    private OnWalletClickListener listener;
 
-    public WalletsAdapter(ArrayList<WalletRealmObject> data) {
+    public WalletsAdapter(OnWalletClickListener listener, List<WalletRealmObject> data) {
+        this.listener = listener;
         this.data = data;
     }
 
@@ -68,11 +70,7 @@ public class WalletsAdapter extends RecyclerView.Adapter<WalletsAdapter.Holder> 
         holder.currency.setText(String.valueOf(NativeDataHelper.Currency.values()[data.get(position).getCurrency()]));
 
         holder.imageChain.setImageResource(chain == NativeDataHelper.Currency.BTC ? R.drawable.ic_btc_huge : R.drawable.ic_eth_medium_icon);
-        holder.itemView.setOnClickListener(view -> {
-            Intent intent = new Intent(view.getContext(), AssetActivity.class);
-            intent.putExtra(Constants.EXTRA_WALLET_ID, data.get(position).getWalletIndex());
-            view.getContext().startActivity(intent);
-        });
+        holder.itemView.setOnClickListener(view -> listener.onWalletClick(data.get(position)));
     }
 
     @Override
@@ -117,5 +115,9 @@ public class WalletsAdapter extends RecyclerView.Adapter<WalletsAdapter.Holder> 
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
+    }
+
+    public interface OnWalletClickListener{
+        void onWalletClick(WalletRealmObject wallet);
     }
 }

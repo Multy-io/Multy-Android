@@ -18,11 +18,13 @@ import com.google.zxing.common.BitMatrix;
 import java.util.List;
 
 import io.multy.api.MultyApi;
+import io.multy.api.socket.CurrenciesRate;
 import io.multy.model.DataManager;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.model.requests.AddWalletAddressRequest;
 import io.multy.storage.RealmManager;
+import io.multy.util.CryptoFormatUtils;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
 import okhttp3.ResponseBody;
@@ -57,7 +59,8 @@ public class AssetRequestViewModel extends BaseViewModel {
     }
 
     public Double getExchangePrice() {
-        return RealmManager.getSettingsDao().getExchangePrice().getExchangePrice();
+        final CurrenciesRate currenciesRate = RealmManager.getSettingsDao().getCurrenciesRate();
+        return currenciesRate != null ? currenciesRate.getBtcToUsd() : 0;
     }
 
     public List<WalletRealmObject> getWallets() {
@@ -91,6 +94,7 @@ public class AssetRequestViewModel extends BaseViewModel {
 
     public WalletRealmObject getWallet(int index) {
         this.wallet = dataManager.getWallet(index);
+        Timber.e("getWallet %s", wallet.toString());
         walletLive.setValue(wallet);
         return wallet;
     }

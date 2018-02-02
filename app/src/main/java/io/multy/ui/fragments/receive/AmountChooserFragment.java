@@ -88,7 +88,7 @@ public class AmountChooserFragment extends BaseFragment {
         if (viewModel.getAmount() != zero) {
             inputOriginal.setText(NumberFormatter.getInstance().format(viewModel.getAmount()));
             inputCurrency.setText(NumberFormatter.getInstance().format(viewModel.getAmount()
-                    * viewModel.getExchangePriceLive().getValue()));
+                    * viewModel.getExchangePrice()));
         }
         groupSend.setVisibility(View.GONE);
         buttonNext.setGravity(Gravity.CENTER);
@@ -140,10 +140,7 @@ public class AmountChooserFragment extends BaseFragment {
                     if (!TextUtils.isEmpty(charSequence)) {
                         if (isParsable(charSequence.toString())) {
                             inputCurrency.setText(NumberFormatter.getInstance()
-                                    .format((viewModel.getExchangePriceLive().getValue() == null
-                                            ? viewModel.getExchangePrice()
-                                            : viewModel.getExchangePriceLive().getValue())
-                                            * Double.parseDouble(charSequence.toString())));
+                                    .format((viewModel.getExchangePrice() * Double.parseDouble(charSequence.toString()))));
                         }
                     } else {
                         inputCurrency.getText().clear();
@@ -184,9 +181,7 @@ public class AmountChooserFragment extends BaseFragment {
                         if (isParsable(charSequence.toString())) {
                             inputOriginal.setText(NumberFormatter.getInstance()
                                     .format(Double.parseDouble(charSequence.toString())
-                                            / (viewModel.getExchangePriceLive().getValue() == null
-                                            ? viewModel.getExchangePrice()
-                                            : viewModel.getExchangePriceLive().getValue())));
+                                            / viewModel.getExchangePrice()));
                         }
                     } else {
                         inputCurrency.getText().clear();

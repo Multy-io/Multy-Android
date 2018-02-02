@@ -36,6 +36,7 @@ import io.multy.ui.activities.AssetRequestActivity;
 import io.multy.ui.fragments.AddressesFragment;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
+import io.multy.util.CryptoFormatUtils;
 import io.multy.util.DeepLinkShareHelper;
 import io.multy.util.NumberFormatter;
 import io.multy.viewmodels.AssetRequestViewModel;
@@ -77,8 +78,6 @@ public class RequestSummaryFragment extends BaseFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = ViewModelProviders.of(getActivity()).get(AssetRequestViewModel.class);
-        viewModel.setContext(getActivity());
-        viewModel.getExchangePrice();
         setBaseViewModel(viewModel);
     }
 
@@ -101,23 +100,22 @@ public class RequestSummaryFragment extends BaseFragment {
 
         textAddress.setText(viewModel.getWalletAddress());
         textWalletName.setText(viewModel.getWallet().getName());
-        textBalanceOriginal.setText(viewModel.getWallet().getBalanceWithCode(CurrencyCode.BTC));
-//        Timber.e("wallet %s", viewModel.getWallet().toString());
-//        for (WalletAddress wal : viewModel.getWallet().getAddresses()){
-//            Timber.e("wallet address %s", wal.toString());
-//        }
-        if (viewModel.getExchangePriceLive().getValue() != null) {
-            textBalanceCurrency.setText(viewModel.getWallet()
-                    .getBalanceFiatWithCode(viewModel.getExchangePriceLive().getValue(), CurrencyCode.USD));
-        } else {
-            textBalanceCurrency.setText(viewModel.getWallet().getBalanceFiatWithCode(viewModel.getExchangePrice(), CurrencyCode.USD));
-        }
+
+        double balance = viewModel.getWallet().calculateBalance();
+        double pending = viewModel.getWallet().getPendingBalance() + balance;
+
+        final double pendingBalance = pending / Math.pow(10, 8);
+
+        textBalanceCurrency.setText(pending == 0 ? "0.0$" : NumberFormatter.getInstance().format(viewModel.getExchangePrice() * pendingBalance) + "$");
+        textBalanceOriginal.setText(pending != 0 ? CryptoFormatUtils.satoshiToBtc(pending) : String.valueOf(pending));
+        textBalanceOriginal.append(Constants.SPACE);
+        textBalanceOriginal.append(CurrencyCode.BTC.name());
 
         if (viewModel.getAmount() != zero){
             textRequestAmount.setVisibility(View.INVISIBLE);
             textBalanceCurrencySend.setVisibility(View.VISIBLE);
             textBalanceOriginalSend.setVisibility(View.VISIBLE);
-            textBalanceCurrencySend.setText(NumberFormatter.getInstance().format(viewModel.getAmount() * viewModel.getExchangePriceLive().getValue()));
+            textBalanceCurrencySend.setText(NumberFormatter.getInstance().format(viewModel.getAmount() * viewModel.getExchangePrice()));
             textBalanceCurrencySend.append(Constants.SPACE);
             textBalanceCurrencySend.append(CurrencyCode.USD.name());
             textBalanceOriginalSend.setText(NumberFormatter.getInstance().format(viewModel.getAmount()));

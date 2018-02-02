@@ -32,9 +32,11 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.api.MultyApi;
+import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.model.responses.WalletsResponse;
 import io.multy.storage.AssetsDao;
 import io.multy.storage.RealmManager;
+import io.multy.ui.activities.AssetActivity;
 import io.multy.ui.activities.CreateAssetActivity;
 import io.multy.ui.activities.SeedActivity;
 import io.multy.ui.adapters.WalletsAdapter;
@@ -46,7 +48,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class AssetsFragment extends BaseFragment {
+public class AssetsFragment extends BaseFragment implements WalletsAdapter.OnWalletClickListener {
 
     public static final String TAG = AssetsFragment.class.getSimpleName();
 
@@ -185,7 +187,7 @@ public class AssetsFragment extends BaseFragment {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setAutoMeasureEnabled(true);
 
-        walletsAdapter = new WalletsAdapter(null);
+        walletsAdapter = new WalletsAdapter(this,null);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(walletsAdapter);
         walletsAdapter.setData(viewModel.getWalletsFromDB());
@@ -243,5 +245,12 @@ public class AssetsFragment extends BaseFragment {
             initialize();
 //        }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onWalletClick(WalletRealmObject wallet) {
+        Intent intent = new Intent(getActivity(), AssetActivity.class);
+        intent.putExtra(Constants.EXTRA_WALLET_ID, wallet.getWalletIndex());
+        startActivity(intent);
     }
 }

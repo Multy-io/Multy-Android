@@ -14,19 +14,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+
 import butterknife.BindInt;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.multy.R;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.ui.activities.AssetRequestActivity;
-import io.multy.ui.adapters.WalletAdapter;
+import io.multy.ui.adapters.WalletsAdapter;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.viewmodels.AssetRequestViewModel;
-import timber.log.Timber;
 
 
-public class WalletChooserFragment extends BaseFragment implements WalletAdapter.OnWalletClickListener {
+public class WalletChooserFragment extends BaseFragment implements WalletsAdapter.OnWalletClickListener {
 
     public static WalletChooserFragment newInstance() {
         return new WalletChooserFragment();
@@ -39,7 +39,7 @@ public class WalletChooserFragment extends BaseFragment implements WalletAdapter
     int zero;
 
     private AssetRequestViewModel viewModel;
-    private WalletAdapter adapter;
+    private WalletsAdapter adapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,8 +54,7 @@ public class WalletChooserFragment extends BaseFragment implements WalletAdapter
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_wallet_chooser, container, false);
         ButterKnife.bind(this, view);
-        setupAdapter(viewModel.getExchangePrice());
-        viewModel.getExchangePriceLive().observe(this, this::setupAdapter);
+        setupAdapter();
         return view;
     }
 
@@ -69,12 +68,10 @@ public class WalletChooserFragment extends BaseFragment implements WalletAdapter
         }
     }
 
-    private void setupAdapter(Double exchangePrice){
+    private void setupAdapter() {
         if (adapter == null) {
-            adapter = new WalletAdapter(exchangePrice, WalletChooserFragment.this);
+            adapter = new WalletsAdapter(this, viewModel.getWalletsDB());
         }
-        adapter.setWallets(viewModel.getWalletsDB());
-        adapter.setExchangePrice(exchangePrice);
         recyclerView.setAdapter(adapter);
 
     }

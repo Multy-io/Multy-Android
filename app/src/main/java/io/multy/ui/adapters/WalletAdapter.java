@@ -23,7 +23,7 @@ import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.util.CryptoFormatUtils;
 
-
+@Deprecated
 public class WalletAdapter extends RecyclerView.Adapter<WalletAdapter.WalletHolder> {
 
     private List<WalletRealmObject> wallets;
