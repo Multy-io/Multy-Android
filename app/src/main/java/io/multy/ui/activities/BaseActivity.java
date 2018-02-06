@@ -17,6 +17,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -51,6 +52,20 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
         }
     }
 
+    public void showKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0);
+        }
+    }
+
+    public void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null && imm.isActive()) {
+            imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+        }
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
@@ -58,6 +73,11 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
                 RealmManager.open(this);
             }
             count = 6;
+        }
+
+        if (Prefs.getBoolean(Constants.PREF_LOCK)) {
+            this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
         }
 
         foregroundListener = new Foreground.Listener() {
@@ -100,12 +120,21 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
         super.onDestroy();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (getCurrentFocus() != null && inputManager != null) {
+            inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+            inputManager.hideSoftInputFromInputMethod(getCurrentFocus().getWindowToken(), 0);
+        }
+    }
+
     public void showLock() {
         if (!Prefs.getBoolean(Constants.PREF_LOCK)) {
             return;
         }
-
-        hideKeyboard(this);
 
         View fastOperation = findViewById(R.id.fast_operations);
         if (fastOperation != null) {
@@ -143,7 +172,7 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
             }
 
             isLockVisible = true;
-            RealmManager.open(this);
+            RealmManager.close();
             Prefs.putBoolean(Constants.PREF_UNLOCKED, false);
         }
     }
@@ -164,6 +193,8 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
             viewGroup.removeViewInLayout(locker);
             isLockVisible = false;
         }
+
+        RealmManager.open(this);
         Prefs.putBoolean(Constants.PREF_UNLOCKED, true);
     }
 

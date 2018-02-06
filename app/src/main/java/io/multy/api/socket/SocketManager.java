@@ -30,7 +30,7 @@ public class SocketManager {
     public static final String TAG = SocketManager.class.getSimpleName();
     private static final String DEVICE_TYPE = "Android";
 
-    private static final String SOCKET_URL = "http://88.198.47.112:7780/";
+    private static final String SOCKET_URL = "http://88.198.47.112:2280/";
     private static final String HEADER_AUTH = "jwtToken";
     private static final String HEADER_DEVICE_TYPE = "deviceType";
     private static final String HEADER_USER_ID = "userId";

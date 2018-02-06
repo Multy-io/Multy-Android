@@ -13,6 +13,11 @@
     android:background="@drawable/background_gradient_blue"
     android:elevation="20dp">
 
+    <EditText
+        android:id="@+id/input_dummy"
+        android:layout_width="0dp"
+        android:layout_height="0dp" />
+
     <TextView
         android:id="@+id/text_title"
         android:layout_width="wrap_content"
