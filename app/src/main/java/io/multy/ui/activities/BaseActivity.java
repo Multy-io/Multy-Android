@@ -23,11 +23,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.samwolfand.oneprefs.Prefs;
 
 import net.khirr.library.foreground.Foreground;
 
 import io.multy.R;
+import io.multy.model.entities.UserId;
 import io.multy.storage.RealmManager;
 import io.multy.storage.SecurePreferencesHelper;
 import io.multy.ui.adapters.PinDotsAdapter;
@@ -253,5 +255,14 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
 
     public interface OnLockCloseListener {
         void onLockClosed();
+    }
+
+    public void subscribeToPushNotifications() {
+        if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
+            UserId userId = RealmManager.getSettingsDao().getUserId();
+            if (userId != null) {
+                FirebaseMessaging.getInstance().subscribeToTopic(Constants.PUSH_TOPIC + userId.getUserId());
+            }
+        }
     }
 }

@@ -28,7 +28,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.firebase.messaging.FirebaseMessaging;
 import com.samwolfand.oneprefs.Prefs;
 
 import butterknife.BindView;
@@ -36,8 +35,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.branch.referral.Branch;
 import io.multy.R;
-import io.multy.model.entities.UserId;
-import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.main.AssetsFragment;
 import io.multy.ui.fragments.main.ContactsFragment;
 import io.multy.ui.fragments.main.FastOperationsFragment;
@@ -71,13 +68,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         setupFooter();
         onTabSelected(tabLayout.getTabAt(0));
 
-        if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
-            UserId userId = RealmManager.getSettingsDao().getUserId();
-            if (userId != null) {
-                Log.i("wise", "subscribing to topic " + userId.getUserId());
-                FirebaseMessaging.getInstance().subscribeToTopic(Constants.PUSH_TOPIC + userId.getUserId());
-            }
-        }
+        subscribeToPushNotifications();
 
         if (Prefs.getBoolean(Constants.PREF_LOCK)) {
             showLock();

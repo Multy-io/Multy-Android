@@ -49,12 +49,12 @@ public class MultyFirebaseMessagingService extends FirebaseMessagingService {
 
         NotificationCompat.Builder notification =
                 new NotificationCompat.Builder(this, getString(R.string.channel_id))
-                        .setSmallIcon(R.mipmap.ic_launcher_app_round)
+                        .setSmallIcon(R.drawable.ic_multy)
+                        .setColor(getResources().getColor(R.color.colorPrimaryDark))
                         .setContentTitle("New action in Multy wallet")
                         .setContentIntent(pendingIntent)
                         .setAutoCancel(true)
                         .setContentText(messageBody);
-
 
         NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {

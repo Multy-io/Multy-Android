@@ -37,6 +37,7 @@ import io.multy.model.responses.WalletsResponse;
 import io.multy.storage.AssetsDao;
 import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetActivity;
+import io.multy.ui.activities.BaseActivity;
 import io.multy.ui.activities.CreateAssetActivity;
 import io.multy.ui.activities.SeedActivity;
 import io.multy.ui.adapters.WalletsAdapter;
@@ -187,7 +188,7 @@ public class AssetsFragment extends BaseFragment implements WalletsAdapter.OnWal
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setAutoMeasureEnabled(true);
 
-        walletsAdapter = new WalletsAdapter(this,null);
+        walletsAdapter = new WalletsAdapter(this, null);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(walletsAdapter);
         walletsAdapter.setData(viewModel.getWalletsFromDB());
@@ -241,8 +242,9 @@ public class AssetsFragment extends BaseFragment implements WalletsAdapter.OnWal
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 //        if ((requestCode == Constants.REQUEST_CODE_RESTORE || requestCode == Constants.REQUEST_CODE_CREATE) && resultCode == Activity.RESULT_OK) {
-            checkViewsVisibility();
-            initialize();
+        checkViewsVisibility();
+        initialize();
+        ((BaseActivity) getActivity()).subscribeToPushNotifications();
 //        }
         super.onActivityResult(requestCode, resultCode, data);
     }
