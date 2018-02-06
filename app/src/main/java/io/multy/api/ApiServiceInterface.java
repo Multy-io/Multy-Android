@@ -57,8 +57,8 @@ public interface ApiServiceInterface {
     @GET("api/v1/wallet/{walletIndex}/verbose/{currencyId}")
     Call<WalletsResponse> getWalletVerboseByIndex(@Path("currencyId") int currencyId, @Path("walletIndex") int walletIndex);
 
-    @POST("api/v1/wallet/name/{currencyId}/{id}")
-    Call<ResponseBody> updateWalletName(@Path("currencyId") int currencyId, @Path("id") int id, @Body UpdateWalletNameRequest updateWalletName);
+    @POST("api/v1/wallet/name")
+    Call<ResponseBody> updateWalletName(@Body UpdateWalletNameRequest updateWalletName);
 
     @DELETE("api/v1/wallet/{currencyId}/{walletIndex}")
     Call<ResponseBody> removeWallet(@Path("currencyId") int currencyId, @Path("walletIndex") int walletIndex);

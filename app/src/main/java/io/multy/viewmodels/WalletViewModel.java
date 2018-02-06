@@ -138,8 +138,8 @@ public class WalletViewModel extends BaseViewModel {
     public MutableLiveData<Boolean> updateWalletSetting(String newName) {
         int id = wallet.getValue().getWalletIndex();
         int currencyId = wallet.getValue().getCurrency();
-        UpdateWalletNameRequest updateWalletName = new UpdateWalletNameRequest(newName);
-        MultyApi.INSTANCE.updateWalletName(currencyId, id, updateWalletName).enqueue(new Callback<ResponseBody>() {
+        UpdateWalletNameRequest updateWalletName = new UpdateWalletNameRequest(newName, currencyId, id);
+        MultyApi.INSTANCE.updateWalletName(updateWalletName).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.code() == 200) {

@@ -33,7 +33,7 @@ public interface MultyApiInterface {
 
     Call<WalletsResponse> getWalletsVerbose();
 
-    Call<ResponseBody> updateWalletName(int currencyId, int id, UpdateWalletNameRequest updateWalletName);
+    Call<ResponseBody> updateWalletName(UpdateWalletNameRequest updateWalletName);
 
     Call<ResponseBody> removeWallet(int currencyId, int walletIndex);
 

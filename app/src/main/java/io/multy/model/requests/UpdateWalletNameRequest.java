@@ -16,13 +16,27 @@ public class UpdateWalletNameRequest {
 
     @SerializedName("walletname")
     private String newName;
+    @SerializedName("currencyID")
+    private int currencyId;
+    @SerializedName("walletIndex")
+    private int walletIndex;
 
-    public UpdateWalletNameRequest(String newName) {
+    public UpdateWalletNameRequest(String newName, int currencyId, int walletIndex) {
         this.newName = newName;
+        this.currencyId = currencyId;
+        this.walletIndex = walletIndex;
     }
 
     public String getNewName() {
         return newName;
+    }
+
+    public int getCurrencyId() {
+        return currencyId;
+    }
+
+    public int getWalletIndex() {
+        return walletIndex;
     }
 
     @Override

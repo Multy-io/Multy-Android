@@ -156,73 +156,80 @@ public class TransactionInfoFragment extends BaseFragment {
             }
         });
         viewModel.getTransactionsHistory().observe(this, transactionHistories -> {
-            if (transactionHistories == null || transactionHistories.size() == 0 || transaction != null) {
+            if (transactionHistories == null || transactionHistories.size() == 0) {
+                return;
+            } else if (transaction != null) {
+                setData();
                 return;
             }
             transaction = transactionHistories.get(selectedPosition);
-            boolean isIncoming = transaction.getTxStatus() == TX_IN_BLOCK_INCOMING ||
-                    transaction.getTxStatus() == TX_CONFIRMED_INCOMING ||
-                    transaction.getTxStatus() == TX_MEMPOOL_INCOMING;
-            textDate.setText(DateHelper.DATE_FORMAT_TRANSACTION_INFO.format(transaction.getBlockTime() * 1000));
-            if (isIncoming) {
-                textValue.setText("+");
-                textAmount.setText("+");
-                textValue.append(CryptoFormatUtils.satoshiToBtc(transaction.getTxOutAmount()));
-                textAmount.append(CryptoFormatUtils.satoshiToUsd(transaction.getTxOutAmount(), transaction.getStockExchangeRates().get(0).getExchanges().getBtcUsd()));
-            } else {
-                textValue.setText("-");
-                textAmount.setText("-");
+            setData();
+        });
+    }
 
-                WalletAddress addressTo = null;
-                List<WalletAddress> outputs = transaction.getOutputs();
-                for (WalletAddress output : outputs) {
-                    if (!output.getAddress().equals(Constants.DONTAION_ADDRESS)) {
-                        for (WalletAddress walletAddress : RealmManager.getAssetsDao().getWalletById(walletIndex).getAddresses()) {
-                            if (!output.getAddress().equals(walletAddress.getAddress())) {
-                                addressTo = output;
-                            }
+    private void setData() {
+        boolean isIncoming = transaction.getTxStatus() == TX_IN_BLOCK_INCOMING ||
+                transaction.getTxStatus() == TX_CONFIRMED_INCOMING ||
+                transaction.getTxStatus() == TX_MEMPOOL_INCOMING;
+        textDate.setText(DateHelper.DATE_FORMAT_TRANSACTION_INFO.format(transaction.getBlockTime() * 1000));
+        if (isIncoming) {
+            textValue.setText("+");
+            textAmount.setText("+");
+            textValue.append(CryptoFormatUtils.satoshiToBtc(transaction.getTxOutAmount()));
+            textAmount.append(CryptoFormatUtils.satoshiToUsd(transaction.getTxOutAmount(), transaction.getStockExchangeRates().get(0).getExchanges().getBtcUsd()));
+        } else {
+            textValue.setText("-");
+            textAmount.setText("-");
+
+            WalletAddress addressTo = null;
+            List<WalletAddress> outputs = transaction.getOutputs();
+            for (WalletAddress output : outputs) {
+                if (!output.getAddress().equals(Constants.DONTAION_ADDRESS)) {
+                    for (WalletAddress walletAddress : RealmManager.getAssetsDao().getWalletById(walletIndex).getAddresses()) {
+                        if (!output.getAddress().equals(walletAddress.getAddress())) {
+                            addressTo = output;
                         }
                     }
                 }
-                if (addressTo != null) {
-                    textValue.append(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(addressTo.getAmount())));
-                    textAmount.append(String.format("%s USD", CryptoFormatUtils.satoshiToUsd(addressTo.getAmount(), transaction.getStockExchangeRates().get(0).getExchanges().getBtcUsd())));
-                }
+            }
+            if (addressTo != null) {
+                textValue.append(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(addressTo.getAmount())));
+                textAmount.append(String.format("%s USD", CryptoFormatUtils.satoshiToUsd(addressTo.getAmount(), transaction.getStockExchangeRates().get(0).getExchanges().getBtcUsd())));
+            }
 
-                getServerConfig();
-            }
-            String addressesfrom = "";
-            for (WalletAddress singleAddress : transaction.getInputs()) {
-                addressesfrom = addressesfrom.concat(System.lineSeparator()).concat(singleAddress.getAddress());
-            }
-            addressesfrom = addressesfrom.substring(1);
-            textAdressesFrom.setText(addressesfrom);
-            String addressesTo = "";
-            for (WalletAddress singleAddress : transaction.getOutputs()) {
-                addressesTo = addressesTo.concat(System.lineSeparator()).concat(singleAddress.getAddress());
-            }
-            addressesTo = addressesTo.substring(1);
-            textAddressesTo.setText(addressesTo);
-            String blocks;
-            switch (transaction.getTxStatus()) {
-                case TX_MEMPOOL_INCOMING:
-                case TX_MEMPOOL_OUTCOMING:
-                    blocks = getString(R.string.in_mempool);
-                    break;
-                case TX_IN_BLOCK_INCOMING:
-                case TX_IN_BLOCK_OUTCOMING:
-                    blocks = "1 - 6 " + getString(R.string.confirmation);
-                    break;
-                case TX_CONFIRMED_INCOMING:
-                case TX_CONFIRMED_OUTCOMING:
-                    blocks = "6+ " + getString(R.string.confirmation);
-                    break;
-                    default:
-                        blocks = "";
-            }
-            textConfirmations.setText(blocks);
-            txid = transaction.getTxId();
-        });
+            getServerConfig();
+        }
+        String addressesfrom = "";
+        for (WalletAddress singleAddress : transaction.getInputs()) {
+            addressesfrom = addressesfrom.concat(System.lineSeparator()).concat(singleAddress.getAddress());
+        }
+        addressesfrom = addressesfrom.substring(1);
+        textAdressesFrom.setText(addressesfrom);
+        String addressesTo = "";
+        for (WalletAddress singleAddress : transaction.getOutputs()) {
+            addressesTo = addressesTo.concat(System.lineSeparator()).concat(singleAddress.getAddress());
+        }
+        addressesTo = addressesTo.substring(1);
+        textAddressesTo.setText(addressesTo);
+        String blocks;
+        switch (transaction.getTxStatus()) {
+            case TX_MEMPOOL_INCOMING:
+            case TX_MEMPOOL_OUTCOMING:
+                blocks = getString(R.string.in_mempool);
+                break;
+            case TX_IN_BLOCK_INCOMING:
+            case TX_IN_BLOCK_OUTCOMING:
+                blocks = "1 - 6 " + getString(R.string.confirmation);
+                break;
+            case TX_CONFIRMED_INCOMING:
+            case TX_CONFIRMED_OUTCOMING:
+                blocks = "6+ " + getString(R.string.confirmation);
+                break;
+            default:
+                blocks = "";
+        }
+        textConfirmations.setText(blocks);
+        txid = transaction.getTxId();
     }
 
     private void getServerConfig() {

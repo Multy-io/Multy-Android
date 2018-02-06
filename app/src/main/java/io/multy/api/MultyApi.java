@@ -133,8 +133,8 @@ public enum MultyApi implements MultyApiInterface {
         }
 
         @Override
-        public Call<ResponseBody> updateWalletName(int currencyId, int id, UpdateWalletNameRequest updateWalletName) {
-            return api.updateWalletName(currencyId, id, updateWalletName);
+        public Call<ResponseBody> updateWalletName(UpdateWalletNameRequest updateWalletName) {
+            return api.updateWalletName(updateWalletName);
         }
 
         @Override
