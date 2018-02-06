@@ -24,16 +24,13 @@ import android.view.animation.AccelerateInterpolator;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.Locale;
-
 import butterknife.BindInt;
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
+import io.multy.ui.activities.BaseActivity;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.NumberFormatter;
 import io.multy.viewmodels.AssetRequestViewModel;
@@ -87,8 +84,8 @@ public class AmountChooserFragment extends BaseFragment {
 
         if (viewModel.getAmount() != zero) {
             inputOriginal.setText(NumberFormatter.getInstance().format(viewModel.getAmount()));
-            inputCurrency.setText(NumberFormatter.getInstance().format(viewModel.getAmount()
-                    * viewModel.getExchangePrice()));
+            inputCurrency.setText(NumberFormatter.getFiatInstance()
+                    .format((viewModel.getExchangePrice() * viewModel.getAmount())));
         }
         groupSend.setVisibility(View.GONE);
         buttonNext.setGravity(Gravity.CENTER);
@@ -99,9 +96,10 @@ public class AmountChooserFragment extends BaseFragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        showKeyboard(getActivity());
+    public void onResume() {
+        super.onResume();
+        inputOriginal.requestFocus();
+        inputOriginal.postDelayed(() -> showKeyboard(getActivity(), inputOriginal),300);
     }
 
     @OnClick(R.id.image_swap)
@@ -131,7 +129,6 @@ public class AmountChooserFragment extends BaseFragment {
         inputOriginal.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
             }
 
             @Override
@@ -139,7 +136,7 @@ public class AmountChooserFragment extends BaseFragment {
                 if (!isAmountSwapped) { // if currency input is main
                     if (!TextUtils.isEmpty(charSequence)) {
                         if (isParsable(charSequence.toString())) {
-                            inputCurrency.setText(NumberFormatter.getInstance()
+                            inputCurrency.setText(NumberFormatter.getFiatInstance()
                                     .format((viewModel.getExchangePrice() * Double.parseDouble(charSequence.toString()))));
                         }
                     } else {
@@ -151,12 +148,8 @@ public class AmountChooserFragment extends BaseFragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if (!TextUtils.isEmpty(editable)
-                        && editable.toString().length() == one
-                        && editable.toString().contains(point)) {
-                    String result = editable.toString().replaceAll(point, "");
-                    inputOriginal.setText(result);
-                }
+                checkForPointAndZeros(editable.toString(), inputOriginal);
+                checkMaxLengthBeforePoint(inputOriginal, 6);
             }
         });
     }
@@ -171,7 +164,6 @@ public class AmountChooserFragment extends BaseFragment {
         inputCurrency.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
             }
 
             @Override
@@ -192,11 +184,13 @@ public class AmountChooserFragment extends BaseFragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
+                checkForPointAndZeros(editable.toString(), inputCurrency);
+                checkMaxLengthBeforePoint(inputCurrency, 9);
                 if (!TextUtils.isEmpty(editable)
-                        && editable.toString().length() == one
-                        && editable.toString().contains(point)) {
-                    String result = editable.toString().replaceAll(point, "");
-                    inputCurrency.setText(result);
+                        && editable.toString().contains(point)
+                        && editable.length() - editable.toString().indexOf(point) >= 4) {
+                    inputCurrency.setText(editable.toString().substring(0, editable.toString().indexOf(point) + 3));
+                    inputCurrency.setSelection(inputCurrency.getText().length());
                 }
             }
         });
@@ -231,4 +225,46 @@ public class AmountChooserFragment extends BaseFragment {
         }
     }
 
+    private void checkForPointAndZeros(String input, EditText inputView) {
+        if (!TextUtils.isEmpty(input)
+                && input.length() == one
+                && input.contains(point)) {
+            String result = input.replaceAll(point, "");
+            inputView.setText(result);
+        } else if (input.length() == getResources().getInteger(R.integer.two)
+                && input.equals("00")) {
+            inputView.setText("0");
+            inputView.setSelection(1);
+        }
+    }
+
+    private void checkMaxLengthBeforePoint(EditText input, int max) {
+        int selection = input.getSelectionStart();
+        String amount = input.getText().toString();
+        if (!TextUtils.isEmpty(amount) && amount.length() > max) {
+            if (amount.contains(point)) {
+                if (amount.indexOf(point) > max) {
+                    input.setText(amount.substring(amount.indexOf(point) - max, amount.length()));
+                    if (selection > input.getText().length()) {
+                        input.setSelection(input.getText().length());
+                    } else {
+                        input.setSelection(selection);
+                    }
+                }
+            } else {
+                input.setText(amount.substring(0, max));
+                if (selection > input.getText().length()) {
+                    input.setSelection(input.getText().length());
+                } else {
+                    input.setSelection(selection);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        ((BaseActivity)getActivity()).hideKeyboard(getActivity());
+        super.onDestroy();
+    }
 }

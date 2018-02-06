@@ -13,15 +13,27 @@ import java.util.Locale;
 
 public class NumberFormatter {
 
-    private static DecimalFormat formatter;
+    private static DecimalFormat cryptoFormatter;
+    private static DecimalFormat fiatFormatter;
 
     public static DecimalFormat getInstance(){
-        if (formatter == null) {
-            DecimalFormat formatter = new DecimalFormat("##.########", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
-            formatter.setMaximumFractionDigits(6);
-            return formatter;
+        if (cryptoFormatter == null) {
+            cryptoFormatter = new DecimalFormat("##.########", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+            cryptoFormatter.setMaximumFractionDigits(8);
+            return cryptoFormatter;
         } else {
-            return formatter;
+            return cryptoFormatter;
         }
     }
+
+    public static DecimalFormat getFiatInstance(){
+        if (fiatFormatter == null) {
+            fiatFormatter = new DecimalFormat("##.##", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+            fiatFormatter.setMaximumFractionDigits(2);
+            return fiatFormatter;
+        } else {
+            return fiatFormatter;
+        }
+    }
+
 }

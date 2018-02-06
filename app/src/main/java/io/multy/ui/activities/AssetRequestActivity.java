@@ -6,10 +6,8 @@
 
 package io.multy.ui.activities;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -24,14 +22,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
-import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.ui.fragments.AddressesFragment;
 import io.multy.ui.fragments.receive.AmountChooserFragment;
 import io.multy.ui.fragments.receive.RequestSummaryFragment;
 import io.multy.ui.fragments.receive.WalletChooserFragment;
 import io.multy.util.Constants;
 import io.multy.viewmodels.AssetRequestViewModel;
-import io.multy.viewmodels.WalletViewModel;
 
 
 public class AssetRequestActivity extends BaseActivity {
@@ -91,10 +87,8 @@ public class AssetRequestActivity extends BaseActivity {
                     toolbar.setTitle(R.string.receive_summary);
                 }
             }
-            getSupportFragmentManager().popBackStack();
-        } else {
-            super.onBackPressed();
         }
+        super.onBackPressed();
     }
 
     @OnClick(R.id.button_cancel)

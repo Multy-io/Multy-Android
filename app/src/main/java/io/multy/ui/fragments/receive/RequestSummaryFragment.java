@@ -86,13 +86,8 @@ public class RequestSummaryFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_request_summary, container, false);
         ButterKnife.bind(this, view);
-        if (getActivity().getIntent().hasExtra(Constants.EXTRA_WALLET_ID)) {
-            containerWallet.setEnabled(false);
-        }
-
         return view;
     }
-
 
     @Override
     public void onResume() {
@@ -106,7 +101,7 @@ public class RequestSummaryFragment extends BaseFragment {
 
         final double pendingBalance = pending / Math.pow(10, 8);
 
-        textBalanceCurrency.setText(pending == 0 ? "0.0$" : NumberFormatter.getInstance().format(viewModel.getExchangePrice() * pendingBalance) + "$");
+        textBalanceCurrency.setText(pending == 0 ? "0.0$" : NumberFormatter.getFiatInstance().format(viewModel.getExchangePrice() * pendingBalance) + " USD");
         textBalanceOriginal.setText(pending != 0 ? CryptoFormatUtils.satoshiToBtc(pending) : String.valueOf(pending));
         textBalanceOriginal.append(Constants.SPACE);
         textBalanceOriginal.append(CurrencyCode.BTC.name());
@@ -115,7 +110,7 @@ public class RequestSummaryFragment extends BaseFragment {
             textRequestAmount.setVisibility(View.INVISIBLE);
             textBalanceCurrencySend.setVisibility(View.VISIBLE);
             textBalanceOriginalSend.setVisibility(View.VISIBLE);
-            textBalanceCurrencySend.setText(NumberFormatter.getInstance().format(viewModel.getAmount() * viewModel.getExchangePrice()));
+            textBalanceCurrencySend.setText(NumberFormatter.getFiatInstance().format(viewModel.getAmount() * viewModel.getExchangePrice()));
             textBalanceCurrencySend.append(Constants.SPACE);
             textBalanceCurrencySend.append(CurrencyCode.USD.name());
             textBalanceOriginalSend.setText(NumberFormatter.getInstance().format(viewModel.getAmount()));

@@ -151,4 +151,12 @@ public class BaseFragment extends Fragment implements ConnectionReceiver.Connect
     public void setConnectionListener(ConnectionReceiver.ConnectionReceiverListener listener) {
         ConnectionReceiver.connectionReceiverListener = listener;
     }
+
+    public void showKeyboard(Activity activity, View view) {
+        InputMethodManager inputMethodManager = (InputMethodManager)
+                activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (inputMethodManager != null) {
+            inputMethodManager.showSoftInput(view, 0);
+        }
+    }
 }

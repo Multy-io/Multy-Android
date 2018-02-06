@@ -74,6 +74,7 @@
         <activity
             android:name=".ui.activities.AssetRequestActivity"
             android:label="@string/receive"
+            android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activities.AssetSendActivity"

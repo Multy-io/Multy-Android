@@ -40,18 +40,18 @@
                 android:background="@null"
                 android:hint="@integer/zero"
                 android:inputType="numberDecimal"
-                android:maxLength="8"
+                android:maxLength="14"
                 android:minWidth="@dimen/dimen_20dp"
-                android:selectAllOnFocus="true"
                 android:textAlignment="textEnd"
                 android:textColor="@color/text_main"
                 android:textColorHint="@color/text_grey"
-                android:textSize="30sp"
+                android:textSize="20sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.2"
+                app:layout_constraintHorizontal_bias="0.42"
                 tools:text="234235 asdf asdf " />
 
             <TextView
@@ -121,16 +121,17 @@
                 android:maxLength="13"
                 android:minWidth="@dimen/dimen_20dp"
                 android:paddingBottom="@dimen/margin_2dp"
-                android:selectAllOnFocus="true"
                 android:textAlignment="textEnd"
                 android:textAppearance="@style/TextAppearance.AppCompat.Menu"
                 android:textColor="@color/text_main"
                 android:textColorHint="@color/text_grey"
-                android:textSize="30sp"
+                android:textSize="20sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintHorizontal_bias="0.42"
+                android:layout_marginBottom="10dp"
                 tools:text="234213" />
 
             <TextView
