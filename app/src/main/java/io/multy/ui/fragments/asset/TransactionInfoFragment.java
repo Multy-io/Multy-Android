@@ -226,7 +226,7 @@ public class TransactionInfoFragment extends BaseFragment {
                 blocks = "6+ " + getString(R.string.confirmation);
                 break;
             default:
-                blocks = "";
+                blocks = getString(R.string.no_information);
         }
         textConfirmations.setText(blocks);
         txid = transaction.getTxId();

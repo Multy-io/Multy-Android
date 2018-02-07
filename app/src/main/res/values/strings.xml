@@ -198,8 +198,7 @@
     <string name="settings_entrance">Entrance settings</string>
     <string name="none">None</string>
     <string name="about_multy">About multy</string>
-    <string name="leave_feedback">Leave feedba
-        ck</string>
+    <string name="leave_feedback">Leave feedback</string>
     <string name="try_again">Try again</string>
     <string name="make_wallet_backup">Make wallet backup before setting PIN or fingerprint</string>
     <string name="use_screen_lock">Use screen lock</string>
@@ -225,6 +224,7 @@
     <string name="multy_item_thanks">Multy team says thank you for your donation! Thanks to your support, we will constantly improve the application</string>
     <string name="thank_you">Thank you for donation!</string>
     <string name="zero">0</string>
-    <string name="in_mempool">In mempool</string>
+    <string name="in_mempool">Tansaction In Mempool</string>
+    <string name="no_information">Information not found</string>
 
 </resources>
