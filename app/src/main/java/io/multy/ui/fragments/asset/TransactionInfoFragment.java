@@ -7,7 +7,6 @@
 package io.multy.ui.fragments.asset;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,6 +16,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.samwolfand.oneprefs.Prefs;
 
 import java.util.List;
 
@@ -233,8 +234,7 @@ public class TransactionInfoFragment extends BaseFragment {
     }
 
     private void getServerConfig() {
-        String btcDonateAddress = getActivity().getPreferences(Context.MODE_PRIVATE)
-                .getString(Constants.PREF_DONATE_ADDRESS_BTC, "no address");
+        String btcDonateAddress = Prefs.getString(Constants.PREF_DONATE_ADDRESS_BTC, "no address");
         try {
             for (WalletAddress address : transaction.getOutputs()) {
                 if (address.getAddress().equals(btcDonateAddress)) {
@@ -249,8 +249,8 @@ public class TransactionInfoFragment extends BaseFragment {
 
     private void initializeDonationBlock(WalletAddress address) {
         viewDonate.setVisibility(View.VISIBLE);
-        textDonateValue.append(CryptoFormatUtils.satoshiToBtc(address.getAmount()));
-        textDonateAmount.append(CryptoFormatUtils.satoshiToUsd(address.getAmount(), transaction.getStockExchangeRates().get(0).getExchanges().getBtcUsd()));
+        textDonateValue.setText(CryptoFormatUtils.satoshiToBtc(address.getAmount()));
+        textDonateAmount.setText(CryptoFormatUtils.satoshiToUsd(address.getAmount(), transaction.getStockExchangeRates().get(0).getExchanges().getBtcUsd()));
     }
 
     @OnClick(R.id.button_view)

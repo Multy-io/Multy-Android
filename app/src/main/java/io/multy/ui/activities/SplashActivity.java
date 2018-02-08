@@ -8,7 +8,6 @@ package io.multy.ui.activities;
 
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -18,6 +17,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+
+import com.samwolfand.oneprefs.Prefs;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -82,11 +83,8 @@ public class SplashActivity extends AppCompatActivity {
                         } else {
                             showMainActivity();
                         }
-                        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
-                        preferences.edit().putString(Constants.PREF_DONATE_ADDRESS_BTC,
-                                configResponse.getDonateInfo().getBtcDonateAddress()).apply();
-                        preferences.edit().putString(Constants.PREF_DONATE_ADDRESS_ETH,
-                                configResponse.getDonateInfo().getEthDonateAddress()).apply();
+                        Prefs.putString(Constants.PREF_DONATE_ADDRESS_BTC, configResponse.getDonateInfo().getBtcDonateAddress());
+                        Prefs.putString(Constants.PREF_DONATE_ADDRESS_ETH, configResponse.getDonateInfo().getEthDonateAddress());
                     } catch (PackageManager.NameNotFoundException e) {
                         e.printStackTrace();
                     }
