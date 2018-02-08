@@ -47,7 +47,7 @@ public class SettingsDao {
     }
 
     public UserId getUserId() {
-        return realm.where(UserId.class).findFirst();
+        return realm != null ? realm.where(UserId.class).findFirst() : null;
     }
 
     public void saveSeed(ByteSeed seed) {

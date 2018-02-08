@@ -155,7 +155,7 @@ public class DatabaseHelper {
     }
 
     public CurrenciesRate getCurrenciesRate() {
-        return realm.where(CurrenciesRate.class).findFirst();
+        return realm != null ? realm.where(CurrenciesRate.class).findFirst() : null;
     }
 
     public WalletAddress getWalletAddress(int id) {

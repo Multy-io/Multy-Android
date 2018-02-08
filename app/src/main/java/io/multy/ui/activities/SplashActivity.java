@@ -25,13 +25,17 @@ import butterknife.ButterKnife;
 import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.model.responses.ServerConfigResponse;
+import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
 import io.multy.util.Constants;
+import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class SplashActivity extends AppCompatActivity {
+
+    public static final String RESET_FLAG = "resetflag";
 
     @BindView(R.id.container)
     View container;
@@ -64,6 +68,9 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void getServerConfig() {
+        if (getIntent().getBooleanExtra(RESET_FLAG, false)) {
+            return;
+        }
         MultyApi.INSTANCE.getServerConfig().enqueue(new Callback<ServerConfigResponse>() {
             @Override
             public void onResponse(Call<ServerConfigResponse> call, Response<ServerConfigResponse> response) {
@@ -100,6 +107,24 @@ public class SplashActivity extends AppCompatActivity {
                 showMainActivity();
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (getIntent().getBooleanExtra(RESET_FLAG, false)) {
+            SimpleDialogFragment.newInstanceNegative(getString(R.string.database_error), getString(R.string.reset_db_with_wrong_key), v -> {
+                try {
+                    RealmManager.removeDatabase(this);
+                    Prefs.clear();
+                    Realm.init(getApplicationContext());
+                } catch (Exception exc) {
+                    exc.printStackTrace();
+                }
+                startActivity(new Intent(this, SplashActivity.class).setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY));
+                finish();
+            }).show(getSupportFragmentManager(), SimpleDialogFragment.class.getSimpleName());
+        }
     }
 
     @Override

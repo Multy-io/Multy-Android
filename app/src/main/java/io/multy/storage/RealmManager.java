@@ -6,7 +6,6 @@
 
 package io.multy.storage;
 
-import android.app.Activity;
 import android.content.Context;
 import android.util.Base64;
 import android.util.Log;
@@ -15,7 +14,6 @@ import java.io.File;
 
 import javax.annotation.Nullable;
 
-import io.multy.Multy;
 import io.multy.util.Constants;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -28,7 +26,11 @@ public class RealmManager {
 
     public static Realm open(Context context) {
         if (realm == null || realm.isClosed()) {
-            realm = Realm.getInstance(getConfiguration(context));
+            try {
+                realm = Realm.getInstance(getConfiguration(context));
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
         }
         return realm;
     }
@@ -49,7 +51,6 @@ public class RealmManager {
                     .schemaVersion(1)
                     .build();
         } catch (Exception e) {
-            Multy.systemClear((Activity) context);
             e.printStackTrace();
         }
 
@@ -97,8 +98,20 @@ public class RealmManager {
     public static void removeDatabase(Context context){
         for (File file : context.getFilesDir().listFiles()) {
             if (file.getAbsolutePath().contains("realm")) {
+                if (file.isDirectory()) {
+                    removeFilesFromDirectory(file);
+                }
                 file.delete();
             }
+        }
+    }
+
+    private static void removeFilesFromDirectory(File file) {
+        for (File subFile : file.listFiles()) {
+            if (subFile.isDirectory()) {
+                removeFilesFromDirectory(file);
+            }
+            subFile.delete();
         }
     }
 }

@@ -89,25 +89,29 @@ public class Multy extends Application {
         try {
             String key = new String(Base64.encode(EntropyProvider.generateKey(512), Base64.NO_WRAP));
             SecurePreferencesHelper.putString(getContext(), Constants.PREF_KEY, key);
-            RealmManager.open(getContext());
+            if (RealmManager.open(getContext()) == null) {
+                systemClear(getContext());
+            }
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
     }
 
-    public static void systemClear(Activity activity) {
+    public static void systemClear(Context context) {
         try {
-            RealmManager.removeDatabase(activity);
+            RealmManager.removeDatabase(context);
             Prefs.clear();
             Multy.makeInitialized();
-            Realm.init(activity);
+            Realm.init(context);
         } catch (Exception exc) {
 //            System.exit(0);
             exc.printStackTrace();
         }
 
-        activity.startActivity(new Intent(activity, SplashActivity.class).setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY));
-        activity.finish();
+        context.startActivity(new Intent(context, SplashActivity.class).setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY));
+        if (context instanceof Activity) {
+            ((Activity) context).finish();
+        }
     }
 
     public static boolean isConnected(Context context) {

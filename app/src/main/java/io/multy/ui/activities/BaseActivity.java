@@ -8,6 +8,7 @@ package io.multy.ui.activities;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -72,7 +73,12 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
             if (!isLockVisible) {
-                RealmManager.open(this);
+                if (RealmManager.open(this) == null) {
+                    finish();
+                    Intent splashIntent = new Intent(this, SplashActivity.class);
+                    splashIntent.putExtra(SplashActivity.RESET_FLAG, true);
+                    startActivity(splashIntent);
+                }
             }
             count = 6;
         }
@@ -97,7 +103,12 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
             @Override
             public void foreground() {
                 if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED) && !Prefs.getBoolean(Constants.PREF_LOCK)) {
-                    RealmManager.open(BaseActivity.this);
+                    if (RealmManager.open(BaseActivity.this) == null) {
+                        finish();
+                        Intent splashIntent = new Intent(BaseActivity.this, SplashActivity.class);
+                        splashIntent.putExtra(SplashActivity.RESET_FLAG, true);
+                        startActivity(splashIntent);
+                    }
                 }
 
 
@@ -196,7 +207,12 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
             isLockVisible = false;
         }
 
-        RealmManager.open(this);
+        if (RealmManager.open(this) == null) {
+            finish();
+            Intent splashIntent = new Intent(this, SplashActivity.class);
+            splashIntent.putExtra(SplashActivity.RESET_FLAG, true);
+            startActivity(splashIntent);
+        }
         Prefs.putBoolean(Constants.PREF_UNLOCKED, true);
     }
 
