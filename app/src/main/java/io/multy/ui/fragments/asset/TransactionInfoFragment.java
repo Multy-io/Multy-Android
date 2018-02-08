@@ -194,8 +194,8 @@ public class TransactionInfoFragment extends BaseFragment {
                 }
             }
             if (addressTo != null) {
-                textValue.append(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(addressTo.getAmount())));
-                textAmount.append(String.format("%s USD", CryptoFormatUtils.satoshiToUsd(addressTo.getAmount(), transaction.getStockExchangeRates().get(0).getExchanges().getBtcUsd())));
+                textValue.append(CryptoFormatUtils.satoshiToBtc(addressTo.getAmount()));
+                textAmount.append(CryptoFormatUtils.satoshiToUsd(addressTo.getAmount(), transaction.getStockExchangeRates().get(0).getExchanges().getBtcUsd()));
             }
 
             getServerConfig();
