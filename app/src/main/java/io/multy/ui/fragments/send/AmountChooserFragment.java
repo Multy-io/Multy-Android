@@ -112,14 +112,11 @@ public class AmountChooserFragment extends BaseFragment {
 
     @OnClick(R.id.button_next)
     void onClickNext() {
-        if (!TextUtils.isEmpty(inputOriginal.getText())
-                && isParsable(inputOriginal.getText().toString())
-                && Double.valueOf(inputOriginal.getText().toString()) != zero) {
+        if (!TextUtils.isEmpty(inputOriginal.getText()) && isParsable(inputOriginal.getText().toString()) && Double.valueOf(inputOriginal.getText().toString()) != zero) {
             if (!TextUtils.isEmpty(inputOriginal.getText()) &&
                     (Double.parseDouble(inputOriginal.getText().toString())
                             + viewModel.getFee().getAmount()
-                            + (viewModel.getDonationAmount() == null ? zero : Double.parseDouble(viewModel.getDonationAmount()))
-                            > viewModel.getWallet().getBalance())) {
+                            + (viewModel.getDonationAmount() == null ? zero : Double.parseDouble(viewModel.getDonationAmount())) > viewModel.getWallet().getBalance())) {
                 Toast.makeText(getActivity(), R.string.error_balance, Toast.LENGTH_LONG).show();
             } else {
                 viewModel.setAmount(Double.valueOf(inputOriginal.getText().toString()));

@@ -10,31 +10,16 @@ package io.multy.model.entities;
 public class Fee {
 
     private String time;
-    private String cost;
-    private double amount;
-    private boolean isSelected;
+    private String name;
+    private long amount;
+    private int blockCount;
+    private boolean isSelected = false;
 
-    public Fee(String time, String cost, double amount, boolean isSelected) {
-        this.time = time;
-        this.cost = cost;
+    public Fee(String name, long amount, int blockCount, String time) {
+        this.name = name;
         this.amount = amount;
-        this.isSelected = isSelected;
-    }
-
-    public String getTime() {
-        return time;
-    }
-
-    public void setTime(String time) {
+        this.blockCount = blockCount;
         this.time = time;
-    }
-
-    public String getCost() {
-        return cost;
-    }
-
-    public void setCost(String cost) {
-        this.cost = cost;
     }
 
     public boolean isSelected() {
@@ -45,45 +30,31 @@ public class Fee {
         isSelected = selected;
     }
 
-    public double getAmount() {
+    public String getTime() {
+        return time;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public long getAmount() {
         return amount;
     }
 
-    public void setAmount(double amount) {
+    public void setAmount(long amount) {
         this.amount = amount;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Fee fee = (Fee) o;
-
-        if (Double.compare(fee.amount, amount) != 0) return false;
-        if (isSelected != fee.isSelected) return false;
-        if (time != null ? !time.equals(fee.time) : fee.time != null) return false;
-        return cost != null ? cost.equals(fee.cost) : fee.cost == null;
+    public int getBlockCount() {
+        return blockCount;
     }
 
-    @Override
-    public int hashCode() {
-        int result;
-        long temp;
-        result = time != null ? time.hashCode() : 0;
-        result = 31 * result + (cost != null ? cost.hashCode() : 0);
-        temp = Double.doubleToLongBits(amount);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        result = 31 * result + (isSelected ? 1 : 0);
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return "Fee{" +
-                "time='" + time + '\'' +
-                ", cost='" + cost + '\'' +
-                ", isSelected=" + isSelected +
-                '}';
+    public void setBlockCount(int blockCount) {
+        this.blockCount = blockCount;
     }
 }

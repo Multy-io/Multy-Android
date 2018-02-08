@@ -10,6 +10,8 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.Group;
+import android.support.design.widget.TextInputEditText;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
 import android.text.Editable;
@@ -30,15 +32,15 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
-import io.multy.model.entities.Fee;
 import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.ui.activities.AssetSendActivity;
-import io.multy.ui.adapters.FeeAdapter;
+import io.multy.ui.adapters.MyFeeAdapter;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
+import io.multy.util.NativeDataHelper;
 import io.multy.viewmodels.AssetSendViewModel;
 
-public class TransactionFeeFragment extends BaseFragment implements FeeAdapter.OnFeeClickListener {
+public class TransactionFeeFragment extends BaseFragment implements MyFeeAdapter.OnCustomFeeClickListener {
 
     public static TransactionFeeFragment newInstance() {
         return new TransactionFeeFragment();
@@ -53,7 +55,7 @@ public class TransactionFeeFragment extends BaseFragment implements FeeAdapter.O
     @BindView(R.id.text_donation_allow)
     TextView textDonationAllow;
     @BindView(R.id.text_donation_summ)
-    TextView textDonationSumm;
+    TextView textDonationsSum;
     @BindView(R.id.input_donation)
     EditText inputDonation;
     @BindView(R.id.text_fee_currency)
@@ -62,8 +64,6 @@ public class TransactionFeeFragment extends BaseFragment implements FeeAdapter.O
     Group groupDonation;
     @BindString(R.string.donation_format_pattern)
     String formatPattern;
-
-//    private FeeAdapter adapter;
 
     private AssetSendViewModel viewModel;
 
@@ -79,15 +79,16 @@ public class TransactionFeeFragment extends BaseFragment implements FeeAdapter.O
                 scrollView.postDelayed(() -> scrollView.fullScroll(ScrollView.FOCUS_DOWN), 500);
             }
         });
+        setupSwitcher();
+        setupInput();
+
+        viewModel.speeds.observe(this, speeds -> setAdapter());
+        viewModel.requestFeeRates(NativeDataHelper.Currency.BTC.getValue());
         return view;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        recyclerView.setAdapter(new FeeAdapter(getActivity(), this, viewModel.getFee()));
-        setupSwitcher();
-        setupInput();
+    private void setAdapter() {
+        recyclerView.setAdapter(new MyFeeAdapter(viewModel.speeds.getValue().asList(), this));
     }
 
     @Override
@@ -111,11 +112,6 @@ public class TransactionFeeFragment extends BaseFragment implements FeeAdapter.O
         } else {
             Toast.makeText(getActivity(), R.string.choose_transaction_speed, Toast.LENGTH_SHORT).show();
         }
-    }
-
-    @Override
-    public void onFeeClick(Fee fee) {
-        viewModel.saveFee(fee);
     }
 
     private void setupSwitcher() {
@@ -160,5 +156,26 @@ public class TransactionFeeFragment extends BaseFragment implements FeeAdapter.O
 
             }
         });
+    }
+
+    public void showCustomFeeDialog(long currentValue) {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = this.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.dialog_custom_fee, null);
+        dialogBuilder.setView(dialogView);
+
+        final TextInputEditText input = dialogView.findViewById(R.id.input_custom);
+        input.setText(currentValue == -1 ? String.valueOf(20) : String.valueOf(currentValue));
+
+        dialogBuilder.setTitle(R.string.custom_fee);
+        dialogBuilder.setPositiveButton(R.string.done, (dialog, whichButton) -> ((MyFeeAdapter) recyclerView.getAdapter()).setCustomFee(Long.valueOf(input.getText().toString())));
+        dialogBuilder.setNegativeButton(R.string.cancel, (dialog, whichButton) -> {
+        });
+        dialogBuilder.create().show();
+    }
+
+    @Override
+    public void onClickCustomFee(long currentValue) {
+        showCustomFeeDialog(currentValue);
     }
 }

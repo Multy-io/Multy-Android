@@ -8,10 +8,17 @@ package io.multy.viewmodels;
 
 import android.arch.lifecycle.MutableLiveData;
 
+import io.multy.Multy;
+import io.multy.R;
+import io.multy.api.MultyApi;
 import io.multy.api.socket.CurrenciesRate;
 import io.multy.model.entities.Fee;
 import io.multy.model.entities.wallet.WalletRealmObject;
+import io.multy.model.responses.FeeRateResponse;
 import io.multy.storage.RealmManager;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Ihar Paliashchuk on 14.11.2017.
@@ -21,6 +28,7 @@ import io.multy.storage.RealmManager;
 public class AssetSendViewModel extends BaseViewModel {
 
     public MutableLiveData<WalletRealmObject> wallet = new MutableLiveData<>();
+    public MutableLiveData<FeeRateResponse.Speeds> speeds = new MutableLiveData<>();
     private Fee fee;
     private double amount;
     private boolean isPayForCommission;
@@ -92,5 +100,27 @@ public class AssetSendViewModel extends BaseViewModel {
 
     public void setAmountScanned(boolean amountScanned) {
         isAmountScanned = amountScanned;
+    }
+
+    public void requestFeeRates(int currencyId) {
+        isLoading.setValue(true);
+        MultyApi.INSTANCE.getFeeRates(currencyId).enqueue(new Callback<FeeRateResponse>() {
+            @Override
+            public void onResponse(Call<FeeRateResponse> call, Response<FeeRateResponse> response) {
+                isLoading.postValue(false);
+                if (response.isSuccessful()) {
+                    speeds.postValue(response.body().getSpeeds());
+                } else {
+                    errorMessage.postValue(Multy.getContext().getString(R.string.error_loading_rates));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<FeeRateResponse> call, Throwable t) {
+                isLoading.postValue(false);
+                errorMessage.postValue(t.getMessage());
+                t.printStackTrace();
+            }
+        });
     }
 }

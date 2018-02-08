@@ -24,13 +24,14 @@ import io.socket.client.Manager;
 import io.socket.client.Socket;
 import io.socket.engineio.client.Transport;
 import io.socket.engineio.client.transports.WebSocket;
+import okhttp3.OkHttpClient;
 
 public class SocketManager {
 
     public static final String TAG = SocketManager.class.getSimpleName();
     private static final String DEVICE_TYPE = "Android";
 
-    private static final String SOCKET_URL = "http://88.198.47.112:2280/";
+    private static final String SOCKET_URL = "https://api.multy.io/";
     private static final String HEADER_AUTH = "jwtToken";
     private static final String HEADER_DEVICE_TYPE = "deviceType";
     private static final String HEADER_USER_ID = "userId";
@@ -57,11 +58,22 @@ public class SocketManager {
 
     public void connect(MutableLiveData<CurrenciesRate> rates, MutableLiveData<TransactionUpdateEntity> transactionUpdateEntity) {
         try {
+            OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                    .hostnameVerifier((hostname, session) -> true)
+//                    .sslSocketFactory(mySSLContext.getSocketFactory(), myX509TrustManager)
+                    .build();
+
+            IO.setDefaultOkHttpWebSocketFactory(okHttpClient);
+            IO.setDefaultOkHttpCallFactory(okHttpClient);
+
             IO.Options options = new IO.Options();
             options.forceNew = true;
             options.reconnectionAttempts = 3;
             options.transports = new String[]{WebSocket.NAME};
             options.path = "/socket.io";
+            options.secure = false;
+            options.callFactory = okHttpClient;
+            options.webSocketFactory = okHttpClient;
 
             final String userId = RealmManager.getSettingsDao().getUserId().getUserId();
 

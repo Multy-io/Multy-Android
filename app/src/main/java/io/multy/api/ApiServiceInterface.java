@@ -14,7 +14,7 @@ import io.multy.model.requests.AddWalletAddressRequest;
 import io.multy.model.requests.UpdateWalletNameRequest;
 import io.multy.model.responses.AddressBalanceResponse;
 import io.multy.model.responses.AuthResponse;
-import io.multy.model.responses.FeeRatesResponse;
+import io.multy.model.responses.FeeRateResponse;
 import io.multy.model.responses.ServerConfigResponse;
 import io.multy.model.responses.TransactionHistoryResponse;
 import io.multy.model.responses.UserAssetsResponse;
@@ -39,8 +39,8 @@ public interface ApiServiceInterface {
     @POST("api/v1/gettransactioninfo/{id}")
     Call<ResponseBody> getTransactionInfo(@Path("id") String transactionId);
 
-    @GET("api/v1/transaction/feerate")
-    Call<FeeRatesResponse> getFeeRates();
+    @GET("api/v1/transaction/feerate/{currencyId}")
+    Call<FeeRateResponse> getFeeRates(@Path("currencyId") int currencyId);
 
     @GET("api/v1/getwalletaddresses/{walletId}")
     Observable<UserAssetsResponse> getWalletAddresses(@Path("walletId") int walletId);
