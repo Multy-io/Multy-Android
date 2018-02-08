@@ -86,10 +86,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:background="@drawable/shape_blue_light_rounded"
-        android:paddingBottom="16dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:paddingTop="16dp"
+        android:paddingBottom="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="10dp"
         app:layout_constraintBottom_toTopOf="@id/divider"
         app:layout_constraintLeft_toLeftOf="@id/container_addresses"
         app:layout_constraintRight_toRightOf="@id/text_fiat"
@@ -101,7 +101,7 @@
             android:layout_height="wrap_content"
             android:text="@string/locked_funds"
             android:textColor="@color/blue_light"
-            android:textSize="12sp"
+            android:textSize="10sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -111,7 +111,7 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="4dp"
             android:textColor="@color/black"
-            android:textSize="12sp"
+            android:textSize="10sp"
             app:layout_constraintRight_toLeftOf="@id/text_locked_fiat"
             app:layout_constraintTop_toTopOf="@id/text_locked"
             tools:text="28.052598 BTC" />
@@ -121,7 +121,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/blue_light"
-            android:textSize="12sp"
+            android:textSize="10sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/text_locked"
             tools:text="(200.400 USD)" />

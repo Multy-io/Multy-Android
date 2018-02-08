@@ -151,6 +151,7 @@ public class AssetsFragment extends BaseFragment implements WalletsAdapter.OnWal
                     Prefs.putInt(Constants.PREF_WALLET_TOP_INDEX, response.body().getBtcTopWalletIndex());
                     AssetsDao assetsDao = RealmManager.getAssetsDao();
                     if (response.body().getWallets() != null && response.body().getWallets().size() != 0) {
+                        assetsDao.deleteAll();
                         assetsDao.saveWallets(response.body().getWallets());
                         walletsAdapter.setData(assetsDao.getWallets());
                     } else {
