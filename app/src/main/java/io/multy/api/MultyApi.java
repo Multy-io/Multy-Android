@@ -28,6 +28,7 @@ import io.multy.model.requests.UpdateWalletNameRequest;
 import io.multy.model.responses.AuthResponse;
 import io.multy.model.responses.FeeRateResponse;
 import io.multy.model.responses.ServerConfigResponse;
+import io.multy.model.responses.SingleWalletResponse;
 import io.multy.model.responses.TransactionHistoryResponse;
 import io.multy.model.responses.UserAssetsResponse;
 import io.multy.model.responses.WalletsResponse;
@@ -50,7 +51,7 @@ public enum MultyApi implements MultyApiInterface {
 
         //        static final String BASE_URL = "http://192.168.0.121:7778/";  // local
 //        static final String BASE_URL = "http://88.198.47.112:7778/";  // remote
-        static final String BASE_URL = "https://api.multy.io/";  // Special for Jack Bolt!
+        static final String BASE_URL = "http://88.198.47.112:2278/";  // Special for Jack Bolt!
 
 
         private ApiServiceInterface api = new Retrofit.Builder()
@@ -62,7 +63,7 @@ public enum MultyApi implements MultyApiInterface {
                         .writeTimeout(30, TimeUnit.SECONDS)
                         .readTimeout(30, TimeUnit.SECONDS)
                         .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-                        .hostnameVerifier((hostname, session) -> true)
+//                        .hostnameVerifier((hostname, session) -> true)
                         .addInterceptor(chain -> {
                             Request original = chain.request();
                             Request request = original.newBuilder()
@@ -125,7 +126,7 @@ public enum MultyApi implements MultyApiInterface {
         }
 
         @Override
-        public Call<WalletsResponse> getWalletVerbose(int currencyId, int walletIndex) {
+        public Call<SingleWalletResponse> getWalletVerbose(int currencyId, int walletIndex) {
             return api.getWalletVerboseByIndex(currencyId, walletIndex);
         }
 

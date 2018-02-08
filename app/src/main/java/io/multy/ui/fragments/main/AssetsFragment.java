@@ -18,12 +18,17 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 import com.samwolfand.oneprefs.Prefs;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 
@@ -33,6 +38,7 @@ import butterknife.OnClick;
 import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.model.entities.wallet.WalletRealmObject;
+import io.multy.model.events.TransactionUpdateEvent;
 import io.multy.model.responses.WalletsResponse;
 import io.multy.storage.AssetsDao;
 import io.multy.storage.RealmManager;
@@ -182,6 +188,24 @@ public class AssetsFragment extends BaseFragment implements WalletsAdapter.OnWal
             dialog.dismiss();
         }
         super.onPause();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onTransactionUpdateEvent(TransactionUpdateEvent event) {
+        Log.i(TAG, "transaction update event called");
+        updateWallets();
     }
 
     private void initList() {

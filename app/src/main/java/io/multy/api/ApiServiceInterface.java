@@ -16,6 +16,7 @@ import io.multy.model.responses.AddressBalanceResponse;
 import io.multy.model.responses.AuthResponse;
 import io.multy.model.responses.FeeRateResponse;
 import io.multy.model.responses.ServerConfigResponse;
+import io.multy.model.responses.SingleWalletResponse;
 import io.multy.model.responses.TransactionHistoryResponse;
 import io.multy.model.responses.UserAssetsResponse;
 import io.multy.model.responses.WalletsResponse;
@@ -55,7 +56,7 @@ public interface ApiServiceInterface {
     Call<ResponseBody> addWalletAddress(@Body AddWalletAddressRequest addWalletAddressRequest);
 
     @GET("api/v1/wallet/{walletIndex}/verbose/{currencyId}")
-    Call<WalletsResponse> getWalletVerboseByIndex(@Path("currencyId") int currencyId, @Path("walletIndex") int walletIndex);
+    Call<SingleWalletResponse> getWalletVerboseByIndex(@Path("currencyId") int currencyId, @Path("walletIndex") int walletIndex);
 
     @POST("api/v1/wallet/name")
     Call<ResponseBody> updateWalletName(@Body UpdateWalletNameRequest updateWalletName);

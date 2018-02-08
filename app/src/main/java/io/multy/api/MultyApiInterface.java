@@ -9,6 +9,7 @@ import io.multy.model.requests.UpdateWalletNameRequest;
 import io.multy.model.responses.AuthResponse;
 import io.multy.model.responses.FeeRateResponse;
 import io.multy.model.responses.ServerConfigResponse;
+import io.multy.model.responses.SingleWalletResponse;
 import io.multy.model.responses.TransactionHistoryResponse;
 import io.multy.model.responses.UserAssetsResponse;
 import io.multy.model.responses.WalletsResponse;
@@ -30,7 +31,7 @@ public interface MultyApiInterface {
 
     Call<ResponseBody> addWalletAddress(AddWalletAddressRequest addWalletAddressRequest);
 
-    Call<WalletsResponse> getWalletVerbose(int currencyId, int walletIndex);
+    Call<SingleWalletResponse> getWalletVerbose(int currencyId, int walletIndex);
 
     Call<WalletsResponse> getWalletsVerbose();
 

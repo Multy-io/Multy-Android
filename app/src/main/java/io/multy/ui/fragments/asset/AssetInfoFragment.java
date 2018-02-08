@@ -13,6 +13,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.samwolfand.oneprefs.Prefs;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.text.DecimalFormat;
 
@@ -31,7 +36,8 @@ import io.multy.api.MultyApi;
 import io.multy.api.socket.CurrenciesRate;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.entities.wallet.WalletRealmObject;
-import io.multy.model.responses.WalletsResponse;
+import io.multy.model.events.TransactionUpdateEvent;
+import io.multy.model.responses.SingleWalletResponse;
 import io.multy.storage.AssetsDao;
 import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetActivity;
@@ -118,26 +124,26 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
 
     private void refreshWallet() {
         swipeRefreshLayout.setRefreshing(false);
-        viewModel.isLoading.setValue(true);
-        viewModel.isLoading.call();
+        viewModel.isLoading.postValue(true);
 
         final int walletIndex = viewModel.getWalletLive().getValue().getWalletIndex();
         final int currencyId = viewModel.getWalletLive().getValue().getCurrency();
-        MultyApi.INSTANCE.getWalletVerbose(currencyId, walletIndex).enqueue(new Callback<WalletsResponse>() {
+        MultyApi.INSTANCE.getWalletVerbose(currencyId, walletIndex).enqueue(new Callback<SingleWalletResponse>() {
             @Override
-            public void onResponse(Call<WalletsResponse> call, Response<WalletsResponse> response) {
-                viewModel.isLoading.setValue(false);
+            public void onResponse(Call<SingleWalletResponse> call, Response<SingleWalletResponse> response) {
+                viewModel.isLoading.postValue(false);
                 if (response.isSuccessful() && response.body().getWallets() != null && response.body().getWallets().size() > 0) {
                     AssetsDao assetsDao = RealmManager.getAssetsDao();
                     assetsDao.saveWallet(response.body().getWallets().get(0));
-                    viewModel.wallet.setValue(assetsDao.getWalletById(walletIndex));
+                    viewModel.wallet.postValue(assetsDao.getWalletById(walletIndex));
                 }
 
+                updateBalanceViews();
                 requestTransactions();
             }
 
             @Override
-            public void onFailure(Call<WalletsResponse> call, Throwable t) {
+            public void onFailure(Call<SingleWalletResponse> call, Throwable t) {
                 viewModel.isLoading.setValue(false);
                 t.printStackTrace();
             }
@@ -228,6 +234,9 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         double balance = wallet.getBalance();
         double pending = wallet.getPendingBalance() + balance;
 
+        Log.i(TAG, "balance = " + wallet.getBalance());
+        Log.i(TAG, "pending = " + wallet.getPendingBalance());
+
         if (pending == 0 || balance == pending) {
             hideAvailableAmount();
         }
@@ -316,5 +325,23 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     @OnClick(R.id.button_warn)
     void onClickWarn() {
         startActivity(new Intent(getActivity(), SeedActivity.class));
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onTransactionUpdateEvent(TransactionUpdateEvent event) {
+        Log.i(TAG, "transaction update event called");
+        refreshWallet();
     }
 }

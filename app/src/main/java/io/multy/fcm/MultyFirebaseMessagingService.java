@@ -17,9 +17,12 @@ import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.Map;
 
 import io.multy.R;
+import io.multy.model.events.TransactionUpdateEvent;
 import io.multy.ui.activities.MainActivity;
 
 public class MultyFirebaseMessagingService extends FirebaseMessagingService {
@@ -35,6 +38,7 @@ public class MultyFirebaseMessagingService extends FirebaseMessagingService {
                 String amount = remoteData.get("amount") + " BTC";
                 String type = remoteData.get("transactionType");
                 sendNotification("transaction " + type + ".\nAmount = " + amount);
+                EventBus.getDefault().post(new TransactionUpdateEvent());
             } catch (Exception e) {
                 e.printStackTrace();
             }
