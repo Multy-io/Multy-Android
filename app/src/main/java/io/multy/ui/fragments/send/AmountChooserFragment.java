@@ -45,6 +45,7 @@ import io.multy.util.CryptoFormatUtils;
 import io.multy.util.NativeDataHelper;
 import io.multy.util.NumberFormatter;
 import io.multy.viewmodels.AssetSendViewModel;
+import timber.log.Timber;
 
 
 public class AmountChooserFragment extends BaseFragment {
@@ -104,6 +105,7 @@ public class AmountChooserFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_amount_chooser, container, false);
         ButterKnife.bind(this, view);
         viewModel = ViewModelProviders.of(getActivity()).get(AssetSendViewModel.class);
+        setBaseViewModel(viewModel);
         currenciesRate = RealmManager.getSettingsDao().getCurrenciesRate();
         isAmountSwapped = false;
         setupSwitcher();
@@ -136,6 +138,10 @@ public class AmountChooserFragment extends BaseFragment {
 
         transactionPrice = Long.valueOf(estimation);
         transactionPriceMax = Long.valueOf(estimationForMax);
+        Timber.e("transactionPrice %d", transactionPrice);
+        Timber.e("transactionPriceMax %d", transactionPriceMax);
+        Timber.e("transactionPriceBTC %s", CryptoFormatUtils.satoshiToBtc(transactionPrice));
+        Timber.e("transactionPriceMaxBTC %s", CryptoFormatUtils.satoshiToBtc(transactionPriceMax));
 
         spendableSatoshi = 0;
 
@@ -146,6 +152,7 @@ public class AmountChooserFragment extends BaseFragment {
                 }
             }
         }
+        Timber.e("spendableSatoshi %d", spendableSatoshi);
 
         textSpendable.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(spendableSatoshi)));
     }
@@ -189,6 +196,8 @@ public class AmountChooserFragment extends BaseFragment {
             return;
         }
 
+        Timber.e("onClickMax");
+
         if (textMax.isSelected()) {
             textMax.setSelected(false);
         } else {
@@ -198,7 +207,7 @@ public class AmountChooserFragment extends BaseFragment {
         inputOriginal.setText(CryptoFormatUtils.satoshiToBtc(spendableSatoshi - transactionPriceMax));
         inputCurrency.setText(CryptoFormatUtils.satoshiToUsd(spendableSatoshi - transactionPriceMax));
 //        inputCurrency.setText(NumberFormatter.getInstance().format(viewModel.getWallet().getBalance() * viewModel.getCurrenciesRate().getBtcToUsd()));
-        textTotal.setText(CryptoFormatUtils.satoshiToUsd(spendableSatoshi - transactionPriceMax) + " BTC");
+        textTotal.setText(CryptoFormatUtils.satoshiToUsd(spendableSatoshi - transactionPriceMax));
         setTotalAmountWithWallet();
     }
 
@@ -351,11 +360,14 @@ public class AmountChooserFragment extends BaseFragment {
         switcher.setOnCheckedChangeListener((compoundButton, isChecked) -> {
             viewModel.setPayForCommission(isChecked);
             if (isChecked) {
-
+                if (Double.parseDouble(inputOriginal.getText().toString()) * Math.pow(10, 8) + transactionPriceMax >= spendableSatoshi) {
+                    viewModel.errorMessage.setValue("You reached spendable amount");
+                    switcher.setChecked(false);
+                }
             } else {
 
             }
-//            setTotalAmountForInput();
+            setTotalAmountForInput();
         });
     }
 
@@ -369,7 +381,7 @@ public class AmountChooserFragment extends BaseFragment {
             textTotal.append(Constants.SPACE);
             textTotal.append(CurrencyCode.USD.name());
         } else {
-            textTotal.setText(viewModel.getWallet().getBalanceWithCode(CurrencyCode.BTC));
+            textTotal.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(spendableSatoshi)));
         }
     }
 
@@ -378,13 +390,13 @@ public class AmountChooserFragment extends BaseFragment {
             if (isAmountSwapped) {                                  // if currency input is main we set total balance in currency (usd, eur, etc.)
                 if (!TextUtils.isEmpty(inputCurrency.getText())) {  // checks input for value to not parse null
                     if (switcher.isChecked()) {                     // if pay for commission is checked we add fee and donation to total amount
-                        textTotal.setText(NumberFormatter.getInstance()
+                        textTotal.setText(NumberFormatter.getFiatInstance()
                                 .format(Double.parseDouble(inputCurrency.getText().toString())
-                                        + (viewModel.getFee().getAmount()
-                                        + (viewModel.getDonationAmount() == null ? zero : Double.parseDouble(viewModel.getDonationAmount())))
-                                        * currenciesRate.getBtcToUsd()));
+                                        + (Double.parseDouble(CryptoFormatUtils.satoshiToBtc(transactionPrice))
+//                                        + (viewModel.getDonationAmount() == null ? zero : Double.parseDouble(viewModel.getDonationAmount())))
+                                        * currenciesRate.getBtcToUsd())));
                     } else {                                        // if pay for commission is unchecked we add just value from input to total amount
-                        textTotal.setText(NumberFormatter.getInstance().format(Double.parseDouble(inputCurrency.getText().toString())));
+                        textTotal.setText(NumberFormatter.getFiatInstance().format(Double.parseDouble(inputCurrency.getText().toString())));
                     }
                     textTotal.append(Constants.SPACE);
                     textTotal.append(CurrencyCode.USD.name());
@@ -396,8 +408,8 @@ public class AmountChooserFragment extends BaseFragment {
                     if (switcher.isChecked()) {                    // if pay for commission is checked we add fee and donation to total amount
                         textTotal.setText(NumberFormatter.getInstance()
                                 .format(Double.parseDouble(inputOriginal.getText().toString())
-                                        + viewModel.getFee().getAmount()
-                                        + (viewModel.getDonationAmount() == null ? zero : Double.parseDouble(viewModel.getDonationAmount()))));
+                                        + Double.parseDouble(CryptoFormatUtils.satoshiToBtc(transactionPrice))));
+//                                        + (viewModel.getDonationAmount() == null ? zero : Double.parseDouble(viewModel.getDonationAmount()))));
                     } else {                                       // if pay for commission is unchecked we add just value from input to total amount
                         textTotal.setText(inputOriginal.getText());
                     }
@@ -424,7 +436,7 @@ public class AmountChooserFragment extends BaseFragment {
     private void setEmptyTotalWithFee() {
         if (switcher.isChecked()) {
             if (isAmountSwapped) {
-                textTotal.setText(NumberFormatter.getInstance().format((viewModel.getFee().getAmount()
+                textTotal.setText(NumberFormatter.getFiatInstance().format((viewModel.getFee().getAmount()
                         + (viewModel.getDonationAmount() == null ? zero : Double.parseDouble(viewModel.getDonationAmount())))
                         * currenciesRate.getBtcToUsd()));
                 textTotal.append(Constants.SPACE);
@@ -443,7 +455,7 @@ public class AmountChooserFragment extends BaseFragment {
     private void setAmountTotalWithFee() {
         if (switcher.isChecked()) {
             if (isAmountSwapped) {
-                textTotal.setText(NumberFormatter.getInstance().format((viewModel.getFee().getAmount()
+                textTotal.setText(NumberFormatter.getFiatInstance().format((viewModel.getFee().getAmount()
                         + viewModel.getAmount()
                         + (viewModel.getDonationAmount() == null ? zero : Double.parseDouble(viewModel.getDonationAmount())))
                         * currenciesRate.getBtcToUsd()));
