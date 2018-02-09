@@ -101,7 +101,7 @@ public class Multy extends Application {
         try {
             RealmManager.removeDatabase(context);
             Prefs.clear();
-            Multy.makeInitialized();
+//            Multy.makeInitialized();
             Realm.init(context);
         } catch (Exception exc) {
 //            System.exit(0);
