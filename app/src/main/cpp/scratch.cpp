@@ -226,6 +226,40 @@ Java_io_multy_util_NativeDataHelper_makeAccountAddress(JNIEnv *env, jobject obj,
 //JNIEXPORT jstring JNICALL
 //Java_io_multy_util_NativeDataHelper_makePrivateKey
 
+JNIEXPORT jstring JNICALL
+Java_io_multy_util_NativeDataHelper_getEstimate(JNIEnv *env, jclass type, jstring feePerByte_,
+                                                jint inputs, jint outputs) {
+
+    using namespace wallet_core::internal;
+    using namespace multy_transaction::internal;
+
+    const char *feePerByte = env->GetStringUTFChars(feePerByte_, 0);
+
+    size_t in = inputs;
+    size_t out = outputs;
+    Amount fee_per_byte(feePerByte);
+
+    ErrorPtr error;
+    AccountPtr baseAccount;
+    error.reset(make_account(CURRENCY_BITCOIN, "cQeGKosJjWPn9GkB7QmvmotmBbVg1hm8UjdN6yLXEWZ5HAcRwam7", reset_sp(baseAccount)));
+
+    TransactionPtr transaction;
+    error.reset(make_transaction(baseAccount.get(), reset_sp(transaction)));
+
+    {
+        Properties &fee = transaction->get_fee();
+        fee.set_property("amount_per_byte", fee_per_byte);
+    }
+
+    Amount total_fee = transaction->estimate_total_fee(out, in);
+
+    //  const char* ret = fee_per_byte.get_value();
+
+    env->ReleaseStringUTFChars(feePerByte_, feePerByte);
+
+    return env->NewStringUTF(total_fee.get_value().c_str());
+}
+
 JNIEXPORT jbyteArray JNICALL
 Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *jniEnv, jobject obj, jbyteArray jSeed,
                                                     jint jWalletIndex, jstring amountToSpend,

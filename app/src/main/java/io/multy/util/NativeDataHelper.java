@@ -65,4 +65,5 @@ public class NativeDataHelper {
 
     public static native byte[] digestSha3256(byte[] s) throws JniException;
 
+    public static native String getEstimate(String fee, int inputs, int outputs);
 }

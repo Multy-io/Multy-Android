@@ -161,11 +161,6 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
             textTitle.setText(R.string.enter_password);
             textTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
 
-            View previousView = viewGroup.findViewById(R.id.container_pin);
-            if (previousView != null) {
-                viewGroup.removeViewInLayout(previousView);
-            }
-
             RecyclerView recyclerViewDots = convertView.findViewById(R.id.recycler_view_dots);
             RecyclerView recyclerViewNumbers = convertView.findViewById(R.id.recycler_view_numbers);
 
@@ -182,6 +177,11 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
             viewGroup.addView(convertView);
             if (viewGroup.getVisibility() != View.VISIBLE) {
                 viewGroup.setVisibility(View.VISIBLE);
+            }
+
+            View previousView = viewGroup.findViewById(R.id.container_pin);
+            if (previousView != null) {
+                viewGroup.removeViewInLayout(previousView);
             }
 
             isLockVisible = true;

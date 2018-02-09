@@ -33,16 +33,23 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.api.socket.CurrenciesRate;
+import io.multy.model.entities.Output;
 import io.multy.model.entities.wallet.CurrencyCode;
+import io.multy.model.entities.wallet.WalletAddress;
+import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetSendActivity;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
+import io.multy.util.CryptoFormatUtils;
+import io.multy.util.NativeDataHelper;
 import io.multy.util.NumberFormatter;
 import io.multy.viewmodels.AssetSendViewModel;
 
 
 public class AmountChooserFragment extends BaseFragment {
+
+    public static final String TAG = AmountChooserFragment.class.getSimpleName();
 
     public static AmountChooserFragment newInstance() {
         return new AmountChooserFragment();
@@ -87,6 +94,9 @@ public class AmountChooserFragment extends BaseFragment {
     private boolean isAmountSwapped;
     private AssetSendViewModel viewModel;
     private CurrenciesRate currenciesRate;
+    private long transactionPrice;
+    private long transactionPriceMax;
+    private long spendableSatoshi;
 
     @Nullable
     @Override
@@ -96,12 +106,48 @@ public class AmountChooserFragment extends BaseFragment {
         viewModel = ViewModelProviders.of(getActivity()).get(AssetSendViewModel.class);
         currenciesRate = RealmManager.getSettingsDao().getCurrenciesRate();
         isAmountSwapped = false;
-        textSpendable.append(viewModel.getWallet().getBalanceWithCode(CurrencyCode.BTC));
         setupSwitcher();
         setupInputOriginal();
         setupInputCurrency();
         setAmountTotalWithFee();
+        initTransactionPrice();
         return view;
+    }
+
+    private void initTransactionPrice() {
+        WalletRealmObject wallet = viewModel.getWallet();
+        boolean isDonationIncluded = viewModel.getDonationAmount() != null;
+
+        int inputsCount = 0;
+        for (WalletAddress walletAddress : wallet.getAddresses()) {
+            inputsCount += walletAddress.getOutputs().size();
+        }
+
+        int outputsCount = isDonationIncluded ? 2 : 1;
+        int outputsCountForMax = isDonationIncluded ? 3 : 2;
+
+        long feePerByte = viewModel.getFee().getAmount();
+        if (feePerByte < 20) {
+            feePerByte = 20;
+        }
+        String estimation = NativeDataHelper.getEstimate(String.valueOf(feePerByte), inputsCount, outputsCount);
+        String estimationForMax = NativeDataHelper.getEstimate(String.valueOf(feePerByte), inputsCount, outputsCountForMax);
+
+
+        transactionPrice = Long.valueOf(estimation);
+        transactionPriceMax = Long.valueOf(estimationForMax);
+
+        spendableSatoshi = 0;
+
+        for (WalletAddress walletAddress : viewModel.getWallet().getAddresses()) {
+            for (Output output : walletAddress.getOutputs()) {
+                if (output.getStatus() == Constants.TX_IN_BLOCK_INCOMING || output.getStatus() == Constants.TX_CONFIRMED_INCOMING) {
+                    spendableSatoshi += Long.valueOf(output.getTxOutAmount());
+                }
+            }
+        }
+
+        textSpendable.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(spendableSatoshi)));
     }
 
     @Override
@@ -139,15 +185,20 @@ public class AmountChooserFragment extends BaseFragment {
 
     @OnClick(R.id.text_max)
     void onClickMax() {
+        if (spendableSatoshi - transactionPriceMax < 0) {
+            return;
+        }
+
         if (textMax.isSelected()) {
             textMax.setSelected(false);
         } else {
             textMax.setSelected(true);
         }
         switcher.setChecked(false);
-        inputOriginal.setText(String.valueOf(viewModel.getWallet().getBalance()));
-        inputCurrency.setText(NumberFormatter.getInstance()
-                .format(viewModel.getWallet().getBalance() * viewModel.getCurrenciesRate().getBtcToUsd()));
+        inputOriginal.setText(CryptoFormatUtils.satoshiToBtc(spendableSatoshi - transactionPriceMax));
+        inputCurrency.setText(CryptoFormatUtils.satoshiToUsd(spendableSatoshi - transactionPriceMax));
+//        inputCurrency.setText(NumberFormatter.getInstance().format(viewModel.getWallet().getBalance() * viewModel.getCurrenciesRate().getBtcToUsd()));
+        textTotal.setText(CryptoFormatUtils.satoshiToUsd(spendableSatoshi - transactionPriceMax) + " BTC");
         setTotalAmountWithWallet();
     }
 
@@ -298,15 +349,13 @@ public class AmountChooserFragment extends BaseFragment {
 
     private void setupSwitcher() {
         switcher.setOnCheckedChangeListener((compoundButton, isChecked) -> {
-//            viewModel.setPayForCommission(isChecked);
+            viewModel.setPayForCommission(isChecked);
             if (isChecked) {
-//                if (viewModel.getWalletLive().getBalance() > Double.parseDouble(inputOriginal.getText().toString())) {
-//
-//                }
+
             } else {
 
             }
-            setTotalAmountForInput();
+//            setTotalAmountForInput();
         });
     }
 
