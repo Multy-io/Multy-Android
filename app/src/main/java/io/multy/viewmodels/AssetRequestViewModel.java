@@ -103,11 +103,11 @@ public class AssetRequestViewModel extends BaseViewModel {
         return walletLive;
     }
 
-    public Bitmap generateQR(Context context) throws WriterException {
+    public Bitmap generateQR(Context context, String strQr) throws WriterException {
         BitMatrix bitMatrix;
         try {
             bitMatrix = new MultiFormatWriter().encode(
-                    getStringQr(),
+                    strQr,
                     BarcodeFormat.QR_CODE,
                     200, 200, null
             );

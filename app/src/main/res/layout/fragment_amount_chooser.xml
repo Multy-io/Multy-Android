@@ -40,7 +40,7 @@
                 android:background="@null"
                 android:hint="@integer/zero"
                 android:inputType="numberDecimal"
-                android:maxLength="14"
+                android:maxLength="15"
                 android:minWidth="@dimen/dimen_20dp"
                 android:textAlignment="textEnd"
                 android:textColor="@color/text_main"

@@ -6,6 +6,7 @@
 
 package io.multy.ui.activities;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,6 +15,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -69,6 +71,16 @@ public class PinSetupActivity extends BaseActivity {
         recyclerViewIndicator.setHasFixedSize(true);
 
         inputPin.requestFocus();
+        if (Prefs.getBoolean(Constants.PREF_LOCK)) {
+            inputPin.postDelayed(() -> {
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm.isActive()) {
+                    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+                }
+
+                imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0);
+            }, 100);
+        }
         inputPin.setKeyImeChangeListener((keyCode, event) -> {
             if (keyCode == KeyEvent.KEYCODE_BACK) {
                 finish();

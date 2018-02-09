@@ -34,26 +34,19 @@
 
             <!-- Branch URI scheme -->
             <intent-filter>
-                <data
-                    android:host="open"
-                    android:scheme="multyrelease" />
+                <data android:scheme="multy" android:host="open" />
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-            </intent-filter>
+            </intent-filter>  
 
             <!-- Branch App Links -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="zn0o.test-app.link"
-                    android:scheme="https" />
-            </intent-filter>
+                <data android:scheme="https" android:host="multy.test-app.link" />
+            </intent-filter>  
 
         </activity>
 
@@ -66,6 +59,10 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activities.CreateAssetActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activities.AmountChooserActivity"
+            android:label="@string/receive_amount"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activities.SeedActivity"
@@ -112,12 +109,13 @@
             android:name="io.branch.sdk.auto_link_request_code"
             android:value="@integer/AutoDeeplinkRequestCode" />
 
-        <!--TODO add live key for release-->
-        <!--<meta-data android:name="io.branch.sdk.BranchKey"-->
-        <!--android:value="key_live_ajEwFvEdpSlByRfcUR9KgfbgqCkJ0Eyl" />-->
+
+        <meta-data
+            android:name="io.branch.sdk.BranchKey"
+            android:value="key_live_hnDTA3d2e5UI8dsmyyY3lihgysidlhdi" />
         <meta-data
             android:name="io.branch.sdk.BranchKey.test"
-            android:value="key_test_deEyCxvdjNmAzVchTM8RnjoeDqdUZsss" />
+            android:value="key_test_niyUD9c8fYOV7kwmBIgiJmdlqrkehhdD" />
 
         <!--TODO remove in release-->
         <!-- Branch testing (TestMode "true" to simulate fresh installs on dev environment) -->

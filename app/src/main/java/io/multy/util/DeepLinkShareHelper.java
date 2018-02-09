@@ -12,6 +12,7 @@ import android.content.Context;
 import io.branch.indexing.BranchUniversalObject;
 import io.branch.referral.util.ContentMetadata;
 import io.branch.referral.util.LinkProperties;
+import io.multy.R;
 
 
 public class DeepLinkShareHelper {
@@ -23,15 +24,15 @@ public class DeepLinkShareHelper {
 
         BranchUniversalObject branchUniversalObject = new BranchUniversalObject()
                 .setCanonicalIdentifier(Constants.DEEP_LINK_QR_CODE + "/" + qrCode)
-                .setTitle(Constants.DEEP_LINK_QR_CODE)
+                .setTitle(context.getString(R.string.app_name))
                 .setContentIndexingMode(BranchUniversalObject.CONTENT_INDEX_MODE.PUBLIC)
                 .setContentMetadata(contentMetadata);
 
         LinkProperties linkProperties = new LinkProperties()
                 .addTag(qrCode)
-                .addControlParameter("$desktop_url", "http://multy.io")
+                .addControlParameter("$desktop_url", "http://multy.io");
 //                .addControlParameter("$sender_id", String.valueOf(userId))
-                .addControlParameter("$ios_url", "com.devmulty");
+//                .addControlParameter("$ios_url", "com.devmulty");
 //                .addControlParameter("$ios_deeplink_path", Constants.DEEP_LINK_QR_CODE)
         return branchUniversalObject.getShortUrl(context, linkProperties, false);
     }
