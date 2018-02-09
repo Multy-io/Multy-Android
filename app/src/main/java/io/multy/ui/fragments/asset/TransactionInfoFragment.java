@@ -95,6 +95,8 @@ public class TransactionInfoFragment extends BaseFragment {
     TextView textDonateValue;
     @BindView(R.id.donat_amount)
     TextView textDonateAmount;
+    @BindView(R.id.donat_money)
+    TextView textDonateMoney;
     @BindColor(R.color.green_light)
     int colorGreen;
     @BindColor(R.color.blue_sky)
@@ -177,7 +179,13 @@ public class TransactionInfoFragment extends BaseFragment {
             textValue.setText("+");
             textAmount.setText("+");
             textValue.append(CryptoFormatUtils.satoshiToBtc(transaction.getTxOutAmount()));
-            textAmount.append(CryptoFormatUtils.satoshiToUsd(transaction.getTxOutAmount(), transaction.getStockExchangeRates().get(0).getExchanges().getBtcUsd()));
+            if (transaction.getStockExchangeRates() != null && transaction.getStockExchangeRates().size() > 0) {
+                textAmount.append(CryptoFormatUtils.satoshiToUsd(transaction.getTxOutAmount(), transaction.getStockExchangeRates().get(0).getExchanges().getBtcUsd()));
+                textMoney.setVisibility(View.VISIBLE);
+            } else {
+                textAmount.setText("");
+                textMoney.setVisibility(View.GONE);
+            }
         } else {
             textValue.setText("-");
             textAmount.setText("-");
@@ -195,7 +203,13 @@ public class TransactionInfoFragment extends BaseFragment {
             }
             if (addressTo != null) {
                 textValue.append(CryptoFormatUtils.satoshiToBtc(addressTo.getAmount()));
-                textAmount.append(CryptoFormatUtils.satoshiToUsd(addressTo.getAmount(), transaction.getStockExchangeRates().get(0).getExchanges().getBtcUsd()));
+                if (transaction.getStockExchangeRates() != null && transaction.getStockExchangeRates().size() > 0) {
+                    textAmount.append(CryptoFormatUtils.satoshiToUsd(addressTo.getAmount(), transaction.getStockExchangeRates().get(0).getExchanges().getBtcUsd()));
+                    textMoney.setVisibility(View.VISIBLE);
+                } else {
+                    textAmount.setText("");
+                    textMoney.setVisibility(View.GONE);
+                }
             }
 
             getServerConfig();
@@ -250,7 +264,13 @@ public class TransactionInfoFragment extends BaseFragment {
     private void initializeDonationBlock(WalletAddress address) {
         viewDonate.setVisibility(View.VISIBLE);
         textDonateValue.setText(CryptoFormatUtils.satoshiToBtc(address.getAmount()));
-        textDonateAmount.setText(CryptoFormatUtils.satoshiToUsd(address.getAmount(), transaction.getStockExchangeRates().get(0).getExchanges().getBtcUsd()));
+        if (transaction.getStockExchangeRates() != null && transaction.getStockExchangeRates().size() > 0) {
+            textDonateAmount.setText(CryptoFormatUtils.satoshiToUsd(address.getAmount(), transaction.getStockExchangeRates().get(0).getExchanges().getBtcUsd()));
+            textDonateMoney.setVisibility(View.VISIBLE);
+        } else {
+            textDonateAmount.setText("");
+            textDonateMoney.setVisibility(View.GONE);
+        }
     }
 
     @OnClick(R.id.button_view)
