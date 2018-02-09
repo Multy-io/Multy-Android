@@ -105,6 +105,13 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
         });
     }
 
+    private String getStockFiatAmount(TransactionHistory transactionHistory) {
+        if (transactionHistory.getStockExchangeRates() != null && transactionHistory.getStockExchangeRates().size() > 0) {
+            return String.valueOf(CryptoFormatUtils.satoshiToUsd(transactionHistory.getTxOutAmount(), transactionHistory.getStockExchangeRates().get(0).getExchanges().getBtcUsd()));
+        }
+        return "";
+    }
+
     private void bindBlocked(BlockedHolder holder, int position) {
         TransactionHistory transactionHistory = transactionHistoryList.get(position);
         final boolean isIncoming = transactionHistory.getTxStatus() == TX_MEMPOOL_INCOMING;
@@ -119,7 +126,7 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
             lockedAmount = CryptoFormatUtils.satoshiToBtc(transactionHistory.getTxOutAmount());
             lockedFiat = CryptoFormatUtils.satoshiToUsd(transactionHistory.getTxOutAmount());
             amount = lockedAmount;
-            amountFiat = String.valueOf(CryptoFormatUtils.satoshiToUsd(transactionHistory.getTxOutAmount(), transactionHistory.getStockExchangeRates().get(0).getExchanges().getBtcUsd()));
+            amountFiat = getStockFiatAmount(transactionHistory);
             setAddresses(transactionHistory.getInputs(), holder.containerAddresses);
         } else {
             //TODO REMOVE DRY AND OPTIMIZE
@@ -148,7 +155,7 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
             lockedAmount = CryptoFormatUtils.satoshiToBtc(userChangeAddress.getAmount());
             lockedFiat = CryptoFormatUtils.satoshiToUsd(userChangeAddress.getAmount());
             amount = CryptoFormatUtils.satoshiToBtc(transactionHistory.getTxOutAmount());
-            amountFiat = String.valueOf(CryptoFormatUtils.satoshiToUsd(transactionHistory.getTxOutAmount(), transactionHistory.getStockExchangeRates().get(0).getExchanges().getBtcUsd()));
+            amountFiat = getStockFiatAmount(transactionHistory);
             setAddress(addressTo, holder.containerAddresses);
         }
 
@@ -170,7 +177,7 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
         holder.imageDirection.setImageResource(isIncoming ? R.drawable.ic_receive_gray : R.drawable.ic_send_gray);
         holder.textRejectedDirection.setText(isIncoming ? R.string.rejected_receive : R.string.rejected_send);
         holder.amount.setText(CryptoFormatUtils.satoshiToBtc(transactionHistory.getTxOutAmount()));
-        holder.fiat.setText(CryptoFormatUtils.satoshiToUsd(transactionHistory.getTxOutAmount(), transactionHistory.getStockExchangeRates().get(0).getExchanges().getBtcUsd()));
+        holder.fiat.setText(getStockFiatAmount(transactionHistory));
 
         setItemClickListener(holder.itemView, isIncoming, position);
     }
@@ -187,7 +194,8 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
         if (isIncoming) {
             setAddresses(transactionHistory.getInputs(), holder.containerAddresses);
             holder.amount.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(transactionHistory.getTxOutAmount())));
-            holder.fiat.setText(String.format("%s USD", CryptoFormatUtils.satoshiToUsd(transactionHistory.getTxOutAmount(), transactionHistory.getStockExchangeRates().get(0).getExchanges().getBtcUsd())));
+            String stockFiat = getStockFiatAmount(transactionHistory);
+            holder.fiat.setText(stockFiat.equals("") ? "" : String.format("%s USD", stockFiat));
         } else {
             //TODO REMOVE DRY AND OPTIMIZE
             WalletAddress addressTo = null;
@@ -209,7 +217,8 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
             if (addressTo != null) {
                 setAddress(addressTo.getAddress(), holder.containerAddresses);
                 holder.amount.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(addressTo.getAmount())));
-                holder.fiat.setText(String.format("%s USD", CryptoFormatUtils.satoshiToUsd(addressTo.getAmount(), transactionHistory.getStockExchangeRates().get(0).getExchanges().getBtcUsd())));
+                String stockFiat = getStockFiatAmount(transactionHistory);
+                holder.fiat.setText(stockFiat.equals("") ? "" : String.format("%s USD", stockFiat));
             }
         }
 

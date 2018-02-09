@@ -22,6 +22,7 @@ import butterknife.ButterKnife;
 import io.multy.R;
 import io.multy.model.entities.Fee;
 import io.multy.util.CryptoFormatUtils;
+import io.reactivex.annotations.Nullable;
 
 public class MyFeeAdapter extends RecyclerView.Adapter<MyFeeAdapter.FeeHolder> {
 
@@ -56,7 +57,7 @@ public class MyFeeAdapter extends RecyclerView.Adapter<MyFeeAdapter.FeeHolder> {
         } else {
             holder.imageLogo.setImageResource(getIconResId(position));
             holder.textBlocks.setText(String.format("%d blocks", rate.getBlockCount()));
-            holder.textName.setText(String.format("%s·%s", rate.getName(), rate.getTime()));
+            holder.textName.setText(String.format("%s · %s", rate.getName(), rate.getTime()));
             holder.textBalanceOriginal.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(price)));
             holder.root.setOnClickListener(v -> setItemSelected(position));
         }
@@ -68,6 +69,17 @@ public class MyFeeAdapter extends RecyclerView.Adapter<MyFeeAdapter.FeeHolder> {
             rates.get(i).setSelected(i == position);
         }
         notifyDataSetChanged();
+    }
+
+    @Nullable
+    public Fee getSelectedFee() {
+        for (Fee rate : rates) {
+            if (rate.isSelected()) {
+                return rate;
+            }
+        }
+
+        return null;
     }
 
     private int getIconResId(int position) {

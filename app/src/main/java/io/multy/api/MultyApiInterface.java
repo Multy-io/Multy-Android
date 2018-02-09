@@ -5,6 +5,7 @@ import android.content.Context;
 
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.model.requests.AddWalletAddressRequest;
+import io.multy.model.requests.HdTransactionRequestEntity;
 import io.multy.model.requests.UpdateWalletNameRequest;
 import io.multy.model.responses.AuthResponse;
 import io.multy.model.responses.FeeRateResponse;
@@ -44,5 +45,7 @@ public interface MultyApiInterface {
     Call<ServerConfigResponse> getServerConfig();
 
     Call<FeeRateResponse> getFeeRates(int currencyId);
+
+    Call<ResponseBody> sendHdTransaction(HdTransactionRequestEntity transactionRequestEntity);
 
 }

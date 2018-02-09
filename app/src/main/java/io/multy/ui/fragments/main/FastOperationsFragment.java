@@ -6,7 +6,6 @@
 
 package io.multy.ui.fragments.main;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -22,14 +21,15 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
-import io.multy.model.DataManager;
+import io.multy.model.entities.wallet.WalletRealmObject;
+import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetRequestActivity;
 import io.multy.ui.activities.AssetSendActivity;
 import io.multy.ui.activities.MainActivity;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.AnimationUtils;
 import io.multy.util.Constants;
-import io.multy.viewmodels.FeedViewModel;
+import io.realm.RealmResults;
 
 /**
  * Created by Ihar Paliashchuk on 02.11.2017.
@@ -39,8 +39,6 @@ import io.multy.viewmodels.FeedViewModel;
 public class FastOperationsFragment extends BaseFragment {
 
     public static final String TAG = FastOperationsFragment.class.getSimpleName();
-
-    private FeedViewModel viewModel;
 
     @BindView(R.id.button_cancel)
     View buttonCancel;
@@ -76,7 +74,6 @@ public class FastOperationsFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_fast_operations, container, false);
         ButterKnife.bind(this, view);
-        viewModel = ViewModelProviders.of(this).get(FeedViewModel.class);
         AnimationUtils.createReveal(view, revealX, revealY, colorBlue, colorWhite);
         buttonCancel.setEnabled(false);
         buttonCancel.postDelayed(() -> buttonCancel.setEnabled(true), AnimationUtils.DURATION_MEDIUM);
@@ -96,19 +93,15 @@ public class FastOperationsFragment extends BaseFragment {
         }
     }
 
+    private boolean isWalletsAvailable() {
+        RealmResults<WalletRealmObject> wallets = RealmManager.getAssetsDao().getWallets();
+        return wallets != null && wallets.size() > 0;
+    }
+
     @OnClick(R.id.button_send)
     void onSendClick() {
-        if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
-            DataManager dataManager = DataManager.getInstance();
-            if (dataManager.getDeviceId() != null && dataManager.getUserId() != null) {
-                if (!dataManager.getWallets().isEmpty()) {
-                    startActivity(new Intent(getContext(), AssetSendActivity.class));
-                } else {
-                    Toast.makeText(getActivity(), "Please, create wallet", Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                Toast.makeText(getActivity(), "Please, create wallet", Toast.LENGTH_SHORT).show();
-            }
+        if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED) && isWalletsAvailable()) {
+            startActivity(new Intent(getContext(), AssetSendActivity.class));
         } else {
             Toast.makeText(getActivity(), "Please, create wallet", Toast.LENGTH_SHORT).show();
         }
@@ -116,17 +109,8 @@ public class FastOperationsFragment extends BaseFragment {
 
     @OnClick(R.id.button_receive)
     void onReceiveClick() {
-        if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
-            DataManager dataManager = DataManager.getInstance();
-            if (dataManager.getDeviceId() != null && dataManager.getUserId() != null) {
-                if (!dataManager.getWallets().isEmpty()) {
-                    startActivity(new Intent(getContext(), AssetRequestActivity.class));
-                } else {
-                    Toast.makeText(getActivity(), "Please, create wallet", Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                Toast.makeText(getActivity(), "Please, create wallet", Toast.LENGTH_SHORT).show();
-            }
+        if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED) && isWalletsAvailable()) {
+            startActivity(new Intent(getContext(), AssetRequestActivity.class));
         } else {
             Toast.makeText(getActivity(), "Please, create wallet", Toast.LENGTH_SHORT).show();
         }
@@ -139,17 +123,8 @@ public class FastOperationsFragment extends BaseFragment {
 
     @OnClick(R.id.button_scan_qr)
     void onScanClick() {
-        if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
-            DataManager dataManager = DataManager.getInstance();
-            if (dataManager.getDeviceId() != null && dataManager.getUserId() != null) {
-                if (!dataManager.getWallets().isEmpty()) {
-                    ((MainActivity) getActivity()).showScanScreen();
-                } else {
-                    Toast.makeText(getActivity(), "Please, create wallet", Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                Toast.makeText(getActivity(), "Please, create wallet", Toast.LENGTH_SHORT).show();
-            }
+        if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED) && isWalletsAvailable()) {
+            ((MainActivity) getActivity()).showScanScreen();
         } else {
             Toast.makeText(getActivity(), "Please, create wallet", Toast.LENGTH_SHORT).show();
         }

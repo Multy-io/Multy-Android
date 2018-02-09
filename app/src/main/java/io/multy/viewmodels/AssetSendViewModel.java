@@ -29,7 +29,7 @@ public class AssetSendViewModel extends BaseViewModel {
 
     public MutableLiveData<WalletRealmObject> wallet = new MutableLiveData<>();
     public MutableLiveData<FeeRateResponse.Speeds> speeds = new MutableLiveData<>();
-    private Fee fee;
+    public MutableLiveData<Fee> fee = new MutableLiveData<>();
     private double amount;
     private boolean isPayForCommission;
     private MutableLiveData<String> receiverAddress = new MutableLiveData<>();
@@ -54,12 +54,12 @@ public class AssetSendViewModel extends BaseViewModel {
         return this.wallet.getValue();
     }
 
-    public void saveFee(Fee fee) {
-        this.fee = fee;
+    public void setFee(Fee fee) {
+        this.fee.setValue(fee);
     }
 
     public Fee getFee() {
-        return fee;
+        return fee.getValue();
     }
 
     public void setAmount(double amount) {

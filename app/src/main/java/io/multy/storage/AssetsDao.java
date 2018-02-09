@@ -8,6 +8,7 @@ package io.multy.storage;
 
 import java.util.List;
 
+import io.multy.model.entities.wallet.RecentAddress;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.reactivex.annotations.NonNull;
@@ -95,5 +96,13 @@ public class AssetsDao {
             WalletRealmObject wallet = getWalletById(id);
             wallet.deleteFromRealm();
         });
+    }
+
+    public void saveRecentAddress(RecentAddress recentAddress) {
+        realm.executeTransaction(realm -> realm.insertOrUpdate(recentAddress));
+    }
+
+    public RealmResults<RecentAddress> getRecentAddresses() {
+        return realm.where(RecentAddress.class).findAll();
     }
 }

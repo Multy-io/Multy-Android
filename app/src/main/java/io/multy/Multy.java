@@ -89,7 +89,7 @@ public class Multy extends Application {
         try {
             String key = new String(Base64.encode(EntropyProvider.generateKey(512), Base64.NO_WRAP));
             SecurePreferencesHelper.putString(getContext(), Constants.PREF_KEY, key);
-            if (RealmManager.open(getContext()) == null) {
+            if (RealmManager.open(getContext()) == null) { //TODO review this.
                 systemClear(getContext());
             }
         } catch (NoSuchAlgorithmException e) {

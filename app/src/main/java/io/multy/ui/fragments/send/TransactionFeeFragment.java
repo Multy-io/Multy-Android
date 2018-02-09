@@ -32,6 +32,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
+import io.multy.model.entities.Fee;
 import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.ui.activities.AssetSendActivity;
 import io.multy.ui.adapters.MyFeeAdapter;
@@ -99,13 +100,19 @@ public class TransactionFeeFragment extends BaseFragment implements MyFeeAdapter
 
     @OnClick(R.id.button_next)
     void onClickNext() {
-        if (viewModel.getFee() != null) {
+        Fee selectedFee = ((MyFeeAdapter) recyclerView.getAdapter()).getSelectedFee();
+
+        if (selectedFee != null) {
+            viewModel.setFee(selectedFee);
+
             if (switcher.isChecked()) {
                 viewModel.setDonationAmount(inputDonation.getText().toString());
             } else {
                 viewModel.setDonationAmount(null);
             }
+
             ((AssetSendActivity) getActivity()).setFragment(R.string.send_amount, R.id.container, AmountChooserFragment.newInstance());
+
             if (viewModel.isAmountScanned()) {
                 ((AssetSendActivity) getActivity()).setFragment(R.string.send_summary, R.id.container, SendSummaryFragment.newInstance());
             }

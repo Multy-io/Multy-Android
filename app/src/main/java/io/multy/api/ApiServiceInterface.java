@@ -11,6 +11,7 @@ import io.multy.model.entities.AuthEntity;
 import io.multy.model.entities.TransactionRequestEntity;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.model.requests.AddWalletAddressRequest;
+import io.multy.model.requests.HdTransactionRequestEntity;
 import io.multy.model.requests.UpdateWalletNameRequest;
 import io.multy.model.responses.AddressBalanceResponse;
 import io.multy.model.responses.AuthResponse;
@@ -48,6 +49,9 @@ public interface ApiServiceInterface {
 
     @POST("/api/v1/transaction/send/{currencyId}")
     Call<ResponseBody> sendRawTransaction(@Body TransactionRequestEntity transactionRequestEntity, @Path("currencyId") int currencyId);
+
+    @POST("/api/v1/transaction/send")
+    Call<ResponseBody> sendHdTransaction(@Body HdTransactionRequestEntity transactionRequestEntity);
 
     @GET("/api/v1/address/balance/{currencyId}/{address}")
     Call<AddressBalanceResponse> getBalanceByAddress(@Path("currencyId") int currencyId, @Path("address") String address);

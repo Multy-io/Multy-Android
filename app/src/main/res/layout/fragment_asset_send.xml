@@ -1,34 +1,34 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2017 Idealnaya rabota LLC
   ~ Licensed under Multy.io license.
   ~ See LICENSE for details
   -->
 
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_main"
-    tools:showIn="io.multy.android.AssetSendActivity"
+    android:clipToPadding="false"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    android:clipToPadding="false">
+    tools:showIn="io.multy.android.AssetSendActivity">
 
     <android.support.design.widget.TextInputEditText
         android:id="@+id/input_address"
         android:layout_width="@dimen/dp0"
         android:layout_height="@dimen/input_address_height"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:background="@drawable/shape_squircle_white"
+        android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
         android:elevation="@dimen/elevation_10dp"
         android:fontFamily="@font/montserrat"
         android:gravity="center"
         android:hint="@string/hint_search_or_enter_address"
         android:maxLines="@integer/two"
-        android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
         android:paddingEnd="@dimen/activity_horizontal_margin"
         android:paddingStart="@dimen/activity_horizontal_margin"
         android:textAppearance="@style/TextAppearance.AppCompat.Menu"
@@ -46,8 +46,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/button_address"
         app:layout_constraintLeft_toLeftOf="@+id/button_address"
         app:layout_constraintRight_toRightOf="@+id/button_scan_qr"
-        app:layout_constraintTop_toTopOf="@+id/button_address"
-        />
+        app:layout_constraintTop_toTopOf="@+id/button_address" />
 
     <TextView
         android:id="@+id/button_address"
@@ -64,8 +63,8 @@
     <TextView
         android:id="@+id/button_scan_wireless"
         style="@style/SendShareButton"
-        android:drawableTop="@drawable/ic_nfc"
         android:drawablePadding="@dimen/margin_9dp"
+        android:drawableTop="@drawable/ic_nfc"
         android:paddingTop="@dimen/margin_19dp"
         android:text="@string/wireless_scan"
         app:layout_constraintLeft_toRightOf="@+id/button_address"
@@ -103,33 +102,38 @@
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:elevation="@dimen/elevation_4dp"
         android:text="@string/recent_addresses"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textColor="@color/text_grey"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="@id/footer_background"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        />
+        app:layout_constraintTop_toTopOf="@id/footer_background" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="@dimen/dp0"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/activity_horizontal_margin"
         android:elevation="@dimen/elevation_4dp"
         app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toTopOf="@+id/button_next"
+        app:layout_constraintBottom_toTopOf="@+id/space"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_recent" />
 
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:id="@+id/space"
+        app:layout_constraintBottom_toTopOf="@id/button_next"
+        app:layout_constraintTop_toBottomOf="@id/recycler_view" />
+
     <TextView
         android:id="@+id/button_next"
         style="@style/ButtonNext"
-        android:text="@string/next"
         android:background="@color/disabled"
+        android:elevation="@dimen/elevation_4dp"
+        android:enabled="false"
+        android:text="@string/next"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:enabled="false"
-        android:elevation="@dimen/elevation_4dp"/>
+        app:layout_constraintRight_toRightOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

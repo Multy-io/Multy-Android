@@ -9,6 +9,8 @@ package io.multy.ui.fragments.send;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -25,6 +27,7 @@ import butterknife.OnClick;
 import io.multy.R;
 import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetSendActivity;
+import io.multy.ui.adapters.RecentAddressesAdapter;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
 import io.multy.viewmodels.AssetSendViewModel;
@@ -39,6 +42,8 @@ public class AssetSendFragment extends BaseFragment {
     EditText inputAddress;
     @BindView(R.id.button_next)
     TextView buttonNext;
+    @BindView(R.id.recycler_view)
+    RecyclerView recyclerView;
 
     private AssetSendViewModel viewModel;
 
@@ -53,9 +58,15 @@ public class AssetSendFragment extends BaseFragment {
             inputAddress.setText(viewModel.getReceiverAddress().getValue()); // to set address from scanning qr or wallet
         }
         viewModel.getReceiverAddress().observe(getActivity(), s -> inputAddress.setText(s));
-//        viewModel.getUserAssetsApi(); //TODO maybe I deleted something more :E
         setupInputAddress();
+        initRecentAddresses();
         return view;
+    }
+
+    private void initRecentAddresses() {
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(new RecentAddressesAdapter(RealmManager.getAssetsDao().getRecentAddresses(), address -> inputAddress.setText(address)));
     }
 
     @Override

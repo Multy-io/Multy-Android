@@ -6,6 +6,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -112,7 +113,7 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         setBaseViewModel(viewModel);
         viewModel.rates.observe(this, currenciesRate -> updateBalanceViews());
         viewModel.transactionUpdate.observe(this, transactionUpdateEntity -> {
-            refreshWallet();
+            new Handler().postDelayed(() -> refreshWallet(), 300);
         });
         swipeRefreshLayout.setOnRefreshListener(() -> refreshWallet());
 
@@ -239,6 +240,8 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
 
         if (pending == 0 || balance == pending) {
             hideAvailableAmount();
+        } else {
+            showAvailableAmount();
         }
 
         final double formatBalance = balance / Math.pow(10, 8);
@@ -265,8 +268,12 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     private void requestTransactions() {
         viewModel.getTransactionsHistory().observe(this, transactions -> {
             if (transactions != null && !transactions.isEmpty()) {
-                transactionsAdapter.setTransactions(transactions);
-                recyclerView.setAdapter(new AssetTransactionsAdapter(transactions, viewModel.wallet.getValue().getWalletIndex()));
+                try {
+                    transactionsAdapter.setTransactions(transactions);
+                    recyclerView.setAdapter(new AssetTransactionsAdapter(transactions, viewModel.wallet.getValue().getWalletIndex()));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
             setTransactionsState();
         });

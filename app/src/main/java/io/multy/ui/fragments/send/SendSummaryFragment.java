@@ -23,8 +23,8 @@ import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.model.DataManager;
 import io.multy.model.entities.wallet.CurrencyCode;
-import io.multy.model.entities.wallet.WalletAddress;
-import io.multy.model.requests.AddWalletAddressRequest;
+import io.multy.model.entities.wallet.RecentAddress;
+import io.multy.model.requests.HdTransactionRequestEntity;
 import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.dialogs.CompleteDialogFragment;
@@ -58,6 +58,8 @@ public class SendSummaryFragment extends BaseFragment {
     TextView textFeeSpeed;
     @BindView(R.id.text_fee_amount)
     TextView textFeeAmount;
+    @BindView(R.id.button_next)
+    View buttonNext;
 
     @BindString(R.string.donation_format_pattern)
     String formatPattern;
@@ -79,13 +81,23 @@ public class SendSummaryFragment extends BaseFragment {
         setBaseViewModel(viewModel);
         subscribeToErrors();
         setInfo();
-
+//        buttonNext.setOnTouchListener(new OnSlideTouchListener() {
+//            @Override
+//            public boolean onSlideRight() {
+//                send();
+//                return true;
+//            }
+//        });
         return view;
     }
 
     @OnClick(R.id.button_next)
     void onClickNext() {
-//        AssetSendDialogFragment dialog = new AssetSendDialogFragment();
+        send();
+    }
+
+    private void send() {
+        //        AssetSendDialogFragment dialog = new AssetSendDialogFragment();
 //        dialog.show(getActivity().getFragmentManager(), null);
         viewModel.isLoading.setValue(true);
 
@@ -111,24 +123,18 @@ public class SendSummaryFragment extends BaseFragment {
             Log.i(TAG, "hex= " + hex);
             Log.i(TAG, "changeAddress = " + changeAddress);
 
-            MultyApi.INSTANCE.addWalletAddress(new AddWalletAddressRequest(viewModel.getWallet().getWalletIndex(), changeAddress, addressesSize)).enqueue(new Callback<ResponseBody>() {
+            MultyApi.INSTANCE.sendHdTransaction(new HdTransactionRequestEntity(
+                    NativeDataHelper.Currency.BTC.getValue(),
+                    new HdTransactionRequestEntity.Payload(changeAddress, addressesSize, viewModel.getWallet().getWalletIndex(), hex))).enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                    RealmManager.getAssetsDao().saveAddress(viewModel.getWallet().getWalletIndex(), new WalletAddress(addressesSize, changeAddress));
-                    //TODO REMOVE THIS HARDCODE of the currency ID from this awesome Api request
-                    MultyApi.INSTANCE.sendRawTransaction(hex, 0).enqueue(new Callback<ResponseBody>() {
-                        @Override
-                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                            viewModel.isLoading.postValue(false);
-                            new CompleteDialogFragment().show(getActivity().getSupportFragmentManager(), "");
-                        }
-
-                        @Override
-                        public void onFailure(Call<ResponseBody> call, Throwable t) {
-                            t.printStackTrace();
-                            showError();
-                        }
-                    });
+                    if (response.isSuccessful()) {
+                        viewModel.isLoading.postValue(false);
+                        RealmManager.getAssetsDao().saveRecentAddress(new RecentAddress(NativeDataHelper.Currency.BTC.getValue(), addressTo));
+                        new CompleteDialogFragment().show(getActivity().getSupportFragmentManager(), "");
+                    } else {
+                        showError();
+                    }
                 }
 
                 @Override
@@ -137,6 +143,33 @@ public class SendSummaryFragment extends BaseFragment {
                     showError();
                 }
             });
+
+//            MultyApi.INSTANCE.addWalletAddress(new AddWalletAddressRequest(viewModel.getWallet().getWalletIndex(), changeAddress, addressesSize)).enqueue(new Callback<ResponseBody>() {
+//                @Override
+//                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+//                    RealmManager.getAssetsDao().saveAddress(viewModel.getWallet().getWalletIndex(), new WalletAddress(addressesSize, changeAddress));
+//                    //TODO REMOVE THIS HARDCODE of the currency ID from this awesome Api request
+//                    MultyApi.INSTANCE.sendRawTransaction(hex, 0).enqueue(new Callback<ResponseBody>() {
+//                        @Override
+//                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+//                            viewModel.isLoading.postValue(false);
+//                            new CompleteDialogFragment().show(getActivity().getSupportFragmentManager(), "");
+//                        }
+//
+//                        @Override
+//                        public void onFailure(Call<ResponseBody> call, Throwable t) {
+//                            t.printStackTrace();
+//                            showError();
+//                        }
+//                    });
+//                }
+//
+//                @Override
+//                public void onFailure(Call<ResponseBody> call, Throwable t) {
+//                    t.printStackTrace();
+//                    showError();
+//                }
+//            });
         } catch (Exception e) {
             e.printStackTrace();
         }
