@@ -12,7 +12,8 @@ import android.text.TextUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import io.multy.model.DataManager;
+import io.multy.storage.RealmManager;
+import io.multy.storage.SettingsDao;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
 import timber.log.Timber;
@@ -27,11 +28,11 @@ public class SeedViewModel extends BaseViewModel {
     public void initData() {
         try {
             final int wordsPerOnce = 3;
-            DataManager dataManager = DataManager.getInstance();
-            final String mnemonic = dataManager.getMnemonic() == null ? NativeDataHelper.makeMnemonic() : dataManager.getMnemonic().getMnemonic();
+            SettingsDao settingsDao = RealmManager.getSettingsDao();
+            final String mnemonic = settingsDao.getMnemonic() == null ? NativeDataHelper.makeMnemonic() : settingsDao.getMnemonic().getMnemonic();
             final ArrayList<String> phrase = new ArrayList<>(Arrays.asList(mnemonic.split(" ")));
             final ArrayList<String> phraseToShow = new ArrayList<>(phrase.size() / wordsPerOnce);
-            final byte[] seed = dataManager.getSeed().getSeed();
+            final byte[] seed = settingsDao.getSeed().getSeed();
 
             for (int i = 0; i < phrase.size(); i += wordsPerOnce) {
                 Timber.i("words %s", TextUtils.join("\n", phrase.subList(i, i + 3)));

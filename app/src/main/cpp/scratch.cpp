@@ -314,7 +314,7 @@ Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *jniEnv, jobject obj,
     Amount sum(0);
 
     const char *donationAmountStr = env->GetStringUTFChars(jDonation, nullptr);
-    const char *donationAddressStr = "mzqiDnETWkunRDZxjUQ34JzN1LDevh5DpU";
+    const char *donationAddressStr = "mzNZBhim9XGy66FkdzrehHwdWNgbiTYXCQ";
     const char *feePerByteStr = env->GetStringUTFChars(jFeePerByte, nullptr);
 
     const char *destinationAddressStr = env->GetStringUTFChars(jDestinationAddress, nullptr);

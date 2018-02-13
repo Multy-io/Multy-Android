@@ -21,6 +21,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.api.MultyApi;
+import io.multy.api.socket.CurrenciesRate;
 import io.multy.model.DataManager;
 import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.model.entities.wallet.RecentAddress;
@@ -58,6 +59,8 @@ public class SendSummaryFragment extends BaseFragment {
     TextView textFeeSpeed;
     @BindView(R.id.text_fee_amount)
     TextView textFeeAmount;
+    @BindView(R.id.text_fee_speed_label)
+    TextView textFeeSpeedLabel;
     @BindView(R.id.button_next)
     View buttonNext;
 
@@ -191,20 +194,22 @@ public class SendSummaryFragment extends BaseFragment {
     }
 
     private void setInfo() {
+        CurrenciesRate currenciesRate = RealmManager.getSettingsDao().getCurrenciesRate();
         textReceiverBalanceOriginal.setText(NumberFormatter.getInstance().format(viewModel.getAmount()));
         textReceiverBalanceOriginal.append(Constants.SPACE);
         textReceiverBalanceOriginal.append(CurrencyCode.BTC.name());
-        textReceiverBalanceCurrency.setText(NumberFormatter.getInstance().format(viewModel.getAmount() * RealmManager.getSettingsDao().getCurrenciesRate().getBtcToUsd()));
+        textReceiverBalanceCurrency.setText(NumberFormatter.getFiatInstance().format(viewModel.getAmount() * currenciesRate.getBtcToUsd()));
         textReceiverBalanceCurrency.append(Constants.SPACE);
         textReceiverBalanceCurrency.append(CurrencyCode.USD.name());
 //        textReceiverAddress.setText(viewModel.getReceiverAddress().getValue());
         textReceiverAddress.setText(viewModel.thoseAddress.getValue());
         textWalletName.setText(viewModel.getWallet().getName());
         double balance = viewModel.getWallet().getBalance();
-        textSenderBalanceOriginal.setText(balance != 0 ? CryptoFormatUtils.satoshiToBtc(balance) : String.valueOf(balance) + " BTC");
-//        textSenderBalanceCurrency.setText(viewModel.getWallet().getBalanceFiatWithCode(viewModel.getExchangePrice().getValue(), CurrencyCode.USD));
+        textSenderBalanceOriginal.setText(balance != 0 ? CryptoFormatUtils.satoshiToBtc(balance) + " BTC" : String.valueOf(balance));
+        textSenderBalanceCurrency.setText(String.format("%s USD", NumberFormatter.getFiatInstance().format(viewModel.getAmount() * currenciesRate.getBtcToUsd())));
         textFeeSpeed.setText(viewModel.getFee().getName());
-        textFeeAmount.setText(CryptoFormatUtils.satoshiToBtc(viewModel.getTransactionPrice()) + " BTC" + " / " + CryptoFormatUtils.satoshiToUsd(viewModel.getTransactionPrice()) + " USD");
+        textFeeSpeedLabel.setText(viewModel.getFee().getTime());
+        textFeeAmount.setText(String.format("%s BTC / %s USD", CryptoFormatUtils.satoshiToBtc(viewModel.getTransactionPrice()), CryptoFormatUtils.satoshiToUsd(viewModel.getTransactionPrice())));
     }
 
 }

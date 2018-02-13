@@ -219,14 +219,14 @@ public class AmountChooserFragment extends BaseFragment {
             textMax.setSelected(true);
         }
         switcher.setChecked(false);
-        String maxSpendableBtc = CryptoFormatUtils.satoshiToBtc(spendableSatoshi - transactionPriceMax);
+        String maxSpendableBtc = CryptoFormatUtils.satoshiToBtc(spendableSatoshi);
         if (maxSpendableBtc.contains(",")) {
             maxSpendableBtc = maxSpendableBtc.replaceAll(",", ".");
         }
         inputOriginal.setText(maxSpendableBtc);
-        inputCurrency.setText(CryptoFormatUtils.satoshiToUsd(spendableSatoshi - transactionPriceMax));
+        inputCurrency.setText(CryptoFormatUtils.satoshiToUsd(spendableSatoshi));
 //        inputCurrency.setText(NumberFormatter.getInstance().format(viewModel.getWallet().getBalance() * viewModel.getCurrenciesRate().getBtcToUsd()));
-        textTotal.setText(CryptoFormatUtils.satoshiToUsd(spendableSatoshi - transactionPriceMax) + " BTC");
+        textTotal.setText(CryptoFormatUtils.satoshiToUsd(spendableSatoshi) + " BTC");
         setTotalAmountWithWallet();
     }
 

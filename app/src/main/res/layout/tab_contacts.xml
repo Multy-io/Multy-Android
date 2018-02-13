@@ -1,15 +1,33 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
-  ~  Copyright 2017 Idealnaya rabota LLC
-  ~  Licensed under Multy.io license.
-  ~  See LICENSE for details
-  -->
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/title"
-    style="@style/TabInactiveText"
+<?xml version="1.0" encoding="utf-8"?><!--
+      ~  Copyright 2017 Idealnaya rabota LLC
+      ~  Licensed under Multy.io license.
+      ~  See LICENSE for details
+      -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:layout_weight="0.2"
     android:clickable="false"
-    android:drawableTop="@drawable/ic_address_book_tab"
-    android:fontFamily="@font/montserrat"
-    android:text="@string/contacts" />
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <ImageButton
+        android:id="@+id/image_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:clickable="false"
+        android:src="@drawable/ic_address_book_tab" />
+
+    <TextView
+        android:id="@+id/title"
+        style="@style/TabInactiveText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:fontFamily="@font/montserrat"
+        android:gravity="center"
+        android:text="@string/contacts_upper" />
+
+</LinearLayout>

@@ -231,5 +231,6 @@
     <string name="satoshi_per_byte">Satosh per byte</string>
     <string name="error_loading_rates">Error loading transaction fees.</string>
     <string name="custom_fee">Custom fee</string>
+    <string name="contacts_upper">Contacts</string>
 
 </resources>

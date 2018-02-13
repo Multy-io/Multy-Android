@@ -37,6 +37,7 @@ import io.multy.Multy;
 import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.model.entities.ByteSeed;
+import io.multy.model.entities.Mnemonic;
 import io.multy.model.entities.UserId;
 import io.multy.model.responses.AuthResponse;
 import io.multy.storage.RealmManager;
@@ -273,6 +274,7 @@ public class SeedValidationFragment extends BaseSeedFragment {
         try {
             seedModel.isLoading.setValue(true);
 
+
             byte[] seed = NativeDataHelper.makeSeed(phrase);
             final String userId = NativeDataHelper.makeAccountId(seed);
             MultyApi.INSTANCE.auth(userId).enqueue(new Callback<AuthResponse>() {
@@ -283,6 +285,7 @@ public class SeedValidationFragment extends BaseSeedFragment {
                         SettingsDao settingsDao = RealmManager.getSettingsDao();
                         settingsDao.setUserId(new UserId(userId));
                         settingsDao.setByteSeed(new ByteSeed(seed));
+                        settingsDao.setMnemonic(new Mnemonic(phrase));
                         Prefs.putString(Constants.PREF_AUTH, response.body().getToken());
                         seedModel.isLoading.setValue(false);
                         seedModel.failed.setValue(false);
