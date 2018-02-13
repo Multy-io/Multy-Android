@@ -111,7 +111,7 @@ public class SendSummaryFragment extends BaseFragment {
 
         try {
             viewModel.isLoading.setValue(true);
-
+//
             byte[] seed = RealmManager.getSettingsDao().getSeed().getSeed();
             final int addressesSize = viewModel.getWallet().getAddresses().size();
             final String changeAddress = NativeDataHelper.makeAccountAddress(seed, viewModel.getWallet().getWalletIndex(), addressesSize, NativeDataHelper.Currency.BTC.getValue());

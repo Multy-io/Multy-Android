@@ -210,11 +210,11 @@ Java_io_multy_util_NativeDataHelper_makeAccountAddress(JNIEnv *env, jobject obj,
     ERSOR(make_master_key(&seed, reset_sp(rootKey)), jstring());
 
     HDAccountPtr hdAccount;
-    ERSOR(make_hd_account(rootKey.get(), static_cast<Currency >((int) currency), addressIndex,
+    ERSOR(make_hd_account(rootKey.get(), static_cast<Currency >((int) currency), walletIndex,
                           reset_sp(hdAccount)), jstring());
 
     AccountPtr account;
-    ERSOR(make_hd_leaf_account(hdAccount.get(), ADDRESS_EXTERNAL, walletIndex, reset_sp(account)),
+    ERSOR(make_hd_leaf_account(hdAccount.get(), ADDRESS_EXTERNAL, addressIndex, reset_sp(account)),
           jstring());
 
     ConstCharPtr address;
@@ -241,7 +241,9 @@ Java_io_multy_util_NativeDataHelper_getEstimate(JNIEnv *env, jclass type, jstrin
 
     ErrorPtr error;
     AccountPtr baseAccount;
-    error.reset(make_account(CURRENCY_BITCOIN, "cQeGKosJjWPn9GkB7QmvmotmBbVg1hm8UjdN6yLXEWZ5HAcRwam7", reset_sp(baseAccount)));
+    error.reset(
+            make_account(CURRENCY_BITCOIN, "cQeGKosJjWPn9GkB7QmvmotmBbVg1hm8UjdN6yLXEWZ5HAcRwam7",
+                         reset_sp(baseAccount)));
 
     TransactionPtr transaction;
     error.reset(make_transaction(baseAccount.get(), reset_sp(transaction)));
@@ -264,7 +266,8 @@ JNIEXPORT jbyteArray JNICALL
 Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *jniEnv, jobject obj, jbyteArray jSeed,
                                                     jint jWalletIndex, jstring amountToSpend,
                                                     jstring jFeePerByte, jstring jDonation,
-                                                    jstring jDestinationAddress, jstring jChangeAddress) {
+                                                    jstring jDestinationAddress,
+                                                    jstring jChangeAddress) {
 
     using namespace wallet_core::internal;
     using namespace multy_transaction::internal;
@@ -299,6 +302,8 @@ Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *jniEnv, jobject obj,
     HDAccountPtr hdAccount;
     error.reset(
             make_hd_account(rootKey.get(), CURRENCY_BITCOIN, jWalletIndex, reset_sp(hdAccount)));
+
+    __android_log_print(ANDROID_LOG_INFO, "log message", "JWalletIndex %d",  jWalletIndex);
 
     AccountPtr baseAccount;
     error.reset(make_hd_leaf_account(hdAccount.get(), ADDRESS_EXTERNAL, 0, reset_sp(baseAccount)));
@@ -353,6 +358,25 @@ Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *jniEnv, jobject obj,
                 const char *keyString = env->GetStringUTFChars(jKey, 0);
                 const char *amountString = env->GetStringUTFChars(jAmount, 0);
                 jint outId = outIdArr[k];
+
+                __android_log_print(ANDROID_LOG_INFO, "log message", "!!! address id  %d",
+                                    addressId);
+                __android_log_print(ANDROID_LOG_INFO, "log message", "!!! Pubkey %s",
+                                    keyString);
+                __android_log_print(ANDROID_LOG_INFO, "log message", "!!! Hash %s",
+                                    hashString);
+                __android_log_print(ANDROID_LOG_INFO, "log message", "!!! amount %s",
+                                    amountString);
+                __android_log_print(ANDROID_LOG_INFO, "log message", "!!! outid %s",
+                                    outId);
+
+
+                ConstCharPtr address;
+                ERSOR(get_account_address_string(account.get(), reset_sp(address)) , jbyteArray());
+                __android_log_print(ANDROID_LOG_INFO, "log message", "!!! outid %s",
+                                    address.get());
+
+
 
                 BinaryDataPtr binaryDataTxHash;
                 BinaryDataPtr binaryDataPubKey;
@@ -436,12 +460,11 @@ MULTY_CORE_API Error *seed_to_string(const BinaryData *seed, const char **str);
 } // extern "C"
 #endif
 
-struct FinallyWrapper
-{
-    ~FinallyWrapper()
-    {
+struct FinallyWrapper {
+    ~FinallyWrapper() {
         finally();
     }
+
     const std::function<void(void)> finally;
 };
 
@@ -451,13 +474,14 @@ extern "C"
 JNIEXPORT jbyteArray JNICALL
 Java_io_multy_util_NativeDataHelper_digestSha3256(JNIEnv *env, jclass type, jbyteArray s_) {
     using namespace wallet_core::internal;
-    jbyte* data = env->GetByteArrayElements(s_, nullptr);
+    jbyte *data = env->GetByteArrayElements(s_, nullptr);
     FINALLY(env->ReleaseByteArrayElements(s_, data, 0));
 
     std::array<uint8_t, SHA3_256> hash_buffer;
     BinaryData output{hash_buffer.data(), hash_buffer.size()};
 
-    const BinaryData input{reinterpret_cast<unsigned char*>(data), static_cast<size_t>(env->GetArrayLength(s_))};
+    const BinaryData input{reinterpret_cast<unsigned char *>(data),
+                           static_cast<size_t>(env->GetArrayLength(s_))};
     ERSOR(sha3(&input, &output), jbyteArray());
 
     jbyteArray resultArray = env->NewByteArray(output.len);
