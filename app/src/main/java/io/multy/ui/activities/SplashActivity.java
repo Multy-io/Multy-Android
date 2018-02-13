@@ -14,6 +14,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -22,6 +24,7 @@ import com.samwolfand.oneprefs.Prefs;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.branch.referral.Branch;
 import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.model.responses.ServerConfigResponse;
@@ -32,6 +35,7 @@ import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import timber.log.Timber;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -53,7 +57,7 @@ public class SplashActivity extends AppCompatActivity {
         emergency.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-                getServerConfig();
+                initBranchIO();
             }
 
             @Override
@@ -156,19 +160,51 @@ public class SplashActivity extends AppCompatActivity {
         Thread background = new Thread() {
             public void run() {
                 try {
-                    sleep(500);
+//                    sleep(500);
                     Intent mainActivityIntent = new Intent(SplashActivity.this, MainActivity.class)
                             .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                     mainActivityIntent.putExtra(MainActivity.IS_ANIMATION_MUST_SHOW, true);
+                    addDeepLinkExtra(mainActivityIntent);
                     startActivity(mainActivityIntent);
                     finish();
                 } catch (Exception e) {
                     e.printStackTrace();
                     Intent i=new Intent(getBaseContext(), MainActivity.class);
+                    addDeepLinkExtra(i);
                     startActivity(i);
                 }
             }
         };
         background.start();
+    }
+
+    private void initBranchIO() {
+        Branch branch = Branch.getInstance(getApplicationContext());
+        branch.initSession((referringParams, error) -> {
+            if (error == null) {
+                String address = referringParams.optString(getString(R.string.address));
+                String amount = referringParams.optString(getString(R.string.amount));
+                if (!TextUtils.isEmpty(address)) {
+                    getIntent().putExtra(Constants.EXTRA_ADDRESS, address);
+                }
+                if (!TextUtils.isEmpty(amount)) {
+                    getIntent().putExtra(Constants.EXTRA_AMOUNT, amount);
+                }
+            } else {
+                Timber.i(error.getMessage());
+            }
+
+            getServerConfig();
+
+        }, this.getIntent().getData(), this);
+    }
+
+    private void addDeepLinkExtra(Intent intent) {
+        if (getIntent().hasExtra(Constants.EXTRA_ADDRESS)) {
+            intent.putExtra(Constants.EXTRA_ADDRESS, getIntent().getStringExtra(Constants.EXTRA_ADDRESS));
+        }
+        if (getIntent().hasExtra(Constants.EXTRA_AMOUNT)) {
+            intent.putExtra(Constants.EXTRA_AMOUNT, getIntent().getStringExtra(Constants.EXTRA_AMOUNT));
+        }
     }
 }

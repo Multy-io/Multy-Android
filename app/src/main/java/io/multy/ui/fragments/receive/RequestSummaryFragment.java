@@ -181,7 +181,7 @@ public class RequestSummaryFragment extends BaseFragment {
         Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
         sharingIntent.setType("text/plain");
         sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT,
-                DeepLinkShareHelper.getDeepLink(getActivity(), viewModel.getStringQr()));
+                DeepLinkShareHelper.getDeepLink(getActivity(), viewModel.getStringAddress(), viewModel.getStringAmount()));
         startActivity(Intent.createChooser(sharingIntent, getResources().getString(R.string.send_via)));
     }
 

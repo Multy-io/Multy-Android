@@ -117,11 +117,7 @@
             android:name="io.branch.sdk.BranchKey.test"
             android:value="key_test_niyUD9c8fYOV7kwmBIgiJmdlqrkehhdD" />
 
-        <!--TODO remove in release-->
-        <!-- Branch testing (TestMode "true" to simulate fresh installs on dev environment) -->
-        <meta-data
-            android:name="io.branch.sdk.TestMode"
-            android:value="true" />
+
 
         <service android:name=".fcm.MultyFirebaseMessagingService">
             <intent-filter>

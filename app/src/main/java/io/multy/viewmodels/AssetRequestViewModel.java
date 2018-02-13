@@ -187,6 +187,14 @@ public class AssetRequestViewModel extends BaseViewModel {
         return "bitcoin:" + getWalletAddress() + (amount == 0 ? "" : "?amount=" + amount);
     }
 
+    public String getStringAddress() {
+        return "bitcoin:" + getWalletAddress();
+    }
+
+    public String getStringAmount() {
+        return String.valueOf(amount);
+    }
+
     public String getWalletAddress() {
         return wallet.getAddresses().isEmpty()
                 ? wallet.getCreationAddress()

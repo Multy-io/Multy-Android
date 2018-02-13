@@ -35,6 +35,9 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.branch.referral.Branch;
 import io.multy.R;
+import io.multy.api.MultyApi;
+import io.multy.model.entities.Fee;
+import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.main.AssetsFragment;
 import io.multy.ui.fragments.main.ContactsFragment;
 import io.multy.ui.fragments.main.FastOperationsFragment;
@@ -45,7 +48,7 @@ import io.multy.util.Constants;
 import timber.log.Timber;
 
 
-public class MainActivity extends BaseActivity implements TabLayout.OnTabSelectedListener {
+public class MainActivity extends BaseActivity implements TabLayout.OnTabSelectedListener, BaseActivity.OnLockCloseListener {
 
     public static final String IS_ANIMATION_MUST_SHOW = "isanimationmustshow";
 
@@ -78,8 +81,8 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
     @Override
     protected void onResume() {
         super.onResume();
+        setOnLockCLoseListener(this);
         overridePendingTransition(0, 0);
-        initBranchIO();
 
         if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
             tabLayout.getLayoutParams().height = getResources().getDimensionPixelSize(R.dimen.tab_layout_height);
@@ -106,22 +109,13 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
                 getSupportFragmentManager().beginTransaction().remove(fastOperations).commit();
             }
         }
+        checkDeepLink(getIntent());
     }
 
-    private void initBranchIO() {
-        Branch branch = Branch.getInstance(getApplicationContext());
-        branch.initSession((referringParams, error) -> {
-            Log.i(getClass().getSimpleName(), "branch io link");
-            if (error == null) {
-                String qrCode = referringParams.optString(Constants.DEEP_LINK_QR_CODE);
-                if (!TextUtils.isEmpty(qrCode)) {
-                    Log.i(getClass().getSimpleName(), "branch io link exist");
-                    getIntent().putExtra(Constants.DEEP_LINK_QR_CODE, qrCode);
-                }
-            } else {
-                Log.i(getClass().getSimpleName(), error.getMessage());
-            }
-        }, this.getIntent().getData(), this);
+    @Override
+    public void onStop() {
+        setOnLockCLoseListener(null);
+        super.onStop();
     }
 
     private void setFragment(@IdRes int container, Fragment fragment) {
@@ -263,7 +257,6 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
                 startActivity(new Intent(this, AssetSendActivity.class)
                         .putExtra(Constants.EXTRA_ADDRESS, data.getStringExtra(Constants.EXTRA_QR_CONTENTS))
                         .putExtra(Constants.EXTRA_AMOUNT, data.getStringExtra(Constants.EXTRA_AMOUNT)));
-                Timber.i("amount34 %s", getIntent().getStringExtra(Constants.EXTRA_AMOUNT));
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -277,5 +270,36 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if (intent.getExtras() != null) {
+            getIntent().putExtras(intent.getExtras());
+        }
+    }
+
+    private void checkDeepLink(Intent intent) {
+        if (!isLockVisible
+                && Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)
+                && RealmManager.getAssetsDao().getWallets().size() > 0) {
+            if (intent.hasExtra(Constants.EXTRA_ADDRESS)) {
+                String addressUri = intent.getStringExtra(Constants.EXTRA_ADDRESS);
+                Intent sendLauncher = new Intent(this, AssetSendActivity.class);
+                sendLauncher.putExtra(Constants.EXTRA_ADDRESS, addressUri.substring(addressUri.indexOf(":") + 1, addressUri.length()));
+                if (intent.hasExtra(Constants.EXTRA_ADDRESS)) {
+                    sendLauncher.putExtra(Constants.EXTRA_AMOUNT, intent.getStringExtra(Constants.EXTRA_AMOUNT));
+                }
+                intent.removeExtra(Constants.EXTRA_ADDRESS);
+                intent.removeExtra(Constants.EXTRA_AMOUNT);
+                startActivity(sendLauncher);
+            }
+        }
+    }
+
+    @Override
+    public void onLockClosed() {
+        checkDeepLink(getIntent());
     }
 }

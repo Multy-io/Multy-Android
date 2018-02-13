@@ -83,4 +83,5 @@ public class Constants {
 
     public static final String BLOCKCHAIN_INFO_PATH = "https://testnet.blockchain.info/tx/";
     public static final String PUSH_TOPIC = "btcTransactionUpdate-";
+    public static final String MULTY_IO_URL = "http://multy.io";
 }

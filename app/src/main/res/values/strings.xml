@@ -232,5 +232,8 @@
     <string name="error_loading_rates">Error loading transaction fees.</string>
     <string name="custom_fee">Custom fee</string>
     <string name="contacts_upper">Contacts</string>
+    <string name="address">address</string>
+    <string name="amount">amount</string>
+    <string name="bitcoin">bitcoin</string>
 
 </resources>
