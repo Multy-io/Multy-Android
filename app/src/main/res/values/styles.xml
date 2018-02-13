@@ -132,7 +132,6 @@
     <style name="ButtonNext" parent="TextAppearance.AppCompat.Large">
         <item name="android:layout_width">@dimen/dp0</item>
         <item name="android:layout_height">@dimen/btn_height</item>
-        <item name="android:layout_marginTop">@dimen/activity_vertical_margin</item>
         <item name="android:background">@drawable/btn_gradient_blue</item>
         <item name="android:foreground">?attr/selectableItemBackground</item>
         <item name="android:gravity">center</item>

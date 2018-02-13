@@ -6,6 +6,7 @@
 
 package io.multy.ui.adapters;
 
+import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,6 +40,8 @@ public class PinNumbersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private OnFingerPrintClickListener fingerPrintClickListener;
     private OnBackSpaceClickListener backSpaceClickListener;
     private boolean isFingerprintAllowed = true;
+    private boolean clickDelay = false;
+    private Handler handler = new Handler();
 
     public PinNumbersAdapter(OnNumberClickListener numberClickListener, OnFingerPrintClickListener fingerPrintClickListener, OnBackSpaceClickListener backSpaceClickListener, boolean isFingerprintAllowed) {
         this.numberClickListener = numberClickListener;
@@ -76,7 +79,15 @@ public class PinNumbersAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             case TYPE_NUMBER:
                 NumberHolder numberHolder = (NumberHolder) holder;
                 numberHolder.number.setText(position < 9 ? String.valueOf(position + 1) : String.valueOf(0));
-                numberHolder.number.setOnClickListener(view -> numberClickListener.onNumberClick(Integer.valueOf(numberHolder.number.getText().toString())));
+                numberHolder.number.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (!clickDelay) {
+                            handler.postDelayed(() -> clickDelay = false, 100);
+                            numberClickListener.onNumberClick(Integer.valueOf(numberHolder.number.getText().toString()));
+                        }
+                    }
+                });
                 break;
         }
     }

@@ -84,7 +84,7 @@
             android:inputType="textCapSentences"
             android:lines="@integer/one"
             android:maxLines="1"
-            android:maxLength="20"
+            android:maxLength="25"
             android:textColor="#363636"
             android:textColorHint="#87a1c5"
             android:textSize="14sp"

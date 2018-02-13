@@ -20,7 +20,11 @@ public class CryptoFormatUtils {
         if (satoshi == 0) {
             return "0.0";
         }
-        return formatBtc.format(satoshi / Math.pow(10, 8));
+        String result = formatBtc.format(satoshi / Math.pow(10, 8));
+        if (!result.equals("") && result.contains(",")) {
+            result = result.replaceAll(",", ".");
+        }
+        return result;
     }
 
     public static String satoshiToUsd(double satoshi) {
@@ -35,7 +39,12 @@ public class CryptoFormatUtils {
 
         double btc = satoshi / Math.pow(10, 8);
         double fiat = currenciesRate.getBtcToUsd() * btc;
-        return formatUsd.format(fiat);
+
+        String result = formatUsd.format(fiat);
+        if (!result.equals("") && result.contains(",")) {
+            result = result.replaceAll(",", ".");
+        }
+        return result;
     }
 
     /**

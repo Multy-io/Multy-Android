@@ -118,7 +118,9 @@ public class SendSummaryFragment extends BaseFragment {
 
             //TODO make fee per byte
             byte[] transactionHex = NativeDataHelper.makeTransaction(DataManager.getInstance().getSeed().getSeed(), viewModel.getWallet().getWalletIndex(), String.valueOf(amountSatoshi),
-                    "2000", String.valueOf(amountDonationSatoshi), addressTo, changeAddress);
+                    String.valueOf(viewModel.getFee().getAmount()), String.valueOf(amountDonationSatoshi), addressTo, changeAddress);
+            Log.i(TAG, "donation amount " + amountDonationSatoshi);
+            Log.i(TAG, "fee per byte " + viewModel.getFee().getAmount());
             String hex = byteArrayToHex(transactionHex);
             Log.i(TAG, "hex= " + hex);
             Log.i(TAG, "changeAddress = " + changeAddress);
@@ -172,6 +174,7 @@ public class SendSummaryFragment extends BaseFragment {
 //            });
         } catch (Exception e) {
             e.printStackTrace();
+            showError();
         }
     }
 
@@ -198,10 +201,10 @@ public class SendSummaryFragment extends BaseFragment {
         textReceiverAddress.setText(viewModel.thoseAddress.getValue());
         textWalletName.setText(viewModel.getWallet().getName());
         double balance = viewModel.getWallet().getBalance();
-        textSenderBalanceOriginal.setText(balance != 0 ? CryptoFormatUtils.satoshiToBtc(balance) : String.valueOf(balance));
+        textSenderBalanceOriginal.setText(balance != 0 ? CryptoFormatUtils.satoshiToBtc(balance) : String.valueOf(balance) + " BTC");
 //        textSenderBalanceCurrency.setText(viewModel.getWallet().getBalanceFiatWithCode(viewModel.getExchangePrice().getValue(), CurrencyCode.USD));
-        textFeeSpeed.setText(viewModel.getFee().getTime());
-        textFeeAmount.setText(String.valueOf(viewModel.getFee().getAmount()));
+        textFeeSpeed.setText(viewModel.getFee().getName());
+        textFeeAmount.setText(CryptoFormatUtils.satoshiToBtc(viewModel.getTransactionPrice()) + " BTC" + " / " + CryptoFormatUtils.satoshiToUsd(viewModel.getTransactionPrice()) + " USD");
     }
 
 }

@@ -136,6 +136,7 @@
                     android:id="@+id/edit_name"
                     style="@style/InputEdit"
                     android:hint="@string/wallet_name"
+                    android:maxLength="25"
                     android:inputType="textCapSentences"
                     android:text="@string/personal"
                     tools:text="Personal" />

@@ -37,6 +37,7 @@ public class AssetSendViewModel extends BaseViewModel {
     private String donationAmount;
     private boolean isAmountScanned = false;
     private CurrenciesRate currenciesRate;
+    private long transactionPrice;
 
     public AssetSendViewModel() {
         currenciesRate = RealmManager.getSettingsDao().getCurrenciesRate();
@@ -100,6 +101,14 @@ public class AssetSendViewModel extends BaseViewModel {
 
     public void setAmountScanned(boolean amountScanned) {
         isAmountScanned = amountScanned;
+    }
+
+    public long getTransactionPrice() {
+        return transactionPrice;
+    }
+
+    public void setTransactionPrice(long transactionPrice) {
+        this.transactionPrice = transactionPrice;
     }
 
     public void requestFeeRates(int currencyId) {

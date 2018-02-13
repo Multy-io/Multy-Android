@@ -71,6 +71,10 @@ public class MyFeeAdapter extends RecyclerView.Adapter<MyFeeAdapter.FeeHolder> {
         notifyDataSetChanged();
     }
 
+    public void setItemSelected(String name) {
+
+    }
+
     @Nullable
     public Fee getSelectedFee() {
         for (Fee rate : rates) {

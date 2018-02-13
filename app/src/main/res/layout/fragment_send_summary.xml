@@ -15,7 +15,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/container_receiver"
@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_marginRight="@dimen/activity_horizontal_margin"
-            android:layout_marginTop="@dimen/dimen_40dp"
+            android:layout_marginTop="30dp"
             android:background="@drawable/shape_squircle_white"
             android:elevation="@dimen/elevation_6dp"
             android:paddingBottom="@dimen/activity_vertical_margin"
@@ -81,8 +81,8 @@
 
         <ImageView
             android:id="@+id/image_logo"
-            android:layout_width="@dimen/summary_logo_size"
-            android:layout_height="@dimen/summary_logo_size"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
             android:elevation="@dimen/elevation_6dp"
             app:layout_constraintBottom_toTopOf="@+id/container_receiver"
             app:layout_constraintLeft_toLeftOf="@+id/container_receiver"
@@ -214,13 +214,22 @@
 
         </android.support.constraint.ConstraintLayout>
 
+        <Space
+            android:id="@+id/space"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="6dp"
+            app:layout_constraintBottom_toTopOf="@id/button_next"
+            app:layout_constraintTop_toBottomOf="@id/container_from" />
+
         <TextView
             android:id="@+id/button_next"
             style="@style/ButtonNext"
-            android:text="@string/slide_to_send"
+            android:text="@string/send"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent" />
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/space" />
     </android.support.constraint.ConstraintLayout>
 
 </ScrollView>

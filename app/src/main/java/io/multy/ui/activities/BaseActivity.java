@@ -156,13 +156,19 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
 
         ViewGroup viewGroup = findViewById(R.id.container_main);
         if (viewGroup != null) {
-            View convertView = getLayoutInflater().inflate(R.layout.layout_pin, viewGroup, false);
-            TextView textTitle = convertView.findViewById(R.id.text_title);
+            ViewGroup pinHolder = viewGroup.findViewById(R.id.holder_pin);
+            if (pinHolder == null) {
+                pinHolder = (ViewGroup) getLayoutInflater().inflate(R.layout.holder_pin, viewGroup, false);
+                viewGroup.addView(pinHolder);
+            }
+
+            View pinView = getLayoutInflater().inflate(R.layout.layout_pin, viewGroup, false);
+            TextView textTitle = pinView.findViewById(R.id.text_title);
             textTitle.setText(R.string.enter_password);
             textTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
 
-            RecyclerView recyclerViewDots = convertView.findViewById(R.id.recycler_view_dots);
-            RecyclerView recyclerViewNumbers = convertView.findViewById(R.id.recycler_view_numbers);
+            RecyclerView recyclerViewDots = pinView.findViewById(R.id.recycler_view_dots);
+            RecyclerView recyclerViewNumbers = pinView.findViewById(R.id.recycler_view_numbers);
 
             dotsLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
             recyclerViewDots.setAdapter(new PinDotsAdapter());
@@ -174,15 +180,19 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
             recyclerViewNumbers.setHasFixedSize(true);
 
             stringBuilder = new StringBuilder();
-            viewGroup.addView(convertView);
-            if (viewGroup.getVisibility() != View.VISIBLE) {
-                viewGroup.setVisibility(View.VISIBLE);
+
+            View previousView = pinHolder.findViewById(R.id.container_pin);
+            if (previousView != null) {
+                pinHolder.removeViewInLayout(previousView);
             }
 
-            View previousView = viewGroup.findViewById(R.id.container_pin);
-            if (previousView != null) {
-                viewGroup.removeViewInLayout(previousView);
+            pinHolder.addView(pinView);
+            if (pinHolder.getVisibility() != View.VISIBLE) {
+                pinHolder.setVisibility(View.VISIBLE);
             }
+
+//            viewGroup.setFocusable(true);
+//            viewGroup.setClickable(true);
 
             isLockVisible = true;
             RealmManager.close();
@@ -202,8 +212,10 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
 
         ViewGroup viewGroup = findViewById(R.id.container_main);
         if (viewGroup != null) {
-            View locker = findViewById(R.id.container_pin);
-            viewGroup.removeViewInLayout(locker);
+            View holder = findViewById(R.id.holder_pin);
+//            View locker = findViewById(R.id.container_pin);
+            viewGroup.removeViewInLayout(holder);
+//            viewGroup.removeViewInLayout(locker);
             isLockVisible = false;
         }
 

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2017 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/holder_pin"
+    android:background="@color/gray_light_transparent"
+    android:clickable="true"
+    android:focusable="true">
+
+</android.support.constraint.ConstraintLayout>
