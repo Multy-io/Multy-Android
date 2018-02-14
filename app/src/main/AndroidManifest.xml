@@ -101,9 +101,9 @@
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
 
-        <meta-data
-            android:name="firebase_analytics_collection_deactivated"
-            android:value="true" />
+        <!--<meta-data-->
+            <!--android:name="firebase_analytics_collection_deactivated"-->
+            <!--android:value="true" />-->
 
         <meta-data
             android:name="io.branch.sdk.auto_link_request_code"

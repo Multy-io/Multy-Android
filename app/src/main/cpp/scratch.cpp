@@ -93,13 +93,14 @@ void throw_java_exception(JNIEnv *env, const Error &error) {
 }
 
 #define ERSOR(statement, value) do { ErrorPtr error(statement); if (error) {throw_java_exception(env, *error); return (value);} } while(false)
+#define HANDLE_ERROR(statement) ERSOR(statement, defaultResult)
 
 JNIEXPORT jint JNICALL
 Java_io_multy_util_NativeDataHelper_runTest(JNIEnv *jenv, jclass jcls) {
     jint jresult = 0;
 
-    start_logger("hallow");
-    __android_log_print(ANDROID_LOG_INFO, "foo", "Error: %s", "Hallow");
+    start_logger("Tests");
+    __android_log_print(ANDROID_LOG_INFO, "Multy", "Running tests");
     char *foo = (char *) "foo";
     jresult = run_tests(1, &foo);
     return jresult;
@@ -268,6 +269,7 @@ Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *jniEnv, jobject obj,
                                                     jstring jFeePerByte, jstring jDonation,
                                                     jstring jDestinationAddress,
                                                     jstring jChangeAddress) {
+    const jbyteArray  defaultResult{};
 
     using namespace wallet_core::internal;
     using namespace multy_transaction::internal;
@@ -293,23 +295,20 @@ Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *jniEnv, jobject obj,
     jint *addressIds = env->GetIntArrayElements(addrIds, NULL);
     int length = env->GetArrayLength(addrIds);
 
-    ErrorPtr error;
     ExtendedKeyPtr rootKey;
 
     BinaryData seed{seedBuf, len};
-    error.reset(make_master_key(&seed, reset_sp(rootKey)));
+    HANDLE_ERROR(make_master_key(&seed, reset_sp(rootKey)));
 
     HDAccountPtr hdAccount;
-    error.reset(
+    HANDLE_ERROR(
             make_hd_account(rootKey.get(), CURRENCY_BITCOIN, jWalletIndex, reset_sp(hdAccount)));
 
-    __android_log_print(ANDROID_LOG_INFO, "log message", "JWalletIndex %d",  jWalletIndex);
-
     AccountPtr baseAccount;
-    error.reset(make_hd_leaf_account(hdAccount.get(), ADDRESS_EXTERNAL, 0, reset_sp(baseAccount)));
+    HANDLE_ERROR(make_hd_leaf_account(hdAccount.get(), ADDRESS_EXTERNAL, 0, reset_sp(baseAccount)));
 
     TransactionPtr transaction;
-    error.reset(make_transaction(baseAccount.get(), reset_sp(transaction)));
+    HANDLE_ERROR(make_transaction(baseAccount.get(), reset_sp(transaction)));
 
     Amount sum(0);
 
@@ -347,7 +346,7 @@ Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *jniEnv, jobject obj,
             jint *outIdArr = env->GetIntArrayElements(outIds, nullptr);
 
             AccountPtr account;
-            error.reset(make_hd_leaf_account(hdAccount.get(), ADDRESS_EXTERNAL, addressId,
+            HANDLE_ERROR(make_hd_leaf_account(hdAccount.get(), ADDRESS_EXTERNAL, addressId,
                                              reset_sp(account)));
 
             for (int k = 0; k < stringCount; k++) {
@@ -358,25 +357,6 @@ Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *jniEnv, jobject obj,
                 const char *keyString = env->GetStringUTFChars(jKey, 0);
                 const char *amountString = env->GetStringUTFChars(jAmount, 0);
                 jint outId = outIdArr[k];
-
-                __android_log_print(ANDROID_LOG_INFO, "log message", "!!! address id  %d",
-                                    addressId);
-                __android_log_print(ANDROID_LOG_INFO, "log message", "!!! Pubkey %s",
-                                    keyString);
-                __android_log_print(ANDROID_LOG_INFO, "log message", "!!! Hash %s",
-                                    hashString);
-                __android_log_print(ANDROID_LOG_INFO, "log message", "!!! amount %s",
-                                    amountString);
-                __android_log_print(ANDROID_LOG_INFO, "log message", "!!! outid %s",
-                                    outId);
-
-
-                ConstCharPtr address;
-                ERSOR(get_account_address_string(account.get(), reset_sp(address)) , jbyteArray());
-                __android_log_print(ANDROID_LOG_INFO, "log message", "!!! outid %s",
-                                    address.get());
-
-
 
                 BinaryDataPtr binaryDataTxHash;
                 BinaryDataPtr binaryDataPubKey;
