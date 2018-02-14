@@ -25,6 +25,7 @@ import io.socket.client.Socket;
 import io.socket.engineio.client.Transport;
 import io.socket.engineio.client.transports.WebSocket;
 import okhttp3.OkHttpClient;
+import timber.log.Timber;
 
 public class SocketManager {
 
@@ -97,13 +98,13 @@ public class SocketManager {
                     .on(Socket.EVENT_CONNECT_TIMEOUT, args -> log("connection timeout"))
                     .on(Socket.EVENT_CONNECT, args -> log("Connected"))
                     .on(EVENT_EXCHANGE_RESPONSE, args -> {
-                        Log.i("wise", "received rate " + String.valueOf(args[0]));
+                        Timber.i("received rate " + String.valueOf(args[0]));
                         rates.postValue(gson.fromJson(String.valueOf(args[0]), CurrenciesRate.class));
                     })
                     .on(Socket.EVENT_DISCONNECT, args -> log("Disconnected"))
                     .on(EVENT_RECEIVE, args -> {
                         try {
-                            Log.i("wise", "UPDATE " + String.valueOf(args[0]));
+                            Timber.i("UPDATE " + String.valueOf(args[0]));
                             transactionUpdateEntity.postValue(gson.fromJson(String.valueOf(args[0]), TransactionUpdateResponse.class).getEntity());
                         } catch (Exception e) {
                             e.printStackTrace();

@@ -14,7 +14,7 @@ package io.multy.util;
 public class NativeDataHelper {
 
     static {
-        System.loadLibrary("core_jnid");
+        System.loadLibrary("core_jni");
     }
 
     public enum Currency {

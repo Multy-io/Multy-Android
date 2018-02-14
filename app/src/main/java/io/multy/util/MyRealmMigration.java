@@ -6,18 +6,17 @@
 
 package io.multy.util;
 
-import android.util.Log;
-
 import io.realm.DynamicRealm;
 import io.realm.RealmMigration;
 import io.realm.RealmSchema;
+import timber.log.Timber;
 
 public class MyRealmMigration implements RealmMigration {
     @Override
     public void migrate(DynamicRealm realm, long oldVersion, long newVersion) {
         RealmSchema schema = realm.getSchema();
 
-        Log.i("wise", "oldVersion " + oldVersion);
+        Timber.i("oldVersion " + oldVersion);
         if (oldVersion == 0) {
             schema.get("WalletRealmObject").addField("pendingBalance", Double.class);
             oldVersion++;

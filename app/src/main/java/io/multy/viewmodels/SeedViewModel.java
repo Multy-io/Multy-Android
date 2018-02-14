@@ -16,7 +16,6 @@ import io.multy.storage.RealmManager;
 import io.multy.storage.SettingsDao;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
-import timber.log.Timber;
 
 public class SeedViewModel extends BaseViewModel {
 
@@ -35,7 +34,7 @@ public class SeedViewModel extends BaseViewModel {
             final byte[] seed = settingsDao.getSeed().getSeed();
 
             for (int i = 0; i < phrase.size(); i += wordsPerOnce) {
-                Timber.i("words %s", TextUtils.join("\n", phrase.subList(i, i + 3)));
+//                Timber.i("words %s", TextUtils.join("\n", phrase.subList(i, i + 3)));
                 phraseToShow.add(TextUtils.join("\n", phrase.subList(i, i + 3)));
             }
 

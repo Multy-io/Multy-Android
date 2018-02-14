@@ -13,7 +13,7 @@ android {
         applicationId "io.multy"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 1
+        versionCode 2
         versionName "0.0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
@@ -22,6 +22,7 @@ android {
                 arguments "-DWITH_TESTS=1"
                 arguments "-DPATH_TO_JNI_WRAPPER=C:\\workspace\\Multy-android\\app\\src\\main\\cpp\\scratch.cpp"
 //                arguments "-DPATH_TO_JNI_WRAPPER=/Users/appscrunch/AndroidStudioProjects/Multy-android/app/src/main/cpp/scratch.cpp"
+                arguments "-DCMAKE_CONFIGURATION_TYPES=Release"
                 arguments "-DANDROID_STL=c++_shared"
             }
         }
