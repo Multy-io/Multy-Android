@@ -9,11 +9,12 @@ package io.multy.ui.fragments.send;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.samwolfand.oneprefs.Prefs;
 
 import butterknife.BindString;
 import butterknife.BindView;
@@ -38,6 +39,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import timber.log.Timber;
 
 public class SendSummaryFragment extends BaseFragment {
 
@@ -121,12 +123,12 @@ public class SendSummaryFragment extends BaseFragment {
 
             //TODO make fee per byte
             byte[] transactionHex = NativeDataHelper.makeTransaction(DataManager.getInstance().getSeed().getSeed(), viewModel.getWallet().getWalletIndex(), String.valueOf(amountSatoshi),
-                    String.valueOf(viewModel.getFee().getAmount()), String.valueOf(amountDonationSatoshi), addressTo, changeAddress);
-            Log.i(TAG, "donation amount " + amountDonationSatoshi);
-            Log.i(TAG, "fee per byte " + viewModel.getFee().getAmount());
+                    String.valueOf(viewModel.getFee().getAmount()), String.valueOf(amountDonationSatoshi), addressTo, changeAddress, Prefs.getString(Constants.PREF_DONATE_ADDRESS_BTC));
+            Timber.i("donation amount " + amountDonationSatoshi);
+            Timber.i("fee per byte " + viewModel.getFee().getAmount());
             String hex = byteArrayToHex(transactionHex);
-            Log.i(TAG, "hex= " + hex);
-            Log.i(TAG, "changeAddress = " + changeAddress);
+            Timber.i("hex= " + hex);
+            Timber.i("changeAddress = " + changeAddress);
 
             MultyApi.INSTANCE.sendHdTransaction(new HdTransactionRequestEntity(
                     NativeDataHelper.Currency.BTC.getValue(),

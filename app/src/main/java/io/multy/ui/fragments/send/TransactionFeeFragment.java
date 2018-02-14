@@ -135,8 +135,9 @@ public class TransactionFeeFragment extends BaseFragment implements MyFeeAdapter
     }
 
     private void setupInput() {
-        textFeeCurrency.setText(new DecimalFormat(formatPattern)
-                .format(Double.parseDouble(inputDonation.getText().toString()) * viewModel.getCurrenciesRate().getBtcToUsd()));
+        if (viewModel.getCurrenciesRate() != null) {
+            textFeeCurrency.setText(new DecimalFormat(formatPattern).format(Double.parseDouble(inputDonation.getText().toString()) * viewModel.getCurrenciesRate().getBtcToUsd()));
+        }
         textFeeCurrency.append(Constants.SPACE);
         textFeeCurrency.append(CurrencyCode.USD.name());
 

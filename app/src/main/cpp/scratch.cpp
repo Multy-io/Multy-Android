@@ -268,7 +268,8 @@ Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *jniEnv, jobject obj,
                                                     jint jWalletIndex, jstring amountToSpend,
                                                     jstring jFeePerByte, jstring jDonation,
                                                     jstring jDestinationAddress,
-                                                    jstring jChangeAddress) {
+                                                    jstring jChangeAddress,
+                                                    jstring jDonationAddress) {
     const jbyteArray  defaultResult{};
 
     using namespace wallet_core::internal;
@@ -313,12 +314,12 @@ Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *jniEnv, jobject obj,
     Amount sum(0);
 
     const char *donationAmountStr = env->GetStringUTFChars(jDonation, nullptr);
-    const char *donationAddressStr = "mzNZBhim9XGy66FkdzrehHwdWNgbiTYXCQ";
     const char *feePerByteStr = env->GetStringUTFChars(jFeePerByte, nullptr);
 
     const char *destinationAddressStr = env->GetStringUTFChars(jDestinationAddress, nullptr);
     const char *destinationAmountStr = env->GetStringUTFChars(amountToSpend, nullptr);
     const char *changeAddressStr = env->GetStringUTFChars(jChangeAddress, nullptr);
+    const char *donationAddressStr = env->GetStringUTFChars(jDonationAddress, nullptr);
 
     const Amount destinationAmount(destinationAmountStr);
     const Amount feePerByte(feePerByteStr);
@@ -411,6 +412,14 @@ Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *jniEnv, jobject obj,
         transaction->update_state();
         transaction->sign();
         BinaryDataPtr serialized = transaction->serialize();
+
+
+        env->ReleaseStringUTFChars(jDonation, donationAmountStr);
+        env->ReleaseStringUTFChars(jFeePerByte, feePerByteStr);
+        env->ReleaseStringUTFChars(jDestinationAddress, destinationAddressStr);
+        env->ReleaseStringUTFChars(amountToSpend, destinationAmountStr);
+        env->ReleaseStringUTFChars(jChangeAddress, changeAddressStr);
+        env->ReleaseStringUTFChars(jDonationAddress, donationAddressStr);
 
         jbyteArray resultArray = env->NewByteArray(serialized.get()->len);
         env->SetByteArrayRegion(resultArray, 0, serialized.get()->len,

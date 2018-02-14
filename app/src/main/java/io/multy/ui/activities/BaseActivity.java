@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -264,7 +265,7 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
         if (!Prefs.getBoolean(Constants.PREF_LOCK) || Prefs.getBoolean(Constants.PREF_UNLOCKED, true)) {
             super.onBackPressed();
         } else {
-            finish();
+            ActivityCompat.finishAffinity(this);
         }
     }
 

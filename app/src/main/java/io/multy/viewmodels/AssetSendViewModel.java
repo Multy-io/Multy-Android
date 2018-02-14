@@ -44,6 +44,10 @@ public class AssetSendViewModel extends BaseViewModel {
     }
 
     public CurrenciesRate getCurrenciesRate() {
+        if (currenciesRate == null) {
+            currenciesRate = new CurrenciesRate();
+            currenciesRate.setBtcToUsd(0);
+        }
         return currenciesRate;
     }
 

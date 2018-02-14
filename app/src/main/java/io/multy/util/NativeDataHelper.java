@@ -7,6 +7,8 @@
 package io.multy.util;
 
 
+import io.multy.BuildConfig;
+
 /**
  * Every method should throw JniException.
  * Also jni exception should be considered while typing new method inside JNI
@@ -14,7 +16,11 @@ package io.multy.util;
 public class NativeDataHelper {
 
     static {
-        System.loadLibrary("core_jni");
+        if (BuildConfig.DEBUG) {
+            System.loadLibrary("core_jnid");
+        } else {
+            System.loadLibrary("core_jni");
+        }
     }
 
     public enum Currency {
@@ -55,13 +61,9 @@ public class NativeDataHelper {
 
     public static native String makeAccountId(byte[] seed) throws JniException;
 
-    public static native byte[] makeTransaction(
-            byte[] seed, String[] amounts, String[] scriptPubKeys,
-            String[] hashes, int[] outIds, String donateAmount, String fee, String destinationAddress, String amountToSpend) throws JniException;
-
     public static native int runTest();
 
-    public static native byte[] makeTransaction(byte[] seed, int walletIndex, String amountToSpend, String feePerByte, String donationAmount, String destinationAddress, String changeAddress);
+    public static native byte[] makeTransaction(byte[] seed, int walletIndex, String amountToSpend, String feePerByte, String donationAmount, String destinationAddress, String changeAddress, String donationAddress);
 
     public static native byte[] digestSha3256(byte[] s) throws JniException;
 

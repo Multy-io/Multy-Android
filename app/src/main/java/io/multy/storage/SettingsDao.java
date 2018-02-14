@@ -105,6 +105,10 @@ public class SettingsDao {
     @Nullable
     public CurrenciesRate getCurrenciesRate() {
         CurrenciesRate currenciesRate = realm.where(CurrenciesRate.class).findFirst();
+        if (currenciesRate == null) {
+            currenciesRate = new CurrenciesRate();
+            currenciesRate.setBtcToUsd(0);
+        }
         return currenciesRate;
     }
 }

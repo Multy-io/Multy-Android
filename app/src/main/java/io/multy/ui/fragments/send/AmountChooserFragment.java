@@ -286,8 +286,8 @@ public class AmountChooserFragment extends BaseFragment {
                 if (!isAmountSwapped) { // if currency input is main
                     if (!TextUtils.isEmpty(charSequence)) {
                         if (isParsable(charSequence.toString())) {
-                            inputCurrency.setText(NumberFormatter.getFiatInstance()
-                                    .format(viewModel.getCurrenciesRate().getBtcToUsd() * Double.parseDouble(charSequence.toString())));
+                                inputCurrency.setText(NumberFormatter.getFiatInstance()
+                                        .format(viewModel.getCurrenciesRate().getBtcToUsd() * Double.parseDouble(charSequence.toString())));
                             setTotalAmountForInput();
                         }
                     } else {
