@@ -68,7 +68,7 @@ public interface ApiServiceInterface {
     @DELETE("api/v1/wallet/{currencyId}/{walletIndex}")
     Call<ResponseBody> removeWallet(@Path("currencyId") int currencyId, @Path("walletIndex") int walletIndex);
 
-    @GET("api/v1/wallets/verbose/")
+    @GET("api/v1/wallets/verbose")
     Call<WalletsResponse> getWalletsVerbose();
 
     @GET("api/v1/wallets/transactions/{currencyid}/{walletIndex}")

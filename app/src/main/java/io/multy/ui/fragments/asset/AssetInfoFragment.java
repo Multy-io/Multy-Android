@@ -156,6 +156,7 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         super.onResume();
         viewModel.subscribeSocketsUpdate();
         appBarLayout.addOnOffsetChangedListener(this);
+        checkWarnVisibility();
     }
 
     @Override
@@ -189,6 +190,10 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
             setToolbarScrollFlag(3);
         }
 
+        checkWarnVisibility();
+    }
+
+    private void checkWarnVisibility() {
         if (Prefs.getBoolean(Constants.PREF_BACKUP_SEED)) {
             buttonWarn.setVisibility(View.GONE);
             buttonWarn.getLayoutParams().height = 0;
