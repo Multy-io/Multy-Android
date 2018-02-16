@@ -30,6 +30,8 @@ import io.multy.Multy;
 import io.multy.R;
 import io.multy.storage.RealmManager;
 import io.multy.ui.activities.SplashActivity;
+import io.multy.util.analytics.Analytics;
+import io.multy.util.analytics.AnalyticsConstants;
 import io.realm.Realm;
 
 
@@ -62,6 +64,7 @@ public class ResetDataDialogFragment extends DialogFragment {
 
     @OnClick(R.id.button_positive)
     public void onClickPositive() {
+        Analytics.getInstance(getActivity()).logSecuritySettings(AnalyticsConstants.SECURITY_SETTINGS_RESET_YES);
         RealmManager.removeDatabase(getActivity());
         Prefs.clear();
         Realm.init(getActivity());
@@ -73,6 +76,7 @@ public class ResetDataDialogFragment extends DialogFragment {
 
     @OnClick(R.id.button_neutral)
     public void onClickNeutral() {
+        Analytics.getInstance(getActivity()).logSecuritySettings(AnalyticsConstants.SECURITY_SETTINGS_RESET_NO);
         dismiss();
     }
 

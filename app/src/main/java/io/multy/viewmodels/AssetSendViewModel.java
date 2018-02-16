@@ -136,4 +136,8 @@ public class AssetSendViewModel extends BaseViewModel {
             }
         });
     }
+
+    public int getChainId() {
+        return 1;
+    }
 }

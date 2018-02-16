@@ -18,6 +18,7 @@ import butterknife.BindInt;
 import butterknife.ButterKnife;
 import io.multy.R;
 import io.multy.util.Constants;
+import io.multy.util.analytics.Analytics;
 import me.dm7.barcodescanner.zbar.BarcodeFormat;
 import me.dm7.barcodescanner.zbar.Result;
 import me.dm7.barcodescanner.zbar.ZBarScannerView;
@@ -39,6 +40,7 @@ public class ScanActivity extends AppCompatActivity implements ZBarScannerView.R
         ButterKnife.bind(this);
         scannerView = new ZBarScannerView(this);
         setContentView(scannerView);
+        Analytics.getInstance(this).logScanQRLaunch();
     }
 
     @Override
@@ -87,5 +89,11 @@ public class ScanActivity extends AppCompatActivity implements ZBarScannerView.R
         } else { // was scanned just address
             addressIntent.putExtra(Constants.EXTRA_QR_CONTENTS, rawResult.getContents());
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Analytics.getInstance(this).logScanQRClose();
+        super.onBackPressed();
     }
 }

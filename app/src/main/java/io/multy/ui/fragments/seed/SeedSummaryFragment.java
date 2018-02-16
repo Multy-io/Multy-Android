@@ -19,6 +19,7 @@ import butterknife.OnClick;
 import io.multy.R;
 import io.multy.ui.fragments.BaseSeedFragment;
 import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
+import io.multy.util.analytics.Analytics;
 
 /**
  * Created by andre on 08.11.2017.
@@ -46,6 +47,7 @@ public class SeedSummaryFragment extends BaseSeedFragment {
 
     @OnClick(R.id.button_repeat)
     public void onClickRepeat() {
+        Analytics.getInstance(getActivity()).logSeedPhraseRepeat();
         SimpleDialogFragment.newInstance(
                 R.string.repeat,
                 R.string.repeat_message,

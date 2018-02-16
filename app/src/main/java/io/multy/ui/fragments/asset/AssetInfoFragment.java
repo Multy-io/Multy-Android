@@ -1,6 +1,8 @@
 package io.multy.ui.fragments.asset;
 
+import android.app.PendingIntent;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -49,6 +51,8 @@ import io.multy.ui.fragments.AddressesFragment;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
+import io.multy.util.analytics.Analytics;
+import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.WalletViewModel;
 import io.realm.RealmList;
 import retrofit2.Call;
@@ -115,11 +119,15 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         viewModel.transactionUpdate.observe(this, transactionUpdateEntity -> {
             new Handler().postDelayed(() -> refreshWallet(), 300);
         });
-        swipeRefreshLayout.setOnRefreshListener(() -> refreshWallet());
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_PULL, viewModel.getChainId());
+            refreshWallet();
+        });
 
         WalletRealmObject wallet = viewModel.getWallet(getActivity().getIntent().getIntExtra(Constants.EXTRA_WALLET_ID, 0));
         viewModel.getWalletLive().observe(this, this::setupWalletInfo);
         viewModel.getWalletLive().setValue(wallet);
+        Analytics.getInstance(getActivity()).logWalletLaunch(AnalyticsConstants.WALLET_SCREEN, viewModel.getChainId());
         return view;
     }
 
@@ -296,11 +304,13 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
 
     @OnClick(R.id.options)
     void onClickOptions() {
+        Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_SETTINGS, viewModel.getChainId());
         ((AssetActivity) getActivity()).setFragment(R.id.container_full, AssetSettingsFragment.newInstance());
     }
 
     @OnClick(R.id.card_addresses)
     void onClickAddress() {
+        Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_ADDRESSES, viewModel.getChainId());
         if (viewModel.getWalletLive().getValue() != null) {
             ((AssetActivity) getActivity()).setFragment(R.id.container_full,
                     AddressesFragment.newInstance(viewModel.getWalletLive().getValue().getWalletIndex()));
@@ -313,14 +323,16 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
 
     @OnClick(R.id.button_share)
     void onClickShare() {
+        Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_SHARE, viewModel.getChainId());
         Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
         sharingIntent.setType("text/plain");
         sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, getAddressToShare());
-        startActivity(Intent.createChooser(sharingIntent, getResources().getString(R.string.send_via)));
+        startActivity(Intent.createChooser(sharingIntent, getResources().getString(R.string.send_via)), new Bundle());
     }
 
     @OnClick(R.id.text_address)
     void onClickCopy() {
+        Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_ADDRESS, viewModel.getChainId());
         String address = getAddressToShare();
         ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText(address, address);
@@ -331,12 +343,34 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
 
     @OnClick(R.id.close)
     void onClickClose() {
+        Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.BUTTON_CLOSE, viewModel.getChainId());
         getActivity().finish();
     }
 
     @OnClick(R.id.button_warn)
     void onClickWarn() {
+        Analytics.getInstance(getActivity()).logWalletBackup(AnalyticsConstants.WALLET_BACKUP_SEED);
         startActivity(new Intent(getActivity(), SeedActivity.class));
+    }
+
+    @OnClick(R.id.text_value)
+    void onClickBalance() {
+        Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_BALANCE, viewModel.getChainId());
+    }
+
+    @OnClick(R.id.text_coin)
+    void onClickBalanceCurrency() {
+        Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_BALANCE, viewModel.getChainId());
+    }
+
+    @OnClick(R.id.text_amount)
+    void onClickBalanceFiat() {
+        Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_BALANCE_FIAT, viewModel.getChainId());
+    }
+
+    @OnClick(R.id.text_amount)
+    void onClickBalanceFiatCurrency() {
+        Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_BALANCE_FIAT, viewModel.getChainId());
     }
 
     @Override
@@ -355,5 +389,13 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     public void onTransactionUpdateEvent(TransactionUpdateEvent event) {
         Log.i(TAG, "transaction update event called");
         refreshWallet();
+    }
+
+    class SharingBroadcastReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+        }
     }
 }

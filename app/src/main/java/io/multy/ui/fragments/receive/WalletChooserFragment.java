@@ -23,6 +23,9 @@ import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.ui.activities.AssetRequestActivity;
 import io.multy.ui.adapters.WalletsAdapter;
 import io.multy.ui.fragments.BaseFragment;
+import io.multy.util.Constants;
+import io.multy.util.analytics.Analytics;
+import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.AssetRequestViewModel;
 
 
@@ -47,6 +50,17 @@ public class WalletChooserFragment extends BaseFragment implements WalletsAdapte
         viewModel = ViewModelProviders.of(getActivity()).get(AssetRequestViewModel.class);
         viewModel.setContext(getActivity());
         setBaseViewModel(viewModel);
+        if (!getActivity().getIntent().hasExtra(Constants.EXTRA_WALLET_ID)) {
+            Analytics.getInstance(getActivity()).logReceiveLaunch(viewModel.getChainId());
+        }
+    }
+
+    @Override
+    public void onStart() {
+        if (getActivity() != null) {
+            getActivity().getIntent().removeExtra(Constants.EXTRA_WALLET_ID);
+        }
+        super.onStart();
     }
 
     @Nullable
@@ -61,6 +75,7 @@ public class WalletChooserFragment extends BaseFragment implements WalletsAdapte
     @Override
     public void onWalletClick(WalletRealmObject wallet) {
         viewModel.setWallet(wallet);
+        Analytics.getInstance(getActivity()).logReceive(AnalyticsConstants.RECEIVE_WALLET_CLICK, viewModel.getChainId());
         if (getActivity().getSupportFragmentManager().getBackStackEntryCount() == zero) {
             ((AssetRequestActivity) getActivity()).setFragment(R.string.receive_summary, RequestSummaryFragment.newInstance());
         } else {

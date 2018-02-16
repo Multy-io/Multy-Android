@@ -21,13 +21,30 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.ui.activities.MainActivity;
+import io.multy.ui.fragments.send.SendSummaryFragment;
+import io.multy.util.Constants;
+import io.multy.util.analytics.Analytics;
+import io.multy.util.analytics.AnalyticsConstants;
 
 public class CompleteDialogFragment extends DialogFragment {
+
+    public static CompleteDialogFragment newInstance(int chainId) {
+        CompleteDialogFragment completeDialogFragment = new CompleteDialogFragment();
+        Bundle args = new Bundle();
+        args.putInt(Constants.CHAIN_ID, chainId);
+        completeDialogFragment.setArguments(args);
+        return completeDialogFragment;
+    }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
         dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        if (getTag() != null && getTag().equals(SendSummaryFragment.TAG_SEND_SUCCESS)) {
+            if (getArguments() != null) {
+                Analytics.getInstance(getActivity()).logSendSuccessLaunch(getArguments().getInt(Constants.CHAIN_ID));
+            }
+        }
         return dialog;
     }
 
@@ -50,6 +67,11 @@ public class CompleteDialogFragment extends DialogFragment {
 
     @OnClick(R.id.button_close)
     public void onClickClose() {
+        if (getTag() != null && getTag().equals(SendSummaryFragment.TAG_SEND_SUCCESS)) {
+            if (getArguments() != null) {
+                Analytics.getInstance(getActivity()).logSendSuccess(AnalyticsConstants.BUTTON_CLOSE, getArguments().getInt(Constants.CHAIN_ID));
+            }
+        }
         startActivity(new Intent(getActivity(), MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
         getActivity().finish();
     }

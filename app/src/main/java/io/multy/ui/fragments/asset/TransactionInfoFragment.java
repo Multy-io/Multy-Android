@@ -35,7 +35,10 @@ import io.multy.ui.fragments.WebFragment;
 import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
 import io.multy.util.DateHelper;
+import io.multy.util.analytics.Analytics;
+import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.WalletViewModel;
+import timber.log.Timber;
 
 import static io.multy.util.Constants.TX_CONFIRMED_INCOMING;
 import static io.multy.util.Constants.TX_CONFIRMED_OUTCOMING;
@@ -61,8 +64,6 @@ public class TransactionInfoFragment extends BaseFragment {
     LinearLayout parent;
     @BindView(R.id.toolbar_name)
     TextView toolbarWalletName;
-    @BindView(R.id.back)
-    View buttonBack;
     @BindView(R.id.text_date)
     TextView textDate;
     @BindView(R.id.image_operation)
@@ -107,6 +108,7 @@ public class TransactionInfoFragment extends BaseFragment {
     private int selectedPosition;
     private String txid;
     private int walletIndex;
+    private boolean isTransactionLogged;
 
     public static TransactionInfoFragment newInstance(Bundle transactionInfoMode) {
         TransactionInfoFragment fragment = new TransactionInfoFragment();
@@ -128,6 +130,7 @@ public class TransactionInfoFragment extends BaseFragment {
         View v = getLayoutInflater().inflate(R.layout.fragment_transaction_info, container, false);
         ButterKnife.bind(this, v);
         viewModel = ViewModelProviders.of(getActivity()).get(WalletViewModel.class);
+        isTransactionLogged = false;
         initialize();
         return v;
     }
@@ -148,7 +151,6 @@ public class TransactionInfoFragment extends BaseFragment {
         } else {
             return;
         }
-        buttonBack.setOnClickListener(view -> getActivity().onBackPressed());
         loadData();
     }
 
@@ -171,6 +173,7 @@ public class TransactionInfoFragment extends BaseFragment {
     }
 
     private void setData() {
+        Timber.e("setData");
         boolean isIncoming = transaction.getTxStatus() == TX_IN_BLOCK_INCOMING ||
                 transaction.getTxStatus() == TX_CONFIRMED_INCOMING ||
                 transaction.getTxStatus() == TX_MEMPOOL_INCOMING;
@@ -245,6 +248,10 @@ public class TransactionInfoFragment extends BaseFragment {
         }
         textConfirmations.setText(blocks);
         txid = transaction.getTxId();
+        if (!isTransactionLogged) {
+            logTransaction(transaction.getTxStatus(), AnalyticsConstants.WALLET_TRANSACTIONS_SCREEN);
+            isTransactionLogged = true;
+        }
     }
 
     private void getServerConfig() {
@@ -275,6 +282,8 @@ public class TransactionInfoFragment extends BaseFragment {
 
     @OnClick(R.id.button_view)
     void onViewClick(View view) {
+        Analytics.getInstance(getActivity()).logWalletTransactionBlockchain(AnalyticsConstants.WALLET_TRANSACTIONS_BLOCKCHAIN,
+                viewModel.getChainId(), getLogStatus());
         try {
             view.setEnabled(false);
             view.postDelayed(() -> view.setEnabled(true), 1500);
@@ -285,6 +294,45 @@ public class TransactionInfoFragment extends BaseFragment {
                     .commit();
         } catch (Throwable t) {
             t.printStackTrace();
+        }
+    }
+
+    @OnClick(R.id.back)
+    void onClickBack() {
+        getActivity().onBackPressed();
+    }
+
+    private int getLogStatus() {
+        switch (transaction.getTxStatus()) {
+            case TX_MEMPOOL_INCOMING:
+            case TX_MEMPOOL_OUTCOMING:
+                return 0;
+            case TX_IN_BLOCK_INCOMING:
+            case TX_CONFIRMED_INCOMING:
+                return 1;
+            case TX_IN_BLOCK_OUTCOMING:
+            case TX_CONFIRMED_OUTCOMING:
+                return -1;
+            default:
+                return 0;
+        }
+    }
+
+    private void logTransaction(int txStatus, String analyticConstant) {
+        switch (txStatus) {
+            case TX_MEMPOOL_INCOMING:
+            case TX_MEMPOOL_OUTCOMING:
+                Analytics.getInstance(getActivity()).logWalletTransactionLaunch(analyticConstant, viewModel.getChainId(), 0);
+                break;
+            case TX_IN_BLOCK_INCOMING:
+            case TX_CONFIRMED_INCOMING:
+                Analytics.getInstance(getActivity()).logWalletTransactionLaunch(analyticConstant, viewModel.getChainId(), 1);
+                break;
+            case TX_IN_BLOCK_OUTCOMING:
+            case TX_CONFIRMED_OUTCOMING:
+                Analytics.getInstance(getActivity()).logWalletTransactionLaunch(analyticConstant, viewModel.getChainId(), -1);
+                break;
+            default:
         }
     }
 }

@@ -17,6 +17,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.ui.fragments.BaseFragment;
+import io.multy.util.analytics.Analytics;
 import io.multy.viewmodels.ContactsViewModel;
 
 /**
@@ -38,6 +39,7 @@ public class ContactsFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_contacts, container, false);
         viewModel = ViewModelProviders.of(this).get(ContactsViewModel.class);
         ButterKnife.bind(this, view);
+        Analytics.getInstance(getActivity()).logContactsLaunch();
         return view;
     }
 

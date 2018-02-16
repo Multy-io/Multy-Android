@@ -16,6 +16,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.ui.fragments.BaseSeedFragment;
+import io.multy.util.analytics.Analytics;
 
 public class HelloSeedFragment extends BaseSeedFragment {
 
@@ -24,6 +25,7 @@ public class HelloSeedFragment extends BaseSeedFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View convertView = inflater.inflate(R.layout.fragment_seed_hello, container, false);
         ButterKnife.bind(this, convertView);
+        Analytics.getInstance(getActivity()).logSeedPhraseLaunch();
 
         return convertView;
     }

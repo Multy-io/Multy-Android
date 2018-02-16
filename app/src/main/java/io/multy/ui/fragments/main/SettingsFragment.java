@@ -27,6 +27,8 @@ import io.multy.storage.RealmManager;
 import io.multy.ui.activities.BaseActivity;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
+import io.multy.util.analytics.Analytics;
+import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.SettingsViewModel;
 
 public class SettingsFragment extends BaseFragment implements BaseActivity.OnLockCloseListener {
@@ -50,13 +52,14 @@ public class SettingsFragment extends BaseFragment implements BaseActivity.OnLoc
         viewModel = ViewModelProviders.of(this).get(SettingsViewModel.class);
         ButterKnife.bind(this, view);
         isSettingsClicked = false;
-        setOnCheckedChangeListener();
+        Analytics.getInstance(getActivity()).logSettingsLaunch();
 
         if (Prefs.getBoolean(Constants.PREF_IS_PUSH_ENABLED, true)) {
             notificationsView.setChecked(true);
         } else {
             notificationsView.setChecked(false);
         }
+        setOnCheckedChangeListener();
 
         return view;
     }
@@ -75,6 +78,7 @@ public class SettingsFragment extends BaseFragment implements BaseActivity.OnLoc
 
     @OnClick(R.id.container_security)
     public void onClickSettings() {
+        Analytics.getInstance(getActivity()).logSettings(AnalyticsConstants.SETTINGS_SECURITY_SETTINGS);
         if (Prefs.contains(Constants.PREF_LOCK) && Prefs.getBoolean(Constants.PREF_LOCK)) {
             isSettingsClicked = true;
             ((BaseActivity)getActivity()).showLock();
@@ -98,8 +102,10 @@ public class SettingsFragment extends BaseFragment implements BaseActivity.OnLoc
             UserId userId = RealmManager.getSettingsDao().getUserId();
             if (userId != null) {
                 if (checked) {
+                    Analytics.getInstance(getActivity()).logSettings(AnalyticsConstants.SETTINGS_PUSH_ENABLE);
                     FirebaseMessaging.getInstance().subscribeToTopic(Constants.PUSH_TOPIC + userId.getUserId());
                 } else {
+                    Analytics.getInstance(getActivity()).logSettings(AnalyticsConstants.SETTINGS_PUSH_DISABLE);
                     FirebaseMessaging.getInstance().unsubscribeFromTopic(Constants.PUSH_TOPIC + userId.getUserId());
                 }
                 Prefs.putBoolean(Constants.PREF_IS_PUSH_ENABLED, checked);

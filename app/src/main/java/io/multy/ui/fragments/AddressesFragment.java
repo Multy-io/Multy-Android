@@ -25,6 +25,8 @@ import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetRequestActivity;
 import io.multy.ui.adapters.AddressesAdapter;
 import io.multy.util.Constants;
+import io.multy.util.analytics.Analytics;
+import io.multy.util.analytics.AnalyticsConstants;
 
 public class AddressesFragment extends BaseFragment {
 
@@ -55,6 +57,7 @@ public class AddressesFragment extends BaseFragment {
         if (getActivity() instanceof AssetRequestActivity) {
             toolbar.setVisibility(View.GONE);
         }
+        Analytics.getInstance(getActivity()).logWalletAddressesLaunch(1);
         return convertView;
     }
 

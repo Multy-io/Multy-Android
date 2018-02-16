@@ -30,12 +30,15 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.storage.RealmManager;
+import io.multy.ui.fragments.receive.RequestSummaryFragment;
 import io.multy.ui.fragments.send.AmountChooserFragment;
 import io.multy.ui.fragments.send.AssetSendFragment;
 import io.multy.ui.fragments.send.SendSummaryFragment;
 import io.multy.ui.fragments.send.TransactionFeeFragment;
 import io.multy.ui.fragments.send.WalletChooserFragment;
 import io.multy.util.Constants;
+import io.multy.util.analytics.Analytics;
+import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.AssetSendViewModel;
 import timber.log.Timber;
 
@@ -53,6 +56,7 @@ public class AssetSendActivity extends BaseActivity {
     int oneNegative;
 
     private boolean isFirstFragmentCreation;
+    private AssetSendViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +64,7 @@ public class AssetSendActivity extends BaseActivity {
         setContentView(R.layout.activity_asset_send);
         ButterKnife.bind(this);
         isFirstFragmentCreation = true;
+        viewModel = ViewModelProviders.of(this).get(AssetSendViewModel.class);
 
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
@@ -101,6 +106,7 @@ public class AssetSendActivity extends BaseActivity {
         } else {
             super.onBackPressed();
         }
+        logCancel();
     }
 
     private void startFlow() {
@@ -151,6 +157,7 @@ public class AssetSendActivity extends BaseActivity {
 
     @OnClick(R.id.button_cancel)
     void ocLickCancel() {
+        logCancel();
         finish();
     }
 
@@ -193,6 +200,23 @@ public class AssetSendActivity extends BaseActivity {
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void logCancel() {
+        List<Fragment> backStackFragments = getSupportFragmentManager().getFragments();
+        for (Fragment backStackFragment : backStackFragments) {
+            if (backStackFragment instanceof SendSummaryFragment && backStackFragment.isVisible()) {
+                Analytics.getInstance(this).logSendSummary(AnalyticsConstants.BUTTON_CLOSE, viewModel.getChainId());
+            } else if (backStackFragment instanceof AmountChooserFragment && backStackFragment.isVisible()) {
+                Analytics.getInstance(this).logSendChooseAmount(AnalyticsConstants.BUTTON_CLOSE, viewModel.getChainId());
+            } else if (backStackFragment instanceof TransactionFeeFragment && backStackFragment.isVisible()) {
+                Analytics.getInstance(this).logTransactionFee(AnalyticsConstants.BUTTON_CLOSE, viewModel.getChainId());
+            } else if (backStackFragment instanceof WalletChooserFragment && backStackFragment.isVisible()) {
+                Analytics.getInstance(this).logSendFrom(AnalyticsConstants.BUTTON_CLOSE, viewModel.getChainId());
+            } else if (backStackFragment instanceof AssetSendFragment && backStackFragment.isVisible()) {
+                Analytics.getInstance(this).logSendTo(AnalyticsConstants.BUTTON_CLOSE);
+            }
+        }
     }
 }
 

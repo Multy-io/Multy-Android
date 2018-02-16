@@ -29,6 +29,8 @@ import io.multy.ui.activities.PinSetupActivity;
 import io.multy.ui.activities.SeedActivity;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
+import io.multy.util.analytics.Analytics;
+import io.multy.util.analytics.AnalyticsConstants;
 
 public class EntranceSettingsFragment extends BaseFragment {
 
@@ -50,6 +52,7 @@ public class EntranceSettingsFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings_entrance, container, false);
         ButterKnife.bind(this, view);
+        Analytics.getInstance(getActivity()).logEntranceSettingsLaunch();
         return view;
     }
 
@@ -61,6 +64,7 @@ public class EntranceSettingsFragment extends BaseFragment {
 
     @OnClick(R.id.button_back)
     public void onClickBack() {
+        Analytics.getInstance(getActivity()).logEntranceSettings(AnalyticsConstants.BUTTON_CLOSE);
         if (getActivity() != null) {
             getActivity().onBackPressed();
         }
@@ -91,6 +95,7 @@ public class EntranceSettingsFragment extends BaseFragment {
         }
         switchPassword.setOnCheckedChangeListener((compoundButton, checked) -> {
             if (checked) {
+                Analytics.getInstance(getActivity()).logEntranceSettings(AnalyticsConstants.ENTRANCE_SETTINGS_PIN_ENABLED);
                 containerSetupPin.setVisibility(View.VISIBLE);
                 if (Prefs.contains(Constants.PREF_PIN)) {
                     imagePin.setVisibility(View.VISIBLE);
@@ -98,6 +103,7 @@ public class EntranceSettingsFragment extends BaseFragment {
                     imagePin.setVisibility(View.GONE);
                 }
             } else {
+                Analytics.getInstance(getActivity()).logEntranceSettings(AnalyticsConstants.ENTRANCE_SETTINGS_PIN_DISABLED);
                 containerSetupPin.setVisibility(View.GONE);
                 Prefs.remove(Constants.PREF_PIN);
                 Prefs.putBoolean(Constants.PREF_LOCK, false);

@@ -26,6 +26,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.w3c.dom.Text;
+
 import butterknife.BindDimen;
 import butterknife.BindInt;
 import butterknife.BindString;
@@ -45,6 +47,8 @@ import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
 import io.multy.util.NativeDataHelper;
 import io.multy.util.NumberFormatter;
+import io.multy.util.analytics.Analytics;
+import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.AssetSendViewModel;
 
 
@@ -93,6 +97,7 @@ public class AmountChooserFragment extends BaseFragment {
     String formatPatternBitcoin;
 
     private boolean isAmountSwapped;
+    private boolean isPayForCommissionChanged;
     private AssetSendViewModel viewModel;
     private CurrenciesRate currenciesRate;
     private long transactionPrice;
@@ -113,6 +118,10 @@ public class AmountChooserFragment extends BaseFragment {
         setupInputCurrency();
         setAmountTotalWithFee();
         initTransactionPrice();
+        if (!viewModel.isAmountScanned()) {
+            Analytics.getInstance(getActivity()).logSendChooseAmountLaunch(viewModel.getChainId());
+        }
+        isPayForCommissionChanged = false;
         return view;
     }
 
@@ -180,6 +189,9 @@ public class AmountChooserFragment extends BaseFragment {
             } else {
                 viewModel.setAmount(Double.valueOf(inputOriginal.getText().toString()));
                 ((AssetSendActivity) getActivity()).setFragment(R.string.send_summary, R.id.container, SendSummaryFragment.newInstance());
+                if (!isPayForCommissionChanged) {
+                    Analytics.getInstance(getActivity()).logSendChooseAmount(AnalyticsConstants.SEND_AMOUNT_COMMISSION_ENABLED, viewModel.getChainId());
+                }
             }
         } else {
             Toast.makeText(getActivity(), R.string.choose_amount, Toast.LENGTH_SHORT).show();
@@ -193,6 +205,7 @@ public class AmountChooserFragment extends BaseFragment {
         } else {
             inputCurrency.requestFocus();
         }
+        Analytics.getInstance(getActivity()).logSendChooseAmount(AnalyticsConstants.SEND_AMOUNT_SWAP, viewModel.getChainId());
     }
 
     private void checkCommas() {
@@ -209,6 +222,7 @@ public class AmountChooserFragment extends BaseFragment {
 
     @OnClick(R.id.text_max)
     void onClickMax() {
+        Analytics.getInstance(getActivity()).logSendChooseAmount(AnalyticsConstants.SEND_AMOUNT_MAX, viewModel.getChainId());
         if (spendableSatoshi - transactionPriceMax < 0) {
             return;
         }
@@ -262,6 +276,7 @@ public class AmountChooserFragment extends BaseFragment {
                 return true;
             }
             showKeyboard(getActivity(), v);
+            Analytics.getInstance(getActivity()).logSendChooseAmount(AnalyticsConstants.SEND_AMOUNT_CRYPTO, viewModel.getChainId());
             return true;
         });
 
@@ -320,6 +335,7 @@ public class AmountChooserFragment extends BaseFragment {
                 return true;
             }
             showKeyboard(getActivity(), v);
+            Analytics.getInstance(getActivity()).logSendChooseAmount(AnalyticsConstants.SEND_AMOUNT_FIAT, viewModel.getChainId());
             return true;
         });
 
@@ -377,15 +393,17 @@ public class AmountChooserFragment extends BaseFragment {
 
     private void setupSwitcher() {
         switcher.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            isPayForCommissionChanged = true;
             viewModel.setPayForCommission(isChecked);
             if (isChecked) {
                 checkCommas();
-                if (Double.parseDouble(inputOriginal.getText().toString()) * Math.pow(10, 8) + transactionPriceMax >= spendableSatoshi) {
+                if (!TextUtils.isEmpty(inputOriginal.getText()) && (Double.parseDouble(inputOriginal.getText().toString()) * Math.pow(10, 8) + transactionPriceMax >= spendableSatoshi)) {
                     viewModel.errorMessage.setValue("You reached spendable amount");
                     switcher.setChecked(false);
                 }
+                Analytics.getInstance(getActivity()).logSendChooseAmount(AnalyticsConstants.SEND_AMOUNT_COMMISSION_ENABLED, viewModel.getChainId());
             } else {
-
+                Analytics.getInstance(getActivity()).logSendChooseAmount(AnalyticsConstants.SEND_AMOUNT_COMMISSION_DISABLED, viewModel.getChainId());
             }
             setTotalAmountForInput();
         });

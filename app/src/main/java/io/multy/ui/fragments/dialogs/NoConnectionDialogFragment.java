@@ -22,6 +22,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.util.NetworkUtils;
+import io.multy.util.analytics.Analytics;
+import io.multy.util.analytics.AnalyticsConstants;
 
 public class NoConnectionDialogFragment extends DialogFragment {
 
@@ -37,6 +39,7 @@ public class NoConnectionDialogFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_no_internet, container, false);
         ButterKnife.bind(this, view);
+        Analytics.getInstance(getActivity()).logNoInternetLaunch();
         return view;
     }
 
@@ -52,6 +55,7 @@ public class NoConnectionDialogFragment extends DialogFragment {
 
     @OnClick(R.id.button_try_again)
     public void onClickCheckConnection() {
+        Analytics.getInstance(getActivity()).logNoInternet(AnalyticsConstants.NO_INTERNET_CHECK);
         if (NetworkUtils.isConnected(getContext())) {
             dismiss();
         } else {

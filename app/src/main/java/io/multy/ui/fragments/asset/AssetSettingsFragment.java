@@ -21,6 +21,8 @@ import butterknife.OnClick;
 import io.multy.R;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
+import io.multy.util.analytics.Analytics;
+import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.WalletViewModel;
 
 /**
@@ -65,6 +67,14 @@ public class AssetSettingsFragment extends BaseFragment {
                 inputName.setText(walletRealmObject.getName());
             }
         });
+        inputName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus)
+                Analytics.getInstance(getActivity()).logWalletSettings(AnalyticsConstants.WALLET_SETTINGS_RENAME, viewModel.getChainId());
+            }
+        });
+        Analytics.getInstance(getActivity()).logWalletSettingsLaunch(viewModel.getChainId());
         return v;
     }
 
@@ -129,6 +139,7 @@ public class AssetSettingsFragment extends BaseFragment {
 
     @OnClick(R.id.button_cancel)
     void onClickCancel() {
+        Analytics.getInstance(getActivity()).logWalletSettings(AnalyticsConstants.BUTTON_CLOSE, viewModel.getChainId());
         if (getActivity() != null) {
             getActivity().onBackPressed();
         }
@@ -136,6 +147,7 @@ public class AssetSettingsFragment extends BaseFragment {
 
     @OnClick(R.id.button_save)
     void onClickSave(View v) {
+        Analytics.getInstance(getActivity()).logWalletSettings(AnalyticsConstants.WALLET_SETTINGS_SAVE, viewModel.getChainId());
         v.setEnabled(false);
         saveSettings();
         v.postDelayed(() -> v.setEnabled(true), 500);
@@ -143,20 +155,31 @@ public class AssetSettingsFragment extends BaseFragment {
 
     @OnClick(R.id.button_currency)
     void onClickCurrency() {
+        Analytics.getInstance(getActivity()).logWalletSettings(AnalyticsConstants.WALLET_SETTINGS_FIAT, viewModel.getChainId());
         chooseCurrencyToConvert();
     }
 
     @OnClick(R.id.button_key)
     void onClickKey() {
+        Analytics.getInstance(getActivity()).logWalletSettings(AnalyticsConstants.WALLET_SETTINGS_KEY, viewModel.getChainId());
         showMyPrivateKey();
+    }
+
+    @OnClick(R.id.edit_name)
+    void onClickName() {
+        Analytics.getInstance(getActivity()).logWalletSettings(AnalyticsConstants.WALLET_SETTINGS_RENAME, viewModel.getChainId());
     }
 
     @OnClick(R.id.button_delete)
     void onClickDelete(View view) {
+        Analytics.getInstance(getActivity()).logWalletSettings(AnalyticsConstants.WALLET_SETTINGS_DELETE, viewModel.getChainId());
         view.setEnabled(false);
         view.postDelayed(() -> view.setEnabled(true), 500);
         SimpleDialogFragment dialogConfirmation = SimpleDialogFragment
-                .newInstance(R.string.delete_wallet, R.string.delete_confirm, v -> deleteWallet());
+                .newInstance(R.string.delete_wallet, R.string.delete_confirm, v -> {
+                    Analytics.getInstance(getActivity()).logWalletSettings(AnalyticsConstants.WALLET_SETTINGS_DELETE_YES, viewModel.getChainId());
+                    deleteWallet();
+                });
         dialogConfirmation.show(getChildFragmentManager(), SimpleDialogFragment.class.getSimpleName());
     }
 }

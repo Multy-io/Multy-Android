@@ -32,6 +32,7 @@ import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetActivity;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
+import io.multy.util.analytics.Analytics;
 import io.multy.viewmodels.WalletViewModel;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -66,6 +67,7 @@ public class CreateAssetFragment extends BaseFragment {
         ButterKnife.bind(this, v);
         initialize();
         subscribeToCurrencyUpdate();
+        Analytics.getInstance(getActivity()).logCreateWalletLaunch();
 
 
         editTextWalletName.requestFocus();
@@ -134,6 +136,7 @@ public class CreateAssetFragment extends BaseFragment {
 
     @OnClick(R.id.button_chain)
     public void onClickChain() {
+        Analytics.getInstance(getActivity()).logCreateWalletChain();
 //        ArrayList<String> chains = new ArrayList<>(2);
 //        chains.add(Constants.BTC);
 //        chains.add(Constants.ETH);
@@ -142,6 +145,7 @@ public class CreateAssetFragment extends BaseFragment {
 
     @OnClick(R.id.button_fiat)
     public void onClickFiat() {
+        Analytics.getInstance(getActivity()).logCreateWalletFiatClick();
 //        ArrayList<String> chains = new ArrayList<>(3);
 //        chains.add(Constants.USD);
 //        chains.add(Constants.EUR);
@@ -150,6 +154,7 @@ public class CreateAssetFragment extends BaseFragment {
 
     @OnClick(R.id.text_create)
     public void onClickCreate() {
+        Analytics.getInstance(getActivity()).logCreateWallet();
         WalletRealmObject walletRealmObject = walletViewModel.createWallet(editTextWalletName.getText().toString());
         MultyApi.INSTANCE.addWallet(getActivity(), walletRealmObject).enqueue(new Callback<ResponseBody>() {
             @Override
@@ -174,6 +179,7 @@ public class CreateAssetFragment extends BaseFragment {
 
     @OnClick(R.id.text_cancel)
     void onCancelClick() {
+        Analytics.getInstance(getActivity()).logCreateWalletClose();
         getActivity().finish();
     }
 }

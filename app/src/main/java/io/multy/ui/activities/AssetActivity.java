@@ -15,20 +15,31 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.widget.Toast;
 
+import java.util.List;
+
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.storage.RealmManager;
+import io.multy.ui.fragments.AddressesFragment;
 import io.multy.ui.fragments.asset.AssetInfoFragment;
+import io.multy.ui.fragments.asset.AssetSettingsFragment;
+import io.multy.ui.fragments.asset.TransactionInfoFragment;
+import io.multy.ui.fragments.receive.RequestSummaryFragment;
+import io.multy.ui.fragments.receive.WalletChooserFragment;
 import io.multy.util.Constants;
+import io.multy.util.analytics.Analytics;
+import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.WalletViewModel;
+import timber.log.Timber;
 
 public class AssetActivity extends BaseActivity {
 
     private boolean isFirstFragmentCreation;
 
     private WalletRealmObject wallet;
+    private WalletViewModel viewModel;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -37,6 +48,7 @@ public class AssetActivity extends BaseActivity {
         ButterKnife.bind(this);
         isFirstFragmentCreation = true;
 
+        viewModel = ViewModelProviders.of(this).get(WalletViewModel.class);
         wallet = RealmManager.getAssetsDao().getWalletById(getIntent().getExtras().getInt(Constants.EXTRA_WALLET_ID, 0));
 
         if (getSupportActionBar() != null) {
@@ -54,6 +66,7 @@ public class AssetActivity extends BaseActivity {
 
     @OnClick(R.id.send)
     void onClickSend() {
+        Analytics.getInstance(this).logWallet(AnalyticsConstants.WALLET_SEND, viewModel.getChainId());
         startActivity(new Intent(this, AssetSendActivity.class)
                 .addCategory(Constants.EXTRA_SENDER_ADDRESS)
                 .putExtra(Constants.EXTRA_WALLET_ID, getIntent().getIntExtra(Constants.EXTRA_WALLET_ID, 0)));
@@ -61,12 +74,14 @@ public class AssetActivity extends BaseActivity {
 
     @OnClick(R.id.receive)
     void onClickReceive() {
+        Analytics.getInstance(this).logWallet(AnalyticsConstants.WALLET_RECEIVE, viewModel.getChainId());
         startActivity(new Intent(this, AssetRequestActivity.class)
                 .putExtra(Constants.EXTRA_WALLET_ID, getIntent().getIntExtra(Constants.EXTRA_WALLET_ID, 0)));
     }
 
     @OnClick(R.id.exchange)
     void onClickExchange() {
+        Analytics.getInstance(this).logWallet(AnalyticsConstants.WALLET_EXCHANGE, viewModel.getChainId());
         Toast.makeText(this, R.string.not_implemented, Toast.LENGTH_SHORT).show();
     }
 
@@ -81,6 +96,31 @@ public class AssetActivity extends BaseActivity {
 
         isFirstFragmentCreation = false;
         transaction.commit();
+    }
+
+    @Override
+    public void onBackPressed() {
+        logCancel();
+        super.onBackPressed();
+    }
+
+    private void logCancel() {
+        List<Fragment> backStackFragments = getSupportFragmentManager().getFragments();
+        for (Fragment backStackFragment : backStackFragments) {
+            if (backStackFragment instanceof AddressesFragment && backStackFragment.isVisible()) {
+                Analytics.getInstance(this).logWalletAddresses(AnalyticsConstants.BUTTON_CLOSE, viewModel.getChainId());
+                break;
+//            } else if (backStackFragment instanceof AssetSettingsFragment && backStackFragment.isVisible()) {
+//                Analytics.getInstance(this).logWalletSettings(AnalyticsConstants.BUTTON_CLOSE, viewModel.getChainId());
+//                break;
+            } else if (backStackFragment instanceof TransactionInfoFragment && backStackFragment.isVisible()) {
+                Analytics.getInstance(this).logWalletTransaction(AnalyticsConstants.BUTTON_CLOSE, viewModel.getChainId());
+                break;
+            } else if (backStackFragment instanceof AssetInfoFragment && backStackFragment.isVisible()) {
+                Analytics.getInstance(this).logWallet(AnalyticsConstants.BUTTON_CLOSE, viewModel.getChainId());
+                break;
+            }
+        }
     }
 
 

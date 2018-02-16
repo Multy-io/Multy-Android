@@ -29,6 +29,8 @@ import io.multy.ui.activities.MainActivity;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.AnimationUtils;
 import io.multy.util.Constants;
+import io.multy.util.analytics.Analytics;
+import io.multy.util.analytics.AnalyticsConstants;
 import io.realm.RealmResults;
 
 /**
@@ -74,6 +76,7 @@ public class FastOperationsFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_fast_operations, container, false);
         ButterKnife.bind(this, view);
+        Analytics.getInstance(getActivity()).logFastOperationsLaunch();
         AnimationUtils.createReveal(view, revealX, revealY, colorBlue, colorWhite);
         buttonCancel.setEnabled(false);
         buttonCancel.postDelayed(() -> buttonCancel.setEnabled(true), AnimationUtils.DURATION_MEDIUM);
@@ -100,6 +103,7 @@ public class FastOperationsFragment extends BaseFragment {
 
     @OnClick(R.id.button_send)
     void onSendClick() {
+        Analytics.getInstance(getActivity()).logFastOperations(AnalyticsConstants.FAST_OPERATIONS_SEND);
         if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED) && isWalletsAvailable()) {
             startActivity(new Intent(getContext(), AssetSendActivity.class));
         } else {
@@ -109,6 +113,7 @@ public class FastOperationsFragment extends BaseFragment {
 
     @OnClick(R.id.button_receive)
     void onReceiveClick() {
+        Analytics.getInstance(getActivity()).logFastOperations(AnalyticsConstants.FAST_OPERATIONS_RECEIVE);
         if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED) && isWalletsAvailable()) {
             startActivity(new Intent(getContext(), AssetRequestActivity.class));
         } else {
@@ -118,11 +123,13 @@ public class FastOperationsFragment extends BaseFragment {
 
     @OnClick(R.id.button_nfc)
     void onNfcClick() {
+        Analytics.getInstance(getActivity()).logFastOperations(AnalyticsConstants.FAST_OPERATIONS_NFC);
         Toast.makeText(getActivity(), R.string.not_implemented, Toast.LENGTH_SHORT).show();
     }
 
     @OnClick(R.id.button_scan_qr)
     void onScanClick() {
+        Analytics.getInstance(getActivity()).logFastOperations(AnalyticsConstants.FAST_OPERATIONS_SCAN);
         if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED) && isWalletsAvailable()) {
             ((MainActivity) getActivity()).showScanScreen();
         } else {
@@ -132,6 +139,7 @@ public class FastOperationsFragment extends BaseFragment {
 
     @OnClick(R.id.button_cancel)
     void onCancelClick(View v) {
+        Analytics.getInstance(getActivity()).logFastOperations(AnalyticsConstants.FAST_OPERATIONS_CLOSE);
         isCanceling = true;
         if (v != null) {
             AnimationUtils.createConceal(getView(), revealX, revealY, colorWhite, colorBlue, () -> getActivity().onBackPressed());

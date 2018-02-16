@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 
 import io.multy.R;
 import io.multy.ui.fragments.BaseFragment;
+import io.multy.util.analytics.Analytics;
 import io.multy.viewmodels.FeedViewModel;
 
 /**
@@ -35,6 +36,7 @@ public class FeedFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_feed, container, false);
         viewModel = ViewModelProviders.of(this).get(FeedViewModel.class);
+        Analytics.getInstance(getActivity()).logActivityLaunch();
         return view;
     }
 

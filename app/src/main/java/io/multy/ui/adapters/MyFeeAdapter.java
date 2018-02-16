@@ -7,6 +7,7 @@
 package io.multy.ui.adapters;
 
 
+import android.content.Context;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -22,12 +23,15 @@ import butterknife.ButterKnife;
 import io.multy.R;
 import io.multy.model.entities.Fee;
 import io.multy.util.CryptoFormatUtils;
+import io.multy.util.analytics.Analytics;
+import io.multy.util.analytics.AnalyticsConstants;
 import io.reactivex.annotations.Nullable;
 
 public class MyFeeAdapter extends RecyclerView.Adapter<MyFeeAdapter.FeeHolder> {
 
     public interface OnCustomFeeClickListener {
         void onClickCustomFee(long currentValue);
+        void logTransaction(int position);
     }
 
     private ArrayList<Fee> rates;
@@ -59,7 +63,10 @@ public class MyFeeAdapter extends RecyclerView.Adapter<MyFeeAdapter.FeeHolder> {
             holder.textBlocks.setText(String.format("%d blocks", rate.getBlockCount()));
             holder.textName.setText(String.format("%s · %s", rate.getName(), rate.getTime()));
             holder.textBalanceOriginal.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(price)));
-            holder.root.setOnClickListener(v -> setItemSelected(position));
+            holder.root.setOnClickListener(v -> {
+                setItemSelected(position);
+                listener.logTransaction(position);
+            });
         }
         holder.imageMark.setVisibility(rate.isSelected() ? View.VISIBLE : View.INVISIBLE);
     }

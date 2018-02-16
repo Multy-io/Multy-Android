@@ -30,6 +30,8 @@ import io.multy.ui.activities.AssetSendActivity;
 import io.multy.ui.adapters.RecentAddressesAdapter;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
+import io.multy.util.analytics.Analytics;
+import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.AssetSendViewModel;
 
 public class AssetSendFragment extends BaseFragment {
@@ -60,6 +62,7 @@ public class AssetSendFragment extends BaseFragment {
         viewModel.getReceiverAddress().observe(getActivity(), s -> inputAddress.setText(s));
         setupInputAddress();
         initRecentAddresses();
+        logLaunch();
         return view;
     }
 
@@ -77,16 +80,19 @@ public class AssetSendFragment extends BaseFragment {
 
     @OnClick(R.id.button_address)
     void onClickAddressBook(){
+        Analytics.getInstance(getActivity()).logSendTo(AnalyticsConstants.SEND_TO_ADDRESS_BOOK);
         Toast.makeText(getActivity(), R.string.not_implemented, Toast.LENGTH_SHORT).show();
     }
 
     @OnClick(R.id.button_scan_wireless)
     void onClickWirelessScan(){
+        Analytics.getInstance(getActivity()).logSendTo(AnalyticsConstants.SEND_TO_WIRELESS);
         Toast.makeText(getActivity(), R.string.not_implemented, Toast.LENGTH_SHORT).show();
     }
 
     @OnClick(R.id.button_scan_qr)
     void onClickScanQr(){
+        Analytics.getInstance(getActivity()).logSendTo(AnalyticsConstants.SEND_TO_QR);
         ((AssetSendActivity) getActivity()).showScanScreen();
     }
 
@@ -123,6 +129,12 @@ public class AssetSendFragment extends BaseFragment {
 
             }
         });
+    }
+
+    private void logLaunch() {
+        if (getActivity() != null && !getActivity().getIntent().hasExtra(Constants.EXTRA_ADDRESS)) {
+            Analytics.getInstance(getActivity()).logSendToLaunch();
+        }
     }
 
 }

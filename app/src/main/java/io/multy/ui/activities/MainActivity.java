@@ -45,6 +45,8 @@ import io.multy.ui.fragments.main.FeedFragment;
 import io.multy.ui.fragments.main.SettingsFragment;
 import io.multy.util.AnimationUtils;
 import io.multy.util.Constants;
+import io.multy.util.analytics.Analytics;
+import io.multy.util.analytics.AnalyticsConstants;
 import timber.log.Timber;
 
 
@@ -76,6 +78,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         if (Prefs.getBoolean(Constants.PREF_LOCK)) {
             showLock();
         }
+        logFirstLaunch();
     }
 
     @Override
@@ -132,15 +135,21 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         changeStateLastTab(lastTabPosition, true);
         switch (tab.getPosition()) {
             case Constants.POSITION_ASSETS:
+                if (!Prefs.getBoolean(Constants.PREF_APP_INITIALIZED, true)) {
+                    Analytics.getInstance(this).logMainTab();
+                }
                 setFragment(R.id.container_frame, AssetsFragment.newInstance());
                 break;
             case Constants.POSITION_FEED:
+                Analytics.getInstance(this).logActivityTab();
                 setFragment(R.id.container_frame, FeedFragment.newInstance());
                 break;
             case Constants.POSITION_CONTACTS:
+                Analytics.getInstance(this).logContactsTab();
                 setFragment(R.id.container_frame, ContactsFragment.newInstance());
                 break;
             case Constants.POSITION_SETTINGS:
+                Analytics.getInstance(this).logSettingsTab();
                 setFragment(R.id.container_frame, SettingsFragment.newInstance());
                 break;
         }
@@ -215,6 +224,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
 
     @OnClick(R.id.fast_operations)
     void onFastOperationsClick(final View v) {
+        Analytics.getInstance(this).logFastOperationsTab();
         v.setEnabled(false);
         v.postDelayed(() -> v.setEnabled(true), AnimationUtils.DURATION_MEDIUM * 2);
         Fragment fastOperationsFragment = getSupportFragmentManager().findFragmentByTag(FastOperationsFragment.TAG);
@@ -245,7 +255,10 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == Constants.CAMERA_REQUEST_CODE) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Analytics.getInstance(this).logFastOperations(AnalyticsConstants.FAST_OPERATIONS_PERMISSION_GRANTED);
                 showScanScreen();
+            } else if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                Analytics.getInstance(this).logFastOperations(AnalyticsConstants.FAST_OPERATIONS_PERMISSION_DENIED);
             }
         }
     }
@@ -301,5 +314,11 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
     @Override
     public void onLockClosed() {
         checkDeepLink(getIntent());
+    }
+
+    private void logFirstLaunch() {
+        if (!Prefs.getBoolean(Constants.PREF_APP_INITIALIZED, false)) {
+            Analytics.getInstance(this).logFirstLaunch();
+        }
     }
 }

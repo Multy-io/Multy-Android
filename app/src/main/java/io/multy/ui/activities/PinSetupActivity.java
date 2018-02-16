@@ -30,6 +30,8 @@ import io.multy.storage.SecurePreferencesHelper;
 import io.multy.ui.adapters.PinDotsAdapter;
 import io.multy.util.Constants;
 import io.multy.util.PinEditText;
+import io.multy.util.analytics.Analytics;
+import io.multy.util.analytics.AnalyticsConstants;
 
 public class PinSetupActivity extends BaseActivity {
 
@@ -126,6 +128,7 @@ public class PinSetupActivity extends BaseActivity {
                         recyclerViewIndicator.setAdapter(getDotsGreyAdapter());
                     } else {
                         if (pin.equals(editable.toString())) {
+                            Analytics.getInstance(PinSetupActivity.this).logSettings(AnalyticsConstants.ENTRANCE_SETTINGS_PIN_SET);
                             SecurePreferencesHelper.putString(getApplicationContext(), Constants.PREF_PIN, pin);
                             Prefs.putBoolean(Constants.PREF_LOCK, true);
                             Toast.makeText(PinSetupActivity.this, "Success", Toast.LENGTH_LONG).show();

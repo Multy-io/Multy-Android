@@ -25,6 +25,7 @@ import butterknife.OnClick;
 import io.multy.R;
 import io.multy.ui.fragments.BaseSeedFragment;
 import io.multy.util.Constants;
+import io.multy.util.analytics.Analytics;
 import io.multy.viewmodels.SeedViewModel;
 
 public class SeedResultFragment extends BaseSeedFragment {
@@ -60,12 +61,16 @@ public class SeedResultFragment extends BaseSeedFragment {
 
     private void showResult() {
         if (isFailure()) {
+            Analytics.getInstance(getActivity()).logSeedFailBackup();
+            Analytics.getInstance(getActivity()).logSeedFailLaunch();
             setBrickColor(BRICK_RED);
             buttonNext.setText(R.string.try_again);
             imageViewResult.setImageResource(R.drawable.ic_fail);
             textViewTitle.setText(R.string.seed_result_fail);
             getActivity().setResult(Activity.RESULT_CANCELED);
         } else {
+            Analytics.getInstance(getActivity()).logSeedBackuped();
+            Analytics.getInstance(getActivity()).logSeedSuccessLaunch();
             if (getActivity().getIntent().hasCategory(Constants.EXTRA_RESTORE)) {
                 textViewTitle.setText(R.string.seed_congrats_restore);
                 if (!Prefs.getBoolean(Constants.PREF_BACKUP_SEED)) {
@@ -87,8 +92,10 @@ public class SeedResultFragment extends BaseSeedFragment {
     @OnClick(R.id.button_next)
     public void onClickNext() {
         if (isFailure()) {
+            Analytics.getInstance(getActivity()).logSeedFailTryAgain();
             repeat();
         } else {
+            Analytics.getInstance(getActivity()).logSeedSuccessOk();
             close();
         }
     }

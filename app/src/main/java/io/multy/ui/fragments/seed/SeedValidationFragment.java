@@ -47,6 +47,7 @@ import io.multy.util.BrickView;
 import io.multy.util.Constants;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
+import io.multy.util.analytics.Analytics;
 import io.multy.viewmodels.SeedViewModel;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -94,6 +95,7 @@ public class SeedValidationFragment extends BaseSeedFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View convertView = inflater.inflate(R.layout.fragment_seed_validation, container, false);
         ButterKnife.bind(this, convertView);
+        Analytics.getInstance(getActivity()).logRestoreSeedLaunch();
 
         seedModel = ViewModelProviders.of(getActivity()).get(SeedViewModel.class);
         if (!getActivity().getIntent().hasCategory(Constants.EXTRA_RESTORE)) {

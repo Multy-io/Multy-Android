@@ -184,4 +184,8 @@ public class WalletViewModel extends BaseViewModel {
         return isRemoved;
     }
 
+    public int getChainId(){
+        return 1;
+    }
+
 }

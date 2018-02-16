@@ -200,4 +200,8 @@ public class AssetRequestViewModel extends BaseViewModel {
                 ? wallet.getCreationAddress()
                 : wallet.getAddresses().get(wallet.getAddresses().size() - 1).getAddress();
     }
+
+    public int getChainId() {
+        return 1;
+    }
 }

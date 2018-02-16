@@ -22,6 +22,9 @@ import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetSendActivity;
 import io.multy.ui.adapters.WalletsAdapter;
 import io.multy.ui.fragments.BaseFragment;
+import io.multy.util.Constants;
+import io.multy.util.analytics.Analytics;
+import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.AssetSendViewModel;
 
 
@@ -43,12 +46,16 @@ public class WalletChooserFragment extends BaseFragment implements WalletsAdapte
         ButterKnife.bind(this, view);
         viewModel = ViewModelProviders.of(getActivity()).get(AssetSendViewModel.class);
         setupAdapter();
+        if (getActivity() != null && !getActivity().getIntent().hasExtra(Constants.EXTRA_WALLET_ID)) {
+            Analytics.getInstance(getActivity()).logSendFromLaunch();
+        }
         return view;
     }
 
     @Override
     public void onWalletClick(WalletRealmObject wallet) {
         viewModel.setWallet(wallet);
+        Analytics.getInstance(getActivity()).logSendFrom(AnalyticsConstants.SEND_FROM_WALLET_CLICK, viewModel.getChainId());
         ((AssetSendActivity) getActivity()).setFragment(R.string.transaction_fee, R.id.container, TransactionFeeFragment.newInstance());
     }
 

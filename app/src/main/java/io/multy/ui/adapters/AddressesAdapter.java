@@ -23,6 +23,8 @@ import io.multy.R;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.util.CryptoFormatUtils;
 import io.multy.util.DateHelper;
+import io.multy.util.analytics.Analytics;
+import io.multy.util.analytics.AnalyticsConstants;
 
 public class AddressesAdapter extends RecyclerView.Adapter<AddressesAdapter.Holder> {
 
@@ -72,7 +74,9 @@ public class AddressesAdapter extends RecyclerView.Adapter<AddressesAdapter.Hold
 //            textName.setText(wallet.getName());
 //            textBalanceOriginal.setText(wallet.getBalanceWithCode());
 //            textBalanceUsd.setText(wallet.getBalanceWithCode());
-//            root.setOnClickListener(view -> listener.onWalletClick(wallet));
+            root.setOnClickListener(view -> {
+                Analytics.getInstance(textAddress.getContext()).logWalletAddresses(AnalyticsConstants.WALLET_ADDRESSES_CLICK, 1);
+            });
         }
     }
 

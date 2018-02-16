@@ -25,6 +25,7 @@ import io.multy.storage.SecurePreferencesHelper;
 import io.multy.ui.activities.SplashActivity;
 import io.multy.util.Constants;
 import io.multy.util.EntropyProvider;
+import io.multy.util.analytics.Analytics;
 import io.realm.Realm;
 import timber.log.Timber;
 

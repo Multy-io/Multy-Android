@@ -7,6 +7,7 @@
 package io.multy.ui.fragments.send;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.Group;
@@ -39,6 +40,8 @@ import io.multy.ui.adapters.MyFeeAdapter;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
 import io.multy.util.NativeDataHelper;
+import io.multy.util.analytics.Analytics;
+import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.AssetSendViewModel;
 
 public class TransactionFeeFragment extends BaseFragment implements MyFeeAdapter.OnCustomFeeClickListener {
@@ -67,6 +70,7 @@ public class TransactionFeeFragment extends BaseFragment implements MyFeeAdapter
     String formatPattern;
 
     private AssetSendViewModel viewModel;
+    private boolean isDonationChanged;
 
     @Nullable
     @Override
@@ -78,6 +82,11 @@ public class TransactionFeeFragment extends BaseFragment implements MyFeeAdapter
         inputDonation.setOnFocusChangeListener((view1, hasFocus) -> {
             if (hasFocus) {
                 scrollView.postDelayed(() -> scrollView.fullScroll(ScrollView.FOCUS_DOWN), 500);
+            } else {
+                if (!TextUtils.isEmpty(inputDonation.getText())
+                        && !inputDonation.getText().toString().equals(getString(R.string.donation_default))) {
+                    Analytics.getInstance(getActivity()).logTransactionFee(AnalyticsConstants.TRANSACTION_FEE_DONATION_CHANGED, viewModel.getChainId());
+                }
             }
         });
         setupSwitcher();
@@ -85,6 +94,8 @@ public class TransactionFeeFragment extends BaseFragment implements MyFeeAdapter
 
         viewModel.speeds.observe(this, speeds -> setAdapter());
         viewModel.requestFeeRates(NativeDataHelper.Currency.BTC.getValue());
+        Analytics.getInstance(getActivity()).logTransactionFeeLaunch(viewModel.getChainId());
+        isDonationChanged = false;
         return view;
     }
 
@@ -119,6 +130,10 @@ public class TransactionFeeFragment extends BaseFragment implements MyFeeAdapter
         } else {
             Toast.makeText(getActivity(), R.string.choose_transaction_speed, Toast.LENGTH_SHORT).show();
         }
+
+        if (!isDonationChanged) {
+            Analytics.getInstance(getActivity()).logTransactionFee(AnalyticsConstants.TRANSACTION_FEE_DONATION, viewModel.getChainId());
+        }
     }
 
     private void setupSwitcher() {
@@ -126,10 +141,12 @@ public class TransactionFeeFragment extends BaseFragment implements MyFeeAdapter
             if (b) {
                 textDonationAllow.setBackground(getResources().getDrawable(R.drawable.shape_top_round_white, null));
                 groupDonation.setVisibility(View.VISIBLE);
+                Analytics.getInstance(getActivity()).logTransactionFee(AnalyticsConstants.TRANSACTION_FEE_DONATION_ENABLE, viewModel.getChainId());
             } else {
                 textDonationAllow.setBackground(getResources().getDrawable(R.drawable.shape_squircle_white, null));
                 groupDonation.setVisibility(View.GONE);
                 hideKeyboard(getActivity());
+                Analytics.getInstance(getActivity()).logTransactionFee(AnalyticsConstants.TRANSACTION_FEE_DONATION_DISABLE, viewModel.getChainId());
             }
         });
     }
@@ -157,6 +174,7 @@ public class TransactionFeeFragment extends BaseFragment implements MyFeeAdapter
                 } else {
                     textFeeCurrency.setText(Constants.SPACE);
                 }
+                isDonationChanged = true;
             }
 
             @Override
@@ -176,8 +194,12 @@ public class TransactionFeeFragment extends BaseFragment implements MyFeeAdapter
         input.setText(currentValue == -1 ? String.valueOf(20) : String.valueOf(currentValue));
 
         dialogBuilder.setTitle(R.string.custom_fee);
-        dialogBuilder.setPositiveButton(R.string.done, (dialog, whichButton) -> ((MyFeeAdapter) recyclerView.getAdapter()).setCustomFee(Long.valueOf(input.getText().toString())));
+        dialogBuilder.setPositiveButton(R.string.done, (dialog, whichButton) -> {
+            ((MyFeeAdapter) recyclerView.getAdapter()).setCustomFee(Long.valueOf(input.getText().toString()));
+            Analytics.getInstance(getActivity()).logTransactionFee(AnalyticsConstants.TRANSACTION_FEE_CUSTOM_SET, viewModel.getChainId());
+        });
         dialogBuilder.setNegativeButton(R.string.cancel, (dialog, whichButton) -> {
+            Analytics.getInstance(getActivity()).logTransactionFee(AnalyticsConstants.TRANSACTION_FEE_CUSTOM_CANCEL, viewModel.getChainId());
         });
         dialogBuilder.create().show();
     }
@@ -185,5 +207,30 @@ public class TransactionFeeFragment extends BaseFragment implements MyFeeAdapter
     @Override
     public void onClickCustomFee(long currentValue) {
         showCustomFeeDialog(currentValue);
+        logTransaction(5);
+    }
+
+    @Override
+    public void logTransaction(int position) {
+        switch (position) {
+            case 0:
+                Analytics.getInstance(getActivity()).logTransactionFee(AnalyticsConstants.TRANSACTION_FEE_VERY_FAST, viewModel.getChainId());
+                break;
+            case 1:
+                Analytics.getInstance(getActivity()).logTransactionFee(AnalyticsConstants.TRANSACTION_FEE_FAST, viewModel.getChainId());
+                break;
+            case 2:
+                Analytics.getInstance(getActivity()).logTransactionFee(AnalyticsConstants.TRANSACTION_FEE_MEDIUM, viewModel.getChainId());
+                break;
+            case 3:
+                Analytics.getInstance(getActivity()).logTransactionFee(AnalyticsConstants.TRANSACTION_FEE_SLOW, viewModel.getChainId());
+                break;
+            case 4:
+                Analytics.getInstance(getActivity()).logTransactionFee(AnalyticsConstants.TRANSACTION_FEE_VERY_SLOW, viewModel.getChainId());
+                break;
+            case 5:
+                Analytics.getInstance(getActivity()).logTransactionFee(AnalyticsConstants.TRANSACTION_FEE_CUSTOM, viewModel.getChainId());
+                break;
+        }
     }
 }

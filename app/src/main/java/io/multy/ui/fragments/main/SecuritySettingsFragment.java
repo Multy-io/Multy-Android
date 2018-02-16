@@ -25,6 +25,8 @@ import io.multy.ui.activities.SeedActivity;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.dialogs.ResetDataDialogFragment;
 import io.multy.util.Constants;
+import io.multy.util.analytics.Analytics;
+import io.multy.util.analytics.AnalyticsConstants;
 
 public class SecuritySettingsFragment extends BaseFragment {
 
@@ -44,6 +46,7 @@ public class SecuritySettingsFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings_security, container, false);
         ButterKnife.bind(this, view);
+        Analytics.getInstance(getActivity()).logSecuritySettingsLaunch();
         return view;
     }
 
@@ -55,6 +58,7 @@ public class SecuritySettingsFragment extends BaseFragment {
 
     @OnClick(R.id.button_back)
     public void onClickBack() {
+        Analytics.getInstance(getActivity()).logSecuritySettings(AnalyticsConstants.BUTTON_CLOSE);
         if (getActivity() != null) {
             getActivity().onBackPressed();
         }
@@ -62,6 +66,7 @@ public class SecuritySettingsFragment extends BaseFragment {
 
     @OnClick(R.id.container_restore_seed)
     public void onClickRestoreSeed() {
+        Analytics.getInstance(getActivity()).logSecuritySettings(AnalyticsConstants.SECURITY_SETTINGS_VIEW_SEED);
         if (Prefs.getBoolean(Constants.PREF_BACKUP_SEED)) {
             startActivity(new Intent(getActivity(), SeedActivity.class).setType(Constants.FLAG_VIEW_SEED_PHRASE));
         } else {
@@ -71,6 +76,7 @@ public class SecuritySettingsFragment extends BaseFragment {
 
     @OnClick(R.id.container_entrance_settings)
     public void onClickEntranceSettings() {
+        Analytics.getInstance(getActivity()).logSecuritySettings(AnalyticsConstants.SECURITY_SETTINGS_ENTRANCE);
         if (getActivity() != null) {
             getActivity().getSupportFragmentManager().beginTransaction()
                     .replace(R.id.settings_container, EntranceSettingsFragment.newInstance())
@@ -81,6 +87,7 @@ public class SecuritySettingsFragment extends BaseFragment {
 
     @OnClick(R.id.container_reset_data)
     public void onClickResetDada() {
+        Analytics.getInstance(getActivity()).logSecuritySettings(AnalyticsConstants.SECURITY_SETTINGS_RESET);
         ResetDataDialogFragment resetDataDialog = new ResetDataDialogFragment();
         resetDataDialog.setCancelable(false);
         resetDataDialog.show(getFragmentManager(), null);

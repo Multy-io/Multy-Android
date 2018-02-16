@@ -24,6 +24,8 @@ import io.multy.ui.fragments.asset.TransactionInfoFragment;
 import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
 import io.multy.util.DateHelper;
+import io.multy.util.analytics.Analytics;
+import io.multy.util.analytics.AnalyticsConstants;
 import io.realm.RealmList;
 
 import static io.multy.ui.fragments.asset.TransactionInfoFragment.MODE_RECEIVE;
@@ -93,6 +95,7 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
 
     private void setItemClickListener(View view, boolean isIncoming, int position) {
         view.setOnClickListener((v) -> {
+            Analytics.getInstance(v.getContext()).logWallet(AnalyticsConstants.WALLET_TRANSACTION, 1);
             Bundle transactionInfo = new Bundle();
             int mode = isIncoming ? MODE_RECEIVE : MODE_SEND;
             transactionInfo.putInt(TransactionInfoFragment.SELECTED_POSITION, position);

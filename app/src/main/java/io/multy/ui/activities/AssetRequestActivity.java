@@ -27,6 +27,8 @@ import io.multy.ui.fragments.receive.AmountChooserFragment;
 import io.multy.ui.fragments.receive.RequestSummaryFragment;
 import io.multy.ui.fragments.receive.WalletChooserFragment;
 import io.multy.util.Constants;
+import io.multy.util.analytics.Analytics;
+import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.AssetRequestViewModel;
 
 
@@ -41,6 +43,7 @@ public class AssetRequestActivity extends BaseActivity {
     int oneNegative;
 
     private boolean isFirstFragmentCreation;
+    private AssetRequestViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,12 +51,12 @@ public class AssetRequestActivity extends BaseActivity {
         setContentView(R.layout.activity_asset_request);
         ButterKnife.bind(this);
         isFirstFragmentCreation = true;
+        viewModel = ViewModelProviders.of(this).get(AssetRequestViewModel.class);
 
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-
 
         startFlow();
     }
@@ -88,15 +91,17 @@ public class AssetRequestActivity extends BaseActivity {
                 }
             }
         }
+        logCancel();
         super.onBackPressed();
     }
 
     @OnClick(R.id.button_cancel)
-    void ocLickCancel(){
+    void ocLickCancel() {
+        logCancel();
         finish();
     }
 
-    private void startFlow(){
+    private void startFlow() {
         if (getIntent().hasExtra(Constants.EXTRA_WALLET_ID)) {
             if (getIntent().getIntExtra(Constants.EXTRA_WALLET_ID, oneNegative) != oneNegative) {
                 AssetRequestViewModel viewModel = ViewModelProviders.of(this).get(AssetRequestViewModel.class);
@@ -124,5 +129,20 @@ public class AssetRequestActivity extends BaseActivity {
 
         isFirstFragmentCreation = false;
         transaction.commit();
+    }
+
+    private void logCancel() {
+        List<Fragment> backStackFragments = getSupportFragmentManager().getFragments();
+        for (Fragment backStackFragment : backStackFragments) {
+            if (backStackFragment instanceof AddressesFragment) {
+//                    Analytics.getInstance(this).logWalletAddresses(AnalyticsConstants.BUTTON_CLOSE, viewModel.getChainId());
+            }
+            if (backStackFragment instanceof RequestSummaryFragment && backStackFragment.isVisible()) {
+                Analytics.getInstance(this).logReceiveSummary(AnalyticsConstants.BUTTON_CLOSE, viewModel.getChainId());
+            }
+            if (backStackFragment instanceof WalletChooserFragment && backStackFragment.isVisible()) {
+                Analytics.getInstance(this).logReceive(AnalyticsConstants.BUTTON_CLOSE, viewModel.getChainId());
+            }
+        }
     }
 }
