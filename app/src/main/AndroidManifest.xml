@@ -141,5 +141,8 @@
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="@string/channel_id" />
 
+        <receiver android:name=".ui.fragments.asset.AssetInfoFragment$SharingBroadcastReceiver"
+            android:exported="true"/>
+
     </application>
 </manifest>

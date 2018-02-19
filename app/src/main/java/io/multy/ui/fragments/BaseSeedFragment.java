@@ -35,6 +35,7 @@ public class BaseSeedFragment extends BaseFragment {
     private int redrawPosition = 0;
     private GridLayoutManager layoutManager;
     protected BricksAdapter adapter;
+    protected boolean isFailed;
 
     protected void initBricks(RecyclerView recyclerView) {
         final int spanCount = 16 * 8; //total cell count * span per item
@@ -148,8 +149,11 @@ public class BaseSeedFragment extends BaseFragment {
                     Analytics.getInstance(getActivity()).logRestoreSeedClose();
                     break;
                 } else if (fragment instanceof SeedResultFragment && fragment.isVisible()) {
-//                    Analytics.getInstance(getActivity()).logSeedSuccessClose();
-//                      TODO how to check failed or success
+                    if (isFailed) {
+                        Analytics.getInstance(getActivity()).logSeedFailClose();
+                    } else {
+                        Analytics.getInstance(getActivity()).logSeedSuccessClose();
+                    }
                     break;
                 } else if (fragment instanceof SeedFragment && fragment.isVisible()) {
                     Analytics.getInstance(getActivity()).logSeedPhraseClose();

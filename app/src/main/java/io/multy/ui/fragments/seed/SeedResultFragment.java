@@ -60,6 +60,7 @@ public class SeedResultFragment extends BaseSeedFragment {
     }
 
     private void showResult() {
+        isFailed = isFailure();
         if (isFailure()) {
             Analytics.getInstance(getActivity()).logSeedFailBackup();
             Analytics.getInstance(getActivity()).logSeedFailLaunch();

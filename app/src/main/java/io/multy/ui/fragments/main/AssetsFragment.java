@@ -50,6 +50,7 @@ import io.multy.ui.adapters.WalletsAdapter;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
 import io.multy.util.analytics.Analytics;
+import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.AssetsViewModel;
 import io.realm.RealmResults;
 import retrofit2.Call;
@@ -249,7 +250,7 @@ public class AssetsFragment extends BaseFragment implements WalletsAdapter.OnWal
     @OnClick(R.id.button_add)
     void onClickAdd() {
 //        showAddWalletActions();
-        Analytics.getInstance(getActivity()).logMainCreateWallet();
+        Analytics.getInstance(getActivity()).logMain(AnalyticsConstants.MAIN_CREATE_WALLET);
         onWalletAddClick();
     }
 
@@ -268,13 +269,13 @@ public class AssetsFragment extends BaseFragment implements WalletsAdapter.OnWal
 
     @OnClick(R.id.button_warn)
     void onClickWarn() {
-        Analytics.getInstance(getActivity()).logMainBackupSeed();
+        Analytics.getInstance(getActivity()).logMain(AnalyticsConstants.MAIN_BACKUP_SEED);
         startActivity(new Intent(getActivity(), SeedActivity.class));
     }
 
     @OnClick(R.id.logo)
     void onClickLogo() {
-        Analytics.getInstance(getActivity()).logMainLogo();
+        Analytics.getInstance(getActivity()).logMain(AnalyticsConstants.MAIN_LOGO);
     }
 
     @Override
@@ -289,6 +290,7 @@ public class AssetsFragment extends BaseFragment implements WalletsAdapter.OnWal
 
     @Override
     public void onWalletClick(WalletRealmObject wallet) {
+        Analytics.getInstance(getActivity()).logMainWalletOpen(viewModel.getChainId());
         Intent intent = new Intent(getActivity(), AssetActivity.class);
         intent.putExtra(Constants.EXTRA_WALLET_ID, wallet.getWalletIndex());
         startActivity(intent);

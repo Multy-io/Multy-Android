@@ -21,6 +21,8 @@ import java.util.Map;
 
 import io.multy.R;
 import io.multy.ui.activities.MainActivity;
+import io.multy.util.analytics.Analytics;
+import io.multy.util.analytics.AnalyticsConstants;
 
 public class MultyFirebaseMessagingService extends FirebaseMessagingService {
 
@@ -34,7 +36,8 @@ public class MultyFirebaseMessagingService extends FirebaseMessagingService {
                 Map<String, String> remoteData = remoteMessage.getData();
                 String amount = remoteData.get("amount") + " BTC";
                 String type = remoteData.get("transactionType");
-                sendNotification("transaction " + type + ".\nAmount = " + amount);
+                sendNotification("transaction " + type + ".\nAmount = " + amount, remoteMessage.getMessageId());
+                Analytics.getInstance(this).logPush(AnalyticsConstants.PUSH_RECEIVED, remoteMessage.getMessageId());
 //                EventBus.getDefault().post(new TransactionUpdateEvent());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -43,8 +46,9 @@ public class MultyFirebaseMessagingService extends FirebaseMessagingService {
         }
     }
 
-    private void sendNotification(String messageBody) {
+    private void sendNotification(String messageBody, String pushId) {
         Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra(getString(R.string.push_id), pushId);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent, PendingIntent.FLAG_ONE_SHOT);
 

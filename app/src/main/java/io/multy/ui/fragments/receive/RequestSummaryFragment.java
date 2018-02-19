@@ -7,12 +7,16 @@
 package io.multy.ui.fragments.receive;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
@@ -38,6 +42,7 @@ import io.multy.ui.activities.AmountChooserActivity;
 import io.multy.ui.activities.AssetRequestActivity;
 import io.multy.ui.fragments.AddressesFragment;
 import io.multy.ui.fragments.BaseFragment;
+import io.multy.ui.fragments.asset.AssetInfoFragment;
 import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
 import io.multy.util.DeepLinkShareHelper;
@@ -86,12 +91,14 @@ public class RequestSummaryFragment extends BaseFragment {
     int zero;
 
     private AssetRequestViewModel viewModel;
+    private SharingBroadcastReceiver receiver;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = ViewModelProviders.of(getActivity()).get(AssetRequestViewModel.class);
         setBaseViewModel(viewModel);
+        receiver = new SharingBroadcastReceiver();
         Analytics.getInstance(getActivity()).logReceiveSummaryLaunch(viewModel.getChainId());
     }
 
@@ -106,6 +113,9 @@ public class RequestSummaryFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
+        if (getActivity() != null) {
+            getActivity().registerReceiver(receiver, new IntentFilter());
+        }
 
         textAddress.setText(viewModel.getWalletAddress());
         textWalletName.setText(viewModel.getWallet().getName());
@@ -125,6 +135,14 @@ public class RequestSummaryFragment extends BaseFragment {
         }
 
         generateQR();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (getActivity() != null) {
+            getActivity().unregisterReceiver(receiver);
+        }
     }
 
     @OnClick(R.id.image_qr)
@@ -192,7 +210,14 @@ public class RequestSummaryFragment extends BaseFragment {
         sharingIntent.setType("text/plain");
         sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT,
                 DeepLinkShareHelper.getDeepLink(getActivity(), viewModel.getStringAddress(), viewModel.getStringAmount()));
-        startActivity(Intent.createChooser(sharingIntent, getResources().getString(R.string.send_via)));
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+            Intent intentReceiver = new Intent(getActivity(), AssetInfoFragment.SharingBroadcastReceiver.class);
+            intentReceiver.putExtra(getString(R.string.chain_id), viewModel.getChainId());
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(getActivity(), 0, intentReceiver, PendingIntent.FLAG_CANCEL_CURRENT);
+            startActivity(Intent.createChooser(sharingIntent, getResources().getString(R.string.send_via), pendingIntent.getIntentSender()));
+        } else {
+            startActivity(Intent.createChooser(sharingIntent, getResources().getString(R.string.send_via)));
+        }
     }
 
     private void generateQR() {
@@ -234,6 +259,22 @@ public class RequestSummaryFragment extends BaseFragment {
                 viewModel.setAmount(amount);
                 generateQR();
                 setBalance();
+            }
+        }
+    }
+
+    public static class SharingBroadcastReceiver extends BroadcastReceiver {
+
+        public SharingBroadcastReceiver() {
+            super();
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getExtras() != null && intent.getExtras().get(Intent.EXTRA_CHOSEN_COMPONENT) != null) {
+                String component = intent.getExtras().get(Intent.EXTRA_CHOSEN_COMPONENT).toString();
+                String packageName = component.substring(component.indexOf("{") + 1, component.indexOf("/"));
+                Analytics.getInstance(context).logWalletSharing(intent.getIntExtra(context.getString(R.string.chain_id), 1), packageName);
             }
         }
     }

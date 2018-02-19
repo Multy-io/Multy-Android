@@ -235,5 +235,7 @@
     <string name="address">address</string>
     <string name="amount">amount</string>
     <string name="bitcoin">bitcoin</string>
+    <string name="push_id">push_id</string>
+    <string name="chain_id">chain_id</string>
 
 </resources>

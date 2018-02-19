@@ -30,7 +30,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.storage.RealmManager;
-import io.multy.ui.fragments.receive.RequestSummaryFragment;
 import io.multy.ui.fragments.send.AmountChooserFragment;
 import io.multy.ui.fragments.send.AssetSendFragment;
 import io.multy.ui.fragments.send.SendSummaryFragment;
@@ -185,7 +184,10 @@ public class AssetSendActivity extends BaseActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == Constants.CAMERA_REQUEST_CODE) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Analytics.getInstance(this).logSendTo(AnalyticsConstants.PERMISSION_GRANTED);
                 showScanScreen();
+            } else if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                Analytics.getInstance(this).logSendTo(AnalyticsConstants.PERMISSION_DENIED);
             }
         }
     }

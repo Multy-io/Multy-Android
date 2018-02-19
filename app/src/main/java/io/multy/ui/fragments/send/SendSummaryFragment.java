@@ -152,6 +152,7 @@ public class SendSummaryFragment extends BaseFragment {
                         RealmManager.getAssetsDao().saveRecentAddress(new RecentAddress(NativeDataHelper.Currency.BTC.getValue(), addressTo));
                         CompleteDialogFragment.newInstance(viewModel.getChainId()).show(getActivity().getSupportFragmentManager(), TAG_SEND_SUCCESS);
                     } else {
+                        Analytics.getInstance(getActivity()).logError(AnalyticsConstants.ERROR_TRANSACTION_API);
                         showError();
                     }
                 }

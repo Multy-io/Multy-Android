@@ -180,6 +180,7 @@ public class AmountChooserFragment extends BaseFragment {
 
     @OnClick(R.id.button_next)
     void onClickNext() {
+//        Analytics.getInstance(getActivity()).logError(AnalyticsConstants.ERROR_TRANSACTION_SIGN); // TODO uncomment
         if (!TextUtils.isEmpty(inputOriginal.getText()) && isParsable(inputOriginal.getText().toString()) && Double.valueOf(inputOriginal.getText().toString()) != zero) {
             if (!TextUtils.isEmpty(inputOriginal.getText()) &&
                     (Double.parseDouble(inputOriginal.getText().toString())

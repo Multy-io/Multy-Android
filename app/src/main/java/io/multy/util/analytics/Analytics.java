@@ -94,9 +94,9 @@ public class Analytics {
         analytics.logEvent(AnalyticsConstants.SEED_PHRASE_RESTORE_SUCCESS, null);
     }
 
-//    public void logSeedSuccessClose() {
-//        logEvent(AnalyticsConstants.SEED_PHRASE_RESTORE_SUCCESS_NAME, AnalyticsConstants.SEED_PHRASE_RESTORE_SUCCESS_NAME, AnalyticsConstants.SEED_PHRASE_RESTORE_SUCCESS_CANCEL);
-//    }
+    public void logSeedSuccessClose() {
+        logEvent(AnalyticsConstants.SEED_PHRASE_RESTORE_SUCCESS_NAME, AnalyticsConstants.SEED_PHRASE_RESTORE_SUCCESS_NAME, AnalyticsConstants.SEED_PHRASE_RESTORE_SUCCESS_CANCEL);
+    }
 
     public void logSeedSuccessOk() {
         logEvent(AnalyticsConstants.SEED_PHRASE_RESTORE_SUCCESS_NAME, AnalyticsConstants.SEED_PHRASE_RESTORE_SUCCESS_NAME, AnalyticsConstants.SEED_PHRASE_RESTORE_SUCCESS_OK);
@@ -111,9 +111,9 @@ public class Analytics {
         analytics.logEvent(AnalyticsConstants.SEED_PHRASE_RESTORE_FAIL, null);
     }
 
-//    public void logSeedFailClose() {
-//        logEvent(AnalyticsConstants.SEED_PHRASE_RESTORE_FAIL_NAME, AnalyticsConstants.SEED_PHRASE_RESTORE_FAIL_NAME, AnalyticsConstants.SEED_PHRASE_RESTORE_FAIL_CANCEL);
-//    }
+    public void logSeedFailClose() {
+        logEvent(AnalyticsConstants.SEED_PHRASE_RESTORE_FAIL_NAME, AnalyticsConstants.SEED_PHRASE_RESTORE_FAIL_NAME, AnalyticsConstants.SEED_PHRASE_RESTORE_FAIL_CANCEL);
+    }
 
     public void logSeedFailTryAgain() {
         logEvent(AnalyticsConstants.SEED_PHRASE_RESTORE_FAIL_NAME, AnalyticsConstants.SEED_PHRASE_RESTORE_FAIL_NAME, AnalyticsConstants.SEED_PHRASE_RESTORE_TRY_AGAIN);
@@ -128,49 +128,14 @@ public class Analytics {
         analytics.logEvent(AnalyticsConstants.MAIN_SCREEN, null);
     }
 
-    public void logMainClose() {
-        logEvent(AnalyticsConstants.MAIN_SCREEN_NAME, AnalyticsConstants.MAIN_SCREEN_NAME, AnalyticsConstants.MAIN_SCREEN_CLOSE);
+    public void logMain(String argument) {
+        logEvent(AnalyticsConstants.MAIN_SCREEN_NAME, AnalyticsConstants.MAIN_SCREEN_NAME, argument);
     }
 
-    public void logMainTab() {
-        logEvent(AnalyticsConstants.MAIN_SCREEN_NAME, AnalyticsConstants.MAIN_SCREEN_NAME, AnalyticsConstants.TAB_MAIN);
+    public void logMainWalletOpen(int chainId) {
+        logEvent(AnalyticsConstants.MAIN_SCREEN_NAME, AnalyticsConstants.MAIN_WALLET_CLICK, String.format(Locale.US, AnalyticsConstants.CHAIN_ID, chainId));
     }
 
-    public void logActivityTab() {
-        logEvent(AnalyticsConstants.MAIN_SCREEN_NAME, AnalyticsConstants.MAIN_SCREEN_NAME, AnalyticsConstants.TAB_ACTIVITY);
-    }
-
-    public void logContactsTab() {
-        logEvent(AnalyticsConstants.MAIN_SCREEN_NAME, AnalyticsConstants.MAIN_SCREEN_NAME, AnalyticsConstants.TAB_CONTACTS);
-    }
-
-    public void logSettingsTab() {
-        logEvent(AnalyticsConstants.MAIN_SCREEN_NAME, AnalyticsConstants.MAIN_SCREEN_NAME, AnalyticsConstants.TAB_SETTINGS);
-    }
-
-    public void logFastOperationsTab() {
-        logEvent(AnalyticsConstants.MAIN_SCREEN_NAME, AnalyticsConstants.MAIN_SCREEN_NAME, AnalyticsConstants.MAIN_FAST_OPERATIONS);
-    }
-
-    public void logMainCreateWallet() {
-        logEvent(AnalyticsConstants.MAIN_SCREEN_NAME, AnalyticsConstants.MAIN_SCREEN_NAME, AnalyticsConstants.MAIN_CREATE_WALLET);
-    }
-
-    public void logMainLogo() {
-        logEvent(AnalyticsConstants.MAIN_SCREEN_NAME, AnalyticsConstants.MAIN_SCREEN_NAME, AnalyticsConstants.MAIN_LOGO);
-    }
-
-//    public void logMainPullWallets() {
-//        logEvent(AnalyticsConstants.MAIN_SCREEN_NAME, AnalyticsConstants.MAIN_SCREEN_NAME, AnalyticsConstants.MAIN_LOGO);
-//    }
-
-//    public void logMainWalletOpen() {
-//        logEvent(AnalyticsConstants.MAIN_SCREEN_NAME, AnalyticsConstants.MAIN_SCREEN_NAME, AnalyticsConstants.MAIN_WALLET_CLICK);
-//    }
-
-    public void logMainBackupSeed() {
-        logEvent(AnalyticsConstants.MAIN_SCREEN_NAME, AnalyticsConstants.MAIN_SCREEN_NAME, AnalyticsConstants.MAIN_BACKUP_SEED);
-    }
 
     public void logActivityLaunch() {
         analytics.logEvent(AnalyticsConstants.ACTIVITY_SCREEN, null);
@@ -239,6 +204,10 @@ public class Analytics {
 
     public void logWallet(String argument, int chainId) {
         logEvent(AnalyticsConstants.WALLET_SCREEN_NAME, argument, String.format(Locale.US, AnalyticsConstants.CHAIN_ID, chainId));
+    }
+
+    public void logWalletSharing(int chainId, String appName) {
+        logEvent(AnalyticsConstants.WALLET_SCREEN_NAME, AnalyticsConstants.SHARED_WITH, String.format(Locale.US, AnalyticsConstants.CHAIN_ID_APP_NAME, chainId, appName));
     }
 
     public void logWalletBackup(String argument) {
@@ -347,6 +316,10 @@ public class Analytics {
         logEvent(AnalyticsConstants.RECEIVE_SCREEN_NAME, argument, String.format(Locale.US, AnalyticsConstants.CHAIN_ID, chainId));
     }
 
+    public void logReceiveSharing(int chainId, String appName) {
+        logEvent(AnalyticsConstants.RECEIVE_SCREEN_NAME, AnalyticsConstants.SHARED_WITH, String.format(Locale.US, AnalyticsConstants.CHAIN_ID_APP_NAME, chainId, appName));
+    }
+
 
     public void logReceiveSummaryLaunch(int chainId) {
         logEvent(AnalyticsConstants.RECEIVE_SUMMARY_SCREEN, AnalyticsConstants.RECEIVE_SUMMARY_SCREEN, String.format(Locale.US, AnalyticsConstants.CHAIN_ID, chainId));
@@ -356,6 +329,13 @@ public class Analytics {
         logEvent(AnalyticsConstants.RECEIVE_SUMMARY_SCREEN_NAME, argument, String.format(Locale.US, AnalyticsConstants.CHAIN_ID, chainId));
     }
 
+    public void logPush(String argument, String pushId) {
+        logEvent(argument, argument, String.format(Locale.US, AnalyticsConstants.PUSH_ID, pushId));
+    }
+
+    public void logError(String argument) {
+        logEvent(argument, argument, null);
+    }
 
     private void logEvent(String event, String argumentName, String argument) {
         Bundle bundle = new Bundle();

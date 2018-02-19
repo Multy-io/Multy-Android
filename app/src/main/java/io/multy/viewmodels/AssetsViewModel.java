@@ -70,4 +70,8 @@ public class AssetsViewModel extends BaseViewModel implements LifecycleObserver 
     public boolean isFirstStart() {
         return !Prefs.getBoolean(Constants.PREF_APP_INITIALIZED);
     }
+
+    public int getChainId() {
+        return 1;
+    }
 }

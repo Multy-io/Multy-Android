@@ -21,8 +21,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -33,10 +31,7 @@ import com.samwolfand.oneprefs.Prefs;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.branch.referral.Branch;
 import io.multy.R;
-import io.multy.api.MultyApi;
-import io.multy.model.entities.Fee;
 import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.main.AssetsFragment;
 import io.multy.ui.fragments.main.ContactsFragment;
@@ -47,7 +42,6 @@ import io.multy.util.AnimationUtils;
 import io.multy.util.Constants;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
-import timber.log.Timber;
 
 
 public class MainActivity extends BaseActivity implements TabLayout.OnTabSelectedListener, BaseActivity.OnLockCloseListener {
@@ -136,20 +130,20 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         switch (tab.getPosition()) {
             case Constants.POSITION_ASSETS:
                 if (!Prefs.getBoolean(Constants.PREF_APP_INITIALIZED, true)) {
-                    Analytics.getInstance(this).logMainTab();
+                    Analytics.getInstance(this).logMain(AnalyticsConstants.TAB_MAIN);
                 }
                 setFragment(R.id.container_frame, AssetsFragment.newInstance());
                 break;
             case Constants.POSITION_FEED:
-                Analytics.getInstance(this).logActivityTab();
+                Analytics.getInstance(this).logMain(AnalyticsConstants.TAB_ACTIVITY);
                 setFragment(R.id.container_frame, FeedFragment.newInstance());
                 break;
             case Constants.POSITION_CONTACTS:
-                Analytics.getInstance(this).logContactsTab();
+                Analytics.getInstance(this).logMain(AnalyticsConstants.TAB_CONTACTS);
                 setFragment(R.id.container_frame, ContactsFragment.newInstance());
                 break;
             case Constants.POSITION_SETTINGS:
-                Analytics.getInstance(this).logSettingsTab();
+                Analytics.getInstance(this).logMain(AnalyticsConstants.TAB_SETTINGS);
                 setFragment(R.id.container_frame, SettingsFragment.newInstance());
                 break;
         }
@@ -224,7 +218,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
 
     @OnClick(R.id.fast_operations)
     void onFastOperationsClick(final View v) {
-        Analytics.getInstance(this).logFastOperationsTab();
+        Analytics.getInstance(this).logMain(AnalyticsConstants.MAIN_FAST_OPERATIONS);
         v.setEnabled(false);
         v.postDelayed(() -> v.setEnabled(true), AnimationUtils.DURATION_MEDIUM * 2);
         Fragment fastOperationsFragment = getSupportFragmentManager().findFragmentByTag(FastOperationsFragment.TAG);
@@ -255,10 +249,10 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == Constants.CAMERA_REQUEST_CODE) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Analytics.getInstance(this).logFastOperations(AnalyticsConstants.FAST_OPERATIONS_PERMISSION_GRANTED);
+                Analytics.getInstance(this).logFastOperations(AnalyticsConstants.PERMISSION_GRANTED);
                 showScanScreen();
             } else if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                Analytics.getInstance(this).logFastOperations(AnalyticsConstants.FAST_OPERATIONS_PERMISSION_DENIED);
+                Analytics.getInstance(this).logFastOperations(AnalyticsConstants.PERMISSION_DENIED);
             }
         }
     }
@@ -283,6 +277,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         } else {
             super.onBackPressed();
         }
+        logCancel();
     }
 
     @Override
@@ -319,6 +314,19 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
     private void logFirstLaunch() {
         if (!Prefs.getBoolean(Constants.PREF_APP_INITIALIZED, false)) {
             Analytics.getInstance(this).logFirstLaunch();
+        }
+    }
+
+    private void logCancel() {
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container_frame);
+        if (fragment instanceof FeedFragment && fragment.isVisible()) {
+            Analytics.getInstance(this).logActivityClose();
+        } else if (fragment instanceof ContactsFragment && fragment.isVisible()) {
+            Analytics.getInstance(this).logContactsClose();
+        } else if (fragment instanceof AssetsFragment && fragment.isVisible()) {
+            Analytics.getInstance(this).logMain(AnalyticsConstants.BUTTON_CLOSE);
+        } else if (fragment instanceof SettingsFragment && fragment.isVisible()) {
+            Analytics.getInstance(this).logSettings(AnalyticsConstants.BUTTON_CLOSE);
         }
     }
 }

@@ -31,6 +31,8 @@ import io.multy.model.responses.ServerConfigResponse;
 import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
 import io.multy.util.Constants;
+import io.multy.util.analytics.Analytics;
+import io.multy.util.analytics.AnalyticsConstants;
 import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -51,6 +53,7 @@ public class SplashActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
 //        FirstLaunchHelper.preventRootIfDetected(this);
+        logPushClicked();
 
         Animation emergency = AnimationUtils.loadAnimation(this, R.anim.splash_emergency);
         emergency.setDuration(350);
@@ -205,6 +208,13 @@ public class SplashActivity extends AppCompatActivity {
         }
         if (getIntent().hasExtra(Constants.EXTRA_AMOUNT)) {
             intent.putExtra(Constants.EXTRA_AMOUNT, getIntent().getStringExtra(Constants.EXTRA_AMOUNT));
+        }
+    }
+
+    private void logPushClicked() {
+        if (getIntent().hasExtra(getString(R.string.push_id))) {
+            Analytics.getInstance(this).logPush(AnalyticsConstants.PUSH_OPEN,
+                    getIntent().getStringExtra(getString(R.string.push_id)));
         }
     }
 }

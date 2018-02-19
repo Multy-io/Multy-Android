@@ -21,7 +21,7 @@ public class AnalyticsConstants {
     public static final String CREATE_WALLET_CREATE = "Button_Create_Wallet";
     public static final String CREATE_WALLET_CHAIN = "Button_Chain_Id";
     public static final String CREATE_WALLET_FIAT_CLICKED = "Button_Fiat_Id";
-    public static final String CREATE_WALLET_FIAT_SELECTED = "Event Fiat Id $FIAT_ID Selected"; // ?
+    public static final String CREATE_WALLET_FIAT_SELECTED = "Event Fiat Id $FIAT_ID Selected";
     public static final String CREATE_WALLET_CANCEL = "Button_Cancel";
 
     // View Seed Phrase Screen
@@ -45,14 +45,13 @@ public class AnalyticsConstants {
     // Fail Restore Seed
     public static final String SEED_PHRASE_RESTORE_FAIL_NAME = "Fail_Restore_Seed_SC";
     public static final String SEED_PHRASE_RESTORE_FAIL = "Screen_Fail_Restore_Seed";
-    public static final String SEED_PHRASE_RESTORE_FAIL_CANCEL = "Button_Cancel"; //!
-    public static final String SEED_PHRASE_RESTORE_TRY_AGAIN = "Button_Try_again"; //!
+    public static final String SEED_PHRASE_RESTORE_FAIL_CANCEL = "Button_Cancel";
+    public static final String SEED_PHRASE_RESTORE_TRY_AGAIN = "Button_Try_again";
     public static final String SEED_PHRASE_RESTORE_FAIL_BACKUP = "Event_Seed_Backup_Failed";
 
     // Main Screen
     public static final String MAIN_SCREEN_NAME = "Main_SC";
     public static final String MAIN_SCREEN = "Screen_Main";
-    public static final String MAIN_SCREEN_CLOSE = "Button_Close";
     public static final String TAB_MAIN = "Tab_Main";
     public static final String TAB_ACTIVITY = "Tab_Activity";
     public static final String TAB_CONTACTS = "Tab_Contacts";
@@ -61,7 +60,7 @@ public class AnalyticsConstants {
     public static final String MAIN_CREATE_WALLET = "Button_Create_Wallet";
     public static final String MAIN_LOGO = "Button_Logo";
     public static final String MAIN_PULL_WALLETS = "Pull_Wallets";
-    public static final String MAIN_WALLET_CLICK = "Button_Wallet_Open - $CHAIN_ID - Main SC"; // ?
+    public static final String MAIN_WALLET_CLICK = "Button_Wallet_Open";
     public static final String MAIN_BACKUP_SEED = "Button_Backup_Seed";
 
     // Activity Screen
@@ -75,13 +74,13 @@ public class AnalyticsConstants {
     // Fast Operation Screen
     public static final String FAST_OPERATIONS_NAME = "Fast_Operation_SC";
     public static final String FAST_OPERATIONS = "Screen_Fast_Operation";
-    public static final String FAST_OPERATIONS_CLOSE = "ButtonClose";
+    public static final String FAST_OPERATIONS_CLOSE = "Button_Close";
     public static final String FAST_OPERATIONS_SEND = "Button_Send";
     public static final String FAST_OPERATIONS_RECEIVE = "Button_Receive";
     public static final String FAST_OPERATIONS_NFC = "Button_NFC";
     public static final String FAST_OPERATIONS_SCAN = "Button_Scan";
-    public static final String FAST_OPERATIONS_PERMISSION_GRANTED = "Button_Scan_Got_Permission";
-    public static final String FAST_OPERATIONS_PERMISSION_DENIED = "Button_Scan_Denied_Permission";
+    public static final String PERMISSION_GRANTED = "Button_Scan_Got_Permission";
+    public static final String PERMISSION_DENIED = "Button_Scan_Denied_Permission";
 
     // QR Screen
     public static final String QR_SCREEN_NAME = "QR_SCC";
@@ -90,13 +89,11 @@ public class AnalyticsConstants {
     // Wallet Screen
     public static final String WALLET_SCREEN_NAME = "Wallet_SC";
     public static final String WALLET_SCREEN = "Screen_Wallet";
-    public static final String WALLET_CLOSE = "Button_Close";
     public static final String WALLET_SETTINGS = "Button_Settings";
     public static final String WALLET_BALANCE = "Button_Crypto";
     public static final String WALLET_BALANCE_FIAT = "Button_Fiat";
     public static final String WALLET_ADDRESS = "Button_Address";
     public static final String WALLET_SHARE = "Button_Share";
-    public static final String WALLET_SHARED = "Shared with $CHAIN_ID $APP_NAME";
     public static final String WALLET_ADDRESSES = "Button_All_Addresses";
     public static final String WALLET_SEND = "Button_Send";
     public static final String WALLET_RECEIVE = "Button_Receive";
@@ -108,7 +105,6 @@ public class AnalyticsConstants {
     // Wallet Addresses Screen
     public static final String WALLET_ADDRESSES_SCREEN_NAME = "Wallet_Addresses_SC";
     public static final String WALLET_ADDRESSES_SCREEN = "Screen_Wallet_Addresses";
-    public static final String WALLET_ADDRESSES_CLOSE = "Button_Close";
     public static final String WALLET_ADDRESSES_CLICK = "Button_Address";
 
     // Wallet Transactions Screen
@@ -138,7 +134,6 @@ public class AnalyticsConstants {
     // Send To Screen
     public static final String SEND_TO_SCREEN_NAME = "Send_To_SC";
     public static final String SEND_TO_SCREEN = "Screen_Send_To";
-    public static final String SEND_TO_CLOSE = "Button_Close";
     public static final String SEND_TO_ADDRESS_BOOK = "Button_Address_Book";
     public static final String SEND_TO_WIRELESS = "Button_Wireless_Scan";
     public static final String SEND_TO_QR = "Button_Scan_QR";
@@ -146,13 +141,11 @@ public class AnalyticsConstants {
     // Send From Screen
     public static final String SEND_FROM_SCREEN_NAME = "Send_From_SC";
     public static final String SEND_FROM_SCREEN = "Screen_Send_From";
-    public static final String SEND_FROM_CLOSE = "Button_Close";
     public static final String SEND_FROM_WALLET_CLICK = "Button_Wallet";
 
     // Transaction Fee Screen
     public static final String TRANSACTION_FEE_SCREEN_NAME = "Transaction_Fee_SC";
     public static final String TRANSACTION_FEE_SCREEN = "Screen_Transaction_Fee";
-    public static final String TRANSACTION_FEE_CLOSE = "Button_Close";
     public static final String TRANSACTION_FEE_VERY_FAST = "Button_Very_Fast";
     public static final String TRANSACTION_FEE_FAST = "Button_Fast";
     public static final String TRANSACTION_FEE_MEDIUM = "Button_Medium";
@@ -169,7 +162,6 @@ public class AnalyticsConstants {
     // Send Amount Screen
     public static final String SEND_AMOUNT_SCREEN_NAME = "Send_Amount_SC";
     public static final String SEND_AMOUNT_SCREEN = "Screen_Send_Amount";
-    public static final String SEND_AMOUNT_CLOSE = "Button_Close";
     public static final String SEND_AMOUNT_FIAT = "Button_Fiat";
     public static final String SEND_AMOUNT_CRYPTO = "Button_Crypto";
     public static final String SEND_AMOUNT_SWAP = "Button_Switch";
@@ -180,24 +172,20 @@ public class AnalyticsConstants {
     // Send Summary Screen
     public static final String SEND_SUMMARY_SCREEN_NAME = "Send_Summary_SC";
     public static final String SEND_SUMMARY_SCREEN = "Screen_Send_Summary";
-    public static final String SEND_SUMMARY_CLOSE = "Button_Close";
     public static final String SEND_SUMMARY_NOTE = "Button_Add_Note";
 
     // Send Success Screen
     public static final String SEND_SUCCESS_SCREEN_NAME = "Send_Success_SC";
     public static final String SEND_SUCCESS_SCREEN = "Screen_Send_Success";
-    public static final String SEND_SUCCESS_CLOSE = "Button Close";
 
     // Receive Screen
     public static final String RECEIVE_SCREEN_NAME = "Receive_SC";
     public static final String RECEIVE_SCREEN = "Screen_Receive";
-    public static final String RECEIVE_CLOSE = "Button Close";
     public static final String RECEIVE_WALLET_CLICK = "Button_Wallet";
 
     // Receive Summary Screen
     public static final String RECEIVE_SUMMARY_SCREEN_NAME = "Receive_Summary_SC";
     public static final String RECEIVE_SUMMARY_SCREEN = "Screen_Receive_Summary";
-    public static final String RECEIVE_SUMMARY_CLOSE = "Button Close";
     public static final String RECEIVE_SUMMARY_QR = "Button_QR";
     public static final String RECEIVE_SUMMARY_ADDRESS = "Button_Address";
     public static final String RECEIVE_SUMMARY_REQUEST_SUM = "Button_Request_Sum";
@@ -205,7 +193,6 @@ public class AnalyticsConstants {
     public static final String RECEIVE_SUMMARY_ADDRESS_BOOK = "Button_Address_Book";
     public static final String RECEIVE_SUMMARY_WIRELESS = "Button_Wireless_Scan";
     public static final String RECEIVE_SUMMARY_OPTIONS = "Button_More_Options";
-    public static final String RECEIVE_SUMMARY_SHARED = "Shared with $APP_NAME";
     public static final String RECEIVE_SUMMARY_RECEIVED = "Event_Money_Received";
 
     // Settings Screen
@@ -232,12 +219,16 @@ public class AnalyticsConstants {
     public static final String ENTRANCE_SETTINGS_PIN_SET = "Event_PIN_Setuped";
 
     // Push
-    public static final String PUSH_RECEIVED = "Event Push Received $PUSH_ID";
-    public static final String PUSH_OPEN = "Event Open App By Push $PUSH_ID";
+    public static final String PUSH_RECEIVED = "Event_Push_Received";
+    public static final String PUSH_OPEN = "Event_Open_App_By_Push";
 
+    public static final String ERROR_TRANSACTION_SIGN = "Error_Transaction_Sign";
+    public static final String ERROR_TRANSACTION_API = "Error_Sending_Transaction_From_Api";
 
+    public static final String SHARED_WITH = "Shared_with";
     public static final String BUTTON_CLOSE = "Button_Close";
     public static final String CHAIN_ID = "CHAIN_ID_%d";
     public static final String CHAIN_ID_STATE = "CHAIN_ID_%d_STATE_%d";
-
+    public static final String PUSH_ID = "PUSH_ID_%s";
+    public static final String CHAIN_ID_APP_NAME = "CHAIN_ID_%d_APP_NAME_%s";
 }
