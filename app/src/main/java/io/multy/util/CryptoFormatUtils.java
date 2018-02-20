@@ -65,4 +65,12 @@ public class CryptoFormatUtils {
         double btc = (satoshi / Math.pow(10, 8));
         return formatUsd.format(btc * price);
     }
+
+    public static long btcToSatoshi(String btc) {
+        try {
+            return (long) (Double.parseDouble(btc) * Math.pow(10, 8));
+        } catch (Exception e) {
+            return -1;
+        }
+    }
 }

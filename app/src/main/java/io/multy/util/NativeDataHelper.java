@@ -17,9 +17,9 @@ public class NativeDataHelper {
 
     static {
         if (BuildConfig.DEBUG) {
-            System.loadLibrary("core_jnid");
+            System.loadLibrary("multy_core_jnid");
         } else {
-            System.loadLibrary("core_jni");
+            System.loadLibrary("multy_core_jni");
         }
     }
 
@@ -63,9 +63,7 @@ public class NativeDataHelper {
 
     public static native int runTest();
 
-    public static native byte[] makeTransaction(byte[] seed, int walletIndex, String amountToSpend, String feePerByte, String donationAmount, String destinationAddress, String changeAddress, String donationAddress);
+    public static native byte[] makeTransaction(byte[] seed, int walletIndex, String amountToSpend, String feePerByte, String donationAmount, String destinationAddress, String changeAddress, String donationAddress, boolean payFee) throws JniException;
 
     public static native byte[] digestSha3256(byte[] s) throws JniException;
-
-    public static native String getEstimate(String fee, int inputs, int outputs);
 }

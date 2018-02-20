@@ -15,8 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.samwolfand.oneprefs.Prefs;
-
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -24,7 +22,6 @@ import butterknife.OnClick;
 import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.api.socket.CurrenciesRate;
-import io.multy.model.DataManager;
 import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.model.entities.wallet.RecentAddress;
 import io.multy.model.requests.HdTransactionRequestEntity;
@@ -92,13 +89,6 @@ public class SendSummaryFragment extends BaseFragment {
         setBaseViewModel(viewModel);
         subscribeToErrors();
         setInfo();
-//        buttonNext.setOnTouchListener(new OnSlideTouchListener() {
-//            @Override
-//            public boolean onSlideRight() {
-//                send();
-//                return true;
-//            }
-//        });
         inputNote.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
                 Analytics.getInstance(getActivity()).logSendSummary(AnalyticsConstants.SEND_SUMMARY_NOTE, viewModel.getChainId());
@@ -114,34 +104,16 @@ public class SendSummaryFragment extends BaseFragment {
     }
 
     private void send() {
-        //        AssetSendDialogFragment dialog = new AssetSendDialogFragment();
-//        dialog.show(getActivity().getFragmentManager(), null);
         viewModel.isLoading.setValue(true);
-
-        double amount = viewModel.getAmount();
-        long amountDonationSatoshi = 0;
-        long amountSatoshi = (long) (amount * Math.pow(10, 8));
-        if (viewModel.getDonationAmount() != null) {
-            amountDonationSatoshi = (long) (Double.valueOf(viewModel.getDonationAmount()) * Math.pow(10, 8));
-        }
         String addressTo = viewModel.getReceiverAddress().getValue();
 
         try {
             viewModel.isLoading.setValue(true);
-//
             byte[] seed = RealmManager.getSettingsDao().getSeed().getSeed();
             final int addressesSize = viewModel.getWallet().getAddresses().size();
             final String changeAddress = NativeDataHelper.makeAccountAddress(seed, viewModel.getWallet().getWalletIndex(), addressesSize, NativeDataHelper.Currency.BTC.getValue());
-
-            //TODO make fee per byte
-            byte[] transactionHex = NativeDataHelper.makeTransaction(DataManager.getInstance().getSeed().getSeed(), viewModel.getWallet().getWalletIndex(), String.valueOf(amountSatoshi),
-                    String.valueOf(viewModel.getFee().getAmount()), String.valueOf(amountDonationSatoshi), addressTo, changeAddress, Prefs.getString(Constants.PREF_DONATE_ADDRESS_BTC));
-            Timber.i("donation amount " + amountDonationSatoshi);
-            Timber.i("fee per byte " + viewModel.getFee().getAmount());
-            String hex = byteArrayToHex(transactionHex);
-            Timber.i("hex= " + hex);
-            Timber.i("changeAddress = " + changeAddress);
-
+            final String hex = viewModel.transaction.getValue();
+            Timber.i("hex=%s", hex);
             MultyApi.INSTANCE.sendHdTransaction(new HdTransactionRequestEntity(
                     NativeDataHelper.Currency.BTC.getValue(),
                     new HdTransactionRequestEntity.Payload(changeAddress, addressesSize, viewModel.getWallet().getWalletIndex(), hex))).enqueue(new Callback<ResponseBody>() {
@@ -163,33 +135,6 @@ public class SendSummaryFragment extends BaseFragment {
                     showError();
                 }
             });
-
-//            MultyApi.INSTANCE.addWalletAddress(new AddWalletAddressRequest(viewModel.getWallet().getWalletIndex(), changeAddress, addressesSize)).enqueue(new Callback<ResponseBody>() {
-//                @Override
-//                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-//                    RealmManager.getAssetsDao().saveAddress(viewModel.getWallet().getWalletIndex(), new WalletAddress(addressesSize, changeAddress));
-//                    //TODO REMOVE THIS HARDCODE of the currency ID from this awesome Api request
-//                    MultyApi.INSTANCE.sendRawTransaction(hex, 0).enqueue(new Callback<ResponseBody>() {
-//                        @Override
-//                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-//                            viewModel.isLoading.postValue(false);
-//                            new CompleteDialogFragment().show(getActivity().getSupportFragmentManager(), "");
-//                        }
-//
-//                        @Override
-//                        public void onFailure(Call<ResponseBody> call, Throwable t) {
-//                            t.printStackTrace();
-//                            showError();
-//                        }
-//                    });
-//                }
-//
-//                @Override
-//                public void onFailure(Call<ResponseBody> call, Throwable t) {
-//                    t.printStackTrace();
-//                    showError();
-//                }
-//            });
         } catch (Exception e) {
             e.printStackTrace();
             showError();
@@ -224,7 +169,7 @@ public class SendSummaryFragment extends BaseFragment {
         textSenderBalanceCurrency.setText(String.format("%s USD", NumberFormatter.getFiatInstance().format(viewModel.getAmount() * currenciesRate.getBtcToUsd())));
         textFeeSpeed.setText(viewModel.getFee().getName());
         textFeeSpeedLabel.setText(viewModel.getFee().getTime());
-        textFeeAmount.setText(String.format("%s BTC / %s USD", CryptoFormatUtils.satoshiToBtc(viewModel.getTransactionPrice()), CryptoFormatUtils.satoshiToUsd(viewModel.getTransactionPrice())));
+//        textFeeAmount.setText(String.format("%s BTC / %s USD", CryptoFormatUtils.satoshiToBtc(viewModel.getTransactionPrice()), CryptoFormatUtils.satoshiToUsd(viewModel.getTransactionPrice())));
     }
 
 }

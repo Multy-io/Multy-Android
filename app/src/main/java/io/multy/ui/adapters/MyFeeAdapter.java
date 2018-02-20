@@ -109,6 +109,9 @@ public class MyFeeAdapter extends RecyclerView.Adapter<MyFeeAdapter.FeeHolder> {
     }
 
     public void setCustomFee(long fee) {
+        if (fee < 2) {
+            fee = 2;
+        }
         rates.get(rates.size() - 1).setAmount(fee);
         setItemSelected(rates.size() - 1);
     }

@@ -7,6 +7,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.IntentFilter;
 import android.content.pm.ComponentInfo;
 import android.content.pm.ResolveInfo;

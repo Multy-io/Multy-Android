@@ -6,9 +6,14 @@
 
 package io.multy.util;
 
+import android.os.Build;
+
 public class Constants {
 
-    public static final String DEVICE_NAME = "Andrdoid " + " " + android.os.Build.MANUFACTURER + " " + android.os.Build.PRODUCT;
+    public static final String DEVICE_NAME = "Andrdoid " + Build.MANUFACTURER
+            + " " + android.os.Build.MODEL + " (" + android.os.Build.PRODUCT + ")"
+            + " " + Build.VERSION.RELEASE
+            + " " + Build.VERSION_CODES.class.getFields()[android.os.Build.VERSION.SDK_INT].getName();
 
     public static final String DONTAION_ADDRESS = "mzqiDnETWkunRDZxjUQ34JzN1LDevh5DpU";
 

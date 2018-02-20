@@ -118,7 +118,7 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
     private void bindBlocked(BlockedHolder holder, int position) {
         TransactionHistory transactionHistory = transactionHistoryList.get(position);
         final boolean isIncoming = transactionHistory.getTxStatus() == TX_MEMPOOL_INCOMING;
-        final String lockedAmount;
+        String lockedAmount = "";
         final String lockedFiat;
         final String amount;
         final String amountFiat;
@@ -137,8 +137,8 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
 //            List<WalletAddress> inputs = transactionHistory.getInputs();
 
             List<WalletAddress> outputs = transactionHistory.getOutputs();
-            //user change address must be last, so reversing
-            Collections.reverse(outputs);
+//            user change address must be last, so reversing
+//            Collections.reverse(outputs);
             WalletAddress userChangeAddress = null;
             String addressTo = "";
 
@@ -155,17 +155,20 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
                 }
             }
 
-            lockedAmount = CryptoFormatUtils.satoshiToBtc(userChangeAddress.getAmount());
-            lockedFiat = CryptoFormatUtils.satoshiToUsd(userChangeAddress.getAmount());
+            if (!lockedAmount.equals("")) {
+                lockedAmount = CryptoFormatUtils.satoshiToBtc(userChangeAddress.getAmount());
+                lockedFiat = CryptoFormatUtils.satoshiToUsd(userChangeAddress.getAmount());
+                holder.amountLocked.setText(String.format("%s BTC", lockedAmount));
+                holder.fiatLocked.setText(String.format("(%s USD)", lockedFiat));
+            }
+
             amount = CryptoFormatUtils.satoshiToBtc(transactionHistory.getTxOutAmount());
             amountFiat = getStockFiatAmount(transactionHistory);
             setAddress(addressTo, holder.containerAddresses);
         }
 
         holder.amount.setText(String.format("%s BTC", amount));
-        holder.amountLocked.setText(String.format("%s BTC", lockedAmount));
         holder.fiat.setText(String.format("%s USD", amountFiat));
-        holder.fiatLocked.setText(String.format("(%s USD)", lockedFiat));
 
         setItemClickListener(holder.itemView, isIncoming, position);
     }
@@ -200,19 +203,25 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
             String stockFiat = getStockFiatAmount(transactionHistory);
             holder.fiat.setText(stockFiat.equals("") ? "" : String.format("%s USD", stockFiat));
         } else {
-            //TODO REMOVE DRY AND OPTIMIZE
             WalletAddress addressTo = null;
             List<WalletAddress> outputs = transactionHistory.getOutputs();
             //user change address must be last, so reversing
             Collections.reverse(outputs);
-            WalletAddress userChangeAddress = null;
 
-            for (WalletAddress output : outputs) {
-                if (!output.getAddress().equals(Constants.DONTAION_ADDRESS)) {
-                    for (WalletAddress walletAddress : RealmManager.getAssetsDao().getWalletById(walletIndex).getAddresses()) {
-                        if (!output.getAddress().equals(walletAddress.getAddress())) {
-                            addressTo = output;
-                        }
+//            for (WalletAddress output : outputs) {
+//                if (!output.getAddress().equals(Constants.DONTAION_ADDRESS)) {
+//                    for (WalletAddress walletAddress : RealmManager.getAssetsDao().getWalletById(walletIndex).getAddresses()) {
+//                        if (!output.getAddress().equals(walletAddress.getAddress())) {
+//                            addressTo = output;
+//                        }
+//                    }
+//                }
+//            }
+
+            for (WalletAddress input : transactionHistory.getInputs()) {
+                for (WalletAddress walletAddress : RealmManager.getAssetsDao().getWalletById(walletIndex).getAddresses()) {
+                    if (input.getAddress().equals(walletAddress.getAddress())) {
+                        addressTo = input;
                     }
                 }
             }
