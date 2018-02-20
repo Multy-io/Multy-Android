@@ -358,7 +358,7 @@ public class AmountChooserFragment extends BaseFragment {
             viewModel.setPayForCommission(isChecked);
             if (isChecked) {
                 checkCommas();
-                if (Double.parseDouble(inputOriginal.getText().toString()) * Math.pow(10, 8) + transactionPrice >= spendableSatoshi) {
+                if (!inputOriginal.getText().toString().equals("") && Double.parseDouble(inputOriginal.getText().toString()) * Math.pow(10, 8) + transactionPrice >= spendableSatoshi) {
                     viewModel.errorMessage.setValue("You reached spendable amount");
                     switcher.setChecked(false);
                 }
@@ -376,7 +376,7 @@ public class AmountChooserFragment extends BaseFragment {
      */
     private void setTotalAmountWithWallet() {
         if (isAmountSwapped) {
-            textTotal.setText(String.valueOf(viewModel.getWallet().getBalance() * currenciesRate.getBtcToUsd()));
+            textTotal.setText(NumberFormatter.getFiatInstance().format(String.valueOf(viewModel.getWallet().getBalance() * currenciesRate.getBtcToUsd())));
             textTotal.append(Constants.SPACE);
             textTotal.append(CurrencyCode.USD.name());
         } else {
@@ -452,15 +452,13 @@ public class AmountChooserFragment extends BaseFragment {
     private void setAmountTotalWithFee() {
         if (switcher.isChecked()) {
             if (isAmountSwapped) {
-                textTotal.setText(NumberFormatter.getFiatInstance().format((viewModel.getFee().getAmount()
-                        + viewModel.getAmount()
+                textTotal.setText(NumberFormatter.getFiatInstance().format((viewModel.getAmount()
                         + (viewModel.getDonationAmount() == null ? 0 : Double.parseDouble(viewModel.getDonationAmount())))
                         * currenciesRate.getBtcToUsd()));
                 textTotal.append(Constants.SPACE);
                 textTotal.append(CurrencyCode.USD.name());
             } else {
-                textTotal.setText(NumberFormatter.getInstance().format(viewModel.getFee().getAmount()
-                        + viewModel.getAmount()
+                textTotal.setText(NumberFormatter.getInstance().format(viewModel.getAmount()
                         + (viewModel.getDonationAmount() == null ? 0 : Double.parseDouble(viewModel.getDonationAmount()))));
                 textTotal.append(Constants.SPACE);
                 textTotal.append(CurrencyCode.BTC.name());
@@ -473,8 +471,9 @@ public class AmountChooserFragment extends BaseFragment {
     private void checkForPointAndZeros(String input, EditText inputView) {
         int selection = inputView.getSelectionStart();
         if (!TextUtils.isEmpty(input) && input.length() == 1 && input.contains(".")) {
-            String result = input.replaceAll(".", "");
+            String result = input.replaceAll(".", "0.");
             inputView.setText(result);
+            inputView.setSelection(result.length());
         } else if (!TextUtils.isEmpty(input) && input.startsWith("00")) {
             inputView.setText(input.substring(1, input.length()));
             inputView.setSelection(selection - 1);

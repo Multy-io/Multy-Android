@@ -23,6 +23,7 @@ import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
+import io.multy.util.SingleLiveEvent;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -35,7 +36,7 @@ public class AssetSendViewModel extends BaseViewModel {
     private MutableLiveData<String> receiverAddress = new MutableLiveData<>();
     public MutableLiveData<String> thoseAddress = new MutableLiveData<>();
     public static MutableLiveData<Long> transactionPrice = new MutableLiveData<>();
-    public MutableLiveData<String> transaction = new MutableLiveData<>();
+    public SingleLiveEvent<String> transaction = new SingleLiveEvent<>();
     private double amount;
     private boolean isPayForCommission;
     private String donationAmount = "0";

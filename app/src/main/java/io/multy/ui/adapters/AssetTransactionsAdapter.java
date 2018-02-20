@@ -131,6 +131,9 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
             amount = lockedAmount;
             amountFiat = getStockFiatAmount(transactionHistory);
             setAddresses(transactionHistory.getInputs(), holder.containerAddresses);
+
+            holder.amountLocked.setText(String.format("%s BTC", lockedAmount));
+            holder.fiatLocked.setText(String.format("(%s USD)", lockedFiat));
         } else {
             //TODO REMOVE DRY AND OPTIMIZE
             RealmList<WalletAddress> addresses = RealmManager.getAssetsDao().getWalletById(walletIndex).getAddresses();

@@ -7,7 +7,6 @@
 package io.multy.ui.fragments.send;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.Group;
@@ -114,6 +113,9 @@ public class TransactionFeeFragment extends BaseFragment implements MyFeeAdapter
         Fee selectedFee = ((MyFeeAdapter) recyclerView.getAdapter()).getSelectedFee();
 
         if (selectedFee != null) {
+            if (selectedFee.getAmount() < 2) {
+                selectedFee.setAmount(2);
+            }
             viewModel.setFee(selectedFee);
 
             if (switcher.isChecked()) {
