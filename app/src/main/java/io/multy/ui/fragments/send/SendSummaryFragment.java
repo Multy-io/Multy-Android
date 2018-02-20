@@ -7,12 +7,14 @@
 package io.multy.ui.fragments.send;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import butterknife.BindString;
@@ -89,6 +91,7 @@ public class SendSummaryFragment extends BaseFragment {
         setBaseViewModel(viewModel);
         subscribeToErrors();
         setInfo();
+        viewModel.setAmountScanned(false);
         inputNote.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
                 Analytics.getInstance(getActivity()).logSendSummary(AnalyticsConstants.SEND_SUMMARY_NOTE, viewModel.getChainId());
@@ -96,6 +99,18 @@ public class SendSummaryFragment extends BaseFragment {
         });
         Analytics.getInstance(getActivity()).logSendSummaryLaunch(viewModel.getChainId());
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        buttonNext.postDelayed(() -> {
+            if (getActivity() != null) {
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm != null && imm.isActive())
+                    imm.hideSoftInputFromWindow(buttonNext.getWindowToken(), 0);
+            }
+        }, 150);
     }
 
     @OnClick(R.id.button_next)

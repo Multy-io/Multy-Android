@@ -13,6 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -23,9 +24,11 @@ import io.multy.ui.activities.AssetSendActivity;
 import io.multy.ui.adapters.WalletsAdapter;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
+import io.multy.util.CryptoFormatUtils;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.AssetSendViewModel;
+import timber.log.Timber;
 
 
 public class WalletChooserFragment extends BaseFragment implements WalletsAdapter.OnWalletClickListener {
@@ -54,13 +57,24 @@ public class WalletChooserFragment extends BaseFragment implements WalletsAdapte
 
     @Override
     public void onWalletClick(WalletRealmObject wallet) {
-        viewModel.setWallet(wallet);
-        Analytics.getInstance(getActivity()).logSendFrom(AnalyticsConstants.SEND_FROM_WALLET_CLICK, viewModel.getChainId());
-        ((AssetSendActivity) getActivity()).setFragment(R.string.transaction_fee, R.id.container, TransactionFeeFragment.newInstance());
+        if (viewModel.isAmountScanned()) {
+            if (Double.parseDouble(CryptoFormatUtils.satoshiToBtc(wallet.calculateBalance())) >= viewModel.getAmount()) {
+                launchTransactionFee(wallet);
+            } else {
+                Toast.makeText(getContext(), getString(R.string.no_balance), Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            launchTransactionFee(wallet);
+        }
     }
 
     private void setupAdapter() {
         recyclerView.setAdapter(new WalletsAdapter(this, RealmManager.getAssetsDao().getWallets()));
+    }
+
+    private void launchTransactionFee(WalletRealmObject wallet) {
+        viewModel.setWallet(wallet);
+        ((AssetSendActivity) getActivity()).setFragment(R.string.transaction_fee, R.id.container, TransactionFeeFragment.newInstance());
     }
 
 }

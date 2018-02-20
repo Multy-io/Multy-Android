@@ -7,7 +7,9 @@
 package io.multy.ui.fragments.send;
 
 import android.annotation.SuppressLint;
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
@@ -20,8 +22,10 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -83,6 +87,7 @@ public class AmountChooserFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         View view = inflater.inflate(R.layout.fragment_amount_chooser, container, false);
         ButterKnife.bind(this, view);
         viewModel = ViewModelProviders.of(getActivity()).get(AssetSendViewModel.class);
@@ -102,8 +107,10 @@ public class AmountChooserFragment extends BaseFragment {
     }
 
     private void subscribeToUpdates() {
-        viewModel.transaction.observe(getActivity(), s -> ((AssetSendActivity) getActivity()).setFragment(R.string.send_summary, R.id.container, SendSummaryFragment.newInstance()));
-        AssetSendViewModel.transactionPrice.observe(getActivity(), transactionPrice -> {
+        viewModel.transaction.observe(this, s -> {
+            ((AssetSendActivity) getActivity()).setFragment(R.string.send_summary, R.id.container, SendSummaryFragment.newInstance());
+        });
+        AssetSendViewModel.transactionPrice.observe(this, transactionPrice -> {
             if (transactionPrice != null) {
                 this.transactionPrice = transactionPrice;
                 setTotalAmountForInput();
@@ -133,7 +140,20 @@ public class AmountChooserFragment extends BaseFragment {
     public void onStart() {
         super.onStart();
         inputOriginal.requestFocus();
-        inputOriginal.postDelayed(() -> showKeyboard(getActivity(), inputOriginal), 300);
+        inputOriginal.postDelayed(() -> showKeyboard(getActivity(), inputOriginal), 100);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        inputOriginal.postDelayed(() -> {
+            if (getActivity() != null) {
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm != null && imm.isActive()) imm.hideSoftInputFromWindow(inputOriginal.getWindowToken(), 0);
+            }
+        }, 110);
+//        inputOriginal.clearFocus();
+//        inputCurrency.clearFocus();
     }
 
     @OnClick(R.id.button_next)
@@ -151,6 +171,11 @@ public class AmountChooserFragment extends BaseFragment {
             } else {
                 viewModel.setAmount(Double.valueOf(inputOriginal.getText().toString()));
                 viewModel.signTransaction();
+                if (AmountChooserFragment.this.getActivity() != null) {
+                    ((AssetSendActivity) AmountChooserFragment.this.getActivity()).setFragment(R.string.send_summary, R.id.container, SendSummaryFragment.newInstance());
+                } else {
+                    viewModel.errorMessage.call();
+                }
             }
         } else {
             Toast.makeText(getActivity(), R.string.choose_amount, Toast.LENGTH_SHORT).show();
@@ -225,7 +250,7 @@ public class AmountChooserFragment extends BaseFragment {
     @SuppressLint("ClickableViewAccessibility")
     private void setupInputOriginal() {
         if (viewModel.getAmount() != 0) {
-            inputOriginal.setText(String.valueOf(viewModel.getAmount()));
+            inputOriginal.setText(NumberFormatter.getInstance().format(viewModel.getAmount()));
         }
 
         inputOriginal.setOnTouchListener((v, event) -> {
@@ -287,7 +312,7 @@ public class AmountChooserFragment extends BaseFragment {
 
     private void setupInputCurrency() {
         if (viewModel.getAmount() != 0) {
-            inputCurrency.setText(NumberFormatter.getInstance().format(viewModel.getAmount() * currenciesRate.getBtcToUsd()));
+            inputCurrency.setText(NumberFormatter.getFiatInstance().format(viewModel.getAmount() * currenciesRate.getBtcToUsd()));
         }
 
         inputCurrency.setOnTouchListener((v, event) -> {
@@ -452,18 +477,18 @@ public class AmountChooserFragment extends BaseFragment {
     private void setAmountTotalWithFee() {
         if (switcher.isChecked()) {
             if (isAmountSwapped) {
-                textTotal.setText(NumberFormatter.getFiatInstance().format((viewModel.getAmount()
-                        + (viewModel.getDonationAmount() == null ? 0 : Double.parseDouble(viewModel.getDonationAmount())))
+                textTotal.setText(NumberFormatter.getFiatInstance().format(((viewModel.getDonationAmount() == null ? 0 : Double.parseDouble(viewModel.getDonationAmount())))
                         * currenciesRate.getBtcToUsd()));
                 textTotal.append(Constants.SPACE);
                 textTotal.append(CurrencyCode.USD.name());
             } else {
-                textTotal.setText(NumberFormatter.getInstance().format(viewModel.getAmount()
-                        + (viewModel.getDonationAmount() == null ? 0 : Double.parseDouble(viewModel.getDonationAmount()))));
+                textTotal.setText(NumberFormatter.getInstance().format((viewModel.getDonationAmount() == null ? 0 : Double.parseDouble(viewModel.getDonationAmount()))));
                 textTotal.append(Constants.SPACE);
                 textTotal.append(CurrencyCode.BTC.name());
             }
         } else {
+            inputOriginal.setText("");
+            inputCurrency.setText("");
             textTotal.getEditableText().clear();
         }
     }

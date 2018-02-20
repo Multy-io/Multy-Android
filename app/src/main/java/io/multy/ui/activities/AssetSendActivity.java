@@ -119,11 +119,17 @@ public class AssetSendActivity extends BaseActivity {
             setFragment(R.string.send_from, R.id.container, WalletChooserFragment.newInstance());
             setTitle(R.string.send_from);
             viewModel.setReceiverAddress(getIntent().getStringExtra(Constants.EXTRA_ADDRESS));
+            viewModel.thoseAddress.setValue(getIntent().getStringExtra(Constants.EXTRA_ADDRESS));
             if (getIntent().hasExtra(Constants.EXTRA_AMOUNT)) {
                 if (!TextUtils.isEmpty(getIntent().getStringExtra(Constants.EXTRA_AMOUNT))) {
                     Timber.i("amount %s", getIntent().getStringExtra(Constants.EXTRA_AMOUNT));
-                    viewModel.setAmount(Double.parseDouble(getIntent().getStringExtra(Constants.EXTRA_AMOUNT)));
-                    viewModel.setAmountScanned(true);
+                    String amountString = getIntent().getStringExtra(Constants.EXTRA_AMOUNT);
+                    amountString = amountString.replaceAll(",", ".");
+                    double amount = Double.parseDouble(amountString);
+                    if (amount > 0) {
+                        viewModel.setAmount(amount);
+                        viewModel.setAmountScanned(true);
+                    }
                 }
             }
         } else {
@@ -196,9 +202,9 @@ public class AssetSendActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == Constants.CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             if (data.hasExtra(Constants.EXTRA_QR_CONTENTS)) {
-                ViewModelProviders.of(this)
-                        .get(AssetSendViewModel.class)
-                        .setReceiverAddress(data.getStringExtra(Constants.EXTRA_QR_CONTENTS));
+                AssetSendViewModel viewModel = ViewModelProviders.of(this).get(AssetSendViewModel.class);
+                viewModel.setReceiverAddress(data.getStringExtra(Constants.EXTRA_QR_CONTENTS));
+                viewModel.thoseAddress.setValue(data.getStringExtra(Constants.EXTRA_QR_CONTENTS));
             }
         }
         super.onActivityResult(requestCode, resultCode, data);

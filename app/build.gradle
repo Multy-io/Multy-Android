@@ -20,7 +20,7 @@ android {
             cmake {
                 cppFlags "-std=c++11"
                 arguments "-DMULTY_ANDROID_PATH_TO_JNI_WRAPPER=C:\\workspace\\Multy-android\\app\\src\\main\\cpp\\scratch.cpp"
-//                arguments "-DPATH_TO_JNI_WRAPPER=/Users/appscrunch/AndroidStudioProjects/Multy-android/app/src/main/cpp/scratch.cpp"
+//                arguments "-DMULTY_ANDROID_PATH_TO_JNI_WRAPPER=/Users/appscrunch/AndroidStudioProjects/Multy-android/app/src/main/cpp/scratch.cpp"
                 arguments "-DANDROID_STL=c++_shared"
                 arguments "-DMULTY_WITH_TESTS=ON"
             }
