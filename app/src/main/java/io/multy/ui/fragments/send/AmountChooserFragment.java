@@ -170,11 +170,6 @@ public class AmountChooserFragment extends BaseFragment {
             } else {
                 viewModel.setAmount(Double.valueOf(inputOriginal.getText().toString()));
                 viewModel.signTransaction();
-                if (AmountChooserFragment.this.getActivity() != null) {
-                    ((AssetSendActivity) AmountChooserFragment.this.getActivity()).setFragment(R.string.send_summary, R.id.container, SendSummaryFragment.newInstance());
-                } else {
-                    viewModel.errorMessage.call();
-                }
             }
         } else {
             Toast.makeText(getActivity(), R.string.choose_amount, Toast.LENGTH_SHORT).show();

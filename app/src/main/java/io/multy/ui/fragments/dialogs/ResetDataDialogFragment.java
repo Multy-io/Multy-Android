@@ -14,7 +14,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
@@ -64,14 +66,19 @@ public class ResetDataDialogFragment extends DialogFragment {
 
     @OnClick(R.id.button_positive)
     public void onClickPositive() {
-        Analytics.getInstance(getActivity()).logSecuritySettings(AnalyticsConstants.SECURITY_SETTINGS_RESET_YES);
-        RealmManager.removeDatabase(getActivity());
-        Prefs.clear();
-        Realm.init(getActivity());
-
-        startActivity(new Intent(getActivity(), SplashActivity.class).setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY));
-        getActivity().finish();
-        System.exit(2);
+//        Analytics.getInstance(getActivity()).logSecuritySettings(AnalyticsConstants.SECURITY_SETTINGS_RESET_YES);
+//        RealmManager.removeDatabase(getActivity());
+//        Prefs.clear();
+//        Realm.init(getActivity());
+//
+//        startActivity(new Intent(getActivity(), SplashActivity.class).setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY));
+//        getActivity().finish();
+//        System.exit(2);
+        Intent intent = new Intent();
+        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        Uri uri = Uri.fromParts("package", getActivity().getPackageName(), null);
+        intent.setData(uri);
+        startActivity(intent);
     }
 
     @OnClick(R.id.button_neutral)

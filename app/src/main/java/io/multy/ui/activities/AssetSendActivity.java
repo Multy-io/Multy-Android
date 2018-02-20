@@ -86,6 +86,7 @@ public class AssetSendActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
+        logCancel();
         if (getSupportFragmentManager().getBackStackEntryCount() >= one) {
             List<Fragment> backStackFragments = getSupportFragmentManager().getFragments();
             for (Fragment backStackFragment : backStackFragments) {
@@ -105,7 +106,6 @@ public class AssetSendActivity extends BaseActivity {
         } else {
             super.onBackPressed();
         }
-        logCancel();
     }
 
     private void startFlow() {
