@@ -6,12 +6,12 @@
 
 package io.multy.ui.fragments.send;
 
+import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -184,7 +184,11 @@ public class SendSummaryFragment extends BaseFragment {
         textSenderBalanceCurrency.setText(String.format("%s USD", NumberFormatter.getFiatInstance().format(viewModel.getAmount() * currenciesRate.getBtcToUsd())));
         textFeeSpeed.setText(viewModel.getFee().getName());
         textFeeSpeedLabel.setText(viewModel.getFee().getTime());
-//        textFeeAmount.setText(String.format("%s BTC / %s USD", CryptoFormatUtils.satoshiToBtc(viewModel.getTransactionPrice()), CryptoFormatUtils.satoshiToUsd(viewModel.getTransactionPrice())));
+
+        MutableLiveData<Long> transactionPrice = AssetSendViewModel.transactionPrice;
+        if (transactionPrice != null) {
+            textFeeAmount.setText(String.format("%s BTC / %s USD", CryptoFormatUtils.satoshiToBtc(transactionPrice.getValue()), CryptoFormatUtils.satoshiToUsd(transactionPrice.getValue())));
+        }
     }
 
 }

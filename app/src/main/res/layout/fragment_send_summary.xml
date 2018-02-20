@@ -92,7 +92,7 @@
             app:srcCompat="@drawable/ic_btc"
             tools:ignore="ContentDescription" />
 
-        <android.support.design.widget.TextInputEditText
+        <EditText
             android:id="@+id/input_note"
             android:layout_width="@dimen/dp0"
             android:layout_height="@dimen/dimen_40dp"

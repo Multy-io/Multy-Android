@@ -159,10 +159,13 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
             }
 
             if (!lockedAmount.equals("")) {
+                holder.containerLocked.setVisibility(View.VISIBLE);
                 lockedAmount = CryptoFormatUtils.satoshiToBtc(userChangeAddress.getAmount());
                 lockedFiat = CryptoFormatUtils.satoshiToUsd(userChangeAddress.getAmount());
                 holder.amountLocked.setText(String.format("%s BTC", lockedAmount));
                 holder.fiatLocked.setText(String.format("(%s USD)", lockedFiat));
+            } else {
+                holder.containerLocked.setVisibility(View.GONE);
             }
 
             amount = CryptoFormatUtils.satoshiToBtc(transactionHistory.getTxOutAmount());
@@ -312,6 +315,9 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
 
         @BindView(R.id.container_addresses)
         LinearLayout containerAddresses;
+
+        @BindView(R.id.container_locked)
+        View containerLocked;
 
         BlockedHolder(View itemView) {
             super(itemView);
