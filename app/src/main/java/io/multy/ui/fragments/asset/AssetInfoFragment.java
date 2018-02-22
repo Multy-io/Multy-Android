@@ -177,7 +177,7 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     public void onResume() {
         super.onResume();
         if (getActivity() != null) {
-            getActivity().registerReceiver(receiver, new IntentFilter());
+                getActivity().registerReceiver(receiver, new IntentFilter());
         }
         viewModel.subscribeSocketsUpdate();
         appBarLayout.addOnOffsetChangedListener(this);
@@ -188,7 +188,11 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     public void onPause() {
         super.onPause();
         if (getActivity() != null) {
-            getActivity().unregisterReceiver(receiver);
+            try {
+                getActivity().unregisterReceiver(receiver);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         viewModel.unsubscribeSocketsUpdate();
         appBarLayout.removeOnOffsetChangedListener(this);

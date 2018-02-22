@@ -143,7 +143,8 @@ public class BaseFragment extends Fragment implements ConnectionReceiver.Connect
             noConnectionDialog = new NoConnectionDialogFragment();
             noConnectionDialog.setCancelable(false);
         }
-        if (!noConnectionDialog.isAdded()) {
+        if (!noConnectionDialog.isShowing().get()) {
+            noConnectionDialog.isShowing().set(true);
             noConnectionDialog.show(getFragmentManager(), NoConnectionDialogFragment.class.getSimpleName());
         }
     }

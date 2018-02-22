@@ -18,6 +18,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
@@ -26,6 +28,8 @@ import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 
 public class NoConnectionDialogFragment extends DialogFragment {
+
+    private final AtomicBoolean isShowing = new AtomicBoolean(false);
 
     @NonNull
     @Override
@@ -58,11 +62,16 @@ public class NoConnectionDialogFragment extends DialogFragment {
         Analytics.getInstance(getActivity()).logNoInternet(AnalyticsConstants.NO_INTERNET_CHECK);
         if (NetworkUtils.isConnected(getContext())) {
             dismiss();
+            isShowing.set(false);
         } else {
             SimpleDialogFragment dialog = SimpleDialogFragment.newInstanceNegative(R.string.check_internet_connection,
                     R.string.no_connection, null);
             dialog.show(getFragmentManager(), "");
             dialog.setTitleSize(18);
         }
+    }
+
+    public AtomicBoolean isShowing() {
+        return isShowing;
     }
 }

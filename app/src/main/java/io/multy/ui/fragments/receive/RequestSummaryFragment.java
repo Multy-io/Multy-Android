@@ -141,7 +141,11 @@ public class RequestSummaryFragment extends BaseFragment {
     public void onStop() {
         super.onStop();
         if (getActivity() != null) {
-            getActivity().unregisterReceiver(receiver);
+            try {
+                getActivity().unregisterReceiver(receiver);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
