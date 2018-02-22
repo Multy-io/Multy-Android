@@ -79,7 +79,9 @@ public class TransactionFeeFragment extends BaseFragment implements MyFeeAdapter
         viewModel = ViewModelProviders.of(getActivity()).get(AssetSendViewModel.class);
         setBaseViewModel(viewModel);
         inputDonation.setOnFocusChangeListener((view1, hasFocus) -> {
-            if (!hasFocus) {
+            if (hasFocus) {
+                scrollView.postDelayed(() -> scrollView.fullScroll(ScrollView.FOCUS_DOWN), 500);
+            } else {
                 if (!TextUtils.isEmpty(inputDonation.getText())
                         && !inputDonation.getText().toString().equals(getString(R.string.donation_default))) {
                     Analytics.getInstance(getActivity()).logTransactionFee(AnalyticsConstants.TRANSACTION_FEE_DONATION_CHANGED, viewModel.getChainId());

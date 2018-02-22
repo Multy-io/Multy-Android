@@ -42,7 +42,7 @@
         android:gravity="left"
         android:hint="@string/seed_validation_hint"
         android:imeOptions="actionDone"
-        android:inputType="text"
+        android:inputType="text|textNoSuggestions"
         android:maxLines="1"
         android:minWidth="200dp"
         android:singleLine="true"

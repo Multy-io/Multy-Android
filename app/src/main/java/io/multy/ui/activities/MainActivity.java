@@ -83,7 +83,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
 
         if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
             tabLayout.getLayoutParams().height = getResources().getDimensionPixelSize(R.dimen.tab_layout_height);
-            if (!isLockVisible) {
+            if (!super.isLockVisible()) {
                 buttonOperations.setVisibility(View.VISIBLE);
             }
         } else {
@@ -289,7 +289,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
     }
 
     private void checkDeepLink(Intent intent) {
-        if (!isLockVisible
+        if (!super.isLockVisible()
                 && Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)
                 && RealmManager.getAssetsDao().getWallets().size() > 0) {
             if (intent.hasExtra(Constants.EXTRA_ADDRESS)) {

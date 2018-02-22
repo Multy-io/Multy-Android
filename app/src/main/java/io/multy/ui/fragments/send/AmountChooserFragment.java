@@ -39,6 +39,7 @@ import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetSendActivity;
+import io.multy.ui.activities.BaseActivity;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
@@ -48,7 +49,7 @@ import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.AssetSendViewModel;
 
 
-public class AmountChooserFragment extends BaseFragment {
+public class AmountChooserFragment extends BaseFragment implements BaseActivity.OnLockCloseListener {
 
     public static final String TAG = AmountChooserFragment.class.getSimpleName();
 
@@ -83,6 +84,14 @@ public class AmountChooserFragment extends BaseFragment {
     private long transactionPrice;
     private long spendableSatoshi;
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getActivity() instanceof BaseActivity) {
+            ((BaseActivity) getActivity()).setOnLockCLoseListener(this);
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -103,6 +112,40 @@ public class AmountChooserFragment extends BaseFragment {
             Analytics.getInstance(getActivity()).logSendChooseAmountLaunch(viewModel.getChainId());
         }
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (!(getActivity() instanceof BaseActivity && ((BaseActivity) getActivity()).isLockVisible())) {
+            requestFocusForInput();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        inputOriginal.postDelayed(() -> {
+            if (getActivity() != null) {
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm != null && imm.isActive()) imm.hideSoftInputFromWindow(inputOriginal.getWindowToken(), 0);
+            }
+        }, 110);
+//        inputOriginal.clearFocus();
+//        inputCurrency.clearFocus();
+    }
+
+    @Override
+    public void onDestroy() {
+        if (getActivity() instanceof BaseActivity) {
+            ((BaseActivity) getActivity()).setOnLockCLoseListener(null);
+        }
+        super.onDestroy();
+    }
+
+    @Override
+    public void onLockClosed() {
+        requestFocusForInput();
     }
 
     private void subscribeToUpdates() {
@@ -133,26 +176,6 @@ public class AmountChooserFragment extends BaseFragment {
             }
         }
         textSpendable.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(spendableSatoshi)));
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        inputOriginal.requestFocus();
-        inputOriginal.postDelayed(() -> showKeyboard(getActivity(), inputOriginal), 100);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        inputOriginal.postDelayed(() -> {
-            if (getActivity() != null) {
-                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                if (imm != null && imm.isActive()) imm.hideSoftInputFromWindow(inputOriginal.getWindowToken(), 0);
-            }
-        }, 110);
-//        inputOriginal.clearFocus();
-//        inputCurrency.clearFocus();
     }
 
     @OnClick(R.id.button_next)
@@ -198,6 +221,11 @@ public class AmountChooserFragment extends BaseFragment {
         }
     }
 
+    private void requestFocusForInput() {
+        inputOriginal.requestFocus();
+        inputOriginal.postDelayed(() -> showKeyboard(getActivity(), inputOriginal), 300);
+    }
+
     @OnClick(R.id.text_max)
     void onClickMax() {
         if (spendableSatoshi - transactionPrice < 0) {
@@ -215,6 +243,7 @@ public class AmountChooserFragment extends BaseFragment {
             maxSpendableBtc = maxSpendableBtc.replaceAll(",", ".");
         }
         inputOriginal.setText(maxSpendableBtc);
+        inputOriginal.setSelection(maxSpendableBtc.length());
         inputCurrency.setText(CryptoFormatUtils.satoshiToUsd(spendableSatoshi));
 //        inputCurrency.setText(NumberFormatter.getInstance().format(viewModel.getWallet().getBalance() * viewModel.getCurrenciesRate().getBtcToUsd()));
         textTotal.setText(CryptoFormatUtils.satoshiToUsd(spendableSatoshi) + " BTC");

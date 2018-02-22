@@ -86,7 +86,9 @@
             android:name=".ui.activities.PinSetupActivity"
             android:windowSoftInputMode="stateAlwaysVisible|adjustNothing"
             android:screenOrientation="portrait" />
-        <activity android:name=".ui.activities.ScanActivity" />
+        <activity
+            android:name=".ui.activities.ScanActivity"
+            android:screenOrientation="portrait"/>
 
         <!-- Branch install referrer tracking -->
         <receiver

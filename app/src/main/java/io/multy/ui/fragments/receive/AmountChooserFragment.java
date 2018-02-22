@@ -8,7 +8,6 @@ package io.multy.ui.fragments.receive;
 
 import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -20,13 +19,11 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -41,10 +38,9 @@ import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
 import io.multy.util.NumberFormatter;
 import io.multy.viewmodels.AssetRequestViewModel;
-import timber.log.Timber;
 
 
-public class AmountChooserFragment extends BaseFragment {
+public class AmountChooserFragment extends BaseFragment implements BaseActivity.OnLockCloseListener {
 
     public static AmountChooserFragment newInstance() {
         return new AmountChooserFragment();
@@ -82,6 +78,9 @@ public class AmountChooserFragment extends BaseFragment {
         super.onCreate(savedInstanceState);
         viewModel = ViewModelProviders.of(getActivity()).get(AssetRequestViewModel.class);
         setBaseViewModel(viewModel);
+        if (getActivity() instanceof BaseActivity) {
+            ((BaseActivity) getActivity()).setOnLockCLoseListener(this);
+        }
     }
 
     @Nullable
@@ -107,31 +106,22 @@ public class AmountChooserFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        inputOriginal.requestFocus();
-        inputOriginal.postDelayed(() -> showKeyboard(getActivity(), inputOriginal),300);
-    }
-
-    @OnClick(R.id.image_swap)
-    void onClickImageSwap() {
-        if (isAmountSwapped) {
-            inputOriginal.requestFocus();
-        } else {
-            inputCurrency.requestFocus();
+        if (!(getActivity() instanceof BaseActivity && ((BaseActivity) getActivity()).isLockVisible())) {
+            requestFocusForInput();
         }
     }
 
-    @OnClick(R.id.button_next)
-    void onClickNext() {
-//        if (!TextUtils.isEmpty(inputOriginal.getText())) {
-//            viewModel.setAmount(Double.valueOf(inputOriginal.getText().toString()));
-//        }
-//        getActivity().onBackPressed();
-        double amount = 0;
-        if (!TextUtils.isEmpty(inputOriginal.getText())) {
-            amount = Double.valueOf(inputOriginal.getText().toString());
+    @Override
+    public void onDestroy() {
+        if (getActivity() instanceof BaseActivity) {
+            ((BaseActivity) getActivity()).setOnLockCLoseListener(null);
         }
-        getActivity().setResult(Activity.RESULT_OK, new Intent().putExtra(Constants.EXTRA_AMOUNT, amount));
-        getActivity().onBackPressed();
+        super.onDestroy();
+    }
+
+    @Override
+    public void onLockClosed() {
+        requestFocusForInput();
     }
 
     private void setupInputOriginal() {
@@ -321,5 +311,33 @@ public class AmountChooserFragment extends BaseFragment {
                 input.setSelection(start);
             }
         }
+    }
+
+    private void requestFocusForInput() {
+        inputOriginal.requestFocus();
+        inputOriginal.postDelayed(() -> showKeyboard(getActivity(), inputOriginal),300);
+    }
+
+    @OnClick(R.id.image_swap)
+    void onClickImageSwap() {
+        if (isAmountSwapped) {
+            inputOriginal.requestFocus();
+        } else {
+            inputCurrency.requestFocus();
+        }
+    }
+
+    @OnClick(R.id.button_next)
+    void onClickNext() {
+//        if (!TextUtils.isEmpty(inputOriginal.getText())) {
+//            viewModel.setAmount(Double.valueOf(inputOriginal.getText().toString()));
+//        }
+//        getActivity().onBackPressed();
+        double amount = 0;
+        if (!TextUtils.isEmpty(inputOriginal.getText())) {
+            amount = Double.valueOf(inputOriginal.getText().toString());
+        }
+        getActivity().setResult(Activity.RESULT_OK, new Intent().putExtra(Constants.EXTRA_AMOUNT, amount));
+        getActivity().onBackPressed();
     }
 }

@@ -46,7 +46,7 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
     private Foreground.Listener foregroundListener;
     private RecyclerView.LayoutManager dotsLayoutManager;
     private StringBuilder stringBuilder;
-    boolean isLockVisible = false;
+    private boolean isLockVisible = false;
     private OnLockCloseListener onLockCLoseListener;
 
     public void hideKeyboard(Activity activity) {
@@ -276,6 +276,10 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
             dot.setBackgroundResource(R.drawable.circle_border_white);
             stringBuilder.deleteCharAt(stringBuilder.length() - 1);
         }
+    }
+
+    public boolean isLockVisible() {
+        return isLockVisible;
     }
 
     public void setOnLockCLoseListener(OnLockCloseListener onLockCLoseListener) {

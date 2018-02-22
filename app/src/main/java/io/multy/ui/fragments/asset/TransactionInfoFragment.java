@@ -177,7 +177,6 @@ public class TransactionInfoFragment extends BaseFragment {
         boolean isIncoming = transaction.getTxStatus() == TX_IN_BLOCK_INCOMING ||
                 transaction.getTxStatus() == TX_CONFIRMED_INCOMING ||
                 transaction.getTxStatus() == TX_MEMPOOL_INCOMING;
-        textDate.setText(DateHelper.DATE_FORMAT_TRANSACTION_INFO.format(transaction.getBlockTime() * 1000));
         if (isIncoming) {
             textValue.setText("+");
             textAmount.setText("+");
@@ -233,14 +232,17 @@ public class TransactionInfoFragment extends BaseFragment {
         switch (transaction.getTxStatus()) {
             case TX_MEMPOOL_INCOMING:
             case TX_MEMPOOL_OUTCOMING:
+                textDate.setText(DateHelper.DATE_FORMAT_TRANSACTION_INFO.format(transaction.getMempoolTime() * 1000));
                 blocks = getString(R.string.in_mempool);
                 break;
             case TX_IN_BLOCK_INCOMING:
             case TX_IN_BLOCK_OUTCOMING:
+                textDate.setText(DateHelper.DATE_FORMAT_TRANSACTION_INFO.format(transaction.getBlockTime() * 1000));
                 blocks = "1 - 6 " + getString(R.string.confirmation);
                 break;
             case TX_CONFIRMED_INCOMING:
             case TX_CONFIRMED_OUTCOMING:
+                textDate.setText(DateHelper.DATE_FORMAT_TRANSACTION_INFO.format(transaction.getBlockTime() * 1000));
                 blocks = "6+ " + getString(R.string.confirmation);
                 break;
             default:

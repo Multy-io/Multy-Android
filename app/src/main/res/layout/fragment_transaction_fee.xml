@@ -13,6 +13,10 @@
     android:background="@color/background_main"
     tools:showIn="io.multy.android.AssetSendActivity">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -182,6 +186,7 @@
             android:id="@+id/button_next"
             style="@style/ButtonNext"
             android:text="@string/next"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/text_fee_description" />
@@ -193,5 +198,7 @@
             app:constraint_referenced_ids="text_fee_original, text_fee_currency,text_donation_summ,input_donation" />
 
     </android.support.constraint.ConstraintLayout>
+
+    </RelativeLayout>
 
 </ScrollView>

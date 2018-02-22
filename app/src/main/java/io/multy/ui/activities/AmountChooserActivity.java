@@ -10,21 +10,14 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
-import io.multy.ui.fragments.AddressesFragment;
-import io.multy.ui.fragments.asset.CreateAssetFragment;
 import io.multy.ui.fragments.receive.AmountChooserFragment;
-import io.multy.ui.fragments.receive.RequestSummaryFragment;
-import io.multy.ui.fragments.receive.WalletChooserFragment;
 import io.multy.util.Constants;
 import io.multy.viewmodels.AssetRequestViewModel;
 
@@ -47,11 +40,6 @@ public class AmountChooserActivity extends BaseActivity {
         AssetRequestViewModel viewModel = ViewModelProviders.of(this).get(AssetRequestViewModel.class);
         viewModel.setAmount(getIntent().getDoubleExtra(Constants.EXTRA_AMOUNT, 0));
         setFragment(R.string.receive_amount, AmountChooserFragment.newInstance());
-    }
-
-    @OnClick(R.id.button_cancel)
-    void onClickCancel(){
-        finish();
     }
 
     @Override
@@ -77,5 +65,10 @@ public class AmountChooserActivity extends BaseActivity {
                 .beginTransaction()
                 .replace(R.id.container, fragment)
                 .commit();
+    }
+
+    @OnClick(R.id.button_cancel)
+    void onClickCancel(){
+        finish();
     }
 }
