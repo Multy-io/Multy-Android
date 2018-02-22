@@ -14,11 +14,12 @@
         android:layout_margin="16dp">
 
         <android.support.design.widget.TextInputEditText
+            android:id="@+id/input_custom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/input_custom"
+            android:hint="@string/satoshi_per_byte"
             android:inputType="numberDecimal"
-            android:hint="@string/satoshi_per_byte" />
+            android:maxLength="6" />
 
     </android.support.design.widget.TextInputLayout>
 </android.support.constraint.ConstraintLayout>
