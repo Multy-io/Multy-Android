@@ -24,6 +24,7 @@ import com.samwolfand.oneprefs.Prefs;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.branch.referral.Branch;
+import io.multy.BuildConfig;
 import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.model.responses.ServerConfigResponse;
@@ -52,7 +53,9 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
         ButterKnife.bind(this);
 
-        FirstLaunchHelper.preventRootIfDetected(this);
+        if (FirstLaunchHelper.preventRootIfDetected(this) && !BuildConfig.DEBUG) {
+            return;
+        }
         logPushClicked();
 
         Animation emergency = AnimationUtils.loadAnimation(this, R.anim.splash_emergency);
@@ -142,7 +145,7 @@ public class SplashActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-
+        super.onBackPressed();
     }
 
     private void showError(int message) {
@@ -172,7 +175,7 @@ public class SplashActivity extends AppCompatActivity {
                     finish();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Intent i=new Intent(getBaseContext(), MainActivity.class);
+                    Intent i = new Intent(getBaseContext(), MainActivity.class);
                     addDeepLinkExtra(i);
                     startActivity(i);
                 }

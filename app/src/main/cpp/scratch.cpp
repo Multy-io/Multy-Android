@@ -92,7 +92,16 @@ void throw_java_exception(JNIEnv *env, const Error &error) {
     throw_java_exception_str(env, error.message);
 }
 
-#define ERSOR(statement, value) do { ErrorPtr error(statement); if (error) {throw_java_exception(env, *error); return (value);} } while(false)
+#define ERSOR(statement, value)                                                                     \
+    do {                                                                                            \
+        ErrorPtr error(statement);                                                                  \
+        if (error)                                                                                  \
+        {                                                                                           \
+            __android_log_print(ANDROID_LOG_INFO, "Multy-core error", "In file %s, \n in line: %d ", error->location.file , error->location.line );    \
+            throw_java_exception(env, *error);                                                      \
+            return (value);                                                                         \
+        }                                                                                           \
+    } while(false)
 #define HANDLE_ERROR(statement) ERSOR(statement, defaultResult)
 
 JNIEXPORT jint JNICALL
@@ -384,14 +393,11 @@ Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *jniEnv, jobject obj,
         Properties *change = nullptr;
         HANDLE_ERROR(transaction_add_destination(transaction.get(), &destination));
         HANDLE_ERROR(properties_set_string_value(destination, "address", destinationAddressStr));
-        if (sum == destinationAmount)
-        {
+        if (sum == destinationAmount) {
             HANDLE_ERROR(properties_set_int32_value(destination, "is_change", 1));
-        } else
-        {
-            if (!fladPayFee)
-            {
-                destinationAmount =  destinationAmount - donationAmount;
+        } else {
+            if (!fladPayFee) {
+                destinationAmount = destinationAmount - donationAmount;
             }
             // set destination amount
             HANDLE_ERROR(properties_set_big_int_value(destination, "amount", &destinationAmount));
@@ -401,14 +407,15 @@ Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *jniEnv, jobject obj,
             HANDLE_ERROR(properties_set_int32_value(change, "is_change", 1));
             HANDLE_ERROR(properties_set_string_value(change, "address", changeAddressStr));
 
-            if (!fladPayFee)
-            {
+            if (!fladPayFee) {
                 HANDLE_ERROR(transaction_update(transaction.get()));
                 BigIntPtr fee_transaction;
-                HANDLE_ERROR(transaction_get_total_fee(transaction.get(), reset_sp(fee_transaction)));
+                HANDLE_ERROR(
+                        transaction_get_total_fee(transaction.get(), reset_sp(fee_transaction)));
                 BigInt noPtrFeeTransaction(*fee_transaction);
-                destinationAmount -=noPtrFeeTransaction;
-                HANDLE_ERROR(properties_set_big_int_value(destination, "amount", &destinationAmount));
+                destinationAmount -= noPtrFeeTransaction;
+                HANDLE_ERROR(
+                        properties_set_big_int_value(destination, "amount", &destinationAmount));
             }
         }
         HANDLE_ERROR(transaction_update(transaction.get()));

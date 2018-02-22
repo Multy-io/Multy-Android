@@ -25,13 +25,16 @@ import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
 
 public class FirstLaunchHelper {
 
-    public static void preventRootIfDetected(AppCompatActivity activity) {
+    public static boolean preventRootIfDetected(AppCompatActivity activity) {
         RootBeer rootBeer = new RootBeer(activity);
         if (rootBeer.isRootedWithoutBusyBoxCheck()) {
             SimpleDialogFragment.newInstanceNegative(R.string.root_title, R.string.root_message, view -> {
                 closeApp(activity);
             }).show(activity.getSupportFragmentManager(), "");
+            return true;
         }
+
+        return false;
     }
 
     public static boolean isLockModeEnabled() {

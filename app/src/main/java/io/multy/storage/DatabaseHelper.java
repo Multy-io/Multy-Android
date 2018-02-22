@@ -147,7 +147,9 @@ public class DatabaseHelper {
     }
 
     public void clear() {
-        realm.executeTransaction(realm -> realm.deleteAll());
+        if (realm != null){
+            realm.executeTransaction(realm -> realm.deleteAll());
+        }
     }
 
     public void saveCurrenciesRate(CurrenciesRate currenciesRate) {
