@@ -254,7 +254,7 @@
             android:background="@color/background_main"
             android:paddingEnd="@dimen/activity_horizontal_margin"
             android:paddingStart="@dimen/activity_horizontal_margin"
-            android:text="@string/send_via"
+            android:text="@string/share"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:textColor="@color/text_main"
             app:layout_constraintEnd_toEndOf="parent"

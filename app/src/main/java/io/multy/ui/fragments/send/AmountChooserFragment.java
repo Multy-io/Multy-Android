@@ -175,7 +175,7 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
                 }
             }
         }
-        textSpendable.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(spendableSatoshi)));
+        textSpendable.setText(String.format(getString(R.string.available_amount), CryptoFormatUtils.satoshiToBtc(spendableSatoshi)));
     }
 
     @OnClick(R.id.button_next)

@@ -30,8 +30,6 @@ import android.widget.Toast;
 
 import com.google.zxing.WriterException;
 
-import java.util.Observable;
-
 import butterknife.BindInt;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -50,12 +48,9 @@ import io.multy.util.NumberFormatter;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.AssetRequestViewModel;
-import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
 
 
 public class RequestSummaryFragment extends BaseFragment {
@@ -218,9 +213,9 @@ public class RequestSummaryFragment extends BaseFragment {
             Intent intentReceiver = new Intent(getActivity(), AssetInfoFragment.SharingBroadcastReceiver.class);
             intentReceiver.putExtra(getString(R.string.chain_id), viewModel.getChainId());
             PendingIntent pendingIntent = PendingIntent.getBroadcast(getActivity(), 0, intentReceiver, PendingIntent.FLAG_CANCEL_CURRENT);
-            startActivity(Intent.createChooser(sharingIntent, getResources().getString(R.string.send_via), pendingIntent.getIntentSender()));
+            startActivity(Intent.createChooser(sharingIntent, getResources().getString(R.string.share), pendingIntent.getIntentSender()));
         } else {
-            startActivity(Intent.createChooser(sharingIntent, getResources().getString(R.string.send_via)));
+            startActivity(Intent.createChooser(sharingIntent, getResources().getString(R.string.share)));
         }
     }
 

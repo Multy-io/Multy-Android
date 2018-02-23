@@ -28,7 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/montserrat"
-        android:text="@string/completed"
+        android:text="@string/success"
         android:textColor="@color/white"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -45,7 +45,7 @@
         android:foreground="?attr/selectableItemBackground"
         android:gravity="center"
         android:padding="16dp"
-        android:text="@string/close"
+        android:text="@string/done"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent" />
 

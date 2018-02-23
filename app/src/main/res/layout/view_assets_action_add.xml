@@ -109,7 +109,7 @@
         <TextView
             android:id="@+id/text_chain"
             style="@style/TitleChooserCreateWallet"
-            android:text="@string/chain" />
+            android:text="@string/blockchain" />
 
         <TextView
             android:id="@+id/text_chain_currency"
@@ -143,7 +143,7 @@
         <TextView
             android:id="@+id/text_fiat"
             style="@style/TitleChooserCreateWallet"
-            android:text="@string/currency_to_convert" />
+            android:text="@string/reference_currency" />
 
         <TextView
             android:id="@+id/text_fiat_currency"

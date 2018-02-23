@@ -19,8 +19,8 @@
     <string name="sha">SHA</string>
     <string name="sha_256">SHA-256</string>
     <string name="seed_continue">Continue</string>
-    <string name="control_phrase">Control phrase</string>
-    <string name="phrase_description">In order to be safe, we will show one word at a time. Write these words on paper and safely save the resulting phrase.</string>
+    <string name="seed_phrase">Seed phrase</string>
+    <string name="phrase_description">For security purpose we will show seed phrase in portions. Write down this words on paper and securely store it somewhere safe!</string>
     <string name="seed_tip_screenshot">Do not take screenshots</string>
     <string name="seed_tip_camera">Step away from the window and from the cameras</string>
     <string name="seed_tip_spy">Check that no one is behind you</string>
@@ -35,9 +35,9 @@
     <string name="seed_writing">Seed phrase validation</string>
     <string name="next_word">Next word</string>
     <string name="next">Next</string>
-    <string name="seed_missing_write">I did not write down the seed phrase</string>
-    <string name="seed_validate">On the next screen you will need to enter all the words in the right order for accessing to wallet.</string>
-    <string name="seed_transferred_words">All words from the seed phrase are transferred to you.</string>
+    <string name="seed_missing_write">Show Seed Phrase again</string>
+    <string name="seed_validate">In order to verify that you have written it correctly type words one by one on the next screen.</string>
+    <string name="seed_transferred_words">You have seen your Seed Phrase.</string>
     <string name="cancel">Cancel</string>
     <string name="cancel_message">Are you really want to cancel?</string>
     <string name="yes">Yes</string>
@@ -46,20 +46,23 @@
     <string name="repeat_message">Restart the seed validation process?</string>
 
     <string name="to">TO</string>
-    <string name="fee_description">A donation is a gift given by physical or legal persons, typically for charitable purposes and/or to benefit a cause. A donation may take various forms, including cash offering, services</string>
+    <string name="fee_description">Fee Rate affects how fast your transaction is going to be accepted in the blockchain.</string>
+    <string name="donation_description">
+        By donating to Multy you show your support and appreciation of a product.
+        We are open-source project and your donation is the only source of profit for us.
+    </string>
     <string name="select_wallet">Select Wallet:</string>
-    <string name="donation_summ">Donation Summ</string>
-    <string name="allow_donation_for_multy">Allow Donation For Multy</string>
-    <string name="donation_for_multy">Donation For Multy</string>
-    <string name="select_speed">Select Speed</string>
+    <string name="donation_summ">Donation Sum</string>
+    <string name="allow_donation_for_multy">Donate For Multy</string>
+    <string name="donation_for_multy">Support Multy</string>
+    <string name="fee_rate">Fee Rate</string>
     <string name="generate_new_address">Generate New Address</string>
     <string name="request_summ">Request Summ</string>
-    <string name="send_via">Send via:</string>
+    <string name="share">Share:</string>
     <string name="address_book">Address \nBook</string>
     <string name="wireless_scan">Wireless \nScan</string>
     <string name="more_options">More \nOptions</string>
     <string name="slide_to_send">Slide to Send</string>
-    <string name="transaction_speed_and_fee">Transaction speed and Fee</string>
     <string name="sending_from">Sending From</string>
     <string name="hint_add_note">+ Add Note</string>
     <string name="recent_addresses">Recent Addresses</string>
@@ -71,7 +74,7 @@
     <string name="max">MAX</string>
     <string name="close">Close</string>
     <string name="choose_amount">Please, choose amount</string>
-    <string name="choose_transaction_speed">Please, choose transaction speed</string>
+    <string name="choose_transaction_speed">Please choose Fee Rate.</string>
     <string name="usd">USD</string>
 
 
@@ -100,7 +103,7 @@
     <string name="donation_default">0.0001</string>
     <string name="donation_format_pattern">##.##</string>
     <string name="donation_format_pattern_bitcoin">##.####</string>
-    <string name="error_balance">Your entered amount bigger than balance</string>
+    <string name="error_balance">You are trying to spend more then you have</string>
 
     <string name="root_message">Sorry, rooted devices is not supported yet according to our safety policy. Please use our app on authorized device.</string>
     <string name="root_title">Root detected</string>
@@ -108,39 +111,37 @@
     <string name="main">Main</string>
     <string name="my_wallets">My Wallets</string>
     <string name="all_addresses">All addresses</string>
-    <string name="btc_adddresses">BTC Addresses</string>
+    <string name="addresses">Addresses</string>
     <string name="eth">ETH</string>
     <string name="create">Create</string>
-    <string name="currency_to_convert">Currency to convert</string>
+    <string name="reference_currency">Reference currency</string>
     <string name="create_wallet">Create Wallet</string>
-    <string name="chain">Chain</string>
+    <string name="blockchain">Blockchain</string>
     <string name="select_chain">Select chain</string>
     <string name="select_currency">Select currency</string>
     <string name="wallet_name">Wallet Name</string>
     <string name="no_contacts">No contacts yet</string>
-    <string name="no_contacts_message">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
+    <string name="no_contacts_message">This screen is not developed yet.</string>
     <string name="no_activity">No activity yet</string>
-    <string name="no_activity_message">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
+    <string name="no_activity_message">This screen is not developed yet.</string>
     <string name="multy_name_long">Multi cryptocurrency and\nassets open-source wallet</string>
 
     <string name="address_copied">Address was copied to clipboard</string>
     <string name="wallet_settings">Wallet Settings</string>
     <string name="general">General</string>
     <string name="security">Security</string>
-    <string name="my_private_key">My Private Key</string>
+    <string name="show_private_keys">Show Private Keys</string>
     <string name="delete_wallet">Delete Wallet</string>
     <string name="delete_confirm">Are you sure want to delete this wallet?</string>
     <string name="save">Save</string>
 
     <string name="about_private_key">
-        Private key – A donation is a gift given by physical or legal persons, typically for
-        charitable purposes and/or to benefit a cause. A donation may take various forms, including
-        cash offering, services
+        Private key allows you or anyone of you behave to
+        spend your crypto assets. You should keep it secret!
     </string>
     <string name="about_delete_wallet">
-        Delete wallet – A donation is a gift given by physical or legal persons, typically for
-        charitable purposes and/or to benefit a cause. A donation may take various forms, including
-        cash offering, services
+        Remove this wallet from UI. Please note that we will be tracking wallet
+        balance and notify you on incoming transactions.
     </string>
     <string name="us_dollars_usd">US Dollars ∙ USD</string>
     <string name="fast_operations">Fast Operations</string>
@@ -160,10 +161,7 @@
 
     <string name="create_first_wallet">Create First Wallet</string>
     <string name="restore_multy">Restore Multy</string>
-    <string name="restore_wallet_description">
-        You do not have any wallet yet. You can <b>create new</b>
-        one or <b>import</b> any your existing wallet into Multy application.
-    </string>
+    <string name="restore_wallet_description">Tap the button to create new or import existing wallet.</string>
 
 
     <string name="pending">Pending</string>
@@ -172,13 +170,13 @@
     <string name="channel_id">Multy wallet</string>
     <string name="graph_title">24h BTC to USD graph</string>
     <string name="logo_title">Blockchain\nopen source wallet</string>
-    <string name="backup_is_not_executed">Backup is not executed</string>
+    <string name="backup_is_not_executed">Backup is needed!</string>
     <string name="wallet_removed">Wallet removed</string>
     <string name="something_went_wrong">Something went wrong</string>
     <string name="zero_zero">0.0</string>
     <string name="show_all_addresses">Show All Addresses</string>
-    <string name="operations_empty">You didn\'t have\noperations</string>
-    <string name="operations_create">You can create\nfirst operation\nhere</string>
+    <string name="operations_empty">You don\'t have\nany transactions</string>
+    <string name="operations_create">Tap the button\nto create funds\nrequest</string>
     <string name="please_update">Please update your version</string>
     <string name="error_config_error">Unable to get config</string>
     <string name="no_internet_connection">No internet connection</string>
@@ -193,14 +191,14 @@
     <string name="rejected_receive">Unable to receive transaction</string>
     <string name="push_notifications">Push Notifications</string>
     <string name="security_settings">Security Settings</string>
-    <string name="settings_restore_seed_description">If you already have any wallets in Multy, you’ve changed your device or lost account - you can restore your seed phrase.</string>
+    <string name="settings_restore_seed_description">Seed Phrase is a major point of your Multy account. It’s absolutely unique and grant access your crypto assets. You should keep it secret!</string>
     <string name="restore_seed">Restore Seed</string>
-    <string name="settings_entrance">Entrance settings</string>
+    <string name="screen_lock">Screen Lock</string>
     <string name="none">None</string>
     <string name="about_multy">About multy</string>
     <string name="leave_feedback">Leave feedback</string>
     <string name="try_again">Try again</string>
-    <string name="make_wallet_backup">Make wallet backup before setting PIN or fingerprint</string>
+    <string name="make_wallet_backup">Set up additional step for accessing your Multy application</string>
     <string name="use_screen_lock">Use screen lock</string>
     <string name="pin_code">PIN-code</string>
     <string name="fingerprint">Fingerprint</string>
@@ -210,18 +208,18 @@
     <string name="reset_data">By resetting all your data you will lose all your wallets and accounts on this device</string>
     <string name="are_you_sure">Are you sure?</string>
     <string name="reset_all_data">reset all data</string>
-    <string name="entranse_settings_description">Make your entrance safe by selecting any secure entrance type.</string>
-    <string name="reset_data_description">By reseting your current data all your wallets will be removed. Make sure that you remember your seed phrase to restore it anytime.</string>
+    <string name="entranse_settings_description">Set up additional step for accessing your Multy application.</string>
+    <string name="reset_data_description">This function return the application to the initial state. All information will be permanently removed. Make sure that Seed Phrase backup was successfully done!</string>
     <string name="view_seed">View Seed</string>
     <string name="backup_seed">Backup Seed</string>
     <string name="enter_password">Enter Password</string>
     <string name="complete">Complete</string>
-    <string name="completed">Completed</string>
+    <string name="success">Success!</string>
     <string name="error_sending_tx">Error while sending transaction</string>
     <string name="confirmation">Confirmation</string>
     <string name="failed_html_page">Failed to loading page!</string>
     <string name="view_in_blockchain">View in Blockchain</string>
-    <string name="multy_item_thanks">Multy team says thank you for your donation! Thanks to your support, we will constantly improve the application</string>
+    <string name="multy_item_thanks">We really appreciate your support of Multy. By donating you help us to bring blockchain technology one step closer to ordinary life</string>
     <string name="thank_you">Thank you for donation!</string>
     <string name="zero">0</string>
     <string name="in_mempool">Tansaction In Mempool</string>
@@ -238,5 +236,6 @@
     <string name="push_id">push_id</string>
     <string name="chain_id">chain_id</string>
     <string name="no_balance">Wallet doesn\'t have enough balance to send from</string>
+    <string name="available_amount">Available: %s BTC</string>
 
 </resources>

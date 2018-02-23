@@ -102,7 +102,7 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:paddingStart="16dp"
-            android:text="@string/settings_entrance"
+            android:text="@string/screen_lock"
             android:textColor="@color/black"
             android:textSize="16sp"
             app:layout_constraintBottom_toTopOf="@+id/text_state_entrance"

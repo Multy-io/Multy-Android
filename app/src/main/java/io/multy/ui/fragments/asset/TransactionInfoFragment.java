@@ -173,7 +173,6 @@ public class TransactionInfoFragment extends BaseFragment {
     }
 
     private void setData() {
-        Timber.e("setData");
         boolean isIncoming = transaction.getTxStatus() == TX_IN_BLOCK_INCOMING ||
                 transaction.getTxStatus() == TX_CONFIRMED_INCOMING ||
                 transaction.getTxStatus() == TX_MEMPOOL_INCOMING;

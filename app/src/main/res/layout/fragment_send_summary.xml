@@ -183,7 +183,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
-                android:text="@string/transaction_speed_and_fee"
+                android:text="@string/fee_rate"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 android:textColor="@color/text_main"
                 app:layout_constraintLeft_toLeftOf="parent"

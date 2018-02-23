@@ -64,7 +64,7 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:paddingTop="8dp"
-        android:text="@string/btc_adddresses"
+        android:text="@string/addresses"
         android:textAllCaps="true"
         android:textColor="#87a1c5"
         app:layout_constraintTop_toBottomOf="@id/toolbar" />
