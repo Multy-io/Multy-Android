@@ -15,6 +15,10 @@
         <item name="android:statusBarColor">@color/color_gray_status</item>
     </style>
 
+    <style name="BottomSheetDialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowBackground">@color/red_transparent</item>
+    </style>
+
     <style name="TransparentActionBar" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="android:windowActionBarOverlay">true</item>
         <!-- Support library compatibility -->

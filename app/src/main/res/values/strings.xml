@@ -111,6 +111,8 @@
     <string name="main">Main</string>
     <string name="my_wallets">My Wallets</string>
     <string name="all_addresses">All addresses</string>
+    <string name="btc_adddress">BTC Address</string>
+    <string name="btc_adddresses">BTC Addresses</string>
     <string name="addresses">Addresses</string>
     <string name="eth">ETH</string>
     <string name="create">Create</string>
@@ -130,10 +132,15 @@
     <string name="wallet_settings">Wallet Settings</string>
     <string name="general">General</string>
     <string name="security">Security</string>
+    <string name="my_private_key">My Private Key</string>
+    <string name="my_private_key_title">My private key:</string>
     <string name="show_private_keys">Show Private Keys</string>
     <string name="delete_wallet">Delete Wallet</string>
     <string name="delete_confirm">Are you sure want to delete this wallet?</string>
     <string name="save">Save</string>
+    <string name="private_key_notification">Your extended private keys are all that is needed to\naccess your bitcoin funds. Be sure to protect your private\nkeys and store them only on secure devices.</string>
+    <string name="copy_to_clipboard">Copy to clipboard</string>
+    <string name="share_key">Share</string>
 
     <string name="about_private_key">
         Private key allows you or anyone of you behave to
@@ -162,7 +169,6 @@
     <string name="create_first_wallet">Create First Wallet</string>
     <string name="restore_multy">Restore Multy</string>
     <string name="restore_wallet_description">Tap the button to create new or import existing wallet.</string>
-
 
     <string name="pending">Pending</string>
     <string name="outputs">Outputs</string>
@@ -237,5 +243,6 @@
     <string name="chain_id">chain_id</string>
     <string name="no_balance">Wallet doesn\'t have enough balance to send from</string>
     <string name="available_amount">Available: %s BTC</string>
+    <string name="select_an_addresses">SELECT AN ADDRESS TO VIEW PRIVATE KEY</string>
 
 </resources>

@@ -19,6 +19,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
+import io.multy.ui.activities.AssetActivity;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
 import io.multy.util.analytics.Analytics;
@@ -67,12 +68,9 @@ public class AssetSettingsFragment extends BaseFragment {
                 inputName.setText(walletRealmObject.getName());
             }
         });
-        inputName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus)
-                Analytics.getInstance(getActivity()).logWalletSettings(AnalyticsConstants.WALLET_SETTINGS_RENAME, viewModel.getChainId());
-            }
+        inputName.setOnFocusChangeListener((v1, hasFocus) -> {
+            if (hasFocus)
+            Analytics.getInstance(getActivity()).logWalletSettings(AnalyticsConstants.WALLET_SETTINGS_RENAME, viewModel.getChainId());
         });
         Analytics.getInstance(getActivity()).logWalletSettingsLaunch(viewModel.getChainId());
         return v;
@@ -122,7 +120,9 @@ public class AssetSettingsFragment extends BaseFragment {
     }
 
     private void showMyPrivateKey() {
-
+        if (getActivity() != null && getActivity() instanceof AssetActivity) {
+            ((AssetActivity) getActivity()).setFragment(R.id.container_full, SettingAssetAddressesFragment.getInstance());
+        }
     }
 
     private void deleteWallet() {
@@ -160,7 +160,8 @@ public class AssetSettingsFragment extends BaseFragment {
     }
 
     @OnClick(R.id.button_key)
-    void onClickKey() {
+    void onClickKey(View view) {
+        view.setEnabled(false);
         Analytics.getInstance(getActivity()).logWalletSettings(AnalyticsConstants.WALLET_SETTINGS_KEY, viewModel.getChainId());
         showMyPrivateKey();
     }

@@ -1,14 +1,10 @@
 package io.multy.ui.fragments.asset;
 
-import android.app.PendingIntent;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.BroadcastReceiver;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -23,7 +19,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.samwolfand.oneprefs.Prefs;
 
@@ -61,8 +56,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import timber.log.Timber;
-
-import static android.content.Intent.ACTION_SEND;
 
 public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOffsetChangedListener {
 
@@ -340,28 +333,13 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     @OnClick(R.id.button_share)
     void onClickShare() {
         Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_SHARE, viewModel.getChainId());
-        Intent sharingIntent = new Intent(ACTION_SEND);
-        sharingIntent.setType("text/plain");
-        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, getAddressToShare());
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
-            Intent intentReceiver = new Intent(getActivity(), SharingBroadcastReceiver.class);
-            intentReceiver.putExtra(getString(R.string.chain_id), viewModel.getChainId());
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(getActivity(), 0, intentReceiver, PendingIntent.FLAG_CANCEL_CURRENT);
-            startActivity(Intent.createChooser(sharingIntent, getResources().getString(R.string.share), pendingIntent.getIntentSender()));
-        } else {
-            startActivity(Intent.createChooser(sharingIntent, getResources().getString(R.string.share)));
-        }
+        viewModel.share(getActivity(), getAddressToShare());
     }
 
     @OnClick(R.id.text_address)
     void onClickCopy() {
         Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_ADDRESS, viewModel.getChainId());
-        String address = getAddressToShare();
-        ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData clip = ClipData.newPlainText(address, address);
-        assert clipboard != null;
-        clipboard.setPrimaryClip(clip);
-        Toast.makeText(getActivity(), R.string.address_copied, Toast.LENGTH_SHORT).show();
+        viewModel.copyToClipboard(getActivity(), getAddressToShare());
     }
 
     @OnClick(R.id.close)

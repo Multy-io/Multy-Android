@@ -24,15 +24,11 @@ import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.AddressesFragment;
 import io.multy.ui.fragments.asset.AssetInfoFragment;
-import io.multy.ui.fragments.asset.AssetSettingsFragment;
 import io.multy.ui.fragments.asset.TransactionInfoFragment;
-import io.multy.ui.fragments.receive.RequestSummaryFragment;
-import io.multy.ui.fragments.receive.WalletChooserFragment;
 import io.multy.util.Constants;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.WalletViewModel;
-import timber.log.Timber;
 
 public class AssetActivity extends BaseActivity {
 

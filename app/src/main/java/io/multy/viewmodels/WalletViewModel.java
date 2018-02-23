@@ -6,8 +6,16 @@
 
 package io.multy.viewmodels;
 
+import android.app.Activity;
+import android.app.PendingIntent;
 import android.arch.lifecycle.MutableLiveData;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.widget.Toast;
 
 import com.samwolfand.oneprefs.Prefs;
 
@@ -15,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.multy.Multy;
+import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.api.socket.CurrenciesRate;
 import io.multy.api.socket.SocketManager;
@@ -26,16 +35,21 @@ import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.model.requests.UpdateWalletNameRequest;
 import io.multy.model.responses.TransactionHistoryResponse;
 import io.multy.storage.RealmManager;
+import io.multy.ui.fragments.asset.AssetInfoFragment;
 import io.multy.util.Constants;
 import io.multy.util.FirstLaunchHelper;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
 import io.multy.util.SingleLiveEvent;
+import io.multy.util.analytics.Analytics;
+import io.multy.util.analytics.AnalyticsConstants;
 import io.realm.RealmList;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static android.content.Intent.ACTION_SEND;
 
 public class WalletViewModel extends BaseViewModel {
 
@@ -186,6 +200,30 @@ public class WalletViewModel extends BaseViewModel {
 
     public int getChainId(){
         return 1;
+    }
+
+    public void share(Activity activity, String stringToShare) {
+        Intent sharingIntent = new Intent(ACTION_SEND);
+        sharingIntent.setType("text/plain");
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, stringToShare);
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+            Intent intentReceiver = new Intent(activity, AssetInfoFragment.SharingBroadcastReceiver.class);
+            intentReceiver.putExtra(activity.getString(R.string.chain_id), getChainId());
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(activity, 0, intentReceiver, PendingIntent.FLAG_CANCEL_CURRENT);
+            activity.startActivity(Intent.createChooser(sharingIntent, activity.getResources().getString(R.string.send_via), pendingIntent.getIntentSender()));
+        } else {
+            activity.startActivity(Intent.createChooser(sharingIntent, activity.getResources().getString(R.string.send_via)));
+        }
+    }
+
+    public void copyToClipboard(Activity activity, String stringToShare) {
+        Analytics.getInstance(activity).logWallet(AnalyticsConstants.WALLET_ADDRESS, getChainId());
+        String address = stringToShare;
+        ClipboardManager clipboard = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText(address, address);
+        assert clipboard != null;
+        clipboard.setPrimaryClip(clip);
+        Toast.makeText(activity, R.string.address_copied, Toast.LENGTH_SHORT).show();
     }
 
 }

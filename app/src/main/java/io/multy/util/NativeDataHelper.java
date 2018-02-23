@@ -66,4 +66,6 @@ public class NativeDataHelper {
     public static native byte[] makeTransaction(byte[] seed, int walletIndex, String amountToSpend, String feePerByte, String donationAmount, String destinationAddress, String changeAddress, String donationAddress, boolean payFee) throws JniException;
 
     public static native byte[] digestSha3256(byte[] s) throws JniException;
+
+    public static native String getMyPrivateKey(byte[] seed, int walletIndex, int addressIndex, int currency) throws JniException;
 }

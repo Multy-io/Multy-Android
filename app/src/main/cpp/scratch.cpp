@@ -237,6 +237,40 @@ Java_io_multy_util_NativeDataHelper_makeAccountAddress(JNIEnv *env, jobject obj,
     return env->NewStringUTF(address.get());
 }
 
+//extern "C"
+JNIEXPORT jstring JNICALL
+Java_io_multy_util_NativeDataHelper_getMyPrivateKey(JNIEnv *env, jclass type, jbyteArray array,
+                                                    jint walletIndex, jint addressIndex,
+                                                    jint currency) {
+
+    using namespace multy_core::internal;
+    const jstring defaultResult{};
+
+    size_t len = (size_t) env->GetArrayLength(array);
+    unsigned char *buf = new unsigned char[len];
+    env->GetByteArrayRegion(array, 0, len, reinterpret_cast<jbyte *>(buf));
+
+    ExtendedKeyPtr rootKey;
+
+    BinaryData seed{buf, len};
+    HANDLE_ERROR(make_master_key(&seed, reset_sp(rootKey)));
+
+    HDAccountPtr hdAccount;
+    HANDLE_ERROR(make_hd_account(rootKey.get(), static_cast<Currency >((int) currency), walletIndex,
+                          reset_sp(hdAccount)));
+
+    AccountPtr account;
+    HANDLE_ERROR(make_hd_leaf_account(hdAccount.get(), ADDRESS_EXTERNAL, addressIndex, reset_sp(account)));
+
+    KeyPtr keyPtr;
+    HANDLE_ERROR(account_get_key(account.get(), KEY_TYPE_PRIVATE, reset_sp(keyPtr)));
+
+    ConstCharPtr privKeyStr;
+    HANDLE_ERROR(key_to_string(keyPtr.get(), reset_sp(privKeyStr)));
+
+    return env->NewStringUTF(privKeyStr.get());
+}
+
 JNIEXPORT jbyteArray JNICALL
 Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *jniEnv, jobject obj, jbyteArray jSeed,
                                                     jint jWalletIndex, jstring amountToSpend,
