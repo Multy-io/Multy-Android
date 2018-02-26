@@ -210,9 +210,9 @@ public class WalletViewModel extends BaseViewModel {
             Intent intentReceiver = new Intent(activity, AssetInfoFragment.SharingBroadcastReceiver.class);
             intentReceiver.putExtra(activity.getString(R.string.chain_id), getChainId());
             PendingIntent pendingIntent = PendingIntent.getBroadcast(activity, 0, intentReceiver, PendingIntent.FLAG_CANCEL_CURRENT);
-            activity.startActivity(Intent.createChooser(sharingIntent, activity.getResources().getString(R.string.send_via), pendingIntent.getIntentSender()));
+            activity.startActivity(Intent.createChooser(sharingIntent, activity.getResources().getString(R.string.share), pendingIntent.getIntentSender()));
         } else {
-            activity.startActivity(Intent.createChooser(sharingIntent, activity.getResources().getString(R.string.send_via)));
+            activity.startActivity(Intent.createChooser(sharingIntent, activity.getResources().getString(R.string.share)));
         }
     }
 
