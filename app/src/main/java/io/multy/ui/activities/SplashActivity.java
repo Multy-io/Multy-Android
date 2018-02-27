@@ -101,8 +101,11 @@ public class SplashActivity extends AppCompatActivity {
                         } else {
                             showMainActivity();
                         }
-//                        Prefs.putString(Constants.PREF_DONATE_ADDRESS_BTC, configResponse.getDonateInfo().getBtcDonateAddress());
-//                        Prefs.putString(Constants.PREF_DONATE_ADDRESS_ETH, configResponse.getDonateInfo().getEthDonateAddress());
+
+                        if (configResponse.getDonateInfo() != null) {
+                            Prefs.putString(Constants.PREF_DONATE_ADDRESS_BTC, configResponse.getDonateInfo().getBtcDonateAddress());
+                            Prefs.putString(Constants.PREF_DONATE_ADDRESS_ETH, configResponse.getDonateInfo().getEthDonateAddress());
+                        }
                     } catch (PackageManager.NameNotFoundException e) {
                         e.printStackTrace();
                     }
