@@ -32,6 +32,7 @@ import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
 import io.multy.util.Constants;
 import io.multy.util.FirstLaunchHelper;
+import io.multy.util.NativeDataHelper;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 import io.realm.Realm;
@@ -100,8 +101,11 @@ public class SplashActivity extends AppCompatActivity {
                         } else {
                             showMainActivity();
                         }
-                        Prefs.putString(Constants.PREF_DONATE_ADDRESS_BTC, configResponse.getDonateInfo().getBtcDonateAddress());
-                        Prefs.putString(Constants.PREF_DONATE_ADDRESS_ETH, configResponse.getDonateInfo().getEthDonateAddress());
+
+                        if (configResponse.getDonateInfo() != null) {
+                            Prefs.putString(Constants.PREF_DONATE_ADDRESS_BTC, configResponse.getDonateInfo().getBtcDonateAddress());
+                            Prefs.putString(Constants.PREF_DONATE_ADDRESS_ETH, configResponse.getDonateInfo().getEthDonateAddress());
+                        }
                     } catch (PackageManager.NameNotFoundException e) {
                         e.printStackTrace();
                     }

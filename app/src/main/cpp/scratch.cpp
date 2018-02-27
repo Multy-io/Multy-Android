@@ -224,7 +224,7 @@ Java_io_multy_util_NativeDataHelper_makeAccountAddress(JNIEnv *env, jobject obj,
     HANDLE_ERROR(make_master_key(&seed, reset_sp(rootKey)));
 
     HDAccountPtr hdAccount;
-    HANDLE_ERROR(make_hd_account(rootKey.get(), static_cast<Currency >((int) currency), walletIndex,
+    HANDLE_ERROR(make_hd_account(rootKey.get(), BlockchainType{BLOCKCHAIN_BITCOIN, BLOCKCHAIN_NET_TYPE_TESTNET}, walletIndex,
                                  reset_sp(hdAccount)));
 
     AccountPtr account;
@@ -310,7 +310,7 @@ Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *jniEnv, jobject obj,
 
     HDAccountPtr hdAccount;
     HANDLE_ERROR(
-            make_hd_account(rootKey.get(), CURRENCY_BITCOIN, jWalletIndex, reset_sp(hdAccount)));
+            make_hd_account(rootKey.get(), BlockchainType{BLOCKCHAIN_BITCOIN, BLOCKCHAIN_NET_TYPE_TESTNET}, jWalletIndex, reset_sp(hdAccount)));
 
     AccountPtr baseAccount;
     HANDLE_ERROR(make_hd_leaf_account(hdAccount.get(), ADDRESS_EXTERNAL, 0, reset_sp(baseAccount)));
