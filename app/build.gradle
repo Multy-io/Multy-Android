@@ -49,7 +49,7 @@ android {
         }
         externalNativeBuild {
             cmake {
-                path "C:\\workspace\\Multy-Core-master\\CMakeLists.txt"
+                path "C:\\workspace\\Multy-Core\\CMakeLists.txt"
             }
         }
     }

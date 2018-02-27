@@ -54,8 +54,6 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
         ButterKnife.bind(this);
 
-        NativeDataHelper.runTest();
-
         if (FirstLaunchHelper.preventRootIfDetected(this) && !BuildConfig.DEBUG) {
             return;
         }
