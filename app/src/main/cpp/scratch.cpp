@@ -256,7 +256,7 @@ Java_io_multy_util_NativeDataHelper_getMyPrivateKey(JNIEnv *env, jclass type, jb
     HANDLE_ERROR(make_master_key(&seed, reset_sp(rootKey)));
 
     HDAccountPtr hdAccount;
-    HANDLE_ERROR(make_hd_account(rootKey.get(), static_cast<Currency >((int) currency), walletIndex,
+    HANDLE_ERROR(make_hd_account(rootKey.get(), BlockchainType{BLOCKCHAIN_BITCOIN, BLOCKCHAIN_NET_TYPE_TESTNET}, walletIndex,
                           reset_sp(hdAccount)));
 
     AccountPtr account;
