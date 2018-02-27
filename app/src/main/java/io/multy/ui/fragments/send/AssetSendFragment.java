@@ -30,6 +30,8 @@ import io.multy.ui.activities.AssetSendActivity;
 import io.multy.ui.adapters.RecentAddressesAdapter;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
+import io.multy.util.JniException;
+import io.multy.util.NativeDataHelper;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.AssetSendViewModel;
@@ -115,7 +117,17 @@ public class AssetSendFragment extends BaseFragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (TextUtils.isEmpty(charSequence)){
+                boolean isValidAddress = false;
+                try {
+                    NativeDataHelper.isValidAddress(charSequence.toString(),
+                            NativeDataHelper.Blockchain.BLOCKCHAIN_BITCOIN.getValue(),
+                            NativeDataHelper.BlockchainNetType.BLOCKCHAIN_NET_TYPE_TESTNET.getValue());
+                    isValidAddress = true;
+                } catch (JniException e) {
+                    //TODO replace these lines with boolean isValidAddress = NativeDataHelper.isAddressValid(address); instead of try catch and code spaming.
+                    e.printStackTrace();
+                }
+                if (TextUtils.isEmpty(charSequence) || !isValidAddress){
                     buttonNext.setBackgroundResource(R.color.disabled);
                     buttonNext.setEnabled(false);
                 } else {

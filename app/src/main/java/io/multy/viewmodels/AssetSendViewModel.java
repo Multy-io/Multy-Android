@@ -161,7 +161,9 @@ public class AssetSendViewModel extends BaseViewModel {
 
         if (changeAddress == null) {
             try {
-                changeAddress = NativeDataHelper.makeAccountAddress(seed, walletIndex, getWallet().getAddresses().size(), NativeDataHelper.Currency.BTC.getValue());
+                changeAddress = NativeDataHelper.makeAccountAddress(seed, walletIndex, getWallet().getAddresses().size(),
+                        NativeDataHelper.Blockchain.BLOCKCHAIN_BITCOIN.getValue(),
+                        NativeDataHelper.BlockchainNetType.BLOCKCHAIN_NET_TYPE_TESTNET.getValue());
             } catch (JniException e) {
                 e.printStackTrace();
                 errorMessage.setValue("Error creating change address " + e.getMessage());

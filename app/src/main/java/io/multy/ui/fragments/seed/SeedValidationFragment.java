@@ -28,7 +28,6 @@ import com.samwolfand.oneprefs.Prefs;
 
 import java.util.ArrayList;
 
-import butterknife.BindArray;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -72,8 +71,7 @@ public class SeedValidationFragment extends BaseSeedFragment {
     @BindView(R.id.text_title)
     TextView textViewTitle;
 
-    @BindArray(R.array.seed_words)
-    String[] seedWords;
+    private String[] seedWords;
 
     private SeedViewModel seedModel;
     private StringBuilder phrase = new StringBuilder();
@@ -122,6 +120,12 @@ public class SeedValidationFragment extends BaseSeedFragment {
     }
 
     private void init() {
+        try {
+            seedWords = NativeDataHelper.getDictionary().split(" ");
+        } catch (JniException e) {
+            e.printStackTrace();
+            seedWords = new String[0];
+        }
         initBricks(recyclerView);
         adapter.enableGreenMode();
         buttonNext.setText(R.string.next_word);
@@ -180,36 +184,6 @@ public class SeedValidationFragment extends BaseSeedFragment {
                         inputWord.setSelection(inputWord.getText().toString().length());
                     }
                 }
-
-                /*if (editable.length() > 0) {
-                    ArrayList<String> suggestions = new ArrayList<>();
-                    boolean isFullCoincidence = false;
-                    for (String s : seedWords) {
-                        if (s.startsWith(editable.toString())) {
-                            suggestions.add(s);
-                            if (s.equals(editable.toString())) {
-                                isFullCoincidence = true;
-                            }
-                        }
-                    }
-                    currentSeedWord = null;
-                    if (suggestions.size() == 1) {
-                        buttonNext.setText(suggestions.get(0));
-                        currentSeedWord = suggestions.get(0);
-                    } else if (suggestions.size() > 1) {
-                        buttonNext.setText(editable);
-                        if (isFullCoincidence) {
-                            buttonNext.append(getString(R.string._or_) + editable);
-                            currentSeedWord = inputWord.getText().toString();
-                        }
-                        buttonNext.append(getString(R.string.tree_dots));
-                    } else {
-                        inputWord.setText(editable.subSequence(0, editable.length() - 1));
-                        inputWord.setSelection(inputWord.getText().toString().length());
-                    }
-                } else {
-                    buttonNext.setText(R.string.next_word);
-                }*/
             }
         });
     }

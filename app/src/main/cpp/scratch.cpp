@@ -209,7 +209,7 @@ Java_io_multy_util_NativeDataHelper_makeAccountId(JNIEnv *env, jobject obj, jbyt
 JNIEXPORT jstring JNICALL
 Java_io_multy_util_NativeDataHelper_makeAccountAddress(JNIEnv *env, jobject obj, jbyteArray array,
                                                        jint walletIndex, jint addressIndex,
-                                                       jint currency) {
+                                                       jint blockchain, jint type) {
 
     using namespace multy_core::internal;
     const jstring defaultResult{};
@@ -224,7 +224,7 @@ Java_io_multy_util_NativeDataHelper_makeAccountAddress(JNIEnv *env, jobject obj,
     HANDLE_ERROR(make_master_key(&seed, reset_sp(rootKey)));
 
     HDAccountPtr hdAccount;
-    HANDLE_ERROR(make_hd_account(rootKey.get(), BlockchainType{BLOCKCHAIN_BITCOIN, BLOCKCHAIN_NET_TYPE_TESTNET}, walletIndex,
+    HANDLE_ERROR(make_hd_account(rootKey.get(), BlockchainType{(Blockchain) blockchain, (BlockchainNetType)type}, walletIndex,
                                  reset_sp(hdAccount)));
 
     AccountPtr account;
@@ -239,9 +239,9 @@ Java_io_multy_util_NativeDataHelper_makeAccountAddress(JNIEnv *env, jobject obj,
 
 //extern "C"
 JNIEXPORT jstring JNICALL
-Java_io_multy_util_NativeDataHelper_getMyPrivateKey(JNIEnv *env, jclass type, jbyteArray array,
+Java_io_multy_util_NativeDataHelper_getMyPrivateKey(JNIEnv *env, jclass type_, jbyteArray array,
                                                     jint walletIndex, jint addressIndex,
-                                                    jint currency) {
+                                                    jint blockchain, jint netType) {
 
     using namespace multy_core::internal;
     const jstring defaultResult{};
@@ -256,7 +256,7 @@ Java_io_multy_util_NativeDataHelper_getMyPrivateKey(JNIEnv *env, jclass type, jb
     HANDLE_ERROR(make_master_key(&seed, reset_sp(rootKey)));
 
     HDAccountPtr hdAccount;
-    HANDLE_ERROR(make_hd_account(rootKey.get(), BlockchainType{BLOCKCHAIN_BITCOIN, BLOCKCHAIN_NET_TYPE_TESTNET}, walletIndex,
+    HANDLE_ERROR(make_hd_account(rootKey.get(), BlockchainType{(Blockchain) blockchain, (BlockchainNetType)netType}, walletIndex,
                           reset_sp(hdAccount)));
 
     AccountPtr account;
@@ -534,6 +534,36 @@ MULTY_CORE_API Error *make_seed(
         const char *mnemonic, const char *password, BinaryData **seed);
 MULTY_CORE_API Error *seed_to_string(const BinaryData *seed, const char **str);
 
+JNIEXPORT jstring JNICALL
+Java_io_multy_util_NativeDataHelper_getDictionary(JNIEnv *env, jclass type) {
+
+    const jstring defaultResult{};
+    using namespace multy_core::internal;
+
+    ConstCharPtr dict;
+    HANDLE_ERROR(mnemonic_get_dictionary(reset_sp(dict)));
+
+    return env->NewStringUTF(dict.get());
+}
+
+JNIEXPORT void JNICALL
+Java_io_multy_util_NativeDataHelper_isValidAddress(JNIEnv *env, jclass type_, jstring address_,
+                                                       jint blockchain, jint netType) {
+    using namespace multy_core::internal;
+
+    const char *address = env->GetStringUTFChars(address_, 0);
+
+    ErrorPtr error(validate_address(BlockchainType{(Blockchain) blockchain, (BlockchainNetType)netType}, address));
+    if (error)
+    {
+        env->ReleaseStringUTFChars(address_, address);
+        throw_java_exception(env, *error);
+        return;
+    }
+
+    env->ReleaseStringUTFChars(address_, address);
+    return;
+}
 
 #ifdef __cplusplus
 } // extern "C"
@@ -570,5 +600,3 @@ Java_io_multy_util_NativeDataHelper_digestSha3256(JNIEnv *env, jclass type, jbyt
                             reinterpret_cast<const jbyte *>(output.data));
     return resultArray;
 }
-
-

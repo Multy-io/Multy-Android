@@ -24,7 +24,6 @@ import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.model.requests.AddWalletAddressRequest;
 import io.multy.storage.RealmManager;
-import io.multy.util.CryptoFormatUtils;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
 import okhttp3.ResponseBody;
@@ -150,10 +149,11 @@ public class AssetRequestViewModel extends BaseViewModel {
             isLoading.setValue(true);
             isLoading.call();
 
-            final int addressIndex = wallet.getAddresses().size();
-            final int currency = NativeDataHelper.Currency.BTC.getValue();
+            final int addressIndex = wallet.getAddresses().size();;
             final byte[] seed = dataManager.getSeed().getSeed();
-            String creationAddress = NativeDataHelper.makeAccountAddress(seed, wallet.getWalletIndex(), addressIndex, currency);
+            String creationAddress = NativeDataHelper.makeAccountAddress(seed, wallet.getWalletIndex(), addressIndex,
+                    NativeDataHelper.Blockchain.BLOCKCHAIN_BITCOIN.getValue(),
+                    NativeDataHelper.BlockchainNetType.BLOCKCHAIN_NET_TYPE_TESTNET.getValue());
 
             MultyApi.INSTANCE.addWalletAddress(new AddWalletAddressRequest(wallet.getWalletIndex(), creationAddress, addressIndex)).enqueue(new Callback<ResponseBody>() {
                 @Override

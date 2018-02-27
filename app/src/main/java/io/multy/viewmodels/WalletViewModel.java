@@ -104,23 +104,24 @@ public class WalletViewModel extends BaseViewModel {
             DataManager dataManager = DataManager.getInstance();
 
             final int topIndex = Prefs.getInt(Constants.PREF_WALLET_TOP_INDEX, 0);
-            final int currency = NativeDataHelper.Currency.BTC.getValue(); //TODO implement choosing crypto currency using enum NativeDataHelper.CURRENCY
 
             if (!Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
                 FirstLaunchHelper.setCredentials("");
             }
 
-            String creationAddress = NativeDataHelper.makeAccountAddress(dataManager.getSeed().getSeed(), topIndex, Constants.ZERO, currency);
+            String creationAddress = NativeDataHelper.makeAccountAddress(dataManager.getSeed().getSeed(),
+                    topIndex, 0, NativeDataHelper.Blockchain.BLOCKCHAIN_BITCOIN.getValue(),
+                    NativeDataHelper.BlockchainNetType.BLOCKCHAIN_NET_TYPE_TESTNET.getValue());
 
             walletRealmObject = new WalletRealmObject();
             walletRealmObject.setName(walletName);
 
             RealmList<WalletAddress> addresses = new RealmList<>();
-            addresses.add(new WalletAddress(Constants.ZERO, creationAddress));
+            addresses.add(new WalletAddress(0, creationAddress));
 
             walletRealmObject.setAddresses(addresses);
-            walletRealmObject.setCurrency(Constants.ZERO);
-            walletRealmObject.setAddressIndex(Constants.ZERO);
+            walletRealmObject.setCurrency(0);
+            walletRealmObject.setAddressIndex(0);
             walletRealmObject.setCreationAddress(creationAddress);
             walletRealmObject.setWalletIndex(topIndex);
         } catch (JniException e) {

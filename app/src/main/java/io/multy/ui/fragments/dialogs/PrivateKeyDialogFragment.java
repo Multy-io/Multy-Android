@@ -18,12 +18,10 @@ import android.support.v4.app.DialogFragment;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.multy.Multy;
 import io.multy.R;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.storage.RealmManager;
@@ -97,11 +95,13 @@ public class PrivateKeyDialogFragment extends BottomSheetDialogFragment implemen
             byte[] seed = RealmManager.getSettingsDao().getSeed().getSeed();
             int walletIndex = viewModel.getWalletLive().getValue().getWalletIndex();
             int addressIndex = address.getIndex();
-            int currency = NativeDataHelper.Currency.BTC.getValue();
-            return NativeDataHelper.getMyPrivateKey(seed, walletIndex, addressIndex, currency);
+            return NativeDataHelper.getMyPrivateKey(seed, walletIndex, addressIndex,
+                    NativeDataHelper.Blockchain.BLOCKCHAIN_BITCOIN.getValue(),
+                    NativeDataHelper.BlockchainNetType.BLOCKCHAIN_NET_TYPE_TESTNET.getValue());
         } catch (Throwable throwable) {
             throwable.printStackTrace();
-            Toast.makeText(Multy.getContext(), "Error while build private key ;(", Toast.LENGTH_SHORT).show();
+            //TODO create new error message
+//            Toast.makeText(Multy.getContext(), "Error while build private key", Toast.LENGTH_SHORT).show();
             return null;
         }
     }
