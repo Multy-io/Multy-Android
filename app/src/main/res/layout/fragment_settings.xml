@@ -69,8 +69,7 @@
         android:id="@+id/container_security"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:foreground="?attr/selectableItemBackground"
+        android:background="@drawable/selector_white"
         app:layout_constraintTop_toBottomOf="@id/container_push">
 
         <ImageView

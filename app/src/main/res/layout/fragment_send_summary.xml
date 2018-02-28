@@ -241,7 +241,7 @@
         <TextView
             android:id="@+id/button_next"
             style="@style/ButtonNext"
-            android:text="@string/send"
+            android:text="@string/slide_to_send"
             android:textColor="@color/white_transparent"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"

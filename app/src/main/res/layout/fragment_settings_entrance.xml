@@ -132,8 +132,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/entrance_settings_container_height"
         android:layout_marginTop="@dimen/entrance_settings_container_margin_top"
-        android:background="@color/white"
-        android:foreground="?attr/selectableItemBackground"
+        android:background="@drawable/selector_white"
         android:clickable="true"
         app:layout_constraintTop_toBottomOf="@id/container_check_password">
 
