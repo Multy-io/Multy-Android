@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.samwolfand.oneprefs.Prefs;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindColor;
@@ -28,7 +29,6 @@ import butterknife.OnClick;
 import io.multy.R;
 import io.multy.model.entities.TransactionHistory;
 import io.multy.model.entities.wallet.WalletAddress;
-import io.multy.storage.RealmManager;
 import io.multy.ui.activities.BaseActivity;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.WebFragment;
@@ -38,7 +38,6 @@ import io.multy.util.DateHelper;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.WalletViewModel;
-import timber.log.Timber;
 
 import static io.multy.util.Constants.TX_CONFIRMED_INCOMING;
 import static io.multy.util.Constants.TX_CONFIRMED_OUTCOMING;
@@ -107,8 +106,8 @@ public class TransactionInfoFragment extends BaseFragment {
     TransactionHistory transaction;
     private int selectedPosition;
     private String txid;
-    private int walletIndex;
     private boolean isTransactionLogged;
+    private List<String> walletAddresses = new ArrayList<>();
 
     public static TransactionInfoFragment newInstance(Bundle transactionInfoMode) {
         TransactionInfoFragment fragment = new TransactionInfoFragment();
@@ -140,7 +139,6 @@ public class TransactionInfoFragment extends BaseFragment {
             return;
         }
         selectedPosition = getArguments().getInt(SELECTED_POSITION, 0);
-        this.walletIndex = getArguments().getInt(WALLET_INDEX);
         int mode = getArguments().getInt(TRANSACTION_INFO_MODE, 0);
         if (mode == MODE_RECEIVE) {
             parent.setBackgroundColor(colorGreen);
@@ -158,6 +156,11 @@ public class TransactionInfoFragment extends BaseFragment {
         viewModel.getWalletLive().observe(this, walletRealmObject -> {
             if (walletRealmObject != null) {
                 toolbarWalletName.setText(walletRealmObject.getName());
+                for (WalletAddress address : walletRealmObject.getAddresses()) {
+                    if (!walletAddresses.contains(address.getAddress())) {
+                        walletAddresses.add(address.getAddress());
+                    }
+                }
             }
         });
         viewModel.getTransactionsHistory().observe(this, transactionHistories -> {
@@ -190,29 +193,19 @@ public class TransactionInfoFragment extends BaseFragment {
         } else {
             textValue.setText("-");
             textAmount.setText("-");
-
-            WalletAddress addressTo = null;
+            double outValue = 0;
             List<WalletAddress> outputs = transaction.getOutputs();
             for (WalletAddress output : outputs) {
-                if (!output.getAddress().equals(Constants.DONTAION_ADDRESS)) {
-                    for (WalletAddress walletAddress : RealmManager.getAssetsDao().getWalletById(walletIndex).getAddresses()) {
-                        if (!output.getAddress().equals(walletAddress.getAddress())) {
-                            addressTo = output;
-                        }
-                    }
+                if (!output.getAddress().equals(Constants.DONTAION_ADDRESS) && !walletAddresses.contains(output.getAddress())) {
+                    outValue += output.getAmount();
                 }
             }
-            if (addressTo != null) {
-                textValue.append(CryptoFormatUtils.satoshiToBtc(addressTo.getAmount()));
-                if (transaction.getStockExchangeRates() != null && transaction.getStockExchangeRates().size() > 0) {
-                    textAmount.append(CryptoFormatUtils.satoshiToUsd(addressTo.getAmount(), transaction.getStockExchangeRates().get(0).getExchanges().getBtcUsd()));
-                    textMoney.setVisibility(View.VISIBLE);
-                } else {
-                    textAmount.setText("");
-                    textMoney.setVisibility(View.GONE);
-                }
+            textValue.append(CryptoFormatUtils.satoshiToBtc(outValue));
+            if (transaction.getStockExchangeRates() != null && transaction.getStockExchangeRates().size() > 0) {
+                textAmount.append(CryptoFormatUtils.satoshiToUsd(outValue,
+                        transaction.getStockExchangeRates().get(0).getExchanges().getBtcUsd()));
+                textMoney.setVisibility(View.VISIBLE);
             }
-
             getServerConfig();
         }
         String addressesfrom = "";

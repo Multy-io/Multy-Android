@@ -180,7 +180,9 @@ public class SendSummaryFragment extends BaseFragment {
             viewModel.isLoading.setValue(true);
             byte[] seed = RealmManager.getSettingsDao().getSeed().getSeed();
             final int addressesSize = viewModel.getWallet().getAddresses().size();
-            final String changeAddress = NativeDataHelper.makeAccountAddress(seed, viewModel.getWallet().getWalletIndex(), addressesSize, NativeDataHelper.Currency.BTC.getValue());
+            final String changeAddress = NativeDataHelper.makeAccountAddress(seed, viewModel.getWallet().getWalletIndex(),
+                    addressesSize, NativeDataHelper.Blockchain.BLOCKCHAIN_BITCOIN.getValue(),
+                    NativeDataHelper.BlockchainNetType.BLOCKCHAIN_NET_TYPE_TESTNET.getValue());
             final String hex = viewModel.transaction.getValue();
             Timber.i("hex=%s", hex);
             MultyApi.INSTANCE.sendHdTransaction(new HdTransactionRequestEntity(
