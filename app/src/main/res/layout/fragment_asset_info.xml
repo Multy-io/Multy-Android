@@ -66,7 +66,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_gravity="left|center_vertical"
-                            android:foreground="?attr/selectableItemBackgroundBorderless"
+                            android:background="?attr/selectableItemBackgroundBorderless"
                             android:padding="14dp"
                             android:src="@drawable/ic_cancel_white" />
 
@@ -89,8 +89,8 @@
                             android:id="@+id/options"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
+                            android:background="?attr/selectableItemBackgroundBorderless"
                             android:clickable="true"
-                            android:foreground="?attr/selectableItemBackgroundBorderless"
                             android:padding="14dp"
                             android:src="@drawable/ic_settings" />
                     </LinearLayout>

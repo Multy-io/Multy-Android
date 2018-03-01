@@ -35,10 +35,9 @@
         android:id="@+id/container_restore_seed"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
+        android:background="@drawable/selector_white"
         android:clickable="true"
         android:focusable="true"
-        android:foreground="?attr/selectableItemBackground"
         app:layout_constraintTop_toBottomOf="@id/text_title">
 
         <View
@@ -84,10 +83,9 @@
         android:id="@+id/container_entrance_settings"
         android:layout_width="match_parent"
         android:layout_height="64dp"
-        android:background="@color/white"
+        android:background="@drawable/selector_white"
         android:clickable="true"
         android:focusable="true"
-        android:foreground="?attr/selectableItemBackground"
         app:layout_constraintTop_toBottomOf="@id/text_hint_seed">
 
         <View
@@ -128,9 +126,9 @@
             android:text="@string/none"
             android:textColor="@color/red"
             android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toRightOf="@id/image_warning"
-            app:layout_constraintTop_toBottomOf="@id/text_entrance_settings"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintTop_toBottomOf="@id/text_entrance_settings" />
 
         <ImageView
             android:id="@+id/chevron_entrance"
@@ -158,10 +156,9 @@
         android:id="@+id/container_reset_data"
         android:layout_width="match_parent"
         android:layout_height="64dp"
-        android:background="@color/white"
+        android:background="@drawable/selector_white"
         android:clickable="true"
         android:focusable="true"
-        android:foreground="?attr/selectableItemBackground"
         app:layout_constraintTop_toBottomOf="@id/text_entrance_settings_description">
 
         <View
