@@ -98,19 +98,12 @@ public class DonationFragment extends BaseFragment {
         ButterKnife.bind(this, convertView);
 
         viewModel = ViewModelProviders.of(this).get(BaseViewModel.class);
-        inputDonation.setOnFocusChangeListener((view1, hasFocus) -> {
+        inputDonation.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
-                View lastChild = scrollView.getChildAt(scrollView.getChildCount() - 1);
-                int bottom = lastChild.getBottom() + scrollView.getPaddingBottom();
-                int sy = scrollView.getScrollY();
-                int sh = scrollView.getHeight();
-                int delta = bottom - (sy + sh);
-                scrollView.smoothScrollBy(0, delta);
-            } else if (!TextUtils.isEmpty(inputDonation.getText()) && !inputDonation.getText().toString().equals(getString(R.string.donation_default))) {
-                //TODO update analytics
-//                Analytics.getInstance(getActivity()).logTransactionFee(AnalyticsConstants.TRANSACTION_FEE_DONATION_CHANGED, viewModel.getChainId());
+                scrollDown();
             }
         });
+        inputDonation.setOnClickListener(v -> scrollDown());
 
         pickWallet(getArguments().getInt(ARG_WALLET_INDEX));
         setupInput();
@@ -118,10 +111,22 @@ public class DonationFragment extends BaseFragment {
         return convertView;
     }
 
+    private void scrollDown() {
+        scrollView.postDelayed(() -> {
+            View lastChild = scrollView.getChildAt(scrollView.getChildCount() - 1);
+            int bottom = lastChild.getBottom() + scrollView.getPaddingBottom();
+            int sy = scrollView.getScrollY();
+            int sh = scrollView.getHeight();
+            int delta = bottom - (sy + sh);
+            scrollView.smoothScrollBy(0, delta);
+        }, 400);
+    }
+
     private void pickWallet(int walletIndex) {
         wallet = RealmManager.getAssetsDao().getWalletById(walletIndex);
         maxValue = wallet.getAvailableBalance();
         textWalletName.setText(wallet.getName());
+        inputDonation.setText(CryptoFormatUtils.satoshiToBtc((wallet.getAvailableBalance() / 100) * 3));
     }
 
     private void setAdapter(ArrayList<Fee> rates) {
@@ -230,7 +235,9 @@ public class DonationFragment extends BaseFragment {
         final String amount = String.valueOf(CryptoFormatUtils.btcToSatoshi(inputDonation.getText().toString()));
 
         try {
-            final String changeAddress = NativeDataHelper.makeAccountAddress(seed, wallet.getWalletIndex(), addressesSize, NativeDataHelper.Currency.BTC.getValue());
+            final String changeAddress = NativeDataHelper.makeAccountAddress(seed, wallet.getWalletIndex(), addressesSize,
+                    NativeDataHelper.Blockchain.BLOCKCHAIN_BITCOIN.getValue(),
+                    NativeDataHelper.BlockchainNetType.BLOCKCHAIN_NET_TYPE_TESTNET.getValue());
             byte[] transactionHex = NativeDataHelper.makeTransaction(seed, wallet.getWalletIndex(), amount,
                     fee, "0", receiverAddress, changeAddress, donationAddress, false);
 

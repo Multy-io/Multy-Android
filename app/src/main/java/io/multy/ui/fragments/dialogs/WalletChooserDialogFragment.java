@@ -23,6 +23,7 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.multy.R;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.storage.RealmManager;
@@ -63,7 +64,7 @@ public class WalletChooserDialogFragment extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_wallet_chooser, container, false);
+        View view = inflater.inflate(R.layout.dialog_wallet_chooser, container, false);
         ButterKnife.bind(this, view);
         setupAdapter();
         if (getActivity() != null && !getActivity().getIntent().hasExtra(Constants.EXTRA_WALLET_ID)) {
@@ -92,5 +93,10 @@ public class WalletChooserDialogFragment extends DialogFragment {
         }
 
         return wallets;
+    }
+
+    @OnClick(R.id.button_back)
+    void onClickBack() {
+        dismiss();
     }
 }

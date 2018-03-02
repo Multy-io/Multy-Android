@@ -28,7 +28,7 @@ public class DonationActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_donation);
-
+        setTitle(R.string.wallet);
         getSupportFragmentManager().beginTransaction().add(R.id.container, DonationFragment.newInstance(getIntent().getIntExtra(Constants.EXTRA_WALLET_ID, 0))).commit();
     }
 

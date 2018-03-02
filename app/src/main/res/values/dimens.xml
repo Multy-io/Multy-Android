@@ -105,5 +105,6 @@
     <dimen name="reset_data_dialog_title_margin_top">21dp</dimen>
     <dimen name="reset_data_dialog_margin">24dp</dimen>
     <dimen name="dialog_button_padding">8dp</dimen>
+    <dimen name="card_challenge_radius">16dp</dimen>
 
 </resources>
