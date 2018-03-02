@@ -8,6 +8,8 @@ package io.multy.storage;
 
 import android.content.Context;
 
+import com.samwolfand.oneprefs.Prefs;
+
 import java.util.List;
 
 import io.multy.api.socket.CurrenciesRate;
@@ -20,6 +22,9 @@ import io.multy.model.entities.Token;
 import io.multy.model.entities.UserId;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.entities.wallet.WalletRealmObject;
+import io.multy.util.Constants;
+import io.multy.util.analytics.Analytics;
+import io.multy.util.analytics.AnalyticsConstants;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
@@ -34,6 +39,9 @@ public class DatabaseHelper {
             realm = Realm.getInstance(RealmManager.getConfiguration(context));
         } catch (Exception exception) {
             exception.printStackTrace();
+            Analytics.getInstance(context).logEvent(AnalyticsConstants.ERROR_DATABASE_DECRYPT,
+                    AnalyticsConstants.ERROR_DATABASE_DECRYPT,
+                    exception.getMessage().replaceAll(" ", "_"));
         }
     }
 
@@ -147,7 +155,7 @@ public class DatabaseHelper {
     }
 
     public void clear() {
-        if (realm != null){
+        if (realm != null) {
             realm.executeTransaction(realm -> realm.deleteAll());
         }
     }

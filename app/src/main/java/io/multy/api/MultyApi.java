@@ -85,7 +85,10 @@ public enum MultyApi implements MultyApiInterface {
 
                                 Call<AuthResponse> responseCall = api.auth(new AuthEntity(userId, Constants.DEVICE_NAME, pushToken, 2));
                                 AuthResponse body = responseCall.execute().body();
-                                Prefs.putString(Constants.PREF_AUTH, body.getToken());
+
+                                if (body != null) {
+                                    Prefs.putString(Constants.PREF_AUTH, body.getToken());
+                                }
 
                                 return response.request().newBuilder()
                                         .header("Authorization", "Bearer " + Prefs.getString(Constants.PREF_AUTH, ""))

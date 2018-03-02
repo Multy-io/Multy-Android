@@ -224,6 +224,7 @@ public class AnalyticsConstants {
 
     public static final String ERROR_TRANSACTION_SIGN = "Error_Transaction_Sign";
     public static final String ERROR_TRANSACTION_API = "Error_Sending_Transaction_From_Api";
+    public static final String ERROR_DATABASE_DECRYPT = "Error_decrypt_database";
 
     public static final String SHARED_WITH = "Shared_with";
     public static final String BUTTON_CLOSE = "Button_Close";
@@ -231,4 +232,5 @@ public class AnalyticsConstants {
     public static final String CHAIN_ID_STATE = "CHAIN_ID_%d_STATE_%d";
     public static final String PUSH_ID = "PUSH_ID_%s";
     public static final String CHAIN_ID_APP_NAME = "CHAIN_ID_%d_APP_NAME_%s";
+
 }

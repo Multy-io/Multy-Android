@@ -100,10 +100,10 @@ public class Multy extends Application {
 
     public static void systemClear(Context context) {
         try {
-            RealmManager.removeDatabase(context);
+            RealmManager.clear();
             Prefs.clear();
 //            Multy.makeInitialized();
-            Realm.init(context);
+//            Realm.init(context);
         } catch (Exception exc) {
 //            System.exit(0);
             exc.printStackTrace();

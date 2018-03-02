@@ -39,7 +39,7 @@ public class SecurePreferencesHelper {
             Prefs.putString(key, encodedString);
         } catch (Exception e) {
             e.printStackTrace();
-            Multy.systemClear((Activity) context);
+            clear();
         }
     }
 
@@ -59,9 +59,14 @@ public class SecurePreferencesHelper {
             return result;
         } catch (Exception e) {
             e.printStackTrace();
-            Multy.systemClear((Activity) context);
+            clear();
         }
         return null;
+    }
+
+    private static void clear() {
+        RealmManager.clear();
+        Prefs.clear();
     }
 
     public static long getLong(Context context, String key) {

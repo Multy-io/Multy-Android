@@ -14,6 +14,7 @@ import java.io.File;
 
 import javax.annotation.Nullable;
 
+import io.multy.Multy;
 import io.multy.util.Constants;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -74,6 +75,9 @@ public class RealmManager {
     }
 
     public static void clear() {
+        if (realm == null || realm.isClosed()) {
+            open(Multy.getContext());
+        }
         realm.executeTransaction(realm -> realm.deleteAll());
     }
 
@@ -95,7 +99,7 @@ public class RealmManager {
 //        Realm.deleteRealm()
 //    }
 
-    public static void removeDatabase(Context context){
+    public static void removeDatabase(Context context) {
         for (File file : context.getFilesDir().listFiles()) {
             if (file.getAbsolutePath().contains("realm")) {
                 if (file.isDirectory()) {

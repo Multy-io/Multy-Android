@@ -8,12 +8,14 @@ package io.multy.encryption;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Build;
 import android.provider.Settings;
 
 import com.google.android.gms.iid.InstanceID;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 
 import io.multy.util.JniException;
@@ -35,6 +37,31 @@ public class MasterKeyGenerator {
         return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID).getBytes();
     }
 
+    private static byte[] getBuildFingerprintAndDeviceSerial() {
+        StringBuilder result = new StringBuilder();
+        String fingerprint = Build.FINGERPRINT;
+        if (fingerprint != null) {
+            result.append(fingerprint);
+        }
+        String serial = getDeviceSerialNumber();
+        if (serial != null) {
+            result.append(serial);
+        }
+        try {
+            return result.toString().getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("UTF-8 encoding not supported");
+        }
+    }
+
+    private static String getDeviceSerialNumber() {
+        try {
+            return (String) Build.class.getField("SERIAL").get(null);
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
     /**
      * Provide PIN or password if user set it. Method will be used after alpha release
      * for better secure protection, but it returns empty value for now.
@@ -52,6 +79,7 @@ public class MasterKeyGenerator {
             outputStream.write(getInstanceID(context));
             outputStream.write(getUserSecret());
             outputStream.write(getSecureID(context));
+//            outputStream.write(getBuildFingerprintAndDeviceSerial());
             return ByteBuffer.allocate(calculateSHA3256(outputStream.toByteArray()).length * 2)
                     .put(calculateSHA3256(outputStream.toByteArray()))
                     .put(calculateSHA3256(outputStream.toByteArray()))

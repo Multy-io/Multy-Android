@@ -34,19 +34,26 @@
 
             <!-- Branch URI scheme -->
             <intent-filter>
-                <data android:scheme="multy" android:host="open" />
+                <data
+                    android:host="open"
+                    android:scheme="multy" />
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-            </intent-filter>  
+            </intent-filter>
 
             <!-- Branch App Links -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https" android:host="multy.test-app.link" />
-            </intent-filter>  
+
+                <data
+                    android:host="multy.test-app.link"
+                    android:scheme="https" />
+            </intent-filter>
 
         </activity>
 
@@ -66,13 +73,13 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activities.SeedActivity"
-            android:windowSoftInputMode="adjustResize"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.activities.AssetRequestActivity"
             android:label="@string/receive"
-            android:windowSoftInputMode="adjustResize"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.activities.AssetSendActivity"
             android:label="@string/send_to"
@@ -84,11 +91,15 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activities.PinSetupActivity"
-            android:windowSoftInputMode="stateAlwaysVisible|adjustNothing"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysVisible|adjustNothing" />
         <activity
             android:name=".ui.activities.ScanActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
+        <activity
+            android:windowSoftInputMode="adjustResize"
+            android:name=".ui.activities.DonationActivity"
+            android:screenOrientation="portrait" />
 
         <!-- Branch install referrer tracking -->
         <receiver
@@ -104,8 +115,8 @@
             android:resource="@array/preloaded_fonts" />
 
         <!--<meta-data-->
-            <!--android:name="firebase_analytics_collection_deactivated"-->
-            <!--android:value="true" />-->
+        <!--android:name="firebase_analytics_collection_deactivated"-->
+        <!--android:value="true" />-->
 
         <meta-data
             android:name="io.branch.sdk.auto_link_request_code"
@@ -118,7 +129,6 @@
         <meta-data
             android:name="io.branch.sdk.BranchKey.test"
             android:value="key_test_niyUD9c8fYOV7kwmBIgiJmdlqrkehhdD" />
-
 
 
         <service android:name=".fcm.MultyFirebaseMessagingService">
@@ -143,8 +153,9 @@
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="@string/channel_id" />
 
-        <receiver android:name=".ui.fragments.asset.AssetInfoFragment$SharingBroadcastReceiver"
-            android:exported="true"/>
+        <receiver
+            android:name=".ui.fragments.asset.AssetInfoFragment$SharingBroadcastReceiver"
+            android:exported="true" />
 
     </application>
 </manifest>
