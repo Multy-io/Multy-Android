@@ -34,6 +34,10 @@ public class WalletsAdapter extends RecyclerView.Adapter<WalletsAdapter.Holder> 
         this.data = data;
     }
 
+    public WalletsAdapter(List<WalletRealmObject> data) {
+        this.data = data;
+    }
+
     @Override
     public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new Holder(LayoutInflater.from(parent.getContext()).inflate(R.layout.view_asset_item, parent, false));
@@ -86,6 +90,10 @@ public class WalletsAdapter extends RecyclerView.Adapter<WalletsAdapter.Holder> 
     public void setAmount(int position, double amount) {
         data.get(position).setBalance(amount);
         notifyItemChanged(position);
+    }
+
+    public void setListener(OnWalletClickListener listener) {
+        this.listener = listener;
     }
 
     public List<WalletRealmObject> getData() {

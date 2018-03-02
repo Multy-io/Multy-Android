@@ -179,11 +179,11 @@ public class TransactionFeeFragment extends BaseFragment implements MyFeeAdapter
     @Override
     public void onClickCustomFee(long currentValue) {
         showCustomFeeDialog(currentValue);
-        logTransaction(5);
+        logTransactionFee(5);
     }
 
     @Override
-    public void logTransaction(int position) {
+    public void logTransactionFee(int position) {
         switch (position) {
             case 0:
                 Analytics.getInstance(getActivity()).logTransactionFee(AnalyticsConstants.TRANSACTION_FEE_VERY_FAST, viewModel.getChainId());

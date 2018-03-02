@@ -337,7 +337,7 @@ public class Analytics {
         logEvent(argument, argument, null);
     }
 
-    private void logEvent(String event, String argumentName, String argument) {
+    public void logEvent(String event, String argumentName, String argument) {
         Bundle bundle = new Bundle();
         bundle.putString(argumentName, argument);
         analytics.logEvent(event, bundle);

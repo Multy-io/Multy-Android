@@ -162,8 +162,8 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
 
     private void initSpendable() {
         long feePerByte = viewModel.getFee().getAmount();
-        if (feePerByte < 20) {
-            viewModel.getFee().setAmount(20);
+        if (feePerByte < 2) {
+            viewModel.getFee().setAmount(2);
         }
 
         spendableSatoshi = 0;

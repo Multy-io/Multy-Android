@@ -64,5 +64,15 @@ public class FeeRateResponse {
             result.add(new Fee("Custom", -1, -1, ""));
             return result;
         }
+
+        public ArrayList<Fee> asListDonation() {
+            ArrayList<Fee> result = new ArrayList<>();
+            final Fee selectedFee = new Fee("Medium", medium, 20, "5 days");
+            selectedFee.setSelected(true);
+            result.add(selectedFee);
+            result.add(new Fee("Very Slow", verySlow, 70, "2 weeks"));
+            result.add(new Fee("Custom", -1, -1, ""));
+            return result;
+        }
     }
 }

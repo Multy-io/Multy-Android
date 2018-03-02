@@ -209,35 +209,32 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
             String stockFiat = getStockFiatAmount(transactionHistory);
             holder.fiat.setText(stockFiat.equals("") ? "" : String.format("%s USD", stockFiat));
         } else {
-            WalletAddress addressTo = null;
+            //TODO REMOVE DRY AND OPTIMIZE
+            RealmList<WalletAddress> addresses = RealmManager.getAssetsDao().getWalletById(walletIndex).getAddresses();
+//            List<WalletAddress> inputs = transactionHistory.getInputs();
+
             List<WalletAddress> outputs = transactionHistory.getOutputs();
-            //user change address must be last, so reversing
-            Collections.reverse(outputs);
+//            user change address must be last, so reversing
+//            Collections.reverse(outputs);
+            WalletAddress userChangeAddress = null;
+            String addressTo = "";
 
-//            for (WalletAddress output : outputs) {
-//                if (!output.getAddress().equals(Constants.DONTAION_ADDRESS)) {
-//                    for (WalletAddress walletAddress : RealmManager.getAssetsDao().getWalletById(walletIndex).getAddresses()) {
-//                        if (!output.getAddress().equals(walletAddress.getAddress())) {
-//                            addressTo = output;
-//                        }
-//                    }
-//                }
-//            }
+            for (WalletAddress output : outputs) {
 
-            for (WalletAddress input : transactionHistory.getInputs()) {
-                for (WalletAddress walletAddress : RealmManager.getAssetsDao().getWalletById(walletIndex).getAddresses()) {
-                    if (input.getAddress().equals(walletAddress.getAddress())) {
-                        addressTo = input;
+                if (!output.getAddress().equals(Constants.DONTAION_ADDRESS)) {
+                    for (WalletAddress walletAddress : addresses) {
+                        if (output.getAddress().equals(walletAddress.getAddress())) {
+                            userChangeAddress = output;
+                        } else {
+                            addressTo = output.getAddress();
+                        }
                     }
                 }
             }
 
-            if (addressTo != null) {
-                setAddress(addressTo.getAddress(), holder.containerAddresses);
-                holder.amount.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(addressTo.getAmount())));
-                String stockFiat = getStockFiatAmount(transactionHistory);
-                holder.fiat.setText(stockFiat.equals("") ? "" : String.format("%s USD", stockFiat));
-            }
+            setAddress(addressTo, holder.containerAddresses);
+            holder.amount.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(transactionHistory.getTxOutAmount())));
+            holder.fiat.setText(String.format("%s USD", getStockFiatAmount(transactionHistory)));
         }
 
         setItemClickListener(holder.itemView, isIncoming, position);

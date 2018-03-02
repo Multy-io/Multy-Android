@@ -7,9 +7,12 @@
 package io.multy.model.entities.wallet;
 
 
+import android.content.Intent;
+
 import com.google.gson.annotations.SerializedName;
 
 import io.multy.model.entities.Output;
+import io.multy.ui.activities.DonationActivity;
 import io.multy.util.Constants;
 import io.realm.RealmList;
 import io.realm.RealmObject;
@@ -180,6 +183,19 @@ public class WalletRealmObject extends RealmObject {
 
     public void setPendingBalance(double pendingBalance) {
         this.pendingBalance = pendingBalance;
+    }
+
+    public long getAvailableBalance() {
+        long result = 0;
+        for (WalletAddress walletAddress : getAddresses()) {
+            for (Output output : walletAddress.getOutputs()) {
+                if (output.getStatus() == Constants.TX_CONFIRMED_INCOMING || output.getStatus() == Constants.TX_IN_BLOCK_INCOMING) {
+                    result += Long.valueOf(output.getTxOutAmount());
+                }
+            }
+        }
+
+        return result;
     }
 
     @Override
