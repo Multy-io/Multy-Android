@@ -279,6 +279,7 @@ public class DonationFragment extends BaseFragment {
 
     @OnClick(R.id.button_send)
     void onClickSend() {
+//        new CompleteDialogFragment().show(getActivity().getSupportFragmentManager(), "");
         sendTransaction();
     }
 
