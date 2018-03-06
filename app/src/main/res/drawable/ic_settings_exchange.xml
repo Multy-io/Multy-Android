@@ -1,0 +1,27 @@
+<!--
+  ~ Copyright 2017 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:aapt="http://schemas.android.com/aapt"
+        android:width="24dp"
+        android:height="24dp"
+        android:viewportWidth="24.0"
+        android:viewportHeight="24.0">
+    <path
+        android:pathData="M20,14a2,2 0,0 1,2 2v4a2,2 0,0 1,-2 2v2h-2v-2a2,2 0,0 1,-2 -2v-4a2,2 0,0 1,2 -2v-2h2v2zM14,2a2,2 0,0 1,2 2v4a2,2 0,0 1,-2 2v2h-2v-2a2,2 0,0 1,-2 -2L10,4a2,2 0,0 1,2 -2L12,0h2v2zM7,10a2,2 0,0 1,2 2v4a2,2 0,0 1,-2 2v2L5,20v-2a2,2 0,0 1,-2 -2v-4a2,2 0,0 1,2 -2L5,8h2v2zM6,12a1,1 0,0 0,-1 1v2a1,1 0,0 0,2 0v-2a1,1 0,0 0,-1 -1z"
+        android:fillType="evenOdd">
+        <aapt:attr name="android:fillColor">
+<gradient 
+
+        android:startY="22.39272"
+        android:startX="0.67326"
+        android:endY="0.0"
+        android:endX="25.26933"
+        android:type="linear">
+<item android:offset="0.0" android:color="#FF00B2FF" />
+<item android:offset="1.0" android:color="#FF007AFF" />
+            </gradient></aapt:attr></path>
+</vector>

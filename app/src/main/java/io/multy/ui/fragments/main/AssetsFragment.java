@@ -16,6 +16,7 @@ import android.support.constraint.Group;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.view.ViewCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -23,6 +24,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import com.samwolfand.oneprefs.Prefs;
 
@@ -44,10 +46,11 @@ import io.multy.storage.AssetsDao;
 import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetActivity;
 import io.multy.ui.activities.BaseActivity;
-import io.multy.ui.activities.CreateAssetActivity;
 import io.multy.ui.activities.SeedActivity;
+import io.multy.ui.adapters.PortfoliosAdapter;
 import io.multy.ui.adapters.WalletsAdapter;
 import io.multy.ui.fragments.BaseFragment;
+import io.multy.ui.fragments.dialogs.AssetActionsDialogFragment;
 import io.multy.util.Constants;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
@@ -75,7 +78,12 @@ public class AssetsFragment extends BaseFragment implements WalletsAdapter.OnWal
     View buttonWarn;
     @BindView(R.id.appbar_layout)
     AppBarLayout appBarLayout;
-
+    @BindView(R.id.view_pager)
+    ViewPager viewPager;
+    @BindView(R.id.image_dot_portfolio)
+    ImageView imageDotPortfolio;
+    @BindView(R.id.image_dot_chart)
+    ImageView imageDotChart;
 
     private AssetsViewModel viewModel;
     private WalletsAdapter walletsAdapter;
@@ -114,6 +122,19 @@ public class AssetsFragment extends BaseFragment implements WalletsAdapter.OnWal
             }
         }
         appBarLayout.post(() -> disableAppBarScrolling());
+        viewPager.setAdapter(new PortfoliosAdapter(getChildFragmentManager()));
+        viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                if (position == 0) {
+                    imageDotPortfolio.setAlpha(1f);
+                    imageDotChart.setAlpha(0.3f);
+                } else {
+                    imageDotPortfolio.setAlpha(0.3f);
+                    imageDotChart.setAlpha(1f);
+                }
+            }
+        });
     }
 
     private void disableAppBarScrolling() {
@@ -244,14 +265,18 @@ public class AssetsFragment extends BaseFragment implements WalletsAdapter.OnWal
     }
 
     private void onWalletAddClick() {
-        startActivityForResult(new Intent(getActivity(), CreateAssetActivity.class).addCategory(Constants.EXTRA_RESTORE), Constants.REQUEST_CODE_CREATE);
+//        startActivityForResult(new Intent(getActivity(), CreateAssetActivity.class).addCategory(Constants.EXTRA_RESTORE), Constants.REQUEST_CODE_CREATE);
     }
 
     @OnClick(R.id.button_add)
-    void onClickAdd() {
-//        showAddWalletActions();
-        Analytics.getInstance(getActivity()).logMain(AnalyticsConstants.MAIN_CREATE_WALLET);
-        onWalletAddClick();
+    void onClickAdd(View v) {
+        if (getActivity() != null) {
+            v.setEnabled(false);
+            Analytics.getInstance(getActivity()).logMain(AnalyticsConstants.MAIN_CREATE_WALLET);
+            AssetActionsDialogFragment fragment = AssetActionsDialogFragment.getInstance();
+            fragment.setListener(() -> v.setEnabled(true));
+            fragment.show(getActivity().getSupportFragmentManager(), AssetActionsDialogFragment.TAG);
+        }
     }
 
     @OnClick(R.id.button_create)
@@ -273,10 +298,10 @@ public class AssetsFragment extends BaseFragment implements WalletsAdapter.OnWal
         startActivity(new Intent(getActivity(), SeedActivity.class));
     }
 
-    @OnClick(R.id.logo)
-    void onClickLogo() {
-        Analytics.getInstance(getActivity()).logMain(AnalyticsConstants.MAIN_LOGO);
-    }
+//    @OnClick(R.id.logo)
+//    void onClickLogo() {
+//        Analytics.getInstance(getActivity()).logMain(AnalyticsConstants.MAIN_LOGO);
+//    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

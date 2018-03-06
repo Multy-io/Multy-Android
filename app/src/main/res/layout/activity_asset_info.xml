@@ -63,7 +63,7 @@
         android:layout_width="0dp"
         android:layout_height="56dp"
         android:background="?attr/selectableItemBackground"
-        android:drawableTop="@drawable/ic_exchange"
+        android:drawableTop="@drawable/ic_donation_icon_smallest"
         android:gravity="center"
         android:paddingTop="9dp"
         android:text="Exchange"

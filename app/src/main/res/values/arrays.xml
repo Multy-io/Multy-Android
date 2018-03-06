@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2017 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<resources>
+    <string-array name="fees">
+        <item>Very Fast • 10 min</item>
+        <item>Fast • 6 hour</item>
+        <item>Medium • 5 days</item>
+        <item>Slow • 1 week</item>
+        <item>Very Slow • 2 weeks</item>
+        <!--<item>Custom</item>-->
+    </string-array>
+    <string-array name="blocks">
+        <item>6 blocks</item>
+        <item>10 blocks</item>
+        <item>20 blocks</item>
+        <item>50 blocks</item>
+        <item>70 blocks</item>
+        <!--<item> </item>-->
+    </string-array>
+
+    <string-array name="chain_available_abbrev">
+        <item>BTC</item>
+    </string-array>
+    <string-array name="chain_available_name">
+        <item>Bitcoin</item>
+    </string-array>
+    <array name="chain_available_image_ids">
+        <item>@drawable/ic_btk_logo</item>
+    </array>
+    <string-array name="chain_soon_abbrev">
+        <item>LBTC</item>
+        <item>ETH</item>
+        <item>GOLOS</item>
+        <item>STEEM</item>
+        <item>BTS</item>
+        <item>BCH</item>
+        <item>LTC</item>
+        <item>DASH</item>
+        <item>ETC</item>
+        <item>ERC20</item>
+    </string-array>
+    <string-array name="chain_soon_name">
+        <item>Lightning Bitcoin</item>
+        <item>Ethereum</item>
+        <item>Golos</item>
+        <item>Steem</item>
+        <item>BitShares</item>
+        <item>Bitcoin Cash</item>
+        <item>Litecoin</item>
+        <item>Dash</item>
+        <item>Ethereum Classic</item>
+        <item>ERC20 Tokens</item>
+    </string-array>
+    <array name="chain_soon_image_ids">
+        <item>@drawable/chain_lbtc</item>
+        <item>@drawable/chain_eth</item>
+        <item>@drawable/chain_golos</item>
+        <item>@drawable/chain_steem</item>
+        <item>@drawable/chain_bts</item>
+        <item>@drawable/chain_bch</item>
+        <item>@drawable/chain_ltc</item>
+        <item>@drawable/chain_dash</item>
+        <item>@drawable/chain_etc</item>
+        <item>@drawable/chain_erc_20</item>
+    </array>
+
+    <string-array name="exchange_available_name">
+        <item>Poloniex</item>
+    </string-array>
+    <string-array name="exchange_soon_name">
+        <item>Binance</item>
+        <item>OKEx</item>
+        <item>Huobi</item>
+        <item>Upbit</item>
+        <item>Bitfinex</item>
+        <item>Bittrex</item>
+        <item>Bithumb</item>
+        <item>GDAX</item>
+        <item>Kraken</item>
+        <item>HitBTC</item>
+    </string-array>
+
+    <string-array name="currencies_to_convert_available_abbrev">
+        <item>USD</item>
+    </string-array>
+    <string-array name="currencies_to_convert_available_name">
+        <item>US Dollar</item>
+    </string-array>
+    <array name="currencies_to_convert_available_image_ids">
+        <item>@drawable/flag_usd</item>
+    </array>
+    <string-array name="currencies_to_convert_soon_abbrev">
+        <item>EUR</item>
+        <item>ETH</item>
+    </string-array>
+    <string-array name="currencies_to_convert_soon_name">
+        <item>Euro</item>
+        <item>Ethereum</item>
+    </string-array>
+    <array name="currencies_to_convert_soon_image_ids">
+        <item>@drawable/flag_eur</item>
+        <item>@drawable/chain_eth</item>
+    </array>
+
+</resources>

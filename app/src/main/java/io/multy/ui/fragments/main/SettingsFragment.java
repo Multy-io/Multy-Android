@@ -13,7 +13,6 @@ import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Switch;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.samwolfand.oneprefs.Prefs;
@@ -125,6 +124,22 @@ public class SettingsFragment extends BaseFragment implements BaseActivity.OnLoc
             getActivity().getSupportFragmentManager().beginTransaction()
                     .replace(R.id.settings_container, SecuritySettingsFragment.newInstance())
                     .addToBackStack(SecuritySettingsFragment.class.getSimpleName())
+                    .commit();
+        }
+    }
+
+    @OnClick(R.id.container_exchange)
+    void onExchangeClick(View v) {
+        v.setEnabled(false);
+        v.postDelayed(() -> v.setEnabled(true), 500);
+        if (getActivity() != null) {
+            ChooseExchangeFragment fragment = (ChooseExchangeFragment) getActivity().getSupportFragmentManager()
+                    .findFragmentByTag(ChooseExchangeFragment.TAG);
+            if (fragment == null) {
+                fragment = ChooseExchangeFragment.getInstance();
+            }
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container_frame, fragment).addToBackStack(ChooseExchangeFragment.TAG)
                     .commit();
         }
     }

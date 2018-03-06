@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2017 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <View
+        android:id="@+id/background"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/white_and_light_green"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/text_title" />
+
+    <TextView
+        android:id="@+id/text_title"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:gravity="center_vertical"
+        android:paddingStart="16dp"
+        android:text="Create or Import New Wallet"
+        android:textColor="@color/blue_light"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/button_create"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/button_create"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:background="?attr/selectableItemBackground"
+        android:drawablePadding="32dp"
+        android:drawableStart="@drawable/ic_wallet_create_new_bigger"
+        android:gravity="center_vertical"
+        android:paddingStart="16dp"
+        android:text="Create New"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/button_import"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <View
+        android:id="@+id/button_import"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:background="?attr/selectableItemBackground"
+        app:layout_constraintBottom_toTopOf="@id/button_cancel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/image_import"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        app:layout_constraintBottom_toBottomOf="@id/button_import"
+        app:layout_constraintStart_toStartOf="@id/button_import"
+        app:layout_constraintTop_toTopOf="@id/button_import"
+        app:srcCompat="@drawable/ic_wallet_import" />
+
+    <TextView
+        android:id="@+id/text_import"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:text="Import Wallet"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/text_in_progress"
+        app:layout_constraintEnd_toStartOf="@id/image_donate"
+        app:layout_constraintStart_toEndOf="@id/image_import"
+        app:layout_constraintTop_toTopOf="@id/button_import" />
+
+    <TextView
+        android:id="@+id/text_in_progress"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/work_in_progress"
+        android:textColor="@color/red_warn"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="@id/button_import"
+        app:layout_constraintEnd_toStartOf="@id/image_donate"
+        app:layout_constraintStart_toStartOf="@id/text_import"
+        app:layout_constraintTop_toBottomOf="@id/text_import" />
+
+    <ImageView
+        android:id="@+id/image_donate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintBottom_toBottomOf="@id/button_import"
+        app:layout_constraintEnd_toEndOf="@id/button_import"
+        app:layout_constraintTop_toTopOf="@id/button_import"
+        app:srcCompat="@drawable/ic_donation_icon" />
+
+    <TextView
+        android:id="@+id/button_cancel"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginBottom="8dp"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:drawablePadding="32dp"
+        android:drawableStart="@drawable/ic_cancel_blue"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:paddingStart="16dp"
+        android:text="@string/cancel"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</android.support.constraint.ConstraintLayout>

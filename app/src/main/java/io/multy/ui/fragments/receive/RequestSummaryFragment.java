@@ -41,6 +41,7 @@ import io.multy.ui.activities.AssetRequestActivity;
 import io.multy.ui.fragments.AddressesFragment;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.asset.AssetInfoFragment;
+import io.multy.ui.fragments.dialogs.DonateThisDialog;
 import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
 import io.multy.util.DeepLinkShareHelper;
@@ -199,7 +200,10 @@ public class RequestSummaryFragment extends BaseFragment {
     @OnClick(R.id.button_scan_wireless)
     void onClickWirelessScan() {
         Analytics.getInstance(getActivity()).logReceiveSummary(AnalyticsConstants.RECEIVE_SUMMARY_WIRELESS, viewModel.getChainId());
-        Toast.makeText(getActivity(), R.string.not_implemented, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getActivity(), R.string.not_implemented, Toast.LENGTH_SHORT).show();
+        if (getActivity() != null) {
+            DonateThisDialog.getInstance().show(getActivity().getSupportFragmentManager(), DonateThisDialog.TAG);
+        }
     }
 
     @OnClick(R.id.button_options)

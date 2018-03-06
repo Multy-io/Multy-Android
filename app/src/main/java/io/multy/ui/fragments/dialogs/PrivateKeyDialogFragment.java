@@ -50,7 +50,7 @@ public class PrivateKeyDialogFragment extends BottomSheetDialogFragment implemen
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setStyle(DialogFragment.STYLE_NO_TITLE, R.style.BottomSheetDialog);
+        setStyle(DialogFragment.STYLE_NO_TITLE, R.style.KeyBottomSheetDialog);
     }
 
     @Override
