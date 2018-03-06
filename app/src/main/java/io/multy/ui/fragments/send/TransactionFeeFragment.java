@@ -6,6 +6,7 @@
 
 package io.multy.ui.fragments.send;
 
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -34,6 +35,7 @@ import butterknife.OnClick;
 import io.multy.R;
 import io.multy.model.entities.Fee;
 import io.multy.model.entities.wallet.CurrencyCode;
+import io.multy.model.responses.FeeRateResponse;
 import io.multy.ui.activities.AssetSendActivity;
 import io.multy.ui.adapters.MyFeeAdapter;
 import io.multy.ui.fragments.BaseFragment;

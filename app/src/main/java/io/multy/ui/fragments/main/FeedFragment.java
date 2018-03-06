@@ -24,7 +24,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
+import io.multy.ui.activities.BaseActivity;
 import io.multy.ui.fragments.BaseFragment;
+import io.multy.ui.fragments.WebFragment;
+import io.multy.ui.fragments.asset.TransactionInfoFragment;
+import io.multy.ui.fragments.dialogs.WebDialogFragment;
+import io.multy.util.Constants;
 import io.multy.util.RoundedCornersDrawable;
 import io.multy.util.analytics.Analytics;
 import io.multy.viewmodels.FeedViewModel;
@@ -56,7 +61,6 @@ public class FeedFragment extends BaseFragment {
         viewModel = ViewModelProviders.of(this).get(FeedViewModel.class);
         Analytics.getInstance(getActivity()).logActivityLaunch();
         setRoundedImage();
-
         return view;
     }
 
@@ -69,8 +73,7 @@ public class FeedFragment extends BaseFragment {
 
     @OnClick(R.id.button_challenge)
     void onClickChallenge() {
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://multy.io/donation_features"));
-        startActivity(browserIntent);
+        WebDialogFragment.newInstance("http://multy.io/donation_features").show(getFragmentManager(), "");
     }
 
 }
