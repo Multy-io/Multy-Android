@@ -21,6 +21,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -40,6 +41,8 @@ import io.multy.ui.fragments.main.FeedFragment;
 import io.multy.ui.fragments.main.SettingsFragment;
 import io.multy.util.AnimationUtils;
 import io.multy.util.Constants;
+import io.multy.util.JniException;
+import io.multy.util.NativeDataHelper;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 
