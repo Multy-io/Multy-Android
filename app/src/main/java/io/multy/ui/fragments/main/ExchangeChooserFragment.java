@@ -18,24 +18,24 @@ import android.view.ViewGroup;
 import butterknife.BindArray;
 import io.multy.R;
 import io.multy.ui.adapters.ExchangeAdapter;
-import io.multy.ui.fragments.BaseChooseFragment;
-import io.multy.ui.fragments.dialogs.DonateThisDialog;
+import io.multy.ui.fragments.BaseChooserFragment;
+import io.multy.ui.fragments.dialogs.DonateDialog;
 
 /**
  * Created by anschutz1927@gmail.com on 05.03.18.
  */
 
-public class ChooseExchangeFragment extends BaseChooseFragment implements ExchangeAdapter.Listener {
+public class ExchangeChooserFragment extends BaseChooserFragment implements ExchangeAdapter.Listener {
 
-    public static final String TAG = ChooseExchangeFragment.class.getSimpleName();
+    public static final String TAG = ExchangeChooserFragment.class.getSimpleName();
 
     @BindArray(R.array.exchange_available_name)
     String[] exchangeAvailableNames;
     @BindArray(R.array.exchange_soon_name)
     String[] exchangeSoonName;
 
-    public static ChooseExchangeFragment getInstance() {
-        return new ChooseExchangeFragment();
+    public static ExchangeChooserFragment getInstance() {
+        return new ExchangeChooserFragment();
     }
 
     @Nullable
@@ -57,7 +57,7 @@ public class ChooseExchangeFragment extends BaseChooseFragment implements Exchan
     @Override
     public void onSoonExchangeClick(String clickedChainName) {
         if (getActivity() != null) {
-            DonateThisDialog.getInstance().show(getActivity().getSupportFragmentManager(), DonateThisDialog.TAG);
+            DonateDialog.getInstance().show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
         }
     }
 
@@ -65,11 +65,11 @@ public class ChooseExchangeFragment extends BaseChooseFragment implements Exchan
         super.setTitle(R.string.exchange);
         ExchangeAdapter availableAdapter = new ExchangeAdapter(ExchangeAdapter.ExchangeType.AVAILABLE, this);
         availableAdapter.setAvailableData(exchangeAvailableNames[0], exchangeAvailableNames);
-        getRecyclerAvailable().setLayoutManager(new LinearLayoutManager(activity));
-        getRecyclerAvailable().setAdapter(availableAdapter);
+        getBlockAvailableRecyclerView().setLayoutManager(new LinearLayoutManager(activity));
+        getBlockAvailableRecyclerView().setAdapter(availableAdapter);
         ExchangeAdapter soonAdapter = new ExchangeAdapter(ExchangeAdapter.ExchangeType.SOON, this);
         soonAdapter.setSoonData(exchangeSoonName);
-        getRecyclerSoon().setLayoutManager(new LinearLayoutManager(activity));
-        getRecyclerSoon().setAdapter(soonAdapter);
+        getBlockSoonRecyclerView().setLayoutManager(new LinearLayoutManager(activity));
+        getBlockSoonRecyclerView().setAdapter(soonAdapter);
     }
 }

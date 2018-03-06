@@ -13,7 +13,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
-import io.multy.ui.fragments.dialogs.DonateThisDialog;
+import io.multy.ui.fragments.dialogs.DonateDialog;
 
 /**
  * Created by appscrunch on 16.11.17.
@@ -73,6 +73,6 @@ public class PortfoliosAdapter extends PagerAdapter {
     void onClickDonate(View v) {
         v.setEnabled(false);
         v.postDelayed(() -> v.setEnabled(true), 500);
-        DonateThisDialog.getInstance().show(fragmentManager, DonateThisDialog.TAG);
+        DonateDialog.getInstance().show(fragmentManager, DonateDialog.TAG);
     }
 }

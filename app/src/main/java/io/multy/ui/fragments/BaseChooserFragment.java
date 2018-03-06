@@ -24,12 +24,12 @@ import io.multy.R;
  * Created by anschutz1927@gmail.com on 05.03.18.
  */
 
-public class BaseChooseFragment extends BaseFragment {
+public class BaseChooserFragment extends BaseFragment {
 
     @BindView(R.id.recycler_available)
-    RecyclerView recyclerAvailable;
+    RecyclerView availableRecyclerView;
     @BindView(R.id.recycler_soon)
-    RecyclerView recyclerSoon;
+    RecyclerView soonRecyclerView;
     @BindView(R.id.text_title)
     TextView textTitle;
 
@@ -39,17 +39,17 @@ public class BaseChooseFragment extends BaseFragment {
                              @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_choose_available_soon, container, false);
         ButterKnife.bind(this, v);
-        recyclerAvailable.setNestedScrollingEnabled(false);
-        recyclerSoon.setNestedScrollingEnabled(false);
+        availableRecyclerView.setNestedScrollingEnabled(false);
+        soonRecyclerView.setNestedScrollingEnabled(false);
         return v;
     }
 
-    protected RecyclerView getRecyclerAvailable() {
-        return recyclerAvailable;
+    protected RecyclerView getBlockAvailableRecyclerView() {
+        return availableRecyclerView;
     }
 
-    protected RecyclerView getRecyclerSoon() {
-        return recyclerSoon;
+    protected RecyclerView getBlockSoonRecyclerView() {
+        return soonRecyclerView;
     }
 
     protected void setTitle(int stringTitleId) {

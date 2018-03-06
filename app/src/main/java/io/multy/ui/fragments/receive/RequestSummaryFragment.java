@@ -41,7 +41,7 @@ import io.multy.ui.activities.AssetRequestActivity;
 import io.multy.ui.fragments.AddressesFragment;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.asset.AssetInfoFragment;
-import io.multy.ui.fragments.dialogs.DonateThisDialog;
+import io.multy.ui.fragments.dialogs.DonateDialog;
 import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
 import io.multy.util.DeepLinkShareHelper;
@@ -202,7 +202,7 @@ public class RequestSummaryFragment extends BaseFragment {
         Analytics.getInstance(getActivity()).logReceiveSummary(AnalyticsConstants.RECEIVE_SUMMARY_WIRELESS, viewModel.getChainId());
 //        Toast.makeText(getActivity(), R.string.not_implemented, Toast.LENGTH_SHORT).show();
         if (getActivity() != null) {
-            DonateThisDialog.getInstance().show(getActivity().getSupportFragmentManager(), DonateThisDialog.TAG);
+            DonateDialog.getInstance().show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
         }
     }
 

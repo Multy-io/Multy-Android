@@ -19,16 +19,16 @@ import android.view.ViewGroup;
 import butterknife.BindArray;
 import io.multy.R;
 import io.multy.ui.adapters.ChainAdapter;
-import io.multy.ui.fragments.BaseChooseFragment;
-import io.multy.ui.fragments.dialogs.DonateThisDialog;
+import io.multy.ui.fragments.BaseChooserFragment;
+import io.multy.ui.fragments.dialogs.DonateDialog;
 
 /**
  * Created by anschutz1927@gmail.com on 03.03.18.
  */
 
-public class ChooseChainFragment extends BaseChooseFragment implements ChainAdapter.Listener {
+public class ChainChooserFragment extends BaseChooserFragment implements ChainAdapter.OnClickListener {
 
-    public static final String TAG = ChooseChainFragment.class.getSimpleName();
+    public static final String TAG = ChainChooserFragment.class.getSimpleName();
 
     @BindArray(R.array.chain_available_image_ids)
     TypedArray chainsAvailableImageIds;
@@ -46,8 +46,8 @@ public class ChooseChainFragment extends BaseChooseFragment implements ChainAdap
 
     private String chainCurrency;
 
-    public static ChooseChainFragment getInstance() {
-        return new ChooseChainFragment();
+    public static ChainChooserFragment getInstance() {
+        return new ChainChooserFragment();
     }
 
     @Nullable
@@ -60,7 +60,7 @@ public class ChooseChainFragment extends BaseChooseFragment implements ChainAdap
     }
 
     @Override
-    public void onAvailableChainClick(String clickedChainName) {
+    public void onClickAvailableChain(String clickedChainName) {
         //todo handle switch chains
         if (getActivity() != null) {
             getActivity().onBackPressed();
@@ -68,9 +68,9 @@ public class ChooseChainFragment extends BaseChooseFragment implements ChainAdap
     }
 
     @Override
-    public void onSoonChainClick(String clickedChainName) {
+    public void onClickSoonChain(String clickedChainName) {
         if (getActivity() != null) {
-            DonateThisDialog.getInstance().show(getActivity().getSupportFragmentManager(), DonateThisDialog.TAG);
+            DonateDialog.getInstance().show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
         }
     }
 
@@ -78,10 +78,10 @@ public class ChooseChainFragment extends BaseChooseFragment implements ChainAdap
         super.setTitle(R.string.chain);
         ChainAdapter chainAvailableAdapter = new ChainAdapter(ChainAdapter.ChainType.AVAILABLE, this);
         ChainAdapter chainSoonAdapter = new ChainAdapter(ChainAdapter.ChainType.SOON, this);
-        getRecyclerAvailable().setLayoutManager(new LinearLayoutManager(activity));
-        getRecyclerAvailable().setAdapter(chainAvailableAdapter);
-        getRecyclerSoon().setLayoutManager(new LinearLayoutManager(activity));
-        getRecyclerSoon().setAdapter(chainSoonAdapter);
+        getBlockAvailableRecyclerView().setLayoutManager(new LinearLayoutManager(activity));
+        getBlockAvailableRecyclerView().setAdapter(chainAvailableAdapter);
+        getBlockSoonRecyclerView().setLayoutManager(new LinearLayoutManager(activity));
+        getBlockSoonRecyclerView().setAdapter(chainSoonAdapter);
         chainAvailableAdapter.setAvailableChainsData(chainCurrency, chainsAvailableImageIds, chainsAvailableAbbrev, chainsAvailableName);
         chainSoonAdapter.setSoonChainsData(chainsSoonImageIds, chainsSoonAbbrev, chainsSoonName);
     }

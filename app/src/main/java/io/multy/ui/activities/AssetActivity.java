@@ -24,7 +24,7 @@ import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.AddressesFragment;
 import io.multy.ui.fragments.asset.AssetInfoFragment;
 import io.multy.ui.fragments.asset.TransactionInfoFragment;
-import io.multy.ui.fragments.dialogs.DonateThisDialog;
+import io.multy.ui.fragments.dialogs.DonateDialog;
 import io.multy.util.Constants;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
@@ -79,7 +79,7 @@ public class AssetActivity extends BaseActivity {
     void onClickExchange() {
         Analytics.getInstance(this).logWallet(AnalyticsConstants.WALLET_EXCHANGE, viewModel.getChainId());
 //        Toast.makeText(this, R.string.not_implemented, Toast.LENGTH_SHORT).show();
-        DonateThisDialog.getInstance().show(getSupportFragmentManager(), DonateThisDialog.TAG);
+        DonateDialog.getInstance().show(getSupportFragmentManager(), DonateDialog.TAG);
     }
 
     public void setFragment(@IdRes int container, Fragment fragment) {

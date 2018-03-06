@@ -26,12 +26,12 @@ import io.multy.ui.activities.DonationActivity;
  * Created by anschutz1927@gmail.com on 05.03.18.
  */
 
-public class DonateThisDialog extends DialogFragment {
+public class DonateDialog extends DialogFragment {
 
-    public static final String TAG = DonateThisDialog.class.getSimpleName();
+    public static final String TAG = DonateDialog.class.getSimpleName();
 
-    public static DonateThisDialog getInstance() {
-        return new DonateThisDialog();
+    public static DonateDialog getInstance() {
+        return new DonateDialog();
     }
 
     @Nullable

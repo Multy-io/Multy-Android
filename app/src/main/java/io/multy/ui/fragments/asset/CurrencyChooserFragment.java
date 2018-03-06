@@ -19,16 +19,16 @@ import android.view.ViewGroup;
 import butterknife.BindArray;
 import io.multy.R;
 import io.multy.ui.adapters.ChainAdapter;
-import io.multy.ui.fragments.BaseChooseFragment;
-import io.multy.ui.fragments.dialogs.DonateThisDialog;
+import io.multy.ui.fragments.BaseChooserFragment;
+import io.multy.ui.fragments.dialogs.DonateDialog;
 
 /**
  * Created by anschutz1927@gmail.com on 03.03.18.
  */
 
-public class ChooseCurrencyConvertFragment extends BaseChooseFragment implements ChainAdapter.Listener {
+public class CurrencyChooserFragment extends BaseChooserFragment implements ChainAdapter.OnClickListener {
 
-    public static final String TAG = ChooseCurrencyConvertFragment.class.getSimpleName();
+    public static final String TAG = CurrencyChooserFragment.class.getSimpleName();
 
     @BindArray(R.array.currencies_to_convert_available_image_ids)
     TypedArray currenciesAvailableImageIds;
@@ -43,8 +43,8 @@ public class ChooseCurrencyConvertFragment extends BaseChooseFragment implements
     @BindArray(R.array.currencies_to_convert_soon_name)
     String[] currensiesSoonName;
 
-    public static ChooseCurrencyConvertFragment getInstance() {
-        return new ChooseCurrencyConvertFragment();
+    public static CurrencyChooserFragment getInstance() {
+        return new CurrencyChooserFragment();
     }
 
     @Override
@@ -62,7 +62,7 @@ public class ChooseCurrencyConvertFragment extends BaseChooseFragment implements
     }
 
     @Override
-    public void onAvailableChainClick(String clickedChainName) {
+    public void onClickAvailableChain(String clickedChainName) {
         //todo handle switch chains
         if (getActivity() != null) {
             getActivity().onBackPressed();
@@ -70,9 +70,9 @@ public class ChooseCurrencyConvertFragment extends BaseChooseFragment implements
     }
 
     @Override
-    public void onSoonChainClick(String clickedChainName) {
+    public void onClickSoonChain(String clickedChainName) {
         if (getActivity() != null) {
-            DonateThisDialog.getInstance().show(getActivity().getSupportFragmentManager(), DonateThisDialog.TAG);
+            DonateDialog.getInstance().show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
         }
     }
 
@@ -80,10 +80,10 @@ public class ChooseCurrencyConvertFragment extends BaseChooseFragment implements
         super.setTitle(R.string.currency_to_convert);
         ChainAdapter chainAvailableAdapter = new ChainAdapter(ChainAdapter.ChainType.AVAILABLE, this);
         ChainAdapter chainSoonAdapter = new ChainAdapter(ChainAdapter.ChainType.SOON, this);
-        getRecyclerAvailable().setLayoutManager(new LinearLayoutManager(activity));
-        getRecyclerAvailable().setAdapter(chainAvailableAdapter);
-        getRecyclerSoon().setLayoutManager(new LinearLayoutManager(activity));
-        getRecyclerSoon().setAdapter(chainSoonAdapter);
+        getBlockAvailableRecyclerView().setLayoutManager(new LinearLayoutManager(activity));
+        getBlockAvailableRecyclerView().setAdapter(chainAvailableAdapter);
+        getBlockSoonRecyclerView().setLayoutManager(new LinearLayoutManager(activity));
+        getBlockSoonRecyclerView().setAdapter(chainSoonAdapter);
         chainAvailableAdapter.setAvailableChainsData(currenciesAvailableAbbrev[0], currenciesAvailableImageIds, currenciesAvailableAbbrev, currenciesAvailableName);
         chainSoonAdapter.setSoonChainsData(currenciesSoonImageIds, currenciesSoonAbbrev, currensiesSoonName);
     }

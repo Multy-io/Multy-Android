@@ -146,14 +146,14 @@ public class CreateAssetFragment extends BaseFragment {
 //        chains.add(Constants.ETH);
 //        ListDialogFragment.newInstance(chains, CurrencyType.CHAIN).show(getFragmentManager(), "");
         if (getActivity() != null) {
-            ChooseChainFragment fragment = (ChooseChainFragment) getActivity().getSupportFragmentManager()
-                    .findFragmentByTag(ChooseChainFragment.TAG);
+            ChainChooserFragment fragment = (ChainChooserFragment) getActivity().getSupportFragmentManager()
+                    .findFragmentByTag(ChainChooserFragment.TAG);
             if (fragment == null) {
-                fragment = ChooseChainFragment.getInstance();
+                fragment = ChainChooserFragment.getInstance();
             }
             fragment.setSelectedChain(textViewChainCurrency.getText().toString());
             getActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container_main, fragment).addToBackStack(ChooseChainFragment.TAG)
+                    .replace(R.id.container_main, fragment).addToBackStack(ChainChooserFragment.TAG)
                     .commit();
         }
     }

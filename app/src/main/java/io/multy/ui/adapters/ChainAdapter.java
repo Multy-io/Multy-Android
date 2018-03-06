@@ -26,7 +26,7 @@ import io.multy.R;
 public class ChainAdapter extends RecyclerView.Adapter<ChainAdapter.Holder> {
 
     private final ChainType chainType;
-    private final Listener listener;
+    private final OnClickListener listener;
     private String chainCurrency;
     private TypedArray chainsAvailableImageIds;
     private String[] chainsAvailableAbbrev;
@@ -35,7 +35,7 @@ public class ChainAdapter extends RecyclerView.Adapter<ChainAdapter.Holder> {
     private String[] chainsSoonAbbrev;
     private String[] chainsSoonName;
 
-    public ChainAdapter(ChainType chainType, Listener listener) {
+    public ChainAdapter(ChainType chainType, OnClickListener listener) {
         this.chainType = chainType;
         this.listener = listener;
     }
@@ -45,9 +45,9 @@ public class ChainAdapter extends RecyclerView.Adapter<ChainAdapter.Holder> {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         switch (chainType) {
             case AVAILABLE:
-                return new HolderAvailable(inflater.inflate(R.layout.item_chain_availabe,parent, false));
+                return new AvailableHolder(inflater.inflate(R.layout.item_chain_availabe,parent, false));
             case SOON:
-                return new HolderSoon(inflater.inflate(R.layout.item_chain_soon, parent, false));
+                return new SoonHolder(inflater.inflate(R.layout.item_chain_soon, parent, false));
         }
         return null;
     }
@@ -56,20 +56,20 @@ public class ChainAdapter extends RecyclerView.Adapter<ChainAdapter.Holder> {
     public void onBindViewHolder(Holder holder, int position) {
         switch (chainType) {
             case AVAILABLE:
-                ((HolderAvailable) holder).imageCoin.setImageDrawable(chainsAvailableImageIds.getDrawable(position));
-                ((HolderAvailable) holder).textChainAbbrev.setText(chainsAvailableAbbrev[position]);
-                ((HolderAvailable) holder).textChainName.setText(chainsAvailableName[position]);
-                ((HolderAvailable) holder).checkBox
+                ((AvailableHolder) holder).imageCoin.setImageDrawable(chainsAvailableImageIds.getDrawable(position));
+                ((AvailableHolder) holder).textChainAbbrev.setText(chainsAvailableAbbrev[position]);
+                ((AvailableHolder) holder).textChainName.setText(chainsAvailableName[position]);
+                ((AvailableHolder) holder).checkBox
                         .setChecked(chainCurrency != null && chainsAvailableAbbrev[position].equals(chainCurrency));
                 holder.divider.setVisibility(position == chainsAvailableAbbrev.length - 1 ? View.INVISIBLE : View.VISIBLE);
-                holder.itemView.setOnClickListener(v -> listener.onAvailableChainClick(chainsAvailableAbbrev[position]));
+                holder.itemView.setOnClickListener(v -> listener.onClickAvailableChain(chainsAvailableAbbrev[position]));
                 break;
             case SOON:
-                ((HolderSoon) holder).imageCoin.setImageDrawable(chainsSoonImageIds.getDrawable(position));
-                ((HolderSoon) holder).textChainAbbrev.setText(chainsSoonAbbrev[position]);
-                ((HolderSoon) holder).textChainName.setText(chainsSoonName[position]);
+                ((SoonHolder) holder).imageCoin.setImageDrawable(chainsSoonImageIds.getDrawable(position));
+                ((SoonHolder) holder).textChainAbbrev.setText(chainsSoonAbbrev[position]);
+                ((SoonHolder) holder).textChainName.setText(chainsSoonName[position]);
                 holder.divider.setVisibility(position == chainsSoonAbbrev.length - 1 ? View.INVISIBLE : View.VISIBLE);
-                holder.itemView.setOnClickListener(v -> listener.onSoonChainClick(chainsSoonAbbrev[position]));
+                holder.itemView.setOnClickListener(v -> listener.onClickSoonChain(chainsSoonAbbrev[position]));
                 break;
         }
     }
@@ -100,20 +100,20 @@ public class ChainAdapter extends RecyclerView.Adapter<ChainAdapter.Holder> {
         notifyDataSetChanged();
     }
 
-    class HolderAvailable extends Holder {
+    class AvailableHolder extends Holder {
 
         @BindView(R.id.checkbox)
         CheckBox checkBox;
 
-        HolderAvailable(View itemView) {
+        AvailableHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
     }
 
-    class HolderSoon extends Holder {
+    class SoonHolder extends Holder {
 
-        HolderSoon(View itemView) {
+        SoonHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
@@ -138,8 +138,8 @@ public class ChainAdapter extends RecyclerView.Adapter<ChainAdapter.Holder> {
 
     public enum ChainType {AVAILABLE, SOON}
 
-    public interface Listener {
-        void onAvailableChainClick(String clickedChainName);
-        void onSoonChainClick(String clickedChainName);
+    public interface OnClickListener {
+        void onClickAvailableChain(String clickedChainName);
+        void onClickSoonChain(String clickedChainName);
     }
 }

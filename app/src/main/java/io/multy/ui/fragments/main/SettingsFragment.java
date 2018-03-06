@@ -133,13 +133,13 @@ public class SettingsFragment extends BaseFragment implements BaseActivity.OnLoc
         v.setEnabled(false);
         v.postDelayed(() -> v.setEnabled(true), 500);
         if (getActivity() != null) {
-            ChooseExchangeFragment fragment = (ChooseExchangeFragment) getActivity().getSupportFragmentManager()
-                    .findFragmentByTag(ChooseExchangeFragment.TAG);
+            ExchangeChooserFragment fragment = (ExchangeChooserFragment) getActivity().getSupportFragmentManager()
+                    .findFragmentByTag(ExchangeChooserFragment.TAG);
             if (fragment == null) {
-                fragment = ChooseExchangeFragment.getInstance();
+                fragment = ExchangeChooserFragment.getInstance();
             }
             getActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container_frame, fragment).addToBackStack(ChooseExchangeFragment.TAG)
+                    .replace(R.id.container_frame, fragment).addToBackStack(ExchangeChooserFragment.TAG)
                     .commit();
         }
     }

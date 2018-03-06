@@ -158,13 +158,13 @@ public class AssetSettingsFragment extends BaseFragment {
         v.setEnabled(false);
         if (getActivity() != null) {
             Analytics.getInstance(getActivity()).logWalletSettings(AnalyticsConstants.WALLET_SETTINGS_FIAT, viewModel.getChainId());
-            ChooseCurrencyConvertFragment fragment = (ChooseCurrencyConvertFragment) getActivity().getSupportFragmentManager()
-                    .findFragmentByTag(ChooseCurrencyConvertFragment.TAG);
+            CurrencyChooserFragment fragment = (CurrencyChooserFragment) getActivity().getSupportFragmentManager()
+                    .findFragmentByTag(CurrencyChooserFragment.TAG);
             if (fragment == null) {
-                fragment = ChooseCurrencyConvertFragment.getInstance();
+                fragment = CurrencyChooserFragment.getInstance();
             }
             getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.container_full, fragment)
-                    .addToBackStack(ChooseChainFragment.TAG).commit();
+                    .addToBackStack(ChainChooserFragment.TAG).commit();
         }
     }
 
