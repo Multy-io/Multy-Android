@@ -62,6 +62,11 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Analytics.getInstance(this).logEvent(AnalyticsConstants.ASUS_LOG,
+                "MainActivityOnCreate",
+                "MainActivity68");
+
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         setupFooter();

@@ -16,6 +16,8 @@ import javax.annotation.Nullable;
 
 import io.multy.Multy;
 import io.multy.util.Constants;
+import io.multy.util.analytics.Analytics;
+import io.multy.util.analytics.AnalyticsConstants;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
@@ -31,6 +33,9 @@ public class RealmManager {
                 realm = Realm.getInstance(getConfiguration(context));
             } catch (Throwable t) {
                 t.printStackTrace();
+                Analytics.getInstance(context).logEvent(AnalyticsConstants.ERROR_ASUS_MEMO,
+                        "DatabaseHelper37",
+                        t.getMessage().replaceAll(" ", "_"));
             }
         }
         return realm;
@@ -52,6 +57,9 @@ public class RealmManager {
                     .schemaVersion(1)
                     .build();
         } catch (Exception e) {
+            Analytics.getInstance(context).logEvent(AnalyticsConstants.ERROR_ASUS_MEMO,
+                    "RealmManager60",
+                    e.getMessage().replaceAll(" ", "_"));
             e.printStackTrace();
         }
 

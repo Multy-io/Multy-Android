@@ -39,8 +39,8 @@ public class DatabaseHelper {
             realm = Realm.getInstance(RealmManager.getConfiguration(context));
         } catch (Exception exception) {
             exception.printStackTrace();
-            Analytics.getInstance(context).logEvent(AnalyticsConstants.ERROR_DATABASE_DECRYPT,
-                    AnalyticsConstants.ERROR_DATABASE_DECRYPT,
+            Analytics.getInstance(context).logEvent(AnalyticsConstants.ERROR_ASUS_MEMO,
+                    "DatabaseHelper42",
                     exception.getMessage().replaceAll(" ", "_"));
         }
     }

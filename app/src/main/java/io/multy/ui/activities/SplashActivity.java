@@ -57,7 +57,14 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
         ButterKnife.bind(this);
 
+        Analytics.getInstance(this).logEvent(AnalyticsConstants.ASUS_LOG,
+                "SplashActivityOnCreate",
+                "SplashActivity61");
+
         if (FirstLaunchHelper.preventRootIfDetected(this) && !BuildConfig.DEBUG) {
+            Analytics.getInstance(this).logEvent(AnalyticsConstants.ASUS_LOG,
+                    "ROOT_DETECTED",
+                    "SplashActivity67");
             RealmManager.clear();
             Prefs.clear();
             return;
@@ -171,6 +178,9 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void showMainActivity() {
+        Analytics.getInstance(this).logEvent(AnalyticsConstants.ASUS_LOG,
+                "ShowMainActivity",
+                "SplashActivity183");
 
         Thread background = new Thread() {
             public void run() {

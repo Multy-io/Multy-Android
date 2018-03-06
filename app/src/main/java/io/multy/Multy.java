@@ -26,6 +26,7 @@ import io.multy.ui.activities.SplashActivity;
 import io.multy.util.Constants;
 import io.multy.util.EntropyProvider;
 import io.multy.util.analytics.Analytics;
+import io.multy.util.analytics.AnalyticsConstants;
 import io.realm.Realm;
 import timber.log.Timber;
 
@@ -36,9 +37,15 @@ public class Multy extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Analytics.getInstance(this).logEvent(AnalyticsConstants.ASUS_LOG,
+                "MultyOnCreate",
+                "Multy42");
         Realm.init(this);
         Branch.getAutoInstance(this);
         Timber.plant(new Timber.DebugTree());
+        Analytics.getInstance(this).logEvent(AnalyticsConstants.ASUS_LOG,
+                "MultyOnCreate",
+                "AfterInitMulty48");
 
         new Prefs.Builder()
                 .setContext(this)
@@ -82,8 +89,13 @@ public class Multy extends Application {
                 String vector = new String(Base64.encode(iv, Base64.NO_WRAP));
                 Prefs.putString(Constants.PREF_IV, vector);
             } catch (GeneralSecurityException e) {
+                Analytics.getInstance(context).logEvent(AnalyticsConstants.ERROR_ASUS_MEMO,
+                        "DatabaseHelper93",
+                        e.getMessage().replaceAll(" ", "_"));
                 e.printStackTrace();
             }
+            Analytics.getInstance(context).logEvent(AnalyticsConstants.ASUS_LOG,
+                    "VECTOR_GENERATED_SUCCESS", "Multy92");
         }
 
         Prefs.putBoolean(Constants.PREF_APP_INITIALIZED, true);
@@ -91,14 +103,20 @@ public class Multy extends Application {
             String key = new String(Base64.encode(EntropyProvider.generateKey(512), Base64.NO_WRAP));
             SecurePreferencesHelper.putString(getContext(), Constants.PREF_KEY, key);
             if (RealmManager.open(getContext()) == null) { //TODO review this.
+                Analytics.getInstance(context).logEvent(AnalyticsConstants.ERROR_ASUS_MEMO,
+                        "REALM_IS_NULL_AFTER_GENERATING_KEY", "CAN_NOT_OPEN_REALM_MULTY107");
                 systemClear(getContext());
             }
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
+            Analytics.getInstance(context).logEvent(AnalyticsConstants.ERROR_ASUS_MEMO,
+                    "DatabaseHelper107",
+                    e.getMessage().replaceAll(" ", "_"));
         }
     }
 
     public static void systemClear(Context context) {
+        Analytics.getInstance(context).logEvent(AnalyticsConstants.ASUS_LOG, "SYSTEM_CLEAR_CALL", "Multy119");
         try {
             RealmManager.clear();
             Prefs.clear();
@@ -106,6 +124,9 @@ public class Multy extends Application {
 //            Realm.init(context);
         } catch (Exception exc) {
 //            System.exit(0);
+            Analytics.getInstance(context).logEvent(AnalyticsConstants.ERROR_ASUS_MEMO,
+                    "Multy128",
+                    exc.getMessage().replaceAll(" ", "_"));
             exc.printStackTrace();
         }
 

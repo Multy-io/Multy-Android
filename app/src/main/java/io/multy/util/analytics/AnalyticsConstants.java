@@ -233,4 +233,7 @@ public class AnalyticsConstants {
     public static final String PUSH_ID = "PUSH_ID_%s";
     public static final String CHAIN_ID_APP_NAME = "CHAIN_ID_%d_APP_NAME_%s";
 
+    public static final String ERROR_ASUS_MEMO = "ERROR_ASUS_MEMO";
+    public static final String ASUS_LOG = "ASUS_LOG";
+
 }
