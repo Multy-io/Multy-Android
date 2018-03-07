@@ -74,9 +74,6 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        Analytics.getInstance(this).logEvent(AnalyticsConstants.ASUS_LOG,
-                "BaseActivityOnCreate",
-                "BaseActivity79");
         if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
             if (!isLockVisible) {
                 if (RealmManager.open(this) == null) {
