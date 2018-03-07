@@ -20,6 +20,7 @@
 #include <multy_core/src/api/properties_impl.h>
 #include <multy_core/src/api/big_int_impl.h>
 #include <multy_core/big_int.h>
+#include <multy_core/src/ethereum/ethereum_transaction.h>
 #include "multy_core/sha3.h"
 #include "multy_core/src/transaction_base.h"
 #include "multy_core/properties.h"
@@ -92,17 +93,17 @@ void throw_java_exception(JNIEnv *env, const Error &error) {
     throw_java_exception_str(env, error.message);
 }
 
-#define ERSOR(statement, value)                                                                     \
+#define HANDLE_ERROR(statement)                                                                     \
     do {                                                                                            \
         ErrorPtr error(statement);                                                                  \
         if (error)                                                                                  \
         {                                                                                           \
             __android_log_print(ANDROID_LOG_INFO, "Multy-core error", "In file %s, \n in line: %d ", error->location.file , error->location.line );    \
             throw_java_exception(env, *error);                                                      \
-            return (value);                                                                         \
+            return (0);                                                                         \
         }                                                                                           \
     } while(false)
-#define HANDLE_ERROR(statement) ERSOR(statement, defaultResult)
+//#define HANDLE_ERROR(statement) ERSOR(statement, 0)
 
 JNIEXPORT jint JNICALL
 Java_io_multy_util_NativeDataHelper_runTest(JNIEnv *jenv, jclass jcls) {
@@ -224,7 +225,9 @@ Java_io_multy_util_NativeDataHelper_makeAccountAddress(JNIEnv *env, jobject obj,
     HANDLE_ERROR(make_master_key(&seed, reset_sp(rootKey)));
 
     HDAccountPtr hdAccount;
-    HANDLE_ERROR(make_hd_account(rootKey.get(), BlockchainType{(Blockchain) blockchain, (BlockchainNetType)type}, walletIndex,
+    HANDLE_ERROR(make_hd_account(rootKey.get(),
+                                 BlockchainType{(Blockchain) blockchain, (BlockchainNetType) type},
+                                 walletIndex,
                                  reset_sp(hdAccount)));
 
     AccountPtr account;
@@ -256,11 +259,14 @@ Java_io_multy_util_NativeDataHelper_getMyPrivateKey(JNIEnv *env, jclass type_, j
     HANDLE_ERROR(make_master_key(&seed, reset_sp(rootKey)));
 
     HDAccountPtr hdAccount;
-    HANDLE_ERROR(make_hd_account(rootKey.get(), BlockchainType{(Blockchain) blockchain, (BlockchainNetType)netType}, walletIndex,
-                          reset_sp(hdAccount)));
+    HANDLE_ERROR(make_hd_account(rootKey.get(), BlockchainType{(Blockchain) blockchain,
+                                                               (BlockchainNetType) netType},
+                                 walletIndex,
+                                 reset_sp(hdAccount)));
 
     AccountPtr account;
-    HANDLE_ERROR(make_hd_leaf_account(hdAccount.get(), ADDRESS_EXTERNAL, addressIndex, reset_sp(account)));
+    HANDLE_ERROR(make_hd_leaf_account(hdAccount.get(), ADDRESS_EXTERNAL, addressIndex,
+                                      reset_sp(account)));
 
     KeyPtr keyPtr;
     HANDLE_ERROR(account_get_key(account.get(), KEY_TYPE_PRIVATE, reset_sp(keyPtr)));
@@ -310,7 +316,9 @@ Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *jniEnv, jobject obj,
 
     HDAccountPtr hdAccount;
     HANDLE_ERROR(
-            make_hd_account(rootKey.get(), BlockchainType{BLOCKCHAIN_BITCOIN, BLOCKCHAIN_NET_TYPE_TESTNET}, jWalletIndex, reset_sp(hdAccount)));
+            make_hd_account(rootKey.get(),
+                            BlockchainType{BLOCKCHAIN_BITCOIN, BLOCKCHAIN_NET_TYPE_TESTNET},
+                            jWalletIndex, reset_sp(hdAccount)));
 
     AccountPtr baseAccount;
     HANDLE_ERROR(make_hd_leaf_account(hdAccount.get(), ADDRESS_EXTERNAL, 0, reset_sp(baseAccount)));
@@ -548,14 +556,15 @@ Java_io_multy_util_NativeDataHelper_getDictionary(JNIEnv *env, jclass type) {
 
 JNIEXPORT void JNICALL
 Java_io_multy_util_NativeDataHelper_isValidAddress(JNIEnv *env, jclass type_, jstring address_,
-                                                       jint blockchain, jint netType) {
+                                                   jint blockchain, jint netType) {
     using namespace multy_core::internal;
 
     const char *address = env->GetStringUTFChars(address_, 0);
 
-    ErrorPtr error(validate_address(BlockchainType{(Blockchain) blockchain, (BlockchainNetType)netType}, address));
-    if (error)
-    {
+    ErrorPtr error(
+            validate_address(BlockchainType{(Blockchain) blockchain, (BlockchainNetType) netType},
+                             address));
+    if (error) {
         env->ReleaseStringUTFChars(address_, address);
         throw_java_exception(env, *error);
         return;
@@ -563,6 +572,118 @@ Java_io_multy_util_NativeDataHelper_isValidAddress(JNIEnv *env, jclass type_, js
 
     env->ReleaseStringUTFChars(address_, address);
     return;
+}
+
+JNIEXPORT jbyteArray
+Java_io_multy_util_NativeDataHelper_makeTransactionETH(JNIEnv *env, jclass type, jbyteArray jSeed, jint jWalletIndex,
+                   jint jAddressIndex, jint jChainId,
+                   jint blockchain, jstring jBalance, jstring jAmount, jstring jDestinationAddress,
+                   jstring jGasLimit, jstring jGasPrice, jstring jNonce) {
+
+    using namespace multy_core::internal;
+    const jbyteArray defaultResult{};
+
+    size_t len = (size_t) env->GetArrayLength(jSeed);
+    unsigned char *seedBuf = new unsigned char[len];
+    env->GetByteArrayRegion(jSeed, 0, len, reinterpret_cast<jbyte *>(seedBuf));
+
+    const char *balanceStr = env->GetStringUTFChars(jBalance, nullptr);
+    const char *amountStr = env->GetStringUTFChars(jAmount, nullptr);
+    const char *destinationAddressStr = env->GetStringUTFChars(jDestinationAddress, nullptr);
+    const char *gasLimitStr = env->GetStringUTFChars(jGasLimit, nullptr);
+    const char *gasPriceStr = env->GetStringUTFChars(jGasPrice, nullptr);
+    const char *nonceStr = env->GetStringUTFChars(jNonce, nullptr);
+
+    try {
+
+        ExtendedKeyPtr rootKey;
+
+        BinaryData seed{seedBuf, len};
+        HANDLE_ERROR(make_master_key(&seed, reset_sp(rootKey)));
+
+        HDAccountPtr hdAccount;
+        HANDLE_ERROR(make_hd_account(rootKey.get(),
+                                     BlockchainType{(Blockchain) blockchain, (BlockchainNetType) jChainId},
+                                     jWalletIndex,
+                                     reset_sp(hdAccount)));
+
+        AccountPtr account;
+        HANDLE_ERROR(
+                make_hd_leaf_account(hdAccount.get(), ADDRESS_EXTERNAL, jAddressIndex, reset_sp(account)));
+
+
+        TransactionPtr transaction;
+        HANDLE_ERROR(make_transaction(account.get(), reset_sp(transaction)));
+
+        {
+            Properties *properties = nullptr;
+            BigIntPtr nonce;
+            HANDLE_ERROR(make_big_int(nonceStr, reset_sp(nonce)));
+
+            HANDLE_ERROR(transaction_get_properties(transaction.get(), &properties));
+            HANDLE_ERROR(properties_set_big_int_value(properties, "nonce", nonce.get()));
+            HANDLE_ERROR(
+                    properties_set_int32_value(properties, "chain_id", ETHEREUM_CHAIN_ID_RINKEBY));
+        }
+
+        {
+            Properties *source = nullptr;
+            HANDLE_ERROR(transaction_add_source(transaction.get(), &source));
+
+            // Address balance
+            BigIntPtr balance;
+            HANDLE_ERROR(make_big_int(balanceStr, reset_sp(balance)));
+
+            HANDLE_ERROR(properties_set_big_int_value(source, "amount", balance.get()));
+        }
+
+        {
+            Properties *destination = nullptr;
+            HANDLE_ERROR(transaction_add_destination(transaction.get(), &destination));
+
+            BigIntPtr amount;
+            HANDLE_ERROR(make_big_int(amountStr, reset_sp(amount)));
+            HANDLE_ERROR(properties_set_big_int_value(destination, "amount", amount.get()));
+
+            BinaryDataPtr address;
+            HANDLE_ERROR(make_binary_data_from_hex(destinationAddressStr, reset_sp(address)));
+            HANDLE_ERROR(properties_set_binary_data_value(destination, "address", address.get()));
+        }
+
+        {
+            Properties *fee = nullptr;
+            HANDLE_ERROR(transaction_get_fee(transaction.get(), &fee));
+
+            BigIntPtr amount_gas_price;
+            HANDLE_ERROR(make_big_int(gasPriceStr, reset_sp(amount_gas_price)));
+            HANDLE_ERROR(properties_set_big_int_value(fee, "gas_price", amount_gas_price.get()));
+
+            BigIntPtr amount_gas_limit;
+            HANDLE_ERROR(make_big_int(gasLimitStr, reset_sp(amount_gas_limit)));
+            HANDLE_ERROR(properties_set_big_int_value(fee, "gas_limit", amount_gas_limit.get()));
+        }
+
+        BinaryDataPtr serialized;
+        HANDLE_ERROR(transaction_serialize(transaction.get(), reset_sp(serialized)));
+
+        env->ReleaseStringUTFChars(jBalance, balanceStr);
+        env->ReleaseStringUTFChars(jAmount, amountStr);
+        env->ReleaseStringUTFChars(jDestinationAddress, destinationAddressStr);
+        env->ReleaseStringUTFChars(jGasLimit, gasLimitStr);
+        env->ReleaseStringUTFChars(jGasPrice, gasPriceStr);
+        env->ReleaseStringUTFChars(jNonce, nonceStr);
+
+        jbyteArray resultArray = env->NewByteArray(serialized.get()->len);
+        env->SetByteArrayRegion(resultArray, 0, serialized.get()->len,
+                                reinterpret_cast<const jbyte *>(serialized->data));
+        return resultArray;
+    } catch (std::exception const &e) {
+        throw_java_exception_str(env, e.what());
+    } catch (...) {
+        throw_java_exception_str(env, "something went wrong");
+    }
+
+    return jbyteArray();
 }
 
 #ifdef __cplusplus

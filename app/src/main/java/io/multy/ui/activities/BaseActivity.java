@@ -37,6 +37,8 @@ import io.multy.storage.SecurePreferencesHelper;
 import io.multy.ui.adapters.PinDotsAdapter;
 import io.multy.ui.adapters.PinNumbersAdapter;
 import io.multy.util.Constants;
+import io.multy.util.analytics.Analytics;
+import io.multy.util.analytics.AnalyticsConstants;
 
 public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter.OnFingerPrintClickListener, PinNumbersAdapter.OnNumberClickListener, PinNumbersAdapter.OnBackSpaceClickListener {
 
@@ -72,6 +74,9 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        Analytics.getInstance(this).logEvent(AnalyticsConstants.ASUS_LOG,
+                "BaseActivityOnCreate",
+                "BaseActivity79");
         if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
             if (!isLockVisible) {
                 if (RealmManager.open(this) == null) {

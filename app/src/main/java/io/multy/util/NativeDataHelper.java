@@ -66,10 +66,11 @@ public class NativeDataHelper {
         public int getValue() {
             return value;
         }
-    };
+    }
 
-    public enum BlockchainNetType
-    {
+    ;
+
+    public enum BlockchainNetType {
         BLOCKCHAIN_NET_TYPE_MAINNET(0),
         BLOCKCHAIN_NET_TYPE_TESTNET(1);
 
@@ -82,7 +83,9 @@ public class NativeDataHelper {
         public int getValue() {
             return value;
         }
-    };
+    }
+
+    ;
 
     public static native String makeMnemonic() throws JniException;
 
@@ -107,5 +110,7 @@ public class NativeDataHelper {
     public static native String getDictionary() throws JniException;
 
     public static native void isValidAddress(String address, int blockchain, int type) throws JniException;
+
+    public static native byte[] makeTransactionETH(byte[] seed, int walletIndex, int addressIndex, int chainId, int networkId, String balance, String amount, String destionationAddress, String gasLimit, String gasPrice, String nonce);
 
 }
