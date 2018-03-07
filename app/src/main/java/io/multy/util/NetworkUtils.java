@@ -39,15 +39,15 @@ public class NetworkUtils {
     }
 
     private static boolean isServerOnline() {
-        try {
-            Runtime runtime = Runtime.getRuntime();
-            Process process = runtime.exec("/system/bin/ping -c 1 google.com");
-            process.waitFor();
-            int exit = process.exitValue();
-            return exit == 0;
-        } catch (InterruptedException | IOException e) {
-            e.printStackTrace();
-        }
-        return false;
+//        try {
+//            Runtime runtime = Runtime.getRuntime();
+//            Process process = runtime.exec("/system/bin/ping -c 1 google.com");
+//            process.waitFor();
+//            int exit = process.exitValue();
+//            return exit == 0;
+//        } catch (InterruptedException | IOException e) {
+//            e.printStackTrace();
+//        }
+        return true;
     }
 }

@@ -16,6 +16,8 @@ import javax.annotation.Nullable;
 
 import io.multy.Multy;
 import io.multy.util.Constants;
+import io.multy.util.analytics.Analytics;
+import io.multy.util.analytics.AnalyticsConstants;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
