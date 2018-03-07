@@ -251,7 +251,7 @@
     <string name="send_donation">Send</string>
     <string name="error_donation">Error sending donation</string>
     <string name="error_donation_message">Error while sending donation. Please try again later.</string>
-    <string name="feature_challenge">Feature Challenge</string>
-    <string name="feature_challenge_message">In computer vision and image processing, a feature is a piece of information which is relevant for solving the computational task related to a certain application.</string>
+    <string name="feature_challenge">Vote for features</string>
+    <string name="feature_challenge_message">We want you to speak up. By voting with your crypto, you can give a feedback on features you want the most and support project at the same time. Your vote will help us to choose the right path.</string>
 
 </resources>
