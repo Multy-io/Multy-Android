@@ -33,9 +33,6 @@ public class RealmManager {
                 realm = Realm.getInstance(getConfiguration(context));
             } catch (Throwable t) {
                 t.printStackTrace();
-                Analytics.getInstance(context).logEvent(AnalyticsConstants.ERROR_ASUS_MEMO,
-                        "DatabaseHelper37",
-                        t.getMessage().replaceAll(" ", "_"));
             }
         }
         return realm;
@@ -57,9 +54,6 @@ public class RealmManager {
                     .schemaVersion(1)
                     .build();
         } catch (Exception e) {
-            Analytics.getInstance(context).logEvent(AnalyticsConstants.ERROR_ASUS_MEMO,
-                    "RealmManager60",
-                    e.getMessage().replaceAll(" ", "_"));
             e.printStackTrace();
         }
 
