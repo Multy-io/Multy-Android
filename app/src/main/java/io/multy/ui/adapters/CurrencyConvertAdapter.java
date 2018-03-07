@@ -25,17 +25,17 @@ import io.multy.R;
 
 public class CurrencyConvertAdapter extends RecyclerView.Adapter<CurrencyConvertAdapter.Holder> {
 
-    private final ChainType chainType;
-    private final OnClickListener listener;
+    private final CurrencyType chainType;
+    private final OnItemClickListener listener;
     private String currency;
-    private TypedArray currenciesAvailableImageIds;
-    private String[] currenciesAvailableAbbrev;
-    private String[] currenciesAvailableName;
-    private TypedArray currenciesSoonImageIds;
-    private String[] currenciesSoonAbbrev;
-    private String[] currenciesSoonName;
+    private TypedArray availableCurrencyImageIds;
+    private String[] availableCurrencyAbbrevs;
+    private String[] availableCurencyNames;
+    private TypedArray disabledCurrencyImageIds;
+    private String[] disabledCurrencyAbbrevs;
+    private String[] disabledCurrencyNames;
 
-    public CurrencyConvertAdapter(ChainType chainType, OnClickListener listener) {
+    public CurrencyConvertAdapter(CurrencyType chainType, OnItemClickListener listener) {
         this.chainType = chainType;
         this.listener = listener;
     }
@@ -45,9 +45,9 @@ public class CurrencyConvertAdapter extends RecyclerView.Adapter<CurrencyConvert
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         switch (chainType) {
             case AVAILABLE:
-                return new AvailableHolder(inflater.inflate(R.layout.item_chain_availabe,parent, false));
+                return new AvailableCurrencyHolder(inflater.inflate(R.layout.item_chain_availabe,parent, false));
             case SOON:
-                return new SoonHolder(inflater.inflate(R.layout.item_chain_soon, parent, false));
+                return new DiasabledCurrencyHolder(inflater.inflate(R.layout.item_chain_soon, parent, false));
         }
         return null;
     }
@@ -56,20 +56,20 @@ public class CurrencyConvertAdapter extends RecyclerView.Adapter<CurrencyConvert
     public void onBindViewHolder(Holder holder, int position) {
         switch (chainType) {
             case AVAILABLE:
-                ((AvailableHolder) holder).image.setImageDrawable(currenciesAvailableImageIds.getDrawable(position));
-                ((AvailableHolder) holder).textAbbrev.setText(currenciesAvailableAbbrev[position]);
-                ((AvailableHolder) holder).textName.setText(currenciesAvailableName[position]);
-                ((AvailableHolder) holder).checkBox
-                        .setChecked(currency != null && currenciesAvailableAbbrev[position].equals(currency));
-                holder.divider.setVisibility(position == currenciesAvailableAbbrev.length - 1 ? View.INVISIBLE : View.VISIBLE);
-                holder.itemView.setOnClickListener(v -> listener.onClickAvailableCurrency(currenciesAvailableAbbrev[position]));
+                ((AvailableCurrencyHolder) holder).image.setImageDrawable(availableCurrencyImageIds.getDrawable(position));
+                ((AvailableCurrencyHolder) holder).textAbbrev.setText(availableCurrencyAbbrevs[position]);
+                ((AvailableCurrencyHolder) holder).textName.setText(availableCurencyNames[position]);
+                ((AvailableCurrencyHolder) holder).checkBox
+                        .setChecked(currency != null && availableCurrencyAbbrevs[position].equals(currency));
+                holder.divider.setVisibility(position == availableCurrencyAbbrevs.length - 1 ? View.INVISIBLE : View.VISIBLE);
+                holder.itemView.setOnClickListener(v -> listener.onClickAvailableCurrency(availableCurrencyAbbrevs[position]));
                 break;
             case SOON:
-                ((SoonHolder) holder).image.setImageDrawable(currenciesSoonImageIds.getDrawable(position));
-                ((SoonHolder) holder).textAbbrev.setText(currenciesSoonAbbrev[position]);
-                ((SoonHolder) holder).textName.setText(currenciesSoonName[position]);
-                holder.divider.setVisibility(position == currenciesSoonAbbrev.length - 1 ? View.INVISIBLE : View.VISIBLE);
-                holder.itemView.setOnClickListener(v -> listener.onClickSoonCurrency(currenciesSoonAbbrev[position]));
+                ((DiasabledCurrencyHolder) holder).image.setImageDrawable(disabledCurrencyImageIds.getDrawable(position));
+                ((DiasabledCurrencyHolder) holder).textAbbrev.setText(disabledCurrencyAbbrevs[position]);
+                ((DiasabledCurrencyHolder) holder).textName.setText(disabledCurrencyNames[position]);
+                holder.divider.setVisibility(position == disabledCurrencyAbbrevs.length - 1 ? View.INVISIBLE : View.VISIBLE);
+                holder.itemView.setOnClickListener(v -> listener.onClickDisabledCurrency(disabledCurrencyAbbrevs[position]));
                 break;
         }
     }
@@ -78,42 +78,42 @@ public class CurrencyConvertAdapter extends RecyclerView.Adapter<CurrencyConvert
     public int getItemCount() {
         switch (chainType) {
             case AVAILABLE:
-                return currenciesAvailableName == null ? 0 : currenciesAvailableName.length;
+                return availableCurencyNames == null ? 0 : availableCurencyNames.length;
             case SOON:
-                return currenciesSoonName == null ? 0 : currenciesSoonName.length;
+                return disabledCurrencyNames == null ? 0 : disabledCurrencyNames.length;
         }
         return 0;
     }
 
     public void setAvailableChainsData(String chainCurrency, TypedArray chainsAvailableImageIds, String[] chainsAvailableAbbrev, String[] chainsAvailableName) {
         this.currency = chainCurrency;
-        this.currenciesAvailableImageIds = chainsAvailableImageIds;
-        this.currenciesAvailableAbbrev = chainsAvailableAbbrev;
-        this.currenciesAvailableName = chainsAvailableName;
+        this.availableCurrencyImageIds = chainsAvailableImageIds;
+        this.availableCurrencyAbbrevs = chainsAvailableAbbrev;
+        this.availableCurencyNames = chainsAvailableName;
         notifyDataSetChanged();
     }
 
     public void setSoonChainsData(TypedArray chainsSoonImageIds, String[] chainsSoonAbbrev, String[] chainsSoonName) {
-        this.currenciesSoonImageIds = chainsSoonImageIds;
-        this.currenciesSoonAbbrev = chainsSoonAbbrev;
-        this.currenciesSoonName = chainsSoonName;
+        this.disabledCurrencyImageIds = chainsSoonImageIds;
+        this.disabledCurrencyAbbrevs = chainsSoonAbbrev;
+        this.disabledCurrencyNames = chainsSoonName;
         notifyDataSetChanged();
     }
 
-    class AvailableHolder extends Holder {
+    class AvailableCurrencyHolder extends Holder {
 
         @BindView(R.id.checkbox)
         CheckBox checkBox;
 
-        AvailableHolder(View itemView) {
+        AvailableCurrencyHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
     }
 
-    class SoonHolder extends Holder {
+    class DiasabledCurrencyHolder extends Holder {
 
-        SoonHolder(View itemView) {
+        DiasabledCurrencyHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
@@ -136,10 +136,10 @@ public class CurrencyConvertAdapter extends RecyclerView.Adapter<CurrencyConvert
         }
     }
 
-    public enum ChainType {AVAILABLE, SOON}
+    public enum CurrencyType {AVAILABLE, SOON}
 
-    public interface OnClickListener {
-        void onClickAvailableCurrency(String clickedChainName);
-        void onClickSoonCurrency(String clickedChainName);
+    public interface OnItemClickListener {
+        void onClickAvailableCurrency(String clickedDisabledCurrencyName);
+        void onClickDisabledCurrency(String clickedDisabledCurrencyName);
     }
 }

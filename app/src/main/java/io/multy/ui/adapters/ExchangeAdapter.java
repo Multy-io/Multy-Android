@@ -24,12 +24,12 @@ import io.multy.R;
 public class ExchangeAdapter extends RecyclerView.Adapter<ExchangeAdapter.Holder> {
 
     private ExchangeType type;
-    private Listener listener;
-    private String[] exchangeSoonName;
+    private OnItemClickListener listener;
+    private String[] disabledExchangeNames;
     private String currentExchange;
-    private String[] exchangeAvailableName;
+    private String[] availableExchangeNames;
 
-    public ExchangeAdapter(ExchangeType type, Listener listener) {
+    public ExchangeAdapter(ExchangeType type, OnItemClickListener listener) {
         this.type = type;
         this.listener = listener;
     }
@@ -39,9 +39,9 @@ public class ExchangeAdapter extends RecyclerView.Adapter<ExchangeAdapter.Holder
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         switch (type) {
             case AVAILABLE:
-                return new AvailableHolder(inflater.inflate(R.layout.item_exchange_availabe, parent, false));
+                return new AvailableExchangeHolder(inflater.inflate(R.layout.item_exchange_availabe, parent, false));
             case SOON:
-                return new SoonHolder(inflater.inflate(R.layout.item_exchange_soon, parent, false));
+                return new DisabledExchangeHolder(inflater.inflate(R.layout.item_exchange_soon, parent, false));
         }
         return null;
     }
@@ -50,16 +50,16 @@ public class ExchangeAdapter extends RecyclerView.Adapter<ExchangeAdapter.Holder
     public void onBindViewHolder(Holder holder, int position) {
         switch (type) {
             case AVAILABLE:
-                ((AvailableHolder) holder).checkBox.setChecked(exchangeAvailableName[position].equals(currentExchange));
-                holder.textExchange.setText(exchangeAvailableName[position]);
-                ((AvailableHolder) holder).itemView.setOnClickListener(v ->
-                        listener.onAvailableExchangeClick(exchangeAvailableName[position]));
-                holder.divider.setVisibility(exchangeAvailableName.length - 1 == position ? View.INVISIBLE : View.VISIBLE);
+                ((AvailableExchangeHolder) holder).checkBox.setChecked(availableExchangeNames[position].equals(currentExchange));
+                holder.textExchange.setText(availableExchangeNames[position]);
+                ((AvailableExchangeHolder) holder).itemView.setOnClickListener(v ->
+                        listener.onAvailableExchangeClick(availableExchangeNames[position]));
+                holder.divider.setVisibility(availableExchangeNames.length - 1 == position ? View.INVISIBLE : View.VISIBLE);
                 break;
             case SOON:
-                holder.textExchange.setText(exchangeSoonName[position]);
-                holder.itemView.setOnClickListener(v -> listener.onSoonExchangeClick(exchangeSoonName[position]));
-                holder.divider.setVisibility(exchangeSoonName.length - 1 == position ? View.INVISIBLE : View.VISIBLE);
+                holder.textExchange.setText(disabledExchangeNames[position]);
+                holder.itemView.setOnClickListener(v -> listener.onDisabledExchangeClick(disabledExchangeNames[position]));
+                holder.divider.setVisibility(disabledExchangeNames.length - 1 == position ? View.INVISIBLE : View.VISIBLE);
                 break;
         }
     }
@@ -68,37 +68,37 @@ public class ExchangeAdapter extends RecyclerView.Adapter<ExchangeAdapter.Holder
     public int getItemCount() {
         switch (type) {
             case AVAILABLE:
-                return exchangeAvailableName == null ? 0 : exchangeAvailableName.length;
+                return availableExchangeNames == null ? 0 : availableExchangeNames.length;
             case SOON:
-                return exchangeSoonName == null ? 0 : exchangeSoonName.length;
+                return disabledExchangeNames == null ? 0 : disabledExchangeNames.length;
         }
         return 0;
     }
 
     public void setAvailableData(String currentExchange, String[] exchangeAvailableName) {
         this.currentExchange = currentExchange;
-        this.exchangeAvailableName = exchangeAvailableName;
+        this.availableExchangeNames = exchangeAvailableName;
         notifyDataSetChanged();
     }
 
     public void setSoonData(String[] exchangeSoonName) {
-        this.exchangeSoonName = exchangeSoonName;
+        this.disabledExchangeNames = exchangeSoonName;
         notifyDataSetChanged();
     }
 
-    class AvailableHolder extends Holder {
+    class AvailableExchangeHolder extends Holder {
 
         @BindView(R.id.checkbox)
         CheckBox checkBox;
 
-        AvailableHolder(View itemView) {
+        AvailableExchangeHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
     }
 
-    class SoonHolder extends Holder {
-        SoonHolder(View itemView) {
+    class DisabledExchangeHolder extends Holder {
+        DisabledExchangeHolder(View itemView) {
             super(itemView);
         }
     }
@@ -118,8 +118,8 @@ public class ExchangeAdapter extends RecyclerView.Adapter<ExchangeAdapter.Holder
 
     public enum ExchangeType {AVAILABLE, SOON}
 
-    public interface Listener {
-        void onAvailableExchangeClick(String clickedChainName);
-        void onSoonExchangeClick(String clickedChainName);
+    public interface OnItemClickListener {
+        void onAvailableExchangeClick(String clickedExchangeName);
+        void onDisabledExchangeClick(String clickedExchangeName);
     }
 }

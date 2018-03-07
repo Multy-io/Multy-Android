@@ -25,7 +25,7 @@ import io.multy.ui.fragments.dialogs.DonateDialog;
  * Created by anschutz1927@gmail.com on 05.03.18.
  */
 
-public class ExchangeChooserFragment extends BaseChooserFragment implements ExchangeAdapter.Listener {
+public class ExchangeChooserFragment extends BaseChooserFragment implements ExchangeAdapter.OnItemClickListener {
 
     public static final String TAG = ExchangeChooserFragment.class.getSimpleName();
 
@@ -48,14 +48,14 @@ public class ExchangeChooserFragment extends BaseChooserFragment implements Exch
     }
 
     @Override
-    public void onAvailableExchangeClick(String clickedChainName) {
+    public void onAvailableExchangeClick(String clickedExchangeName) {
         if (getActivity() != null) {
             getActivity().onBackPressed();
         }
     }
 
     @Override
-    public void onSoonExchangeClick(String clickedChainName) {
+    public void onDisabledExchangeClick(String clickedExchangeName) {
         if (getActivity() != null) {
             DonateDialog.getInstance().show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
         }

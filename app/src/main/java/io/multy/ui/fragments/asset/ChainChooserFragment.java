@@ -26,7 +26,7 @@ import io.multy.ui.fragments.dialogs.DonateDialog;
  * Created by anschutz1927@gmail.com on 03.03.18.
  */
 
-public class ChainChooserFragment extends BaseChooserFragment implements ChainAdapter.OnClickListener {
+public class ChainChooserFragment extends BaseChooserFragment implements ChainAdapter.OnItemClickListener {
 
     public static final String TAG = ChainChooserFragment.class.getSimpleName();
 
