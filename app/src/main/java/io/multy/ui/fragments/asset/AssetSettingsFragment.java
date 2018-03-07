@@ -154,9 +154,18 @@ public class AssetSettingsFragment extends BaseFragment {
     }
 
     @OnClick(R.id.button_currency)
-    void onClickCurrency() {
-        Analytics.getInstance(getActivity()).logWalletSettings(AnalyticsConstants.WALLET_SETTINGS_FIAT, viewModel.getChainId());
-        chooseCurrencyToConvert();
+    void onClickCurrency(View v) {
+        v.setEnabled(false);
+        if (getActivity() != null) {
+            Analytics.getInstance(getActivity()).logWalletSettings(AnalyticsConstants.WALLET_SETTINGS_FIAT, viewModel.getChainId());
+            CurrencyChooserFragment fragment = (CurrencyChooserFragment) getActivity().getSupportFragmentManager()
+                    .findFragmentByTag(CurrencyChooserFragment.TAG);
+            if (fragment == null) {
+                fragment = CurrencyChooserFragment.getInstance();
+            }
+            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.container_full, fragment)
+                    .addToBackStack(ChainChooserFragment.TAG).commit();
+        }
     }
 
     @OnClick(R.id.button_key)

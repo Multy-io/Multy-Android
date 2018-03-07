@@ -60,7 +60,7 @@
     <string name="request_summ">Request Summ</string>
     <string name="share">Share:</string>
     <string name="address_book">Address \nBook</string>
-    <string name="wireless_scan">Wireless \nScan</string>
+    <string name="wireless_scan">Wireless Scan</string>
     <string name="more_options">More \nOptions</string>
     <string name="slide_to_send">Slide to Send</string>
     <string name="sending_from">Sending From</string>
@@ -68,7 +68,7 @@
     <string name="recent_addresses">Recent Addresses</string>
     <string name="scan_qr">Scan \nQR</string>
     <string name="hint_search_or_enter_address">Search or Enter Address Here</string>
-    <string name="btc">BТС</string>
+    <string name="btc">BTC</string>
     <string name="pay_for_commission">Pay for commission</string>
     <string name="spendable">Spendable:</string>
     <string name="max">MAX</string>
@@ -76,24 +76,6 @@
     <string name="choose_amount">Please, choose amount</string>
     <string name="choose_transaction_speed">Please choose Fee Rate.</string>
     <string name="usd">USD</string>
-
-
-    <string-array name="fees">
-        <item>Very Fast • 10 min</item>
-        <item>Fast • 6 hour</item>
-        <item>Medium • 5 days</item>
-        <item>Slow • 1 week</item>
-        <item>Very Slow • 2 weeks</item>
-        <!--<item>Custom</item>-->
-    </string-array>
-    <string-array name="blocks">
-        <item>6 blocks</item>
-        <item>10 blocks</item>
-        <item>20 blocks</item>
-        <item>50 blocks</item>
-        <item>70 blocks</item>
-        <!--<item> </item>-->
-    </string-array>
 
     <string name="send_to">Send to</string>
     <string name="send_from">Send from</string>
@@ -251,6 +233,16 @@
     <string name="send_donation">Send</string>
     <string name="error_donation">Error sending donation</string>
     <string name="error_donation_message">Error while sending donation. Please try again later.</string>
+    <string name="by_donationg">By donationg for this option you\nhelp the development team\nwork more diligently and\ndevelop new application\nfunctionality</string>
+    <string name="DONATE">DONATE</string>
+    <string name="CANCEL">CANCEL</string>
+    <string name="donate_for_this_option">Donate for this option</string>
+    <string name="chain">Chain</string>
+    <string name="excepteur_sint">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
+    <string name="address_book_title">Address Book</string>
+    <string name="sync_my_address_book">Sync my address book</string>
+    <string name="work_in_progress">(work in progress)</string>
+    <string name="currency_to_convert">Currency to convert</string>
     <string name="feature_challenge">Vote for features</string>
     <string name="feature_challenge_message">We want you to speak up. By voting with your crypto, you can give a feedback on features you want the most and support project at the same time. Your vote will help us to choose the right path.</string>
 

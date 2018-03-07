@@ -30,8 +30,6 @@
                 android:id="@+id/button_warn"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
                 android:background="@drawable/shape_warn"
                 android:clickable="true"
                 android:elevation="4dp"
@@ -40,7 +38,11 @@
                 android:paddingBottom="8dp"
                 android:paddingLeft="12dp"
                 android:paddingRight="12dp"
-                android:paddingTop="8dp">
+                android:paddingTop="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:visibility="gone">
 
                 <ImageView
                     android:id="@+id/image_warn"
@@ -72,38 +74,78 @@
 
             </android.support.constraint.ConstraintLayout>
 
-            <ImageView
-                android:id="@+id/logo"
-                android:layout_width="match_parent"
-                android:layout_height="120dp"
-                android:src="@drawable/logo_blue"
-                app:layout_constraintBottom_toTopOf="@id/divider_gray"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+            <android.support.v4.view.ViewPager
+                android:id="@+id/view_pager"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginBottom="12dp"
+                android:layout_marginTop="12dp"
+                android:clipToPadding="false"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                app:layout_constraintBottom_toTopOf="@id/image_plus"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/button_warn" />
 
-            <TextView
-                android:id="@+id/logo_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:gravity="center"
-                android:text="@string/logo_title"
-                android:textAllCaps="true"
-                android:textColor="@color/blue_light"
-                android:textSize="12sp"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/logo" />
+            <ImageView
+                android:id="@+id/image_signal"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_marginBottom="14dp"
+                app:layout_constraintBottom_toTopOf="@id/divider_gray"
+                app:layout_constraintEnd_toStartOf="@+id/image_dot_portfolio"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:srcCompat="@drawable/ic_currency_icon" />
+
+            <ImageView
+                android:id="@+id/image_dot_portfolio"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_marginBottom="14dp"
+                android:layout_marginStart="12dp"
+                app:layout_constraintBottom_toTopOf="@id/divider_gray"
+                app:layout_constraintEnd_toStartOf="@+id/image_dot_chart"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/image_signal"
+                app:srcCompat="@drawable/circle_blue_light" />
+
+            <ImageView
+                android:id="@+id/image_dot_chart"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_marginBottom="14dp"
+                android:layout_marginStart="12dp"
+                android:alpha="0.3"
+                app:layout_constraintBottom_toTopOf="@id/divider_gray"
+                app:layout_constraintEnd_toStartOf="@+id/image_plus"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/image_dot_portfolio"
+                app:srcCompat="@drawable/circle_blue_light" />
+
+            <ImageView
+                android:id="@+id/image_plus"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_marginBottom="14dp"
+                android:layout_marginStart="12dp"
+                android:scaleType="center"
+                app:layout_constraintBottom_toTopOf="@id/divider_gray"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/image_dot_chart"
+                app:srcCompat="@drawable/ic_plus_light" />
 
             <View
                 android:id="@+id/divider_gray"
                 android:layout_width="0dp"
                 android:layout_height="0.5dp"
-                android:layout_marginBottom="30dp"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="280dp"
                 android:background="@color/gray_divider"
-                app:layout_constraintTop_toBottomOf="@+id/logo_title" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:layout_editor_absoluteY="260dp" />
 
             <TextView
                 android:id="@+id/text_wallets"

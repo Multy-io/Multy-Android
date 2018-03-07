@@ -15,8 +15,16 @@
         <item name="android:statusBarColor">@color/color_gray_status</item>
     </style>
 
-    <style name="BottomSheetDialog" parent="@android:style/Theme.Dialog">
+    <style name="KeyBottomSheetDialog" parent="@android:style/Theme.Dialog">
         <item name="android:windowBackground">@color/red_transparent</item>
+    </style>
+
+    <style name="ActionsBottomSheetDialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowBackground">@color/blue_transparent</item>
+    </style>
+
+    <style name="DonateThisDialog">
+        <item name="android:windowBackground">@color/blue_transparent</item>
     </style>
 
     <style name="TransparentActionBar" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
@@ -371,6 +379,23 @@
     <style name="SelectableItem">
         <item name="android:foreground">?attr/selectableItemBackground</item>
         <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
+
+    <style name="ChooseChainText">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">56dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingEnd">20dp</item>
+        <item name="android:paddingStart">20dp</item>
+        <item name="android:textColor">@color/blue_light</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="DividerChain">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">#cfd9e8</item>
     </style>
 
 </resources>

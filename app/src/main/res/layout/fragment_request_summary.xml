@@ -269,6 +269,7 @@
             android:drawableTop="@drawable/ic_address_book2"
             android:paddingTop="@dimen/margin_12dp"
             android:text="@string/address_book"
+            android:textSize="12sp"
             app:layout_constraintHorizontal_chainStyle="spread"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@+id/button_scan_wireless"
@@ -277,23 +278,37 @@
         <TextView
             android:id="@+id/button_scan_wireless"
             style="@style/ShareButton"
-            android:layout_marginTop="@dimen/margin_11dp"
+            android:layout_marginTop="10dp"
             android:drawablePadding="@dimen/margin_9dp"
-            android:drawableTop="@drawable/ic_nfc"
+            android:drawableTop="@drawable/ic_donation_icon_smallest"
             android:paddingTop="@dimen/margin_10dp"
             android:text="@string/wireless_scan"
+            android:textSize="12sp"
             app:layout_constraintLeft_toRightOf="@+id/button_address"
             app:layout_constraintRight_toLeftOf="@+id/button_options"
             app:layout_constraintTop_toBottomOf="@id/text_send_via" />
 
         <TextView
+            android:id="@+id/text_donate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="(work in progress)"
+            android:textColor="@color/red_warn"
+            android:textSize="10sp"
+            app:layout_constraintBottom_toBottomOf="@id/button_scan_wireless"
+            app:layout_constraintEnd_toEndOf="@id/button_scan_wireless"
+            app:layout_constraintStart_toStartOf="@id/button_scan_wireless" />
+
+        <TextView
             android:id="@+id/button_options"
             style="@style/ShareButton"
-            android:layout_marginTop="@dimen/margin_11dp"
+            android:layout_marginTop="10dp"
             android:drawablePadding="@dimen/margin_7dp"
             android:drawableTop="@drawable/ic_options"
             android:paddingTop="@dimen/margin_10dp"
             android:text="@string/more_options"
+            android:textSize="12sp"
             app:layout_constraintLeft_toRightOf="@+id/button_scan_wireless"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/text_send_via" />

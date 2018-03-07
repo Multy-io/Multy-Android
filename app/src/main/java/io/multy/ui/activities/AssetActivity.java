@@ -13,7 +13,6 @@ import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -25,6 +24,7 @@ import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.AddressesFragment;
 import io.multy.ui.fragments.asset.AssetInfoFragment;
 import io.multy.ui.fragments.asset.TransactionInfoFragment;
+import io.multy.ui.fragments.dialogs.DonateDialog;
 import io.multy.util.Constants;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
@@ -78,7 +78,8 @@ public class AssetActivity extends BaseActivity {
     @OnClick(R.id.exchange)
     void onClickExchange() {
         Analytics.getInstance(this).logWallet(AnalyticsConstants.WALLET_EXCHANGE, viewModel.getChainId());
-        Toast.makeText(this, R.string.not_implemented, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, R.string.not_implemented, Toast.LENGTH_SHORT).show();
+        DonateDialog.getInstance().show(getSupportFragmentManager(), DonateDialog.TAG);
     }
 
     public void setFragment(@IdRes int container, Fragment fragment) {

@@ -226,5 +226,4 @@ public class WalletViewModel extends BaseViewModel {
         clipboard.setPrimaryClip(clip);
         Toast.makeText(activity, R.string.address_copied, Toast.LENGTH_SHORT).show();
     }
-
 }

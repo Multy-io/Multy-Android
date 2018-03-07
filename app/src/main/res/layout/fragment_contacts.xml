@@ -4,7 +4,8 @@
   ~  See LICENSE for details
   -->
 
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -12,46 +13,89 @@
     android:background="@color/background_main"
     tools:showIn="io.multy.android.MainActivity">
 
-
-    <ImageView
-        android:id="@+id/image_address"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:src="@drawable/address_book_es"
-        app:layout_constraintBottom_toTopOf="@id/center"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
-
-    <View
-        android:id="@+id/center"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <TextView
         android:id="@+id/title"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="16dp"
+        android:text="@string/address_book_title"
+        android:textColor="@color/black"
+        android:gravity="center_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="56dp" />
+
+    <TextView
+        android:id="@+id/text_no_contacts"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="88dp"
         android:text="@string/no_contacts"
         android:textSize="24sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/center" />
+        app:layout_constraintTop_toBottomOf="@id/title" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/text_excepteur"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:gravity="center"
-        android:lineSpacingExtra="8sp"
-        android:padding="48dp"
-        android:text="@string/no_contacts_message"
-        android:textColor="@color/text_grey_transparent_50"
+        android:lineSpacingExtra="15sp"
+        android:text="@string/excepteur_sint"
+        android:textColor="@color/text_grey_dark"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/title" />
+        app:layout_constraintTop_toBottomOf="@id/text_no_contacts" />
+
+    <FrameLayout
+        android:id="@+id/card_donation"
+        android:layout_width="0dp"
+        android:layout_height="102dp"
+        android:layout_marginEnd="39dp"
+        android:layout_marginStart="39dp"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/button_bottom_cornars_blue"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_excepteur" />
+
+    <ImageView
+        android:id="@+id/image_donate"
+        android:layout_width="30dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="11dp"
+        app:layout_constraintEnd_toEndOf="@id/card_donation"
+        app:layout_constraintStart_toStartOf="@id/card_donation"
+        app:layout_constraintTop_toTopOf="@id/card_donation"
+        app:srcCompat="@drawable/ic_donation_icon" />
+
+    <TextView
+        android:id="@+id/text_sync"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/sync_my_address_book"
+        android:textColor="@color/blue_dark"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@id/card_donation"
+        app:layout_constraintStart_toStartOf="@id/card_donation"
+        app:layout_constraintTop_toBottomOf="@id/image_donate" />
+
+    <TextView
+        android:id="@+id/text_notification"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/work_in_progress"
+        android:textColor="@color/red_warn"
+        app:layout_constraintBottom_toBottomOf="@id/card_donation"
+        app:layout_constraintEnd_toEndOf="@id/card_donation"
+        app:layout_constraintStart_toStartOf="@id/card_donation"
+        app:layout_constraintTop_toBottomOf="@id/text_sync"
+        app:layout_constraintVertical_bias="0.0" />
 
 </android.support.constraint.ConstraintLayout>
