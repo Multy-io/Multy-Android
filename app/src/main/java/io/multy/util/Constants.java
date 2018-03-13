@@ -17,6 +17,8 @@ public class Constants {
 
     public static final String DONTAION_ADDRESS = "mzqiDnETWkunRDZxjUQ34JzN1LDevh5DpU";
 
+    public static final int ANDROID_OS_ID = 1;
+
     public static final int POSITION_ASSETS = 0;
     public static final int POSITION_FEED = 1;
     public static final int POSITION_CONTACTS = 3;
@@ -57,6 +59,7 @@ public class Constants {
     public static final String EXTRA_ADDRESS = "EXTRA_ADDRESS";
     public static final String EXTRA_AMOUNT = "EXTRA_AMOUNT";
     public static final String EXTRA_RESTORE = "EXTRA_RESTORE";
+    public static final String EXTRA_DONATION_CODE = "EXTRA_DONATION_CODE";
 
     public static final String DEEP_LINK_QR_CODE = "QR_CODE";
 
@@ -90,4 +93,13 @@ public class Constants {
     public static final String PUSH_TOPIC = "btcTransactionUpdate-";
     public static final String MULTY_IO_URL = "http://multy.io";
     public static final String CHAIN_ID = "CHAIN_ID";
+
+    public static final int DONATION_WITH_TRANSACTION = 10000;
+    public static final int DONATION_ADDING_ACTIVITY = 10200;
+    public static final int DONATION_ADDING_CONTACTS = 10201;
+    public static final int DONATION_ADDING_PORTFOLIO = 10202;
+    public static final int DONATION_ADDING_CHARTS = 10203;
+    public static final int DONATION_ADDING_IMPORT_WALLET = 10300;
+    public static final int DONATION_ADDING_EXCHANGE = 10301;
+    public static final int DONATION_ADDING_WIRELESS_SCAN = 10302;
 }

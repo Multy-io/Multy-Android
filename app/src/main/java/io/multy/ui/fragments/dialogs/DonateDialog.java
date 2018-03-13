@@ -21,6 +21,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.ui.activities.DonationActivity;
+import io.multy.util.Constants;
 
 /**
  * Created by anschutz1927@gmail.com on 05.03.18.
@@ -30,8 +31,12 @@ public class DonateDialog extends DialogFragment {
 
     public static final String TAG = DonateDialog.class.getSimpleName();
 
-    public static DonateDialog getInstance() {
-        return new DonateDialog();
+    public static DonateDialog getInstance(int donationCode) {
+        DonateDialog dialog = new DonateDialog();
+        Bundle args = new Bundle();
+        args.putInt(Constants.EXTRA_DONATION_CODE, donationCode);
+        dialog.setArguments(args);
+        return dialog;
     }
 
     @Nullable
@@ -56,7 +61,11 @@ public class DonateDialog extends DialogFragment {
     @OnClick(R.id.button_positive)
     void onPositiveClick(View v) {
         v.setEnabled(false);
-        DonationActivity.showDonation(getContext());
+        int donationCode = 0;
+        if (getArguments() != null) {
+            donationCode = getArguments().getInt(Constants.EXTRA_DONATION_CODE, 0);
+        }
+        DonationActivity.showDonation(getContext(), donationCode);
         dismiss();
     }
     @OnClick(R.id.button_negative)

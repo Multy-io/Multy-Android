@@ -26,6 +26,8 @@ import android.widget.TextView;
 
 import com.samwolfand.oneprefs.Prefs;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -39,6 +41,7 @@ import io.multy.model.entities.ByteSeed;
 import io.multy.model.entities.Mnemonic;
 import io.multy.model.entities.UserId;
 import io.multy.model.responses.AuthResponse;
+import io.multy.model.responses.ServerConfigResponse;
 import io.multy.storage.RealmManager;
 import io.multy.storage.SettingsDao;
 import io.multy.ui.fragments.BaseSeedFragment;
@@ -262,6 +265,10 @@ public class SeedValidationFragment extends BaseSeedFragment {
                         settingsDao.setUserId(new UserId(userId));
                         settingsDao.setByteSeed(new ByteSeed(seed));
                         settingsDao.setMnemonic(new Mnemonic(phrase));
+                        ServerConfigResponse serverConfig = EventBus.getDefault().removeStickyEvent(ServerConfigResponse.class);
+                        if (serverConfig != null) {
+                            settingsDao.saveDonation(serverConfig.getDonate());
+                        }
                         Prefs.putString(Constants.PREF_AUTH, response.body().getToken());
                         seedModel.isLoading.setValue(false);
                         seedModel.failed.setValue(false);

@@ -42,6 +42,8 @@ public class CurrencyChooserFragment extends BaseChooserFragment implements Curr
     String[] disabledCurrencyAbbrevs;
     @BindArray(R.array.currencies_to_convert_soon_name)
     String[] disabledCurrencyNames;
+    @BindArray(R.array.currencies_to_convert_soon_donate_addresses)
+    TypedArray disabledCurrencyDonationCodes;
 
     public static CurrencyChooserFragment getInstance() {
         return new CurrencyChooserFragment();
@@ -70,9 +72,9 @@ public class CurrencyChooserFragment extends BaseChooserFragment implements Curr
     }
 
     @Override
-    public void onClickDisabledCurrency(String clickedDisabledCurrencyName) {
+    public void onClickDisabledCurrency(String clickedDisabledCurrencyName, int donationCode) {
         if (getActivity() != null) {
-            DonateDialog.getInstance().show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
+            DonateDialog.getInstance(donationCode).show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
         }
     }
 
@@ -84,7 +86,7 @@ public class CurrencyChooserFragment extends BaseChooserFragment implements Curr
         getBlockAvailableRecyclerView().setAdapter(chainAvailableAdapter);
         getBlockSoonRecyclerView().setLayoutManager(new LinearLayoutManager(activity));
         getBlockSoonRecyclerView().setAdapter(chainSoonAdapter);
-        chainAvailableAdapter.setAvailableChainsData(availableCurrencyAbbrevs[0], availableCurrencyImageIds, availableCurrencyAbbrevs, availableCurrencyNames);
-        chainSoonAdapter.setSoonChainsData(disabledCurrencyImageIds, disabledCurrencyAbbrevs, disabledCurrencyNames);
+        chainAvailableAdapter.setAvailableCurrenciesData(availableCurrencyAbbrevs[0], availableCurrencyImageIds, availableCurrencyAbbrevs, availableCurrencyNames);
+        chainSoonAdapter.setSoonCurrenciesData(disabledCurrencyImageIds, disabledCurrencyAbbrevs, disabledCurrencyNames, disabledCurrencyDonationCodes);
     }
 }

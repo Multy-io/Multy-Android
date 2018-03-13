@@ -68,6 +68,18 @@
         <item>@drawable/chain_etc</item>
         <item>@drawable/chain_erc_20</item>
     </array>
+    <array name="chain_soon_donate_addresses">
+        <item>10100</item>
+        <item>10101</item>
+        <item>10102</item>
+        <item>10103</item>
+        <item>10104</item>
+        <item>10105</item>
+        <item>10106</item>
+        <item>10107</item>
+        <item>10108</item>
+        <item>10109</item>
+    </array>
 
     <string-array name="exchange_available_name">
         <item>Poloniex</item>
@@ -84,6 +96,18 @@
         <item>Kraken</item>
         <item>HitBTC</item>
     </string-array>
+    <array name="exchange_soon_donate_addresses">
+        <item>10400</item>
+        <item>10401</item>
+        <item>10402</item>
+        <item>10403</item>
+        <item>10404</item>
+        <item>10405</item>
+        <item>10406</item>
+        <item>10407</item>
+        <item>10408</item>
+        <item>10409</item>
+    </array>
 
     <string-array name="currencies_to_convert_available_abbrev">
         <item>USD</item>
@@ -105,6 +129,10 @@
     <array name="currencies_to_convert_soon_image_ids">
         <item>@drawable/flag_eur</item>
         <item>@drawable/chain_eth</item>
+    </array>
+    <array name="currencies_to_convert_soon_donate_addresses">
+        <item>10110</item>
+        <item>10111</item>
     </array>
 
 </resources>

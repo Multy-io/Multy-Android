@@ -42,7 +42,8 @@ public class ChainChooserFragment extends BaseChooserFragment implements ChainAd
     String[] chainsSoonAbbrev;
     @BindArray(R.array.chain_soon_name)
     String[] chainsSoonName;
-
+    @BindArray(R.array.chain_soon_donate_addresses)
+    TypedArray chainsSoonDonationCodes;
 
     private String chainCurrency;
 
@@ -68,9 +69,9 @@ public class ChainChooserFragment extends BaseChooserFragment implements ChainAd
     }
 
     @Override
-    public void onClickSoonChain(String clickedChainName) {
+    public void onClickSoonChain(String clickedChainName, int donationCode) {
         if (getActivity() != null) {
-            DonateDialog.getInstance().show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
+            DonateDialog.getInstance(donationCode).show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
         }
     }
 
@@ -83,7 +84,7 @@ public class ChainChooserFragment extends BaseChooserFragment implements ChainAd
         getBlockSoonRecyclerView().setLayoutManager(new LinearLayoutManager(activity));
         getBlockSoonRecyclerView().setAdapter(chainSoonAdapter);
         chainAvailableAdapter.setAvailableChainsData(chainCurrency, chainsAvailableImageIds, chainsAvailableAbbrev, chainsAvailableName);
-        chainSoonAdapter.setSoonChainsData(chainsSoonImageIds, chainsSoonAbbrev, chainsSoonName);
+        chainSoonAdapter.setSoonChainsData(chainsSoonImageIds, chainsSoonAbbrev, chainsSoonName, chainsSoonDonationCodes);
     }
 
     public void setSelectedChain(String chainCurrency) {

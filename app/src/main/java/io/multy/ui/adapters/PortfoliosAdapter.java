@@ -11,9 +11,9 @@ import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import io.multy.R;
 import io.multy.ui.fragments.dialogs.DonateDialog;
+import io.multy.util.Constants;
 
 /**
  * Created by appscrunch on 16.11.17.
@@ -51,11 +51,19 @@ public class PortfoliosAdapter extends PagerAdapter {
         container.addView(layout);
         ButterKnife.bind(this, layout);
         textDonate.setText(itemsName[position]);
+        int donationCode;
         if (position == 0) {
             imageBackground.setImageResource(R.drawable.portfolio_donation_image);
+            donationCode = Constants.DONATION_ADDING_PORTFOLIO;
         } else {
             imageBackground.setImageResource(R.drawable.charts_donation_image);
+            donationCode = Constants.DONATION_ADDING_CHARTS;
         }
+        layout.setOnClickListener(v -> {
+            v.setEnabled(false);
+            v.postDelayed(() -> v.setEnabled(true), 500);
+            DonateDialog.getInstance(donationCode).show(fragmentManager, DonateDialog.TAG);
+        });
         return layout;
     }
 
@@ -67,12 +75,5 @@ public class PortfoliosAdapter extends PagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         return itemsName[position];
-    }
-
-    @OnClick(R.id.card_donation)
-    void onClickDonate(View v) {
-        v.setEnabled(false);
-        v.postDelayed(() -> v.setEnabled(true), 500);
-        DonateDialog.getInstance().show(fragmentManager, DonateDialog.TAG);
     }
 }

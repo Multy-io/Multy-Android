@@ -5,12 +5,15 @@
   ~ See LICENSE for details
   -->
 
-<ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="?android:attr/colorControlHighlight">
-    <item android:id="@+id/android:mask">
+<ripple
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="?android:colorControlHighlight">
+    <item android:id="@android:id/mask">
         <shape android:shape="rectangle">
-            <corners android:radius="12dp" />
             <solid android:color="#000000" />
+            <corners
+                android:bottomLeftRadius="12dp"
+                android:bottomRightRadius="12dp" />
         </shape>
     </item>
     <item>

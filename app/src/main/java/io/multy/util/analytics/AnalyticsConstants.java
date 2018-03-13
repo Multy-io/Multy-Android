@@ -233,4 +233,19 @@ public class AnalyticsConstants {
     public static final String PUSH_ID = "PUSH_ID_%s";
     public static final String CHAIN_ID_APP_NAME = "CHAIN_ID_%d_APP_NAME_%s";
 
+    //donation events
+    public static final String FEATURE_ID = "FEATURE_ID_%d";
+
+    //donation alert
+    public static final String DONATION_ALERT_NAME = "Donation_Alert_SC";
+    public static final String DONATION_ALERT = "Screen_Donation_Alert";
+    public static final String BUTTON_DONATE = "Button_Donate";
+
+    //send donation screen
+    public static final String DONATION_SEND_SCREEN_NAME = "Send_Donation_SC";
+    public static final String DONATION_SEND_SCREEN = "Screen_Send_Donation";
+    public static final String BUTTON_SEND_DONATE = "Button_Send_Donate";
+
+    //donation success screen
+    public static final String DONATION_SUCCESS_SCREEN = "Screen_Donation_Success";
 }

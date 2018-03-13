@@ -21,7 +21,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -29,10 +28,13 @@ import android.widget.TextView;
 
 import com.samwolfand.oneprefs.Prefs;
 
+import org.greenrobot.eventbus.EventBus;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
+import io.multy.model.responses.ServerConfigResponse;
 import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.main.AssetsFragment;
 import io.multy.ui.fragments.main.ContactsFragment;
@@ -41,8 +43,6 @@ import io.multy.ui.fragments.main.FeedFragment;
 import io.multy.ui.fragments.main.SettingsFragment;
 import io.multy.util.AnimationUtils;
 import io.multy.util.Constants;
-import io.multy.util.JniException;
-import io.multy.util.NativeDataHelper;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 
@@ -72,6 +72,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         onTabSelected(tabLayout.getTabAt(0));
 
         subscribeToPushNotifications();
+        handleDonate();
 
         if (Prefs.getBoolean(Constants.PREF_LOCK)) {
             showLock();
@@ -124,6 +125,16 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
                 .beginTransaction()
                 .replace(container, fragment)
                 .commit();
+    }
+
+    private void handleDonate() {
+        if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
+            ServerConfigResponse serverConfig = EventBus.getDefault().removeStickyEvent(ServerConfigResponse.class);
+            if (serverConfig != null) {
+                RealmManager.open(this);
+                RealmManager.getSettingsDao().saveDonation(serverConfig.getDonate());
+            }
+        }
     }
 
     @Override
