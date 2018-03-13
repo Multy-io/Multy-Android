@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~  Copyright 2017 Idealnaya rabota LLC
-  ~  Licensed under Multy.io license.
-  ~  See LICENSE for details
+  ~ Copyright 2018 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
   -->
 
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -15,47 +14,48 @@
 
     <TextView
         android:id="@+id/title"
-        android:textSize="18sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="56dp"
         android:layout_marginStart="16dp"
+        android:gravity="center_vertical"
         android:text="@string/address_book_title"
         android:textColor="@color/black"
-        android:gravity="center_vertical"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/image_logo"
         android:layout_width="wrap_content"
-        android:layout_height="56dp" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/text_no_contacts"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:srcCompat="@drawable/address_book_es" />
 
     <TextView
         android:id="@+id/text_no_contacts"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="88dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="40dp"
         android:text="@string/no_contacts"
         android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@+id/card_donation"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/title" />
-
-    <TextView
-        android:id="@+id/text_excepteur"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:gravity="center"
-        android:lineSpacingExtra="15sp"
-        android:text="@string/excepteur_sint"
-        android:textColor="@color/text_grey_dark"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_no_contacts" />
+        app:layout_constraintTop_toBottomOf="@+id/image_logo" />
 
     <FrameLayout
         android:id="@+id/card_donation"
         android:layout_width="0dp"
         android:layout_height="102dp"
-        android:layout_marginBottom="90dp"
+        android:layout_marginBottom="70dp"
         android:layout_marginEnd="40dp"
         android:layout_marginStart="40dp"
         android:background="@drawable/button_bottom_cornars_blue"

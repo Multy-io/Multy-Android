@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Idealnaya rabota LLC
+ * Copyright 2018 Idealnaya rabota LLC
  * Licensed under Multy.io license.
  * See LICENSE for details
  */
@@ -64,10 +64,10 @@ public class SettingAssetAddressesFragment extends BaseFragment {
         recyclerAddresses.setAdapter(addressesAdapter);
         viewModel = ViewModelProviders.of(getActivity()).get(WalletViewModel.class);
         viewModel.getWalletLive().observe(this, walletRealmObject -> {
-            if (walletRealmObject == null || walletRealmObject.getAddresses() == null) {
+            if (walletRealmObject == null || walletRealmObject.getBtcWallet().getAddresses() == null) {
                 return;
             }
-            addressesAdapter.setData(walletRealmObject.getAddresses());
+            addressesAdapter.setData(walletRealmObject.getBtcWallet().getAddresses());
         });
     }
 

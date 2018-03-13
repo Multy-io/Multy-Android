@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!--
+  ~ Copyright 2018 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="io.multy.ui.activities.CreateAssetActivity">
-
-</android.support.constraint.ConstraintLayout>
+    tools:context="io.multy.ui.activities.CreateAssetActivity" />

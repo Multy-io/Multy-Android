@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Idealnaya rabota LLC
+ * Copyright 2018 Idealnaya rabota LLC
  * Licensed under Multy.io license.
  * See LICENSE for details
  */
@@ -7,6 +7,7 @@
 package io.multy.ui.adapters;
 
 import android.content.res.TypedArray;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,10 +28,13 @@ public class ChainAdapter extends RecyclerView.Adapter<ChainAdapter.Holder> {
 
     private final ChainType chainType;
     private final OnItemClickListener listener;
+    private int chainNet;
     private String chainCurrency;
     private TypedArray availableChainsImageIds;
     private String[] availableChainsAbbrev;
     private String[] availableChainsName;
+    private int[] availableChainNets;
+    private int[] availableChainIds;
     private TypedArray disabledChainsImageIds;
     private String[] disabledChainsAbbrev;
     private String[] disabledChainsName;
@@ -41,8 +45,9 @@ public class ChainAdapter extends RecyclerView.Adapter<ChainAdapter.Holder> {
         this.listener = listener;
     }
 
+    @NonNull
     @Override
-    public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         switch (chainType) {
             case AVAILABLE:
@@ -54,24 +59,13 @@ public class ChainAdapter extends RecyclerView.Adapter<ChainAdapter.Holder> {
     }
 
     @Override
-    public void onBindViewHolder(Holder holder, int position) {
+    public void onBindViewHolder(@NonNull Holder holder, int position) {
         switch (chainType) {
             case AVAILABLE:
-                ((AvailableChainHolder) holder).imageCoin.setImageDrawable(availableChainsImageIds.getDrawable(position));
-                ((AvailableChainHolder) holder).textChainAbbrev.setText(availableChainsAbbrev[position]);
-                ((AvailableChainHolder) holder).textChainName.setText(availableChainsName[position]);
-                ((AvailableChainHolder) holder).checkBox
-                        .setChecked(chainCurrency != null && availableChainsAbbrev[position].equals(chainCurrency));
-                holder.divider.setVisibility(position == availableChainsAbbrev.length - 1 ? View.INVISIBLE : View.VISIBLE);
-                holder.itemView.setOnClickListener(v -> listener.onClickAvailableChain(availableChainsAbbrev[position]));
+                bindAvailable((AvailableChainHolder) holder, position);
                 break;
             case SOON:
-                ((DisabledChainHolder) holder).imageCoin.setImageDrawable(disabledChainsImageIds.getDrawable(position));
-                ((DisabledChainHolder) holder).textChainAbbrev.setText(disabledChainsAbbrev[position]);
-                ((DisabledChainHolder) holder).textChainName.setText(disabledChainsName[position]);
-                holder.divider.setVisibility(position == disabledChainsAbbrev.length - 1 ? View.INVISIBLE : View.VISIBLE);
-                holder.itemView.setOnClickListener(v -> listener.onClickSoonChain(disabledChainsAbbrev[position],
-                        disabledChainsDonationCodes.getInteger(position, 0)));
+                bindDisable((DisabledChainHolder) holder, position);
                 break;
         }
     }
@@ -87,15 +81,41 @@ public class ChainAdapter extends RecyclerView.Adapter<ChainAdapter.Holder> {
         return 0;
     }
 
-    public void setAvailableChainsData(String chainCurrency, TypedArray chainsAvailableImageIds, String[] chainsAvailableAbbrev, String[] chainsAvailableName) {
+    public void setAvailableChainsData(int chainNet, String chainCurrency, TypedArray chainsAvailableImageIds,
+                                       String[] chainsAvailableAbbrev, String[] chainsAvailableName,
+                                       int[] availableChainNets, int[] availableChainIds) {
+        this.chainNet = chainNet;
         this.chainCurrency = chainCurrency;
         this.availableChainsImageIds = chainsAvailableImageIds;
         this.availableChainsAbbrev = chainsAvailableAbbrev;
         this.availableChainsName = chainsAvailableName;
+        this.availableChainNets = availableChainNets;
+        this.availableChainIds = availableChainIds;
         notifyDataSetChanged();
     }
 
-    public void setSoonChainsData(TypedArray disableChainImageIds, String[] disabledChainAbbrevs, String[] disabledChainNames, TypedArray disabledChainDonationCodes) {
+    private void bindAvailable(AvailableChainHolder holder, int position) {
+        holder.imageCoin.setImageDrawable(availableChainsImageIds.getDrawable(position));
+        holder.textChainAbbrev.setText(availableChainsAbbrev[position]);
+        holder.textChainName.setText(availableChainsName[position]);
+        holder.checkBox.setChecked(chainCurrency != null
+                && availableChainsAbbrev[position].equals(chainCurrency) && chainNet == availableChainNets[position]);
+        holder.divider.setVisibility(position == availableChainsAbbrev.length - 1 ? View.INVISIBLE : View.VISIBLE);
+        holder.itemView.setOnClickListener(v -> listener.onClickAvailableChain(availableChainsAbbrev[position],
+                availableChainNets[position], availableChainIds[position]));
+    }
+
+    private void bindDisable(DisabledChainHolder holder, int position) {
+        holder.imageCoin.setImageDrawable(disabledChainsImageIds.getDrawable(position));
+        holder.textChainAbbrev.setText(disabledChainsAbbrev[position]);
+        holder.textChainName.setText(disabledChainsName[position]);
+        holder.divider.setVisibility(position == disabledChainsAbbrev.length - 1 ? View.INVISIBLE : View.VISIBLE);
+        holder.itemView.setOnClickListener(v -> listener.onClickSoonChain(disabledChainsAbbrev[position],
+                disabledChainsDonationCodes.getInteger(position, 0)));
+    }
+
+    public void setSoonChainsData(TypedArray disableChainImageIds, String[] disabledChainAbbrevs,
+                                  String[] disabledChainNames, TypedArray disabledChainDonationCodes) {
         this.disabledChainsImageIds = disableChainImageIds;
         this.disabledChainsAbbrev = disabledChainAbbrevs;
         this.disabledChainsName = disabledChainNames;
@@ -142,7 +162,7 @@ public class ChainAdapter extends RecyclerView.Adapter<ChainAdapter.Holder> {
     public enum ChainType {AVAILABLE, SOON}
 
     public interface OnItemClickListener {
-        void onClickAvailableChain(String clickedChainName);
+        void onClickAvailableChain(String clickedChainName, int clickedChainNet, int clickedChainId);
         void onClickSoonChain(String clickedChainName, int donationCode);
     }
 }

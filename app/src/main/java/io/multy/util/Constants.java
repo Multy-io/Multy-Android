@@ -1,7 +1,7 @@
 /*
- *  Copyright 2017 Idealnaya rabota LLC
- *  Licensed under Multy.io license.
- *  See LICENSE for details
+ * Copyright 2018 Idealnaya rabota LLC
+ * Licensed under Multy.io license.
+ * See LICENSE for details
  */
 
 package io.multy.util;
@@ -15,12 +15,10 @@ public class Constants {
             + " " + Build.VERSION.RELEASE
             + " " + Build.VERSION_CODES.class.getFields()[android.os.Build.VERSION.SDK_INT].getName();
 
-//    static final String BASE_URL = "http://192.168.0.121:7778/";  // local
-//    static final String BASE_URL = "http://88.198.47.112:7778/";  // remote
-//    static final String BASE_URL = "https://api.multy.io/";  // Special for Jack Bolt!
-    public static final String BASE_URL = "https://stage.multy.io/";  // Special for Jack Bolt!
+    public static final String BASE_URL = "https://stage.multy.io/";
 
-    public static final String DONTAION_ADDRESS = "mzqiDnETWkunRDZxjUQ34JzN1LDevh5DpU";
+    public static final String DONATION_ADDRESS = "mzqiDnETWkunRDZxjUQ34JzN1LDevh5DpU";
+    public static final String DONATION_ADDRESS_TESTNET = "mnUtMQcs3s8kSkSRXpREVtJamgUCWpcFj4";
 
     public static final int ANDROID_OS_ID = 1;
 
@@ -39,7 +37,8 @@ public class Constants {
     public static final String PREF_BACKUP_SEED = "backup_seed";
     public static final String PREF_AUTH = "pref_auth";
     public static final String PREF_EXCHANGE_PRICE = "pref_exchange_price";
-    public static final String PREF_WALLET_TOP_INDEX = "pref_wallet_top_index";
+    public static final String PREF_WALLET_TOP_INDEX_BTC = "pref_wallet_top_index_btc";
+    public static final String PREF_WALLET_TOP_INDEX_ETH = "pref_wallet_top_index_eth";
     public static final String PREF_IS_FINGERPRINT_ENABLED = "PREF_IS_FINGERPRINT_ENABLED";
     public static final String PIN_COUNTER = "PIN_COUNTER";
     public static final String ANDROID_PACKAGE = "android.webkit.";
@@ -57,6 +56,12 @@ public class Constants {
     public static final String FLAG_VIEW_SEED_PHRASE = "view_seed_phrase";
     public static final String PREF_IS_PUSH_ENABLED = "PREF_IS_PUSH_ENABLED";
 
+    public static final int REQUEST_CODE_SET_CHAIN = 560;
+    public static final int REQUEST_CODE_SET_GAS = 560;
+    public static final String CHAIN_NAME = "chain_name";
+    public static final String CHAIN_NET = "chain_net";
+    public static final String GAS_PRICE = "gas_price";
+    public static final String GAS_LIMIT = "gas_limit";
 
     public static final int CAMERA_REQUEST_CODE = 328;
     public static final String EXTRA_QR_CONTENTS = "EXTRA_QR_CONTENTS";
@@ -74,17 +79,6 @@ public class Constants {
     public final static String USD = "USD";
     public final static String EUR = "EUR";
 
-    public static final String ERROR_LOAD_EXCHANGE_PRICE = "Can't load exchange price. Will be used the last one";
-    public static final String ERROR_ADDING_ADDRESS = "An error occurred while adding new address";
-
-    public static final int ZERO = 0;
-    public static final int ONE = 1;
-
-    public static final String BULLETS_FIVE = " • • • ∙ ";
-
-    public static final int TRANSACTIONS_EMPTY_SIZE = 0;
-    public static final int ADDRESS_PART = 9;
-
     public static final int TX_MEMPOOL_INCOMING = 1;
     public static final int TX_MEMPOOL_OUTCOMING = 3;
     public static final int TX_IN_BLOCK_INCOMING = 2;
@@ -95,10 +89,12 @@ public class Constants {
     public static final int REQUEST_CODE_RESTORE = 22;
     public static final int REQUEST_CODE_CREATE = 22;
 
-    public static final String BLOCKCHAIN_INFO_PATH = "https://testnet.blockchain.info/tx/";
+    public static final String BLOCKCHAIN_TEST_INFO_PATH = "https://testnet.blockchain.info/tx/";
+    public static final String BLOCKCHAIN_MAIN_INFO_PATH = "https://blockchain.info/tx/";
     public static final String PUSH_TOPIC = "btcTransactionUpdate-";
     public static final String MULTY_IO_URL = "http://multy.io";
     public static final String CHAIN_ID = "CHAIN_ID";
+    public static final String FEATURE_ID = "FEATURE_ID";
 
     public static final int DONATE_WITH_TRANSACTION = 10000;
     public static final int DONATE_ADDING_ACTIVITY = 10200;

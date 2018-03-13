@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Idealnaya rabota LLC
+ * Copyright 2018 Idealnaya rabota LLC
  * Licensed under Multy.io license.
  * See LICENSE for details
  */
@@ -21,6 +21,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.ui.activities.MainActivity;
+import io.multy.ui.fragments.DonationFragment;
 import io.multy.ui.fragments.send.SendSummaryFragment;
 import io.multy.util.Constants;
 import io.multy.util.analytics.Analytics;
@@ -43,6 +44,10 @@ public class CompleteDialogFragment extends DialogFragment {
         if (getTag() != null && getTag().equals(SendSummaryFragment.TAG_SEND_SUCCESS)) {
             if (getArguments() != null) {
                 Analytics.getInstance(getActivity()).logSendSuccessLaunch(getArguments().getInt(Constants.CHAIN_ID));
+            }
+        } else if (getTag() != null && getTag().equals(DonationFragment.TAG_SEND_SUCCESS)) {
+            if (getArguments() != null) {
+                Analytics.getInstance(getContext()).logDonationSuccessLaunch(getArguments().getInt(Constants.FEATURE_ID));
             }
         }
         return dialog;

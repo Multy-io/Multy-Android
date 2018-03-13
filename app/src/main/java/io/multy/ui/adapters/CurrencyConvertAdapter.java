@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Idealnaya rabota LLC
+ * Copyright 2018 Idealnaya rabota LLC
  * Licensed under Multy.io license.
  * See LICENSE for details
  */
@@ -48,7 +48,7 @@ public class CurrencyConvertAdapter extends RecyclerView.Adapter<CurrencyConvert
             case AVAILABLE:
                 return new AvailableCurrencyHolder(inflater.inflate(R.layout.item_chain_availabe,parent, false));
             case SOON:
-                return new DiasabledCurrencyHolder(inflater.inflate(R.layout.item_chain_soon, parent, false));
+                return new DisabledCurrencyHolder(inflater.inflate(R.layout.item_chain_soon, parent, false));
         }
         return null;
     }
@@ -57,21 +57,10 @@ public class CurrencyConvertAdapter extends RecyclerView.Adapter<CurrencyConvert
     public void onBindViewHolder(Holder holder, int position) {
         switch (chainType) {
             case AVAILABLE:
-                ((AvailableCurrencyHolder) holder).image.setImageDrawable(availableCurrencyImageIds.getDrawable(position));
-                ((AvailableCurrencyHolder) holder).textAbbrev.setText(availableCurrencyAbbrevs[position]);
-                ((AvailableCurrencyHolder) holder).textName.setText(availableCurencyNames[position]);
-                ((AvailableCurrencyHolder) holder).checkBox
-                        .setChecked(currency != null && availableCurrencyAbbrevs[position].equals(currency));
-                holder.divider.setVisibility(position == availableCurrencyAbbrevs.length - 1 ? View.INVISIBLE : View.VISIBLE);
-                holder.itemView.setOnClickListener(v -> listener.onClickAvailableCurrency(availableCurrencyAbbrevs[position]));
+                bindAvailable((AvailableCurrencyHolder) holder, position);
                 break;
             case SOON:
-                ((DiasabledCurrencyHolder) holder).image.setImageDrawable(disabledCurrencyImageIds.getDrawable(position));
-                ((DiasabledCurrencyHolder) holder).textAbbrev.setText(disabledCurrencyAbbrevs[position]);
-                ((DiasabledCurrencyHolder) holder).textName.setText(disabledCurrencyNames[position]);
-                holder.divider.setVisibility(position == disabledCurrencyAbbrevs.length - 1 ? View.INVISIBLE : View.VISIBLE);
-                holder.itemView.setOnClickListener(v -> listener.onClickDisabledCurrency(disabledCurrencyAbbrevs[position],
-                        disablesCurrencyDonationCodes.getInteger(position, 0)));
+                bindDisabled((DisabledCurrencyHolder) holder, position);
                 break;
         }
     }
@@ -85,6 +74,25 @@ public class CurrencyConvertAdapter extends RecyclerView.Adapter<CurrencyConvert
                 return disabledCurrencyNames == null ? 0 : disabledCurrencyNames.length;
         }
         return 0;
+    }
+
+    private void bindAvailable(AvailableCurrencyHolder holder, int position) {
+        holder.image.setImageDrawable(availableCurrencyImageIds.getDrawable(position));
+        holder.textAbbrev.setText(availableCurrencyAbbrevs[position]);
+        holder.textName.setText(availableCurencyNames[position]);
+        holder.checkBox
+                .setChecked(currency != null && availableCurrencyAbbrevs[position].equals(currency));
+        holder.divider.setVisibility(position == availableCurrencyAbbrevs.length - 1 ? View.INVISIBLE : View.VISIBLE);
+        holder.itemView.setOnClickListener(v -> listener.onClickAvailableCurrency(availableCurrencyAbbrevs[position]));
+    }
+
+    private void bindDisabled(DisabledCurrencyHolder holder, int position) {
+        holder.image.setImageDrawable(disabledCurrencyImageIds.getDrawable(position));
+        holder.textAbbrev.setText(disabledCurrencyAbbrevs[position]);
+        holder.textName.setText(disabledCurrencyNames[position]);
+        holder.divider.setVisibility(position == disabledCurrencyAbbrevs.length - 1 ? View.INVISIBLE : View.VISIBLE);
+        holder.itemView.setOnClickListener(v -> listener.onClickDisabledCurrency(disabledCurrencyAbbrevs[position],
+                disablesCurrencyDonationCodes.getInteger(position, 0)));
     }
 
     public void setAvailableCurrenciesData(String chainCurrency, TypedArray availableCurrencyImageIds,
@@ -116,9 +124,9 @@ public class CurrencyConvertAdapter extends RecyclerView.Adapter<CurrencyConvert
         }
     }
 
-    class DiasabledCurrencyHolder extends Holder {
+    class DisabledCurrencyHolder extends Holder {
 
-        DiasabledCurrencyHolder(View itemView) {
+        DisabledCurrencyHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }

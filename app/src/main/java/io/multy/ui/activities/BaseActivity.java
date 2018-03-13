@@ -1,7 +1,7 @@
 /*
- *  Copyright 2017 Idealnaya rabota LLC
- *  Licensed under Multy.io license.
- *  See LICENSE for details
+ * Copyright 2018 Idealnaya rabota LLC
+ * Licensed under Multy.io license.
+ * See LICENSE for details
  */
 
 package io.multy.ui.activities;
@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -37,8 +38,6 @@ import io.multy.storage.SecurePreferencesHelper;
 import io.multy.ui.adapters.PinDotsAdapter;
 import io.multy.ui.adapters.PinNumbersAdapter;
 import io.multy.util.Constants;
-import io.multy.util.analytics.Analytics;
-import io.multy.util.analytics.AnalyticsConstants;
 
 public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter.OnFingerPrintClickListener, PinNumbersAdapter.OnNumberClickListener, PinNumbersAdapter.OnBackSpaceClickListener {
 
@@ -76,7 +75,7 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
             if (!isLockVisible) {
-                if (RealmManager.open(this) == null) {
+                if (RealmManager.open() == null) {
                     finish();
                     Intent splashIntent = new Intent(this, SplashActivity.class);
                     splashIntent.putExtra(SplashActivity.RESET_FLAG, true);
@@ -106,7 +105,7 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
             @Override
             public void foreground() {
                 if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED) && !Prefs.getBoolean(Constants.PREF_LOCK)) {
-                    if (RealmManager.open(BaseActivity.this) == null) {
+                    if (RealmManager.open() == null) {
                         finish();
                         Intent splashIntent = new Intent(BaseActivity.this, SplashActivity.class);
                         splashIntent.putExtra(SplashActivity.RESET_FLAG, true);
@@ -222,7 +221,7 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
             isLockVisible = false;
         }
 
-        if (RealmManager.open(this) == null) {
+        if (RealmManager.open() == null) {
             finish();
             Intent splashIntent = new Intent(this, SplashActivity.class);
             splashIntent.putExtra(SplashActivity.RESET_FLAG, true);
@@ -239,11 +238,14 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
     @Override
     public void onNumberClick(int number) {
         stringBuilder.append(String.valueOf(number));
+        if (stringBuilder.length() > 6) {
+            return;
+        }
 
         ImageView dot = (ImageView) dotsLayoutManager.getChildAt(stringBuilder.toString().length() - 1);
         dot.setBackgroundResource(R.drawable.circle_white);
 
-        if (stringBuilder.toString().length() >= 6) {
+        if (stringBuilder.toString().length() == 6) {
             if (!SecurePreferencesHelper.getString(this, Constants.PREF_PIN).equals(stringBuilder.toString())) {
                 if (count != 1) {
                     count--;
@@ -254,7 +256,7 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
                     finish();
                 }
             } else {
-                hideLock();
+                new Handler().postDelayed(this::hideLock, 500);
                 if (onLockCLoseListener != null) {
                     onLockCLoseListener.onLockClosed();
                 }

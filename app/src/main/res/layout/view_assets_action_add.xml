@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2018 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -66,11 +72,12 @@
     <android.support.design.widget.TextInputLayout
         android:id="@+id/layout_name"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:layout_marginTop="16dp"
+        android:layout_height="wrap_content"
         android:background="#ffffff"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
+        android:paddingBottom="8dp"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
         android:textColorHint="#87a1c5"
         app:layout_constraintTop_toBottomOf="@+id/divider_toolbar">
 
@@ -83,8 +90,8 @@
             android:hint="@string/wallet_name"
             android:inputType="textCapSentences"
             android:lines="@integer/one"
-            android:maxLines="1"
             android:maxLength="25"
+            android:maxLines="1"
             android:textColor="#363636"
             android:textColorHint="#87a1c5"
             android:textSize="14sp"
@@ -115,7 +122,8 @@
             android:id="@+id/text_chain_currency"
             style="@style/TextChooserCreateWallet"
             android:layout_below="@id/text_chain"
-            android:text="@string/btc" />
+            android:text="@string/btc"
+            android:textAllCaps="false" />
 
         <ImageView
             android:layout_width="wrap_content"
@@ -149,7 +157,8 @@
             android:id="@+id/text_fiat_currency"
             style="@style/TextChooserCreateWallet"
             android:layout_below="@id/text_fiat"
-            android:text="@string/usd" />
+            android:text="@string/usd"
+            android:textAllCaps="false" />
 
         <ImageView
             android:layout_width="wrap_content"

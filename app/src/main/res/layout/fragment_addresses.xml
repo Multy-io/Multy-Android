@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright 2017 Idealnaya rabota LLC
+  ~ Copyright 2018 Idealnaya rabota LLC
   ~ Licensed under Multy.io license.
   ~ See LICENSE for details
   -->
@@ -43,16 +43,27 @@
                 android:layout_height="match_parent"
                 android:fontFamily="@font/montserrat"
                 android:gravity="center"
-                android:paddingEnd="16dp"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
                 android:paddingStart="16dp"
+                android:paddingLeft="16dp"
+                android:paddingEnd="16dp"
+                android:paddingRight="16dp"
                 android:text="@string/all_addresses"
                 android:textAlignment="center"
                 android:textColor="#000000"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintLeft_toRightOf="@id/button_back" />
+
+            <ImageButton
+                android:id="@+id/btn_add"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="8dp"
+                android:src="@drawable/ic_plus_light"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
         </android.support.constraint.ConstraintLayout>
     </android.support.v7.widget.Toolbar>
 
@@ -61,10 +72,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/montserrat"
-        android:paddingBottom="8dp"
         android:paddingLeft="16dp"
-        android:paddingRight="16dp"
         android:paddingTop="8dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="8dp"
         android:text="@string/addresses"
         android:textAllCaps="true"
         android:textColor="#87a1c5"

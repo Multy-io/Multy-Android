@@ -25,6 +25,8 @@
 #include "multy_core/src/transaction_base.h"
 #include "multy_core/properties.h"
 #include "multy_core/src/api/account_impl.h"
+#include "multy_core/ethereum.h"
+#include "multy_core/blockchain.h"
 
 
 JavaVM *gJvm = nullptr;
@@ -98,7 +100,7 @@ void throw_java_exception(JNIEnv *env, const Error &error) {
         ErrorPtr error(statement);                                                                  \
         if (error)                                                                                  \
         {                                                                                           \
-            __android_log_print(ANDROID_LOG_INFO, "Multy-core error", "In file %s, \n in line: %d ", error->location.file , error->location.line );    \
+            __android_log_print(ANDROID_LOG_INFO, "Multy-core error", "In file %s, \n in line: %d, jni : %d ", error->location.file , error->location.line, __LINE__ );    \
             throw_java_exception(env, *error);                                                      \
             return (0);                                                                         \
         }                                                                                           \
@@ -202,7 +204,7 @@ Java_io_multy_util_NativeDataHelper_makeAccountId(JNIEnv *env, jobject obj, jbyt
     HANDLE_ERROR(make_master_key(&seed, reset_sp(rootKey)));
 
     const char *id = nullptr;
-    HANDLE_ERROR(make_key_id(rootKey.get(), &id));
+    HANDLE_ERROR(make_user_id_from_master_key(rootKey.get(), &id));
 
     return env->NewStringUTF(id);
 }
@@ -226,7 +228,7 @@ Java_io_multy_util_NativeDataHelper_makeAccountAddress(JNIEnv *env, jobject obj,
 
     HDAccountPtr hdAccount;
     HANDLE_ERROR(make_hd_account(rootKey.get(),
-                                 BlockchainType{(Blockchain) blockchain, (BlockchainNetType) type},
+                                 BlockchainType{(Blockchain) blockchain, (size_t) type},
                                  walletIndex,
                                  reset_sp(hdAccount)));
 
@@ -259,8 +261,7 @@ Java_io_multy_util_NativeDataHelper_getMyPrivateKey(JNIEnv *env, jclass type_, j
     HANDLE_ERROR(make_master_key(&seed, reset_sp(rootKey)));
 
     HDAccountPtr hdAccount;
-    HANDLE_ERROR(make_hd_account(rootKey.get(), BlockchainType{(Blockchain) blockchain,
-                                                               (BlockchainNetType) netType},
+    HANDLE_ERROR(make_hd_account(rootKey.get(), BlockchainType{(Blockchain) blockchain, (size_t) netType},
                                  walletIndex,
                                  reset_sp(hdAccount)));
 
@@ -278,7 +279,8 @@ Java_io_multy_util_NativeDataHelper_getMyPrivateKey(JNIEnv *env, jclass type_, j
 }
 
 JNIEXPORT jbyteArray JNICALL
-Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *jniEnv, jobject obj, jbyteArray jSeed,
+Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *jniEnv, jobject obj, jlong jWalletId,
+                                                    jint jNetworkId, jbyteArray jSeed,
                                                     jint jWalletIndex, jstring amountToSpend,
                                                     jstring jFeePerByte, jstring jDonation,
                                                     jstring jDestinationAddress,
@@ -294,8 +296,8 @@ Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *jniEnv, jobject obj,
     env->GetByteArrayRegion(jSeed, 0, len, reinterpret_cast<jbyte *>(seedBuf));
 
     jclass jTransaction = env->FindClass("io/multy/util/SendTransactionModel");
-    jmethodID jMethodInit = env->GetMethodID(jTransaction, "<init>", "(ILjava/lang/String;)V");
-    jobject jObjectTransaction = env->NewObject(jTransaction, jMethodInit, jWalletIndex,
+    jmethodID jMethodInit = env->GetMethodID(jTransaction, "<init>", "(JLjava/lang/String;)V");
+    jobject jObjectTransaction = env->NewObject(jTransaction, jMethodInit, jWalletId,
                                                 amountToSpend);
 
     jmethodID jMidSetup = env->GetMethodID(jTransaction, "setupFields", "(I)V");
@@ -314,10 +316,13 @@ Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *jniEnv, jobject obj,
     BinaryData seed{seedBuf, len};
     HANDLE_ERROR(make_master_key(&seed, reset_sp(rootKey)));
 
+
+    __android_log_print(ANDROID_LOG_INFO, "networkid address", "%d", jNetworkId);
+
     HDAccountPtr hdAccount;
     HANDLE_ERROR(
             make_hd_account(rootKey.get(),
-                            BlockchainType{BLOCKCHAIN_BITCOIN, BLOCKCHAIN_NET_TYPE_TESTNET},
+                            BlockchainType{BLOCKCHAIN_BITCOIN, (size_t) jNetworkId},
                             jWalletIndex, reset_sp(hdAccount)));
 
     AccountPtr baseAccount;
@@ -574,7 +579,7 @@ Java_io_multy_util_NativeDataHelper_isValidAddress(JNIEnv *env, jclass type_, js
     const char *address = env->GetStringUTFChars(address_, 0);
 
     ErrorPtr error(
-            validate_address(BlockchainType{(Blockchain) blockchain, (BlockchainNetType) netType},
+            validate_address(BlockchainType{(Blockchain) blockchain, (size_t) netType},
                              address));
     if (error) {
         env->ReleaseStringUTFChars(address_, address);
@@ -586,11 +591,14 @@ Java_io_multy_util_NativeDataHelper_isValidAddress(JNIEnv *env, jclass type_, js
     return;
 }
 
-JNIEXPORT jbyteArray
-Java_io_multy_util_NativeDataHelper_makeTransactionETH(JNIEnv *env, jclass type, jbyteArray jSeed, jint jWalletIndex,
-                   jint jAddressIndex, jint jChainId,
-                   jint blockchain, jstring jBalance, jstring jAmount, jstring jDestinationAddress,
-                   jstring jGasLimit, jstring jGasPrice, jstring jNonce) {
+JNIEXPORT jbyteArray JNICALL
+Java_io_multy_util_NativeDataHelper_makeTransactionETH(JNIEnv *env, jclass type, jbyteArray jSeed,
+                                                       jint jWalletIndex,
+                                                       jint jAddressIndex, jint jChainId,
+                                                       jint jNetType, jstring jBalance,
+                                                       jstring jAmount, jstring jDestinationAddress,
+                                                       jstring jGasLimit, jstring jGasPrice,
+                                                       jstring jNonce) {
 
     using namespace multy_core::internal;
     const jbyteArray defaultResult{};
@@ -615,13 +623,15 @@ Java_io_multy_util_NativeDataHelper_makeTransactionETH(JNIEnv *env, jclass type,
 
         HDAccountPtr hdAccount;
         HANDLE_ERROR(make_hd_account(rootKey.get(),
-                                     BlockchainType{(Blockchain) blockchain, (BlockchainNetType) jChainId},
+                                     BlockchainType{(Blockchain) jChainId,
+                                                    (size_t) jNetType},
                                      jWalletIndex,
                                      reset_sp(hdAccount)));
 
         AccountPtr account;
         HANDLE_ERROR(
-                make_hd_leaf_account(hdAccount.get(), ADDRESS_EXTERNAL, jAddressIndex, reset_sp(account)));
+                make_hd_leaf_account(hdAccount.get(), ADDRESS_EXTERNAL, jAddressIndex,
+                                     reset_sp(account)));
 
 
         TransactionPtr transaction;
@@ -645,7 +655,6 @@ Java_io_multy_util_NativeDataHelper_makeTransactionETH(JNIEnv *env, jclass type,
             // Address balance
             BigIntPtr balance;
             HANDLE_ERROR(make_big_int(balanceStr, reset_sp(balance)));
-
             HANDLE_ERROR(properties_set_big_int_value(source, "amount", balance.get()));
         }
 

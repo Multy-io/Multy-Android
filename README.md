@@ -2,7 +2,7 @@
 
 Multi cryptocurrency and assets open-source wallet
 
-To conrtibute please check **Build instraction**
+To conrtibute please check **Build instruction
 
 [Multy](http://multy.io)
 
@@ -15,7 +15,7 @@ To conrtibute please check **Build instraction**
 git clone https://github.com/Appscrunch/Multy-android.git
 ```
 
-2. Be shure you have CMake and NDK installed in the Android Studio SDK Tools
+2. Make shure you have CMake and NDK installed in Android Studio SDK Tools
 
 3. Clone master branch of the Multy-Core project
 ```
@@ -42,9 +42,9 @@ externalNativeBuild {
             }
         }
 ```
-7. In the Android Studio make Gradle syncronization 
+7. In Android Studio make Gradle sync
 
-8. In the Android Studio
+8. In Android Studio
 ```
 Build -> Clean Project
 Build -> Refresh Linked C++ Project

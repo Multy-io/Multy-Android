@@ -1,3 +1,9 @@
+/*
+ * Copyright 2018 Idealnaya rabota LLC
+ * Licensed under Multy.io license.
+ * See LICENSE for details
+ */
+
 package io.multy.ui.adapters;
 
 import android.os.Bundle;
@@ -21,7 +27,6 @@ import io.multy.model.entities.TransactionHistory;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.asset.TransactionInfoFragment;
-import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
 import io.multy.util.DateHelper;
 import io.multy.util.analytics.Analytics;
@@ -41,12 +46,12 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
     private static final int TYPE_CONFIRMED = 203;
     private static final int TYPE_REJECTED = 204;
 
-    private int walletIndex;
+    private long walletId;
     private List<TransactionHistory> transactionHistoryList;
 
-    public AssetTransactionsAdapter(List<TransactionHistory> transactionHistoryList, int walletIndex) {
+    public AssetTransactionsAdapter(List<TransactionHistory> transactionHistoryList, long walletId) {
         this.transactionHistoryList = transactionHistoryList;
-        this.walletIndex = walletIndex;
+        this.walletId = walletId;
         Collections.sort(this.transactionHistoryList, (transactionHistory, t1) -> Long.compare(t1.getMempoolTime(), transactionHistory.getMempoolTime()));
     }
 
@@ -100,7 +105,7 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
             int mode = isIncoming ? MODE_RECEIVE : MODE_SEND;
             transactionInfo.putInt(TransactionInfoFragment.SELECTED_POSITION, position);
             transactionInfo.putInt(TransactionInfoFragment.TRANSACTION_INFO_MODE, mode);
-            transactionInfo.putInt(TransactionInfoFragment.WALLET_INDEX, walletIndex);
+            transactionInfo.putLong(TransactionInfoFragment.WALLET_INDEX, walletId);
             ((FragmentActivity) v.getContext()).getSupportFragmentManager().beginTransaction()
                     .replace(R.id.container_full, TransactionInfoFragment.newInstance(transactionInfo))
                     .addToBackStack(TransactionInfoFragment.TAG)
@@ -110,7 +115,8 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
 
     private String getStockFiatAmount(TransactionHistory transactionHistory) {
         if (transactionHistory.getStockExchangeRates() != null && transactionHistory.getStockExchangeRates().size() > 0) {
-            return String.valueOf(CryptoFormatUtils.satoshiToUsd(transactionHistory.getTxOutAmount(), transactionHistory.getStockExchangeRates().get(0).getExchanges().getBtcUsd()));
+            double rate = getPreferredExchangeRate(transactionHistory.getStockExchangeRates());
+            return String.valueOf(CryptoFormatUtils.satoshiToUsd(transactionHistory.getTxOutAmount(), rate));
         }
         return "";
     }
@@ -136,26 +142,30 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
             holder.fiatLocked.setText(String.format("(%s USD)", lockedFiat));
         } else {
             //TODO REMOVE DRY AND OPTIMIZE
-            RealmList<WalletAddress> addresses = RealmManager.getAssetsDao().getWalletById(walletIndex).getAddresses();
+            RealmList<WalletAddress> addresses = RealmManager.getAssetsDao().getWalletById(walletId).getBtcWallet().getAddresses();
 //            List<WalletAddress> inputs = transactionHistory.getInputs();
-
             List<WalletAddress> outputs = transactionHistory.getOutputs();
 //            user change address must be last, so reversing
 //            Collections.reverse(outputs);
             WalletAddress userChangeAddress = null;
-            String addressTo = "";
+            WalletAddress addressTo = outputs.get(0);
+            List<String> walletAddresses = getWalletAddresses(addresses);
+            double outputBtcValue = getOutputBtcValue(outputs, walletAddresses);
 
             for (WalletAddress output : outputs) {
-
-                if (!output.getAddress().equals(Constants.DONTAION_ADDRESS)) {
-                    for (WalletAddress walletAddress : addresses) {
-                        if (output.getAddress().equals(walletAddress.getAddress())) {
-                            userChangeAddress = output;
-                        } else {
-                            addressTo = output.getAddress();
-                        }
-                    }
+                if (walletAddresses.contains(output.getAddress())) {
+                    userChangeAddress = output;
+                    break;
                 }
+//                todo check for mistakes and remove commented lines below
+//                if (!output.getAddress().equals(Constants.DONATION_ADDRESS)) {
+//                    for (WalletAddress walletAddress : addresses) {
+//                        if (output.getAddress().equals(walletAddress.getAddress())) {
+//                            userChangeAddress = output;
+//                            break;
+//                        }
+//                    }
+//                }
             }
 
             if (!lockedAmount.equals("")) {
@@ -167,10 +177,9 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
             } else {
                 holder.containerLocked.setVisibility(View.GONE);
             }
-
-            amount = CryptoFormatUtils.satoshiToBtc(transactionHistory.getTxOutAmount());
+            amount = CryptoFormatUtils.satoshiToBtc(outputBtcValue);
             amountFiat = getStockFiatAmount(transactionHistory);
-            setAddress(addressTo, holder.containerAddresses);
+            setAddress(addressTo.getAddress(), holder.containerAddresses);
         }
 
         holder.amount.setText(String.format("%s BTC", amount));
@@ -210,34 +219,50 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
             holder.fiat.setText(stockFiat.equals("") ? "" : String.format("%s USD", stockFiat));
         } else {
             //TODO REMOVE DRY AND OPTIMIZE
-            RealmList<WalletAddress> addresses = RealmManager.getAssetsDao().getWalletById(walletIndex).getAddresses();
+            RealmList<WalletAddress> addresses = RealmManager.getAssetsDao().getWalletById(walletId).getBtcWallet().getAddresses();
 //            List<WalletAddress> inputs = transactionHistory.getInputs();
 
             List<WalletAddress> outputs = transactionHistory.getOutputs();
 //            user change address must be last, so reversing
 //            Collections.reverse(outputs);
-            WalletAddress userChangeAddress = null;
-            String addressTo = "";
+            WalletAddress addressTo = outputs.get(0);
+            double outputBtcValue = getOutputBtcValue(outputs, getWalletAddresses(addresses));
 
-            for (WalletAddress output : outputs) {
-
-                if (!output.getAddress().equals(Constants.DONTAION_ADDRESS)) {
-                    for (WalletAddress walletAddress : addresses) {
-                        if (output.getAddress().equals(walletAddress.getAddress())) {
-                            userChangeAddress = output;
-                        } else {
-                            addressTo = output.getAddress();
-                        }
-                    }
-                }
-            }
-
-            setAddress(addressTo, holder.containerAddresses);
-            holder.amount.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(transactionHistory.getTxOutAmount())));
+            setAddress(addressTo.getAddress(), holder.containerAddresses);
+            holder.amount.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(outputBtcValue)));
             holder.fiat.setText(String.format("%s USD", getStockFiatAmount(transactionHistory)));
         }
 
         setItemClickListener(holder.itemView, isIncoming, position);
+    }
+
+    private double getOutputBtcValue(List<WalletAddress> outputs, List<String> walletAddresses) {
+        double outValue = 0;
+        for (WalletAddress output : outputs) {
+            if (!walletAddresses.contains(output.getAddress())) {
+                outValue += output.getAmount();
+            }
+        }
+        return outValue;
+    }
+
+    private List<String> getWalletAddresses(RealmList<WalletAddress> addresses) {
+        List<String> result = new ArrayList<>();
+        for (WalletAddress address : addresses) {
+            result.add(address.getAddress());
+        }
+        return result;
+    }
+
+    private double getPreferredExchangeRate(ArrayList<TransactionHistory.StockExchangeRate> stockExchangeRates) {
+        if (stockExchangeRates != null && stockExchangeRates.size() > 0) {
+            for (TransactionHistory.StockExchangeRate rate : stockExchangeRates) {
+                if (rate.getExchanges().getBtcUsd() > 0) {
+                    return rate.getExchanges().getBtcUsd();
+                }
+            }
+        }
+        return 0.0;
     }
 
     private void setAddresses(List<WalletAddress> addresses, ViewGroup destination) {

@@ -1,7 +1,7 @@
 /*
- *  Copyright 2017 Idealnaya rabota LLC
- *  Licensed under Multy.io license.
- *  See LICENSE for details
+ * Copyright 2018 Idealnaya rabota LLC
+ * Licensed under Multy.io license.
+ * See LICENSE for details
  */
 
 package io.multy.ui.fragments.seed;

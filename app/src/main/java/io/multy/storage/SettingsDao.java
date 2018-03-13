@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Idealnaya rabota LLC
+ * Copyright 2018 Idealnaya rabota LLC
  * Licensed under Multy.io license.
  * See LICENSE for details
  */
@@ -12,13 +12,11 @@ import io.multy.api.socket.CurrenciesRate;
 import io.multy.model.entities.ByteSeed;
 import io.multy.model.entities.DeviceId;
 import io.multy.model.entities.DonateFeatureEntity;
-import io.multy.model.entities.ExchangePrice;
 import io.multy.model.entities.Mnemonic;
 import io.multy.model.entities.RootKey;
 import io.multy.model.entities.Token;
 import io.multy.model.entities.UserId;
 import io.multy.model.responses.ServerConfigResponse;
-import io.multy.util.Constants;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.annotations.Nullable;
 import io.realm.Realm;
@@ -79,10 +77,6 @@ public class SettingsDao {
         return realm.where(DeviceId.class).findFirst();
     }
 
-    public void saveExchangePrice(final ExchangePrice exchangePrice) {
-        realm.executeTransaction(realm -> realm.insertOrUpdate(exchangePrice));
-    }
-
     public void setUserId(UserId userId) {
         realm.executeTransaction(realm -> realm.insertOrUpdate(userId));
     }
@@ -95,14 +89,6 @@ public class SettingsDao {
         return realm.where(ByteSeed.class).findFirst();
     }
 
-    public ExchangePrice getExchangePrice() {
-        ExchangePrice exchangePrice = realm.where(ExchangePrice.class).findFirst();
-        if (exchangePrice == null) {
-            exchangePrice = new ExchangePrice(15000.00);
-        }
-        return exchangePrice;
-    }
-
     public void saveCurrenciesRate(CurrenciesRate currenciesRate) {
         realm.executeTransaction(realm -> realm.insertOrUpdate(currenciesRate));
     }
@@ -112,7 +98,6 @@ public class SettingsDao {
         CurrenciesRate currenciesRate = realm.where(CurrenciesRate.class).findFirst();
         if (currenciesRate == null) {
             currenciesRate = new CurrenciesRate();
-            currenciesRate.setBtcToUsd(0);
         }
         return currenciesRate;
     }
@@ -120,10 +105,9 @@ public class SettingsDao {
     public void saveDonation(List<ServerConfigResponse.Donate> donates) {
         realm.executeTransactionAsync(realm -> {
             for (ServerConfigResponse.Donate donate : donates) {
-                if (donate.getOs() == Constants.ANDROID_OS_ID) {
+                if (donate.getFeatureCode() < 20000) {
                     DonateFeatureEntity donateFeature = new DonateFeatureEntity(donate.getFeatureCode());
                     donateFeature.setDonationAddress(donate.getDonationAddress());
-                    donateFeature.setFeatureDescription(donate.getFeatureDescription());
                     realm.insertOrUpdate(donateFeature);
                 }
             }

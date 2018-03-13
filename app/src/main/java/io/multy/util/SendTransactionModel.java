@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Idealnaya rabota LLC
+ * Copyright 2018 Idealnaya rabota LLC
  * Licensed under Multy.io license.
  * See LICENSE for details
  */
@@ -9,10 +9,14 @@ package io.multy.util;
 import java.util.ArrayList;
 
 import io.multy.model.entities.Output;
+import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.storage.RealmManager;
 
+/**
+ * Used only from JNI to init data for BTC transaction.
+ */
 public class SendTransactionModel {
 
     private final static String TAG = SendTransactionModel.class.getSimpleName();
@@ -21,19 +25,19 @@ public class SendTransactionModel {
     private String[] hashes;
     private String[] pubKeys;
     private String[] amounts;
-    private WalletRealmObject wallet;
+    private Wallet wallet;
     private ArrayList<WalletAddress> addresses;
     private int addressIndex;
 
-    public SendTransactionModel(int walletIndex, String amount) {
-        wallet = RealmManager.getAssetsDao().getWalletById(walletIndex);
+    public SendTransactionModel(long walletId, String amount) {
+        wallet = RealmManager.getAssetsDao().getWalletById(walletId);
         initAddresses(Long.valueOf(amount));
     }
 
     public void initAddresses(long amount) {
         addresses = new ArrayList<>();
 
-        for (WalletAddress walletAddress : wallet.getAddresses()) {
+        for (WalletAddress walletAddress : wallet.getBtcWallet().getAddresses()) {
             if (walletAddress.getAmount() != 0) {
                 addresses.add(walletAddress);
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Idealnaya rabota LLC
+ * Copyright 2018 Idealnaya rabota LLC
  * Licensed under Multy.io license.
  * See LICENSE for details
  */
@@ -17,6 +17,7 @@ import io.multy.util.Constants;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 
+@Deprecated
 public class WalletRealmObject extends RealmObject {
 
     @SerializedName("walletname")
@@ -33,7 +34,6 @@ public class WalletRealmObject extends RealmObject {
     @SerializedName("walletindex")
     private int walletIndex;
     private double pendingBalance;
-    private boolean isEnabled;
 
     public WalletRealmObject() {
     }
@@ -169,14 +169,6 @@ public class WalletRealmObject extends RealmObject {
         return String.valueOf(getCurrency() * exchangePrice).concat(Constants.SPACE).concat(currencyCode.name());
     }
 
-    public boolean isEnabled() {
-        return isEnabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        isEnabled = enabled;
-    }
-
     public double getPendingBalance() {
         return pendingBalance;
     }
@@ -209,7 +201,6 @@ public class WalletRealmObject extends RealmObject {
                 ", addressIndex=" + addressIndex +
                 ", walletIndex=" + walletIndex +
                 ", pendingBalance=" + pendingBalance +
-                ", isEnabled=" + isEnabled +
                 '}';
     }
 }

@@ -1,29 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~  Copyright 2017 Idealnaya rabota LLC
-  ~  Licensed under Multy.io license.
-  ~  See LICENSE for details
+  ~ Copyright 2018 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
   -->
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nested"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_main">
+    android:background="@color/background_main"
+    android:overScrollMode="ifContentScrolls">
 
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/appbar_layout"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/background_main"
-        app:layout_behavior="io.multy.util.IdleAbleAppBarLayoutBehaviour"
-        app:elevation="0dp">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <android.support.constraint.ConstraintLayout
+            android:id="@+id/appbar_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="10dp"
+            android:layout_height="wrap_content"
             android:background="@color/background_main"
-            app:layout_scrollFlags="scroll"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:focusedByDefault="true"
+            android:paddingTop="10dp"
             tools:showIn="io.multy.android.MainActivity">
 
             <android.support.constraint.ConstraintLayout
@@ -79,12 +81,13 @@
             <ImageView
                 android:id="@+id/logo"
                 android:layout_width="match_parent"
-                android:layout_height="120dp"
+                android:layout_height="140dp"
                 android:src="@drawable/logo_blue"
                 app:layout_constraintBottom_toTopOf="@id/divider_gray"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/button_warn" />
+                app:layout_constraintTop_toBottomOf="@id/button_warn"
+                app:layout_constraintVertical_bias="0.3500000" />
 
             <TextView
                 android:id="@+id/logo_title"
@@ -119,6 +122,7 @@
                 android:layout_width="8dp"
                 android:layout_height="8dp"
                 android:layout_marginBottom="14dp"
+                android:visibility="invisible"
                 app:layout_constraintBottom_toTopOf="@id/divider_gray"
                 app:layout_constraintEnd_toStartOf="@+id/image_dot_portfolio"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -158,6 +162,7 @@
                 android:layout_marginBottom="14dp"
                 android:layout_marginStart="12dp"
                 android:scaleType="center"
+                android:visibility="invisible"
                 app:layout_constraintBottom_toTopOf="@id/divider_gray"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -242,7 +247,7 @@
                 android:id="@+id/group_wallets_list"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:constraint_referenced_ids="recycler_wallets,button_add,text_wallets" />
+                app:constraint_referenced_ids="button_add,text_wallets" />
 
             <android.support.constraint.Group
                 android:id="@+id/group_create_description"
@@ -262,19 +267,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:constraint_referenced_ids="view_pager,image_signal,image_dot_chart,image_plus,image_dot_portfolio" />
-        </android.support.constraint.ConstraintLayout>
-    </android.support.design.widget.AppBarLayout>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="8dp"
-        android:overScrollMode="never"
-        android:layout_marginTop="6dp"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_wallets" />
-</android.support.design.widget.CoordinatorLayout>
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="6dp"
+            android:overScrollMode="never" />
+
+    </LinearLayout>
+
+</android.support.v4.widget.NestedScrollView>

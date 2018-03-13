@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Idealnaya rabota LLC
+ * Copyright 2018 Idealnaya rabota LLC
  * Licensed under Multy.io license.
  * See LICENSE for details
  */
@@ -12,11 +12,14 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
 
+import com.samwolfand.oneprefs.Prefs;
+
 import io.multy.R;
-import io.multy.model.entities.wallet.WalletRealmObject;
+import io.multy.model.entities.wallet.Wallet;
 import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.DonationFragment;
 import io.multy.util.Constants;
+import io.multy.util.NativeDataHelper;
 import io.realm.RealmResults;
 
 public class DonationActivity extends BaseActivity {
@@ -27,17 +30,23 @@ public class DonationActivity extends BaseActivity {
         setContentView(R.layout.activity_donation);
         setTitle(R.string.wallet);
         getSupportFragmentManager().beginTransaction().add(R.id.container,
-                DonationFragment.newInstance(getIntent().getIntExtra(Constants.EXTRA_WALLET_ID, 0),
+                DonationFragment.newInstance(getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0),
                         getIntent().getIntExtra(Constants.EXTRA_DONATION_CODE, 0))).commit();
     }
 
     public static void showDonation(Context context, int donationCode) {
-        RealmResults<WalletRealmObject> wallets = RealmManager.getAssetsDao().getWallets();
+        if (!Prefs.getBoolean(Constants.PREF_APP_INITIALIZED, false)) {
+            Toast.makeText(context, "You are have no wallets, let's make the first wallet!", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        for (WalletRealmObject wallet : wallets) {
-            if (wallet.getAvailableBalance() > 150) {
+        RealmResults<Wallet> wallets = RealmManager.getAssetsDao().getWallets();
+
+        for (Wallet wallet : wallets) {
+            if (wallet.isPayable() && wallet.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue() &&
+                    wallet.getNetworkId() == NativeDataHelper.NetworkId.MAIN_NET.getValue()) {
                 context.startActivity(new Intent(context, DonationActivity.class)
-                        .putExtra(Constants.EXTRA_WALLET_ID, wallet.getWalletIndex())
+                        .putExtra(Constants.EXTRA_WALLET_ID, wallet.getId())
                         .putExtra(Constants.EXTRA_DONATION_CODE, donationCode));
                 return;
             }

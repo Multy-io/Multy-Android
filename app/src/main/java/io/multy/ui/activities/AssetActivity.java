@@ -1,7 +1,7 @@
 /*
- *  Copyright 2017 Idealnaya rabota LLC
- *  Licensed under Multy.io license.
- *  See LICENSE for details
+ * Copyright 2018 Idealnaya rabota LLC
+ * Licensed under Multy.io license.
+ * See LICENSE for details
  */
 
 package io.multy.ui.activities;
@@ -19,13 +19,14 @@ import java.util.List;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
-import io.multy.model.entities.wallet.WalletRealmObject;
-import io.multy.storage.RealmManager;
+import io.multy.model.entities.wallet.Wallet;
 import io.multy.ui.fragments.AddressesFragment;
 import io.multy.ui.fragments.asset.AssetInfoFragment;
+import io.multy.ui.fragments.asset.EthAssetInfoFragment;
 import io.multy.ui.fragments.asset.TransactionInfoFragment;
 import io.multy.ui.fragments.dialogs.DonateDialog;
 import io.multy.util.Constants;
+import io.multy.util.NativeDataHelper;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.WalletViewModel;
@@ -34,7 +35,6 @@ public class AssetActivity extends BaseActivity {
 
     private boolean isFirstFragmentCreation;
 
-    private WalletRealmObject wallet;
     private WalletViewModel viewModel;
 
     @Override
@@ -45,13 +45,16 @@ public class AssetActivity extends BaseActivity {
         isFirstFragmentCreation = true;
 
         viewModel = ViewModelProviders.of(this).get(WalletViewModel.class);
-        wallet = RealmManager.getAssetsDao().getWalletById(getIntent().getExtras().getInt(Constants.EXTRA_WALLET_ID, 0));
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
-
-        setFragment(R.id.frame_container, AssetInfoFragment.newInstance());
+        Wallet wallet = viewModel.getWallet(getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0));
+        if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()) {
+            setFragment(R.id.frame_container, AssetInfoFragment.newInstance());
+        } else if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.ETH.getValue()) {
+            setFragment(R.id.frame_container, EthAssetInfoFragment.newInstance());
+        }
     }
 
     @Override
@@ -65,21 +68,22 @@ public class AssetActivity extends BaseActivity {
         Analytics.getInstance(this).logWallet(AnalyticsConstants.WALLET_SEND, viewModel.getChainId());
         startActivity(new Intent(this, AssetSendActivity.class)
                 .addCategory(Constants.EXTRA_SENDER_ADDRESS)
-                .putExtra(Constants.EXTRA_WALLET_ID, getIntent().getIntExtra(Constants.EXTRA_WALLET_ID, 0)));
+                .putExtra(Constants.EXTRA_WALLET_ID, getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0)));
     }
 
     @OnClick(R.id.receive)
     void onClickReceive() {
         Analytics.getInstance(this).logWallet(AnalyticsConstants.WALLET_RECEIVE, viewModel.getChainId());
         startActivity(new Intent(this, AssetRequestActivity.class)
-                .putExtra(Constants.EXTRA_WALLET_ID, getIntent().getIntExtra(Constants.EXTRA_WALLET_ID, 0)));
+                .putExtra(Constants.EXTRA_WALLET_ID, getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0)));
     }
 
     @OnClick(R.id.exchange)
     void onClickExchange() {
         Analytics.getInstance(this).logWallet(AnalyticsConstants.WALLET_EXCHANGE, viewModel.getChainId());
 //        Toast.makeText(this, R.string.not_implemented, Toast.LENGTH_SHORT).show();
-        DonateDialog.getInstance(Constants.DONATE_ADDING_EXCHANGE).show(getSupportFragmentManager(), DonateDialog.TAG);
+        DonationActivity.showDonation(this, Constants.DONATE_ADDING_EXCHANGE);
+//        DonateDialog.getInstance(Constants.DONATE_ADDING_EXCHANGE).show(getSupportFragmentManager(), DonateDialog.TAG);
     }
 
     public void setFragment(@IdRes int container, Fragment fragment) {

@@ -1,11 +1,14 @@
 /*
- *  Copyright 2017 Idealnaya rabota LLC
- *  Licensed under Multy.io license.
- *  See LICENSE for details
+ * Copyright 2018 Idealnaya rabota LLC
+ * Licensed under Multy.io license.
+ * See LICENSE for details
  */
 
 package io.multy.util;
 
+
+import java.util.HashMap;
+import java.util.Map;
 
 import io.multy.BuildConfig;
 
@@ -23,39 +26,11 @@ public class NativeDataHelper {
         }
     }
 
-    public enum Currency {
-        BTC(0),
-        ETH(1);
-
-        private final int value;
-
-        Currency(int value) {
-            this.value = value;
-        }
-
-        public int getValue() {
-            return value;
-        }
-    }
-
-//    public enum AddressType {
-//        ADDRESS_EXTERNAL(0),
-//        ADDRESS_INTERNAL(1);
-//
-//        private final int value;
-//
-//        AddressType(int value) {
-//            this.value = value;
-//        }
-//
-//        public int getValue() {
-//            return value;
-//        }
-//    }
-
     public enum Blockchain {
-        BLOCKCHAIN_BITCOIN(0x80000000),
-        BLOCKCHAIN_ETHEREUM(0x8000003c);
+//        BTC(0x80000000),
+//        ETH(0x8000003c);
+        BTC(0),
+        ETH(60);
 
         private final int value;
 
@@ -66,26 +41,46 @@ public class NativeDataHelper {
         public int getValue() {
             return value;
         }
+
+        private static Map map = new HashMap<>();
+
+        static {
+            for (Blockchain blockchain : Blockchain.values()) {
+                map.put(blockchain.value, blockchain);
+            }
+        }
+
+        public static Blockchain valueOf(int blockchainId) {
+            return (Blockchain) map.get(blockchainId);
+        }
     }
 
-    ;
-
-    public enum BlockchainNetType {
-        BLOCKCHAIN_NET_TYPE_MAINNET(0),
-        BLOCKCHAIN_NET_TYPE_TESTNET(1);
+    public enum NetworkId {
+        MAIN_NET(0),
+        TEST_NET(1);
 
         private final int value;
 
-        BlockchainNetType(int value) {
+        NetworkId(int value) {
             this.value = value;
         }
 
         public int getValue() {
             return value;
         }
-    }
 
-    ;
+        private static Map map = new HashMap<>();
+
+        static {
+            for (NetworkId networkId : NetworkId.values()) {
+                map.put(networkId.value, networkId);
+            }
+        }
+
+        public static NetworkId valueOf(int networkId) {
+            return (NetworkId) map.get(networkId);
+        }
+    }
 
     public static native String makeMnemonic() throws JniException;
 
@@ -98,7 +93,7 @@ public class NativeDataHelper {
 
     public static native int runTest();
 
-    public static native byte[] makeTransaction(byte[] seed, int walletIndex, String amountToSpend,
+    public static native byte[] makeTransaction(long id, int networkId, byte[] seed, int walletIndex, String amountToSpend,
                                                 String feePerByte, String donationAmount, String destinationAddress,
                                                 String changeAddress, String donationAddress, boolean payFee) throws JniException;
 
@@ -111,7 +106,7 @@ public class NativeDataHelper {
 
     public static native void isValidAddress(String address, int blockchain, int type) throws JniException;
 
-    public static native byte[] makeTransactionETH(byte[] seed, int walletIndex, int addressIndex, int chainId, int networkId, String balance, String amount, String destionationAddress, String gasLimit, String gasPrice, String nonce);
+    public static native byte[] makeTransactionETH(byte[] seed, int walletIndex, int addressIndex, int chainId, int networkId, String balance, String amount, String destionationAddress, String gasLimit, String gasPrice, String nonce) throws JniException;
 
     public static native String getLibraryVersion() throws JniException;
 

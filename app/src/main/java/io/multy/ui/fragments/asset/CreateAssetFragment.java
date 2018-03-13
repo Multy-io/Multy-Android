@@ -1,11 +1,12 @@
 /*
- * Copyright 2017 Idealnaya rabota LLC
+ * Copyright 2018 Idealnaya rabota LLC
  * Licensed under Multy.io license.
  * See LICENSE for details
  */
 
 package io.multy.ui.fragments.asset;
 
+import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
@@ -27,12 +28,12 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.api.MultyApi;
-import io.multy.model.entities.wallet.WalletRealmObject;
+import io.multy.model.entities.wallet.Wallet;
 import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetActivity;
-import io.multy.ui.activities.CreateAssetActivity;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
+import io.multy.util.NativeDataHelper;
 import io.multy.util.analytics.Analytics;
 import io.multy.viewmodels.WalletViewModel;
 import okhttp3.ResponseBody;
@@ -53,8 +54,9 @@ public class CreateAssetFragment extends BaseFragment {
     @BindView(R.id.text_chain_currency)
     TextView textViewChainCurrency;
 
-    private boolean isFirstStart = false;
     private WalletViewModel walletViewModel;
+    private int chainNet = NativeDataHelper.NetworkId.MAIN_NET.getValue();
+    private int chainId = NativeDataHelper.Blockchain.BTC.getValue();
 
     public static CreateAssetFragment newInstance() {
         return new CreateAssetFragment();
@@ -63,17 +65,14 @@ public class CreateAssetFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN
+                | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
         View v = inflater.inflate(R.layout.view_assets_action_add, container, false);
         ButterKnife.bind(this, v);
         initialize();
         subscribeToCurrencyUpdate();
         Analytics.getInstance(getActivity()).logCreateWalletLaunch();
-
-        if (getArguments() != null) {
-            isFirstStart = getArguments().getBoolean(CreateAssetActivity.EXTRA_IS_FIRST_START, false);
-        }
 
         editTextWalletName.requestFocus();
         editTextWalletName.postDelayed(() -> {
@@ -85,6 +84,23 @@ public class CreateAssetFragment extends BaseFragment {
             imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0);
         }, 100);
         return v;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == Constants.REQUEST_CODE_SET_CHAIN) {
+            if (resultCode == Activity.RESULT_OK && data.getExtras() != null) {
+                chainNet = data.getExtras().getInt(Constants.CHAIN_NET, 0);
+                chainId = data.getExtras().getInt(Constants.CHAIN_ID, 0);
+                String chainCurrency = data.getExtras().getString(Constants.CHAIN_NAME, "");
+                if (chainNet == NativeDataHelper.NetworkId.TEST_NET.getValue()) {
+                    chainCurrency = chainCurrency.concat("*Testnet");
+                }
+                walletViewModel.chainCurrency.setValue(chainCurrency);
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     private void subscribeToCurrencyUpdate() {
@@ -129,10 +145,10 @@ public class CreateAssetFragment extends BaseFragment {
         };
     }
 
-    private void showWalletInfoActivity(WalletRealmObject walletRealmObject) {
+    private void showWalletInfoActivity(Wallet walletRealmObject) {
         Intent intent = new Intent(getActivity(), AssetActivity.class);
         if (walletRealmObject != null) {
-            intent.putExtra(Constants.EXTRA_WALLET_ID, walletRealmObject.getWalletIndex());
+            intent.putExtra(Constants.EXTRA_WALLET_ID, walletRealmObject.getId());
         }
 
         getActivity().startActivity(intent);
@@ -142,17 +158,15 @@ public class CreateAssetFragment extends BaseFragment {
     @OnClick(R.id.button_chain)
     public void onClickChain() {
         Analytics.getInstance(getActivity()).logCreateWalletChain();
-//        ArrayList<String> chains = new ArrayList<>(2);
-//        chains.add(Constants.BTC);
-//        chains.add(Constants.ETH);
-//        ListDialogFragment.newInstance(chains, CurrencyType.CHAIN).show(getFragmentManager(), "");
-        if (!isFirstStart && getActivity() != null) {
+        if (getActivity() != null) {
+            hideKeyboard(getActivity());
             ChainChooserFragment fragment = (ChainChooserFragment) getActivity().getSupportFragmentManager()
                     .findFragmentByTag(ChainChooserFragment.TAG);
             if (fragment == null) {
                 fragment = ChainChooserFragment.getInstance();
             }
-            fragment.setSelectedChain(textViewChainCurrency.getText().toString());
+            fragment.setTargetFragment(CreateAssetFragment.this, Constants.REQUEST_CODE_SET_CHAIN);
+            fragment.setSelectedChain(textViewChainCurrency.getText().toString().split("\\*")[0], chainNet);
             getActivity().getSupportFragmentManager().beginTransaction()
                     .replace(R.id.container_main, fragment).addToBackStack(ChainChooserFragment.TAG)
                     .commit();
@@ -162,11 +176,9 @@ public class CreateAssetFragment extends BaseFragment {
     @OnClick(R.id.button_fiat)
     public void onClickFiat() {
         Analytics.getInstance(getActivity()).logCreateWalletFiatClick();
-//        ArrayList<String> chains = new ArrayList<>(3);
-//        chains.add(Constants.USD);
-//        chains.add(Constants.EUR);
-//        ListDialogFragment.newInstance(chains, CurrencyType.FIAT).show(getFragmentManager(), "");
-        if (!isFirstStart && getActivity() != null) {
+
+        if (getActivity() != null) {
+            hideKeyboard(getActivity());
             CurrencyChooserFragment fragment = (CurrencyChooserFragment) getActivity().getSupportFragmentManager()
                     .findFragmentByTag(CurrencyChooserFragment.TAG);
             if (fragment == null) {
@@ -180,13 +192,15 @@ public class CreateAssetFragment extends BaseFragment {
 
     @OnClick(R.id.text_create)
     public void onClickCreate() {
+        walletViewModel.isLoading.setValue(true);
         Analytics.getInstance(getActivity()).logCreateWallet();
-        WalletRealmObject walletRealmObject = walletViewModel.createWallet(editTextWalletName.getText().toString());
+        Wallet walletRealmObject = walletViewModel.createWallet(editTextWalletName.getText().toString(), chainId, chainNet);
         MultyApi.INSTANCE.addWallet(getActivity(), walletRealmObject).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 walletViewModel.isLoading.setValue(false);
                 if (response.isSuccessful()) {
+                    RealmManager.open();
                     RealmManager.getAssetsDao().saveWallet(walletRealmObject);
                     showWalletInfoActivity(walletRealmObject);
                 } else {
