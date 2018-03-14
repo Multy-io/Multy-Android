@@ -8,20 +8,22 @@ package io.multy.model.responses;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 public class ServerConfigResponse {
 
     @SerializedName("android")
     private AndroidConfig androidConfig;
 
     @SerializedName("donate")
-    private Donate donateInfo;
+    private List<Donate> donates;
 
     public AndroidConfig getAndroidConfig() {
         return androidConfig;
     }
 
-    public Donate getDonateInfo() {
-        return donateInfo;
+    public List<Donate> getDonates() {
+        return donates;
     }
 
     public class AndroidConfig {
@@ -48,18 +50,32 @@ public class ServerConfigResponse {
     }
 
     public class Donate {
-        @SerializedName("BTC")
-        private String btcDonateAddress;
+        @SerializedName("DonationAddress")
+        private String donationAddress;
 
-        @SerializedName("ETH")
-        private String ethDonateAddress;
+        @SerializedName("Feature")
+        private String featureDescription;
 
-        public String getBtcDonateAddress() {
-            return btcDonateAddress;
+        @SerializedName("FeatureCode")
+        private int featureCode;
+
+        @SerializedName("OS")
+        private int os;
+
+        public String getDonationAddress() {
+            return donationAddress;
         }
 
-        public String getEthDonateAddress() {
-            return ethDonateAddress;
+        public String getFeatureDescription() {
+            return featureDescription;
+        }
+
+        public int getFeatureCode() {
+            return featureCode;
+        }
+
+        public int getOs() {
+            return os;
         }
     }
 }

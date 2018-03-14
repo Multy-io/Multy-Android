@@ -12,13 +12,14 @@ import android.support.v4.app.Fragment;
 import io.multy.R;
 import io.multy.ui.fragments.asset.CreateAssetFragment;
 import io.multy.util.analytics.Analytics;
-import timber.log.Timber;
 
 /**
  * Created by anschutz1927@gmail.com on 23.11.17.
  */
 
 public class CreateAssetActivity extends BaseActivity {
+
+    public static final String EXTRA_IS_FIRST_START = "isFirstStart";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +34,7 @@ public class CreateAssetActivity extends BaseActivity {
         if (fragment == null) {
             fragment = CreateAssetFragment.newInstance();
         }
+        fragment.setArguments(getIntent().getExtras());
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container_main, fragment, CreateAssetFragment.TAG)
                 .commit();

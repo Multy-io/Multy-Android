@@ -19,6 +19,7 @@ import butterknife.OnClick;
 import io.multy.R;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.dialogs.DonateDialog;
+import io.multy.util.Constants;
 import io.multy.util.analytics.Analytics;
 import io.multy.viewmodels.ContactsViewModel;
 
@@ -51,7 +52,7 @@ public class ContactsFragment extends BaseFragment {
         v.setEnabled(false);
         v.postDelayed(() -> v.setEnabled(true), 500);
         if (getActivity() != null) {
-            DonateDialog.getInstance().show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
+            DonateDialog.getInstance(Constants.DONATE_ADDING_CONTACTS).show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
         }
     }
 }

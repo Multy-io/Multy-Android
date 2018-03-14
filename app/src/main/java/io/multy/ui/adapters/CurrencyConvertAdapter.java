@@ -34,6 +34,7 @@ public class CurrencyConvertAdapter extends RecyclerView.Adapter<CurrencyConvert
     private TypedArray disabledCurrencyImageIds;
     private String[] disabledCurrencyAbbrevs;
     private String[] disabledCurrencyNames;
+    private TypedArray disablesCurrencyDonationCodes;
 
     public CurrencyConvertAdapter(CurrencyType chainType, OnItemClickListener listener) {
         this.chainType = chainType;
@@ -69,7 +70,8 @@ public class CurrencyConvertAdapter extends RecyclerView.Adapter<CurrencyConvert
                 ((DiasabledCurrencyHolder) holder).textAbbrev.setText(disabledCurrencyAbbrevs[position]);
                 ((DiasabledCurrencyHolder) holder).textName.setText(disabledCurrencyNames[position]);
                 holder.divider.setVisibility(position == disabledCurrencyAbbrevs.length - 1 ? View.INVISIBLE : View.VISIBLE);
-                holder.itemView.setOnClickListener(v -> listener.onClickDisabledCurrency(disabledCurrencyAbbrevs[position]));
+                holder.itemView.setOnClickListener(v -> listener.onClickDisabledCurrency(disabledCurrencyAbbrevs[position],
+                        disablesCurrencyDonationCodes.getInteger(position, 0)));
                 break;
         }
     }
@@ -85,18 +87,21 @@ public class CurrencyConvertAdapter extends RecyclerView.Adapter<CurrencyConvert
         return 0;
     }
 
-    public void setAvailableChainsData(String chainCurrency, TypedArray chainsAvailableImageIds, String[] chainsAvailableAbbrev, String[] chainsAvailableName) {
+    public void setAvailableCurrenciesData(String chainCurrency, TypedArray availableCurrencyImageIds,
+                                           String[] availableCurrencyAbbrev, String[] availableCurrencyName) {
         this.currency = chainCurrency;
-        this.availableCurrencyImageIds = chainsAvailableImageIds;
-        this.availableCurrencyAbbrevs = chainsAvailableAbbrev;
-        this.availableCurencyNames = chainsAvailableName;
+        this.availableCurrencyImageIds = availableCurrencyImageIds;
+        this.availableCurrencyAbbrevs = availableCurrencyAbbrev;
+        this.availableCurencyNames = availableCurrencyName;
         notifyDataSetChanged();
     }
 
-    public void setSoonChainsData(TypedArray chainsSoonImageIds, String[] chainsSoonAbbrev, String[] chainsSoonName) {
-        this.disabledCurrencyImageIds = chainsSoonImageIds;
-        this.disabledCurrencyAbbrevs = chainsSoonAbbrev;
-        this.disabledCurrencyNames = chainsSoonName;
+    public void setSoonCurrenciesData(TypedArray disabledCurrencyImageIds, String[] disableCurrencyAbbrev,
+                                      String[] disabledCurrencyName, TypedArray disabledCurrencyDonationCodes) {
+        this.disabledCurrencyImageIds = disabledCurrencyImageIds;
+        this.disabledCurrencyAbbrevs = disableCurrencyAbbrev;
+        this.disabledCurrencyNames = disabledCurrencyName;
+        this.disablesCurrencyDonationCodes = disabledCurrencyDonationCodes;
         notifyDataSetChanged();
     }
 
@@ -140,6 +145,6 @@ public class CurrencyConvertAdapter extends RecyclerView.Adapter<CurrencyConvert
 
     public interface OnItemClickListener {
         void onClickAvailableCurrency(String clickedDisabledCurrencyName);
-        void onClickDisabledCurrency(String clickedDisabledCurrencyName);
+        void onClickDisabledCurrency(String clickedDisabledCurrencyName, int donationCode);
     }
 }

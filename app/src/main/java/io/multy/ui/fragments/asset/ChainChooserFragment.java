@@ -30,19 +30,20 @@ public class ChainChooserFragment extends BaseChooserFragment implements ChainAd
 
     public static final String TAG = ChainChooserFragment.class.getSimpleName();
 
-    @BindArray(R.array.chain_available_image_ids)
-    TypedArray chainsAvailableImageIds;
-    @BindArray(R.array.chain_available_abbrev)
-    String[] chainsAvailableAbbrev;
-    @BindArray(R.array.chain_available_name)
-    String[] chainsAvailableName;
-    @BindArray(R.array.chain_soon_image_ids)
-    TypedArray chainsSoonImageIds;
-    @BindArray(R.array.chain_soon_abbrev)
-    String[] chainsSoonAbbrev;
-    @BindArray(R.array.chain_soon_name)
-    String[] chainsSoonName;
-
+    @BindArray(R.array.available_chain_image_ids)
+    TypedArray availableChainImageIds;
+    @BindArray(R.array.available_chain_abbrev)
+    String[] availableChainAbbrevs;
+    @BindArray(R.array.available_chain_name)
+    String[] availableChainNames;
+    @BindArray(R.array.soon_chain_image_ids)
+    TypedArray disabledChainImageIds;
+    @BindArray(R.array.soon_chain_abbrev)
+    String[] disabledChainSoonAbbrevs;
+    @BindArray(R.array.soon_chain_name)
+    String[] disabledChainNames;
+    @BindArray(R.array.soon_chain_donate_addresses)
+    TypedArray disabledChainDonationCodes;
 
     private String chainCurrency;
 
@@ -68,9 +69,9 @@ public class ChainChooserFragment extends BaseChooserFragment implements ChainAd
     }
 
     @Override
-    public void onClickSoonChain(String clickedChainName) {
+    public void onClickSoonChain(String clickedChainName, int donationCode) {
         if (getActivity() != null) {
-            DonateDialog.getInstance().show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
+            DonateDialog.getInstance(donationCode).show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
         }
     }
 
@@ -82,8 +83,8 @@ public class ChainChooserFragment extends BaseChooserFragment implements ChainAd
         getBlockAvailableRecyclerView().setAdapter(chainAvailableAdapter);
         getBlockSoonRecyclerView().setLayoutManager(new LinearLayoutManager(activity));
         getBlockSoonRecyclerView().setAdapter(chainSoonAdapter);
-        chainAvailableAdapter.setAvailableChainsData(chainCurrency, chainsAvailableImageIds, chainsAvailableAbbrev, chainsAvailableName);
-        chainSoonAdapter.setSoonChainsData(chainsSoonImageIds, chainsSoonAbbrev, chainsSoonName);
+        chainAvailableAdapter.setAvailableChainsData(chainCurrency, availableChainImageIds, availableChainAbbrevs, availableChainNames);
+        chainSoonAdapter.setSoonChainsData(disabledChainImageIds, disabledChainSoonAbbrevs, disabledChainNames, disabledChainDonationCodes);
     }
 
     public void setSelectedChain(String chainCurrency) {

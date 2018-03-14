@@ -7,11 +7,8 @@
 package io.multy.ui.fragments.main;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
@@ -24,10 +21,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
-import io.multy.ui.activities.BaseActivity;
 import io.multy.ui.fragments.BaseFragment;
-import io.multy.ui.fragments.WebFragment;
-import io.multy.ui.fragments.asset.TransactionInfoFragment;
+import io.multy.ui.fragments.dialogs.DonateDialog;
 import io.multy.ui.fragments.dialogs.WebDialogFragment;
 import io.multy.util.Constants;
 import io.multy.util.RoundedCornersDrawable;
@@ -76,4 +71,10 @@ public class FeedFragment extends BaseFragment {
         WebDialogFragment.newInstance("http://multy.io/donation_features").show(getFragmentManager(), "");
     }
 
+    @OnClick(R.id.card_donation)
+    void onClickDonate(View view) {
+        view.setEnabled(false);
+        view.postDelayed(() -> view.setEnabled(true), 500);
+        DonateDialog.getInstance(Constants.DONATE_ADDING_ACTIVITY).show(getChildFragmentManager(), DonateDialog.TAG);
+    }
 }

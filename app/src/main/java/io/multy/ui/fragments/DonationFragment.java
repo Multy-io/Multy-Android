@@ -24,8 +24,6 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.samwolfand.oneprefs.Prefs;
-
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
@@ -44,7 +42,6 @@ import io.multy.model.requests.HdTransactionRequestEntity;
 import io.multy.model.responses.FeeRateResponse;
 import io.multy.storage.RealmManager;
 import io.multy.ui.adapters.MyFeeAdapter;
-import io.multy.ui.adapters.WalletsAdapter;
 import io.multy.ui.fragments.dialogs.CompleteDialogFragment;
 import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
 import io.multy.ui.fragments.dialogs.WalletChooserDialogFragment;
@@ -65,6 +62,7 @@ import static io.multy.ui.fragments.send.SendSummaryFragment.byteArrayToHex;
 public class DonationFragment extends BaseFragment {
 
     private final static String ARG_WALLET_INDEX = "wallet_index";
+    private final static String ARG_DONATION_CODE = "donation_code";
 
     @BindView(R.id.scroll_view)
     ScrollView scrollView;
@@ -83,10 +81,11 @@ public class DonationFragment extends BaseFragment {
     private WalletRealmObject wallet;
     private long maxValue;
 
-    public static DonationFragment newInstance(int walletIndex) {
+    public static DonationFragment newInstance(int walletIndex, int donationCode) {
         DonationFragment donationFragment = new DonationFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_WALLET_INDEX, walletIndex);
+        args.putInt(ARG_DONATION_CODE, donationCode);
         donationFragment.setArguments(args);
         return donationFragment;
     }
@@ -217,7 +216,7 @@ public class DonationFragment extends BaseFragment {
         });
     }
 
-    private void sendTransaction() {
+    private void sendTransaction(String receiverAddress) {
         viewModel.isLoading.setValue(true);
         double btcValue = Double.parseDouble(inputDonation.getText().toString());
         long satoshiValue = (long) (btcValue * Math.pow(10, 8));
@@ -230,7 +229,6 @@ public class DonationFragment extends BaseFragment {
         final byte[] seed = RealmManager.getSettingsDao().getSeed().getSeed();
         final int addressesSize = wallet.getAddresses().size();
         final String fee = String.valueOf(((MyFeeAdapter) recyclerView.getAdapter()).getSelectedFee().getAmount());
-        final String receiverAddress = Prefs.getString(Constants.PREF_DONATE_ADDRESS_BTC);
         final String donationAddress = "";
         final String amount = String.valueOf(CryptoFormatUtils.btcToSatoshi(inputDonation.getText().toString()));
 
@@ -278,9 +276,15 @@ public class DonationFragment extends BaseFragment {
     }
 
     @OnClick(R.id.button_send)
-    void onClickSend() {
+    void onClickSend(View view) {
 //        new CompleteDialogFragment().show(getActivity().getSupportFragmentManager(), "");
-        sendTransaction();
+        view.setEnabled(false);
+        //todo: if wallet is on testnet then address for donate should be "mnUtMQcs3s8kSkSRXpREVtJamgUCWpcFj4"
+        String addressForDonate = RealmManager.getSettingsDao()
+                .getDonationAddress(getArguments().getInt(ARG_DONATION_CODE, 0));
+        if (addressForDonate != null) {
+            sendTransaction(addressForDonate);
+        }
     }
 
     @OnClick(R.id.button_wallet)

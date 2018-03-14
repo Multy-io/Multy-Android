@@ -22,8 +22,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -32,10 +30,9 @@ import io.multy.api.MultyApi;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetActivity;
+import io.multy.ui.activities.CreateAssetActivity;
 import io.multy.ui.fragments.BaseFragment;
-import io.multy.ui.fragments.dialogs.ListDialogFragment;
 import io.multy.util.Constants;
-import io.multy.util.CurrencyType;
 import io.multy.util.analytics.Analytics;
 import io.multy.viewmodels.WalletViewModel;
 import okhttp3.ResponseBody;
@@ -56,6 +53,7 @@ public class CreateAssetFragment extends BaseFragment {
     @BindView(R.id.text_chain_currency)
     TextView textViewChainCurrency;
 
+    private boolean isFirstStart = false;
     private WalletViewModel walletViewModel;
 
     public static CreateAssetFragment newInstance() {
@@ -73,6 +71,9 @@ public class CreateAssetFragment extends BaseFragment {
         subscribeToCurrencyUpdate();
         Analytics.getInstance(getActivity()).logCreateWalletLaunch();
 
+        if (getArguments() != null) {
+            isFirstStart = getArguments().getBoolean(CreateAssetActivity.EXTRA_IS_FIRST_START, false);
+        }
 
         editTextWalletName.requestFocus();
         editTextWalletName.postDelayed(() -> {
@@ -140,12 +141,12 @@ public class CreateAssetFragment extends BaseFragment {
 
     @OnClick(R.id.button_chain)
     public void onClickChain() {
-//        Analytics.getInstance(getActivity()).logCreateWalletChain();
+        Analytics.getInstance(getActivity()).logCreateWalletChain();
 //        ArrayList<String> chains = new ArrayList<>(2);
 //        chains.add(Constants.BTC);
 //        chains.add(Constants.ETH);
 //        ListDialogFragment.newInstance(chains, CurrencyType.CHAIN).show(getFragmentManager(), "");
-        if (getActivity() != null) {
+        if (!isFirstStart && getActivity() != null) {
             ChainChooserFragment fragment = (ChainChooserFragment) getActivity().getSupportFragmentManager()
                     .findFragmentByTag(ChainChooserFragment.TAG);
             if (fragment == null) {
@@ -161,10 +162,10 @@ public class CreateAssetFragment extends BaseFragment {
     @OnClick(R.id.button_fiat)
     public void onClickFiat() {
         Analytics.getInstance(getActivity()).logCreateWalletFiatClick();
-        ArrayList<String> chains = new ArrayList<>(3);
-        chains.add(Constants.USD);
-        chains.add(Constants.EUR);
-        ListDialogFragment.newInstance(chains, CurrencyType.FIAT).show(getFragmentManager(), "");
+//        ArrayList<String> chains = new ArrayList<>(3);
+//        chains.add(Constants.USD);
+//        chains.add(Constants.EUR);
+//        ListDialogFragment.newInstance(chains, CurrencyType.FIAT).show(getFragmentManager(), "");
     }
 
     @OnClick(R.id.text_create)

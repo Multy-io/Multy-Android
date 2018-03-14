@@ -13,14 +13,11 @@ import android.support.annotation.Nullable;
 import android.widget.Toast;
 
 import io.multy.R;
-import io.multy.model.entities.Output;
-import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.DonationFragment;
 import io.multy.util.Constants;
 import io.realm.RealmResults;
-import timber.log.Timber;
 
 public class DonationActivity extends BaseActivity {
 
@@ -29,15 +26,19 @@ public class DonationActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_donation);
         setTitle(R.string.wallet);
-        getSupportFragmentManager().beginTransaction().add(R.id.container, DonationFragment.newInstance(getIntent().getIntExtra(Constants.EXTRA_WALLET_ID, 0))).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.container,
+                DonationFragment.newInstance(getIntent().getIntExtra(Constants.EXTRA_WALLET_ID, 0),
+                        getIntent().getIntExtra(Constants.EXTRA_DONATION_CODE, 0))).commit();
     }
 
-    public static void showDonation(Context context) {
+    public static void showDonation(Context context, int donationCode) {
         RealmResults<WalletRealmObject> wallets = RealmManager.getAssetsDao().getWallets();
 
         for (WalletRealmObject wallet : wallets) {
             if (wallet.getAvailableBalance() > 150) {
-                context.startActivity(new Intent(context, DonationActivity.class).putExtra(Constants.EXTRA_WALLET_ID, wallet.getWalletIndex()));
+                context.startActivity(new Intent(context, DonationActivity.class)
+                        .putExtra(Constants.EXTRA_WALLET_ID, wallet.getWalletIndex())
+                        .putExtra(Constants.EXTRA_DONATION_CODE, donationCode));
                 return;
             }
         }

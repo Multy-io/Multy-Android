@@ -15,9 +15,9 @@
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         android:padding="16dp"
-        android:text="@string/wallet"
+        android:text="@string/activity"
         android:textColor="@color/black"
         android:textSize="18sp"
         app:layout_constraintLeft_toRightOf="@id/button_back" />
@@ -49,12 +49,13 @@
             <TextView
                 android:id="@+id/feature"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingBottom="@dimen/margin_16dp"
+                android:layout_height="44dp"
+                android:gravity="center_vertical"
                 android:paddingEnd="20dp"
                 android:paddingStart="20dp"
-                android:paddingTop="16dp"
                 android:text="@string/feature_challenge"
+                android:textColor="@color/gray_dark"
+                android:textSize="16sp"
                 app:layout_constraintTop_toBottomOf="@id/image" />
 
             <ImageView
@@ -80,5 +81,52 @@
                 app:layout_constraintTop_toBottomOf="@id/feature" />
         </android.support.constraint.ConstraintLayout>
     </android.support.v7.widget.CardView>
+
+    <FrameLayout
+        android:id="@+id/card_donation"
+        android:layout_width="0dp"
+        android:layout_height="102dp"
+        android:layout_marginBottom="90dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginStart="40dp"
+        android:background="@drawable/button_bottom_cornars_blue"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/image_donate"
+        android:layout_width="30dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="11dp"
+        app:layout_constraintEnd_toEndOf="@id/card_donation"
+        app:layout_constraintStart_toStartOf="@id/card_donation"
+        app:layout_constraintTop_toTopOf="@id/card_donation"
+        app:srcCompat="@drawable/ic_donation_icon" />
+
+    <TextView
+        android:id="@+id/text_sync"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/sync_my_address_book"
+        android:textColor="@color/blue_dark"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@id/card_donation"
+        app:layout_constraintStart_toStartOf="@id/card_donation"
+        app:layout_constraintTop_toBottomOf="@id/image_donate" />
+
+    <TextView
+        android:id="@+id/text_notification"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/work_in_progress"
+        android:textColor="@color/red_warn"
+        app:layout_constraintBottom_toBottomOf="@id/card_donation"
+        app:layout_constraintEnd_toEndOf="@id/card_donation"
+        app:layout_constraintStart_toStartOf="@id/card_donation"
+        app:layout_constraintTop_toBottomOf="@id/text_sync"
+        app:layout_constraintVertical_bias="0.0" />
 
 </android.support.constraint.ConstraintLayout>

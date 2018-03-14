@@ -46,6 +46,7 @@ import io.multy.storage.AssetsDao;
 import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetActivity;
 import io.multy.ui.activities.BaseActivity;
+import io.multy.ui.activities.CreateAssetActivity;
 import io.multy.ui.activities.SeedActivity;
 import io.multy.ui.adapters.PortfoliosAdapter;
 import io.multy.ui.adapters.WalletsAdapter;
@@ -70,6 +71,10 @@ public class AssetsFragment extends BaseFragment implements WalletsAdapter.OnWal
     Group groupWalletsList;
     @BindView(R.id.group_create_description)
     Group groupCreateDescription;
+    @BindView(R.id.group_multy_logo)
+    Group groupMultyLogo;
+    @BindView(R.id.group_portfolio)
+    Group groupPortfolio;
     @BindView(R.id.button_add)
     ImageButton buttonAdd;
     @BindView(R.id.container_create_restore)
@@ -155,6 +160,8 @@ public class AssetsFragment extends BaseFragment implements WalletsAdapter.OnWal
         if (viewModel.isFirstStart()) {
             groupWalletsList.setVisibility(View.GONE);
             containerCreateRestore.setVisibility(View.VISIBLE);
+            groupPortfolio.setVisibility(View.GONE);
+            groupMultyLogo.setVisibility(View.VISIBLE);
             buttonWarn.setVisibility(View.GONE);
             recyclerView.setVisibility(View.GONE);
         } else {
@@ -164,6 +171,8 @@ public class AssetsFragment extends BaseFragment implements WalletsAdapter.OnWal
             buttonWarn.setVisibility(Prefs.getBoolean(Constants.PREF_BACKUP_SEED) ? View.GONE : View.VISIBLE);
             groupWalletsList.setVisibility(View.VISIBLE);
             containerCreateRestore.setVisibility(View.GONE);
+            groupPortfolio.setVisibility(View.VISIBLE);
+            groupMultyLogo.setVisibility(View.INVISIBLE);
             groupCreateDescription.setVisibility(View.GONE);
         }
     }
@@ -265,7 +274,9 @@ public class AssetsFragment extends BaseFragment implements WalletsAdapter.OnWal
     }
 
     private void onWalletAddClick() {
-//        startActivityForResult(new Intent(getActivity(), CreateAssetActivity.class).addCategory(Constants.EXTRA_RESTORE), Constants.REQUEST_CODE_CREATE);
+        startActivityForResult(new Intent(getActivity(), CreateAssetActivity.class)
+                .putExtra(CreateAssetActivity.EXTRA_IS_FIRST_START, viewModel.isFirstStart())
+                .addCategory(Constants.EXTRA_RESTORE), Constants.REQUEST_CODE_CREATE);
     }
 
     @OnClick(R.id.button_add)
@@ -298,10 +309,10 @@ public class AssetsFragment extends BaseFragment implements WalletsAdapter.OnWal
         startActivity(new Intent(getActivity(), SeedActivity.class));
     }
 
-//    @OnClick(R.id.logo)
-//    void onClickLogo() {
-//        Analytics.getInstance(getActivity()).logMain(AnalyticsConstants.MAIN_LOGO);
-//    }
+    @OnClick(R.id.logo)
+    void onClickLogo() {
+        Analytics.getInstance(getActivity()).logMain(AnalyticsConstants.MAIN_LOGO);
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

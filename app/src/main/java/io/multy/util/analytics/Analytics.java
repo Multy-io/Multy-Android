@@ -337,6 +337,30 @@ public class Analytics {
         logEvent(argument, argument, null);
     }
 
+    public void logDonationAllertLaunch(int featureId) {
+        logEvent(AnalyticsConstants.DONATION_ALERT, AnalyticsConstants.DONATION_ALERT, String.format(Locale.US, AnalyticsConstants.FEATURE_ID, featureId));
+    }
+
+    public void logDonationAllertClose(int featureId) {
+        logEvent(AnalyticsConstants.DONATION_ALERT_NAME, AnalyticsConstants.BUTTON_CLOSE, String.format(Locale.US, AnalyticsConstants.FEATURE_ID, featureId));
+    }
+
+    public void logDonationAllertDonateClick(int featureId) {
+        logEvent(AnalyticsConstants.DONATION_ALERT_NAME, AnalyticsConstants.BUTTON_DONATE, String.format(Locale.US, AnalyticsConstants.FEATURE_ID, featureId));
+    }
+
+    public void logDonationSendLaunch(int featureId) {
+        logEvent(AnalyticsConstants.DONATION_SEND_SCREEN, AnalyticsConstants.DONATION_SEND_SCREEN, String.format(Locale.US, AnalyticsConstants.FEATURE_ID, featureId));
+    }
+
+    public void logDonationSendDonateClick(int featureId) {
+        logEvent(AnalyticsConstants.DONATION_SEND_SCREEN_NAME, AnalyticsConstants.BUTTON_SEND_DONATE, String.format(Locale.US, AnalyticsConstants.FEATURE_ID, featureId));
+    }
+
+    public void logDonationSuccessLaunch(int featureId) {
+        logEvent(AnalyticsConstants.DONATION_SUCCESS_SCREEN, AnalyticsConstants.DONATION_SUCCESS_SCREEN, String.format(Locale.US, AnalyticsConstants.FEATURE_ID, featureId));
+    }
+
     public void logEvent(String event, String argumentName, String argument) {
         Bundle bundle = new Bundle();
         bundle.putString(argumentName, argument);

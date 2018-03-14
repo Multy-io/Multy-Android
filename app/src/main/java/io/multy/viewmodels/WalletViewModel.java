@@ -19,6 +19,8 @@ import android.widget.Toast;
 
 import com.samwolfand.oneprefs.Prefs;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +35,7 @@ import io.multy.model.entities.TransactionHistory;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.model.requests.UpdateWalletNameRequest;
+import io.multy.model.responses.ServerConfigResponse;
 import io.multy.model.responses.TransactionHistoryResponse;
 import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.asset.AssetInfoFragment;
@@ -100,14 +103,19 @@ public class WalletViewModel extends BaseViewModel {
             if (!Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
                 Multy.makeInitialized();
                 FirstLaunchHelper.setCredentials("");
+                ServerConfigResponse serverConfig = EventBus.getDefault().removeStickyEvent(ServerConfigResponse.class);
+                if (serverConfig != null) {
+                    RealmManager.open(Multy.getContext());
+                    RealmManager.getSettingsDao().saveDonation(serverConfig.getDonates());
+                }
             }
             DataManager dataManager = DataManager.getInstance();
 
             final int topIndex = Prefs.getInt(Constants.PREF_WALLET_TOP_INDEX, 0);
 
-            if (!Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
-                FirstLaunchHelper.setCredentials("");
-            }
+//            if (!Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
+//                FirstLaunchHelper.setCredentials("");
+//            }
 
             String creationAddress = NativeDataHelper.makeAccountAddress(dataManager.getSeed().getSeed(),
                     topIndex, 0, NativeDataHelper.Blockchain.BLOCKCHAIN_BITCOIN.getValue(),

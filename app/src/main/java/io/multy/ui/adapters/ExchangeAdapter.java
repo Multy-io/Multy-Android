@@ -6,6 +6,7 @@
 
 package io.multy.ui.adapters;
 
+import android.content.res.TypedArray;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,9 +26,10 @@ public class ExchangeAdapter extends RecyclerView.Adapter<ExchangeAdapter.Holder
 
     private ExchangeType type;
     private OnItemClickListener listener;
-    private String[] disabledExchangeNames;
     private String currentExchange;
     private String[] availableExchangeNames;
+    private String[] disabledExchangeNames;
+    private TypedArray disabledExchangeDonationCodes;
 
     public ExchangeAdapter(ExchangeType type, OnItemClickListener listener) {
         this.type = type;
@@ -58,7 +60,8 @@ public class ExchangeAdapter extends RecyclerView.Adapter<ExchangeAdapter.Holder
                 break;
             case SOON:
                 holder.textExchange.setText(disabledExchangeNames[position]);
-                holder.itemView.setOnClickListener(v -> listener.onDisabledExchangeClick(disabledExchangeNames[position]));
+                holder.itemView.setOnClickListener(v -> listener.onDisabledExchangeClick(disabledExchangeNames[position],
+                        disabledExchangeDonationCodes.getInteger(position, 0)));
                 holder.divider.setVisibility(disabledExchangeNames.length - 1 == position ? View.INVISIBLE : View.VISIBLE);
                 break;
         }
@@ -81,8 +84,9 @@ public class ExchangeAdapter extends RecyclerView.Adapter<ExchangeAdapter.Holder
         notifyDataSetChanged();
     }
 
-    public void setSoonData(String[] exchangeSoonName) {
-        this.disabledExchangeNames = exchangeSoonName;
+    public void setSoonData(String[] disabledExchangeName, TypedArray disabledExchangeDonationCodes) {
+        this.disabledExchangeNames = disabledExchangeName;
+        this.disabledExchangeDonationCodes = disabledExchangeDonationCodes;
         notifyDataSetChanged();
     }
 
@@ -120,6 +124,6 @@ public class ExchangeAdapter extends RecyclerView.Adapter<ExchangeAdapter.Holder
 
     public interface OnItemClickListener {
         void onAvailableExchangeClick(String clickedExchangeName);
-        void onDisabledExchangeClick(String clickedExchangeName);
+        void onDisabledExchangeClick(String clickedExchangeName, int donationCode);
     }
 }

@@ -6,6 +6,7 @@
 
 package io.multy.ui.fragments.main;
 
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -29,10 +30,12 @@ public class ExchangeChooserFragment extends BaseChooserFragment implements Exch
 
     public static final String TAG = ExchangeChooserFragment.class.getSimpleName();
 
-    @BindArray(R.array.exchange_available_name)
+    @BindArray(R.array.available_exchange_name)
     String[] exchangeAvailableNames;
-    @BindArray(R.array.exchange_soon_name)
+    @BindArray(R.array.soon_exchange_name)
     String[] exchangeSoonName;
+    @BindArray(R.array.soon_exchange_donate_addresses)
+    TypedArray disabledExchangeDonationCodes;
 
     public static ExchangeChooserFragment getInstance() {
         return new ExchangeChooserFragment();
@@ -55,9 +58,9 @@ public class ExchangeChooserFragment extends BaseChooserFragment implements Exch
     }
 
     @Override
-    public void onDisabledExchangeClick(String clickedExchangeName) {
+    public void onDisabledExchangeClick(String clickedExchangeName, int donationCode) {
         if (getActivity() != null) {
-            DonateDialog.getInstance().show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
+            DonateDialog.getInstance(donationCode).show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
         }
     }
 
@@ -68,7 +71,7 @@ public class ExchangeChooserFragment extends BaseChooserFragment implements Exch
         getBlockAvailableRecyclerView().setLayoutManager(new LinearLayoutManager(activity));
         getBlockAvailableRecyclerView().setAdapter(availableAdapter);
         ExchangeAdapter soonAdapter = new ExchangeAdapter(ExchangeAdapter.ExchangeType.SOON, this);
-        soonAdapter.setSoonData(exchangeSoonName);
+        soonAdapter.setSoonData(exchangeSoonName, disabledExchangeDonationCodes);
         getBlockSoonRecyclerView().setLayoutManager(new LinearLayoutManager(activity));
         getBlockSoonRecyclerView().setAdapter(soonAdapter);
     }

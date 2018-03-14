@@ -202,7 +202,7 @@ public class RequestSummaryFragment extends BaseFragment {
         Analytics.getInstance(getActivity()).logReceiveSummary(AnalyticsConstants.RECEIVE_SUMMARY_WIRELESS, viewModel.getChainId());
 //        Toast.makeText(getActivity(), R.string.not_implemented, Toast.LENGTH_SHORT).show();
         if (getActivity() != null) {
-            DonateDialog.getInstance().show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
+            DonateDialog.getInstance(Constants.DONATE_ADDING_WIRELESS_SCAN).show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
         }
     }
 

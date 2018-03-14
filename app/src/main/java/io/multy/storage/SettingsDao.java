@@ -6,14 +6,19 @@
 
 package io.multy.storage;
 
+import java.util.List;
+
 import io.multy.api.socket.CurrenciesRate;
 import io.multy.model.entities.ByteSeed;
 import io.multy.model.entities.DeviceId;
+import io.multy.model.entities.DonateFeatureEntity;
 import io.multy.model.entities.ExchangePrice;
 import io.multy.model.entities.Mnemonic;
 import io.multy.model.entities.RootKey;
 import io.multy.model.entities.Token;
 import io.multy.model.entities.UserId;
+import io.multy.model.responses.ServerConfigResponse;
+import io.multy.util.Constants;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.annotations.Nullable;
 import io.realm.Realm;
@@ -110,5 +115,24 @@ public class SettingsDao {
             currenciesRate.setBtcToUsd(0);
         }
         return currenciesRate;
+    }
+
+    public void saveDonation(List<ServerConfigResponse.Donate> donates) {
+        realm.executeTransactionAsync(realm -> {
+            for (ServerConfigResponse.Donate donate : donates) {
+                if (donate.getOs() == Constants.ANDROID_OS_ID) {
+                    DonateFeatureEntity donateFeature = new DonateFeatureEntity(donate.getFeatureCode());
+                    donateFeature.setDonationAddress(donate.getDonationAddress());
+                    donateFeature.setFeatureDescription(donate.getFeatureDescription());
+                    realm.insertOrUpdate(donateFeature);
+                }
+            }
+        }, Throwable::printStackTrace);
+    }
+
+    public String getDonationAddress(int donationCode) {
+        DonateFeatureEntity donateFeature = realm.where(DonateFeatureEntity.class)
+                .equalTo(DonateFeatureEntity.FEATURE_CODE, donationCode).findFirst();
+        return donateFeature == null ? null : donateFeature.getDonationAddress();
     }
 }
