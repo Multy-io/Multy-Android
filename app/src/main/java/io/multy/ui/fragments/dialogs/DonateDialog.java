@@ -61,10 +61,7 @@ public class DonateDialog extends DialogFragment {
     @OnClick(R.id.button_positive)
     void onPositiveClick(View v) {
         v.setEnabled(false);
-        int donationCode = 0;
-        if (getArguments() != null) {
-            donationCode = getArguments().getInt(Constants.EXTRA_DONATION_CODE, 0);
-        }
+        int donationCode = getArguments() == null ? 0 : getArguments().getInt(Constants.EXTRA_DONATION_CODE, 0);
         DonationActivity.showDonation(getContext(), donationCode);
         dismiss();
     }

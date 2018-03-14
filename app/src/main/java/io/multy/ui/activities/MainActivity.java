@@ -132,7 +132,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
             ServerConfigResponse serverConfig = EventBus.getDefault().removeStickyEvent(ServerConfigResponse.class);
             if (serverConfig != null) {
                 RealmManager.open(this);
-                RealmManager.getSettingsDao().saveDonation(serverConfig.getDonate());
+                RealmManager.getSettingsDao().saveDonation(serverConfig.getDonates());
             }
         }
     }

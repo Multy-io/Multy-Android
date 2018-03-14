@@ -105,7 +105,7 @@ public class SplashActivity extends AppCompatActivity {
                             showMainActivity();
                         }
 
-                        if (configResponse.getDonate() != null) {
+                        if (configResponse.getDonates() != null) {
                             EventBus.getDefault().postSticky(configResponse);
                         }
                     } catch (PackageManager.NameNotFoundException e) {

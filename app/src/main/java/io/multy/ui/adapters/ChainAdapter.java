@@ -95,11 +95,11 @@ public class ChainAdapter extends RecyclerView.Adapter<ChainAdapter.Holder> {
         notifyDataSetChanged();
     }
 
-    public void setSoonChainsData(TypedArray chainsSoonImageIds, String[] chainsSoonAbbrev, String[] chainsSoonName, TypedArray chainsSoonDonationCodes) {
-        this.disabledChainsImageIds = chainsSoonImageIds;
-        this.disabledChainsAbbrev = chainsSoonAbbrev;
-        this.disabledChainsName = chainsSoonName;
-        this.disabledChainsDonationCodes = chainsSoonDonationCodes;
+    public void setSoonChainsData(TypedArray disableChainImageIds, String[] disabledChainAbbrevs, String[] disabledChainNames, TypedArray disabledChainDonationCodes) {
+        this.disabledChainsImageIds = disableChainImageIds;
+        this.disabledChainsAbbrev = disabledChainAbbrevs;
+        this.disabledChainsName = disabledChainNames;
+        this.disabledChainsDonationCodes = disabledChainDonationCodes;
         notifyDataSetChanged();
     }
 

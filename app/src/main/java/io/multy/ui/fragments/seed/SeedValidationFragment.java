@@ -267,7 +267,7 @@ public class SeedValidationFragment extends BaseSeedFragment {
                         settingsDao.setMnemonic(new Mnemonic(phrase));
                         ServerConfigResponse serverConfig = EventBus.getDefault().removeStickyEvent(ServerConfigResponse.class);
                         if (serverConfig != null) {
-                            settingsDao.saveDonation(serverConfig.getDonate());
+                            settingsDao.saveDonation(serverConfig.getDonates());
                         }
                         Prefs.putString(Constants.PREF_AUTH, response.body().getToken());
                         seedModel.isLoading.setValue(false);

@@ -16,14 +16,14 @@ public class ServerConfigResponse {
     private AndroidConfig androidConfig;
 
     @SerializedName("donate")
-    private List<Donate> donate;
+    private List<Donate> donates;
 
     public AndroidConfig getAndroidConfig() {
         return androidConfig;
     }
 
-    public List<Donate> getDonate() {
-        return donate;
+    public List<Donate> getDonates() {
+        return donates;
     }
 
     public class AndroidConfig {

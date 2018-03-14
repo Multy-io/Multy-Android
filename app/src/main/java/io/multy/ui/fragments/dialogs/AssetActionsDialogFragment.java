@@ -89,7 +89,7 @@ public class AssetActionsDialogFragment extends BottomSheetDialogFragment implem
         v.setEnabled(false);
         v.postDelayed(() -> v.setEnabled(true), 500);
         if (getActivity() != null) {
-            DonateDialog.getInstance(Constants.DONATION_ADDING_IMPORT_WALLET).show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
+            DonateDialog.getInstance(Constants.DONATE_ADDING_IMPORT_WALLET).show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
         }
     }
 

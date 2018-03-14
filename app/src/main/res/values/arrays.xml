@@ -23,16 +23,16 @@
         <!--<item> </item>-->
     </string-array>
 
-    <string-array name="chain_available_abbrev">
+    <string-array name="available_chain_abbrev">
         <item>BTC</item>
     </string-array>
-    <string-array name="chain_available_name">
+    <string-array name="available_chain_name">
         <item>Bitcoin</item>
     </string-array>
-    <array name="chain_available_image_ids">
+    <array name="available_chain_image_ids">
         <item>@drawable/ic_btk_logo</item>
     </array>
-    <string-array name="chain_soon_abbrev">
+    <string-array name="soon_chain_abbrev">
         <item>LBTC</item>
         <item>ETH</item>
         <item>GOLOS</item>
@@ -44,7 +44,7 @@
         <item>ETC</item>
         <item>ERC20</item>
     </string-array>
-    <string-array name="chain_soon_name">
+    <string-array name="soon_chain_name">
         <item>Lightning Bitcoin</item>
         <item>Ethereum</item>
         <item>Golos</item>
@@ -56,7 +56,7 @@
         <item>Ethereum Classic</item>
         <item>ERC20 Tokens</item>
     </string-array>
-    <array name="chain_soon_image_ids">
+    <array name="soon_chain_image_ids">
         <item>@drawable/chain_lbtc</item>
         <item>@drawable/chain_eth</item>
         <item>@drawable/chain_golos</item>
@@ -68,7 +68,7 @@
         <item>@drawable/chain_etc</item>
         <item>@drawable/chain_erc_20</item>
     </array>
-    <array name="chain_soon_donate_addresses">
+    <array name="soon_chain_donate_addresses">
         <item>10100</item>
         <item>10101</item>
         <item>10102</item>
@@ -81,10 +81,10 @@
         <item>10109</item>
     </array>
 
-    <string-array name="exchange_available_name">
+    <string-array name="available_exchange_name">
         <item>Poloniex</item>
     </string-array>
-    <string-array name="exchange_soon_name">
+    <string-array name="soon_exchange_name">
         <item>Binance</item>
         <item>OKEx</item>
         <item>Huobi</item>
@@ -96,7 +96,7 @@
         <item>Kraken</item>
         <item>HitBTC</item>
     </string-array>
-    <array name="exchange_soon_donate_addresses">
+    <array name="soon_exchange_donate_addresses">
         <item>10400</item>
         <item>10401</item>
         <item>10402</item>
@@ -109,28 +109,28 @@
         <item>10409</item>
     </array>
 
-    <string-array name="currencies_to_convert_available_abbrev">
+    <string-array name="available_currencies_to_convert_abbrev">
         <item>USD</item>
     </string-array>
-    <string-array name="currencies_to_convert_available_name">
+    <string-array name="available_currencies_to_convert_name">
         <item>US Dollar</item>
     </string-array>
-    <array name="currencies_to_convert_available_image_ids">
+    <array name="available_currencies_to_convert_image_ids">
         <item>@drawable/flag_usd</item>
     </array>
-    <string-array name="currencies_to_convert_soon_abbrev">
+    <string-array name="soon_currencies_to_convert_abbrev">
         <item>EUR</item>
         <item>ETH</item>
     </string-array>
-    <string-array name="currencies_to_convert_soon_name">
+    <string-array name="soon_currencies_to_convert_name">
         <item>Euro</item>
         <item>Ethereum</item>
     </string-array>
-    <array name="currencies_to_convert_soon_image_ids">
+    <array name="soon_currencies_to_convert_image_ids">
         <item>@drawable/flag_eur</item>
         <item>@drawable/chain_eth</item>
     </array>
-    <array name="currencies_to_convert_soon_donate_addresses">
+    <array name="soon_currencies_to_convert_donate_addresses">
         <item>10110</item>
         <item>10111</item>
     </array>

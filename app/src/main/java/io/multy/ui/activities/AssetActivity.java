@@ -79,7 +79,7 @@ public class AssetActivity extends BaseActivity {
     void onClickExchange() {
         Analytics.getInstance(this).logWallet(AnalyticsConstants.WALLET_EXCHANGE, viewModel.getChainId());
 //        Toast.makeText(this, R.string.not_implemented, Toast.LENGTH_SHORT).show();
-        DonateDialog.getInstance(Constants.DONATION_ADDING_EXCHANGE).show(getSupportFragmentManager(), DonateDialog.TAG);
+        DonateDialog.getInstance(Constants.DONATE_ADDING_EXCHANGE).show(getSupportFragmentManager(), DonateDialog.TAG);
     }
 
     public void setFragment(@IdRes int container, Fragment fragment) {

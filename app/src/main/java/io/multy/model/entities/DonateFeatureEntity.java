@@ -15,9 +15,9 @@ import io.realm.annotations.PrimaryKey;
 
 public class DonateFeatureEntity extends RealmObject {
 
-    public static final String FIELD_FEATURE_CODE = "featureCode";
-    public static final String FIELD_FEATURE_DESCRIPTION = "featureDescription";
-    public static final String FIELD_DONATION_ADDRESS = "donationAddress";
+    public static final String FEATURE_CODE = "featureCode";
+    public static final String FEATURE_DESCRIPTION = "featureDescription";
+    public static final String DONATION_ADDRESS = "donationAddress";
 
     @PrimaryKey
     private int featureCode;

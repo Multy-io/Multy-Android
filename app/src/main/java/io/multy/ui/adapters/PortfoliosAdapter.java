@@ -54,10 +54,10 @@ public class PortfoliosAdapter extends PagerAdapter {
         int donationCode;
         if (position == 0) {
             imageBackground.setImageResource(R.drawable.portfolio_donation_image);
-            donationCode = Constants.DONATION_ADDING_PORTFOLIO;
+            donationCode = Constants.DONATE_ADDING_PORTFOLIO;
         } else {
             imageBackground.setImageResource(R.drawable.charts_donation_image);
-            donationCode = Constants.DONATION_ADDING_CHARTS;
+            donationCode = Constants.DONATE_ADDING_CHARTS;
         }
         layout.setOnClickListener(v -> {
             v.setEnabled(false);

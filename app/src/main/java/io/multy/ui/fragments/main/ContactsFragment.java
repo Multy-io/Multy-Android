@@ -52,7 +52,7 @@ public class ContactsFragment extends BaseFragment {
         v.setEnabled(false);
         v.postDelayed(() -> v.setEnabled(true), 500);
         if (getActivity() != null) {
-            DonateDialog.getInstance(Constants.DONATION_ADDING_CONTACTS).show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
+            DonateDialog.getInstance(Constants.DONATE_ADDING_CONTACTS).show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
         }
     }
 }

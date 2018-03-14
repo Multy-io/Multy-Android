@@ -75,6 +75,6 @@ public class FeedFragment extends BaseFragment {
     void onClickDonate(View view) {
         view.setEnabled(false);
         view.postDelayed(() -> view.setEnabled(true), 500);
-        DonateDialog.getInstance(Constants.DONATION_ADDING_ACTIVITY).show(getChildFragmentManager(), DonateDialog.TAG);
+        DonateDialog.getInstance(Constants.DONATE_ADDING_ACTIVITY).show(getChildFragmentManager(), DonateDialog.TAG);
     }
 }

@@ -30,11 +30,11 @@ public class ExchangeChooserFragment extends BaseChooserFragment implements Exch
 
     public static final String TAG = ExchangeChooserFragment.class.getSimpleName();
 
-    @BindArray(R.array.exchange_available_name)
+    @BindArray(R.array.available_exchange_name)
     String[] exchangeAvailableNames;
-    @BindArray(R.array.exchange_soon_name)
+    @BindArray(R.array.soon_exchange_name)
     String[] exchangeSoonName;
-    @BindArray(R.array.exchange_soon_donate_addresses)
+    @BindArray(R.array.soon_exchange_donate_addresses)
     TypedArray disabledExchangeDonationCodes;
 
     public static ExchangeChooserFragment getInstance() {

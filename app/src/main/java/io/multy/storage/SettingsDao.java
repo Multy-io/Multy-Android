@@ -132,7 +132,7 @@ public class SettingsDao {
 
     public String getDonationAddress(int donationCode) {
         DonateFeatureEntity donateFeature = realm.where(DonateFeatureEntity.class)
-                .equalTo(DonateFeatureEntity.FIELD_FEATURE_CODE, donationCode).findFirst();
+                .equalTo(DonateFeatureEntity.FEATURE_CODE, donationCode).findFirst();
         return donateFeature == null ? null : donateFeature.getDonationAddress();
     }
 }

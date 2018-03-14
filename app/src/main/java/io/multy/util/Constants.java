@@ -94,12 +94,12 @@ public class Constants {
     public static final String MULTY_IO_URL = "http://multy.io";
     public static final String CHAIN_ID = "CHAIN_ID";
 
-    public static final int DONATION_WITH_TRANSACTION = 10000;
-    public static final int DONATION_ADDING_ACTIVITY = 10200;
-    public static final int DONATION_ADDING_CONTACTS = 10201;
-    public static final int DONATION_ADDING_PORTFOLIO = 10202;
-    public static final int DONATION_ADDING_CHARTS = 10203;
-    public static final int DONATION_ADDING_IMPORT_WALLET = 10300;
-    public static final int DONATION_ADDING_EXCHANGE = 10301;
-    public static final int DONATION_ADDING_WIRELESS_SCAN = 10302;
+    public static final int DONATE_WITH_TRANSACTION = 10000;
+    public static final int DONATE_ADDING_ACTIVITY = 10200;
+    public static final int DONATE_ADDING_CONTACTS = 10201;
+    public static final int DONATE_ADDING_PORTFOLIO = 10202;
+    public static final int DONATE_ADDING_CHARTS = 10203;
+    public static final int DONATE_ADDING_IMPORT_WALLET = 10300;
+    public static final int DONATE_ADDING_EXCHANGE = 10301;
+    public static final int DONATE_ADDING_WIRELESS_SCAN = 10302;
 }
