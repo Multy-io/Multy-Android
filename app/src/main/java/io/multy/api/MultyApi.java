@@ -49,17 +49,10 @@ public enum MultyApi implements MultyApiInterface {
 
     INSTANCE {
 
-
-        //        static final String BASE_URL = "http://192.168.0.121:7778/";  // local
-//        static final String BASE_URL = "http://88.198.47.112:7778/";  // remote
-//        static final String BASE_URL = "https://api.multy.io/";  // Special for Jack Bolt!
-        static final String BASE_URL = "https://stage.multy.io/";  // Special for Jack Bolt!
-
-
         private ApiServiceInterface api = new Retrofit.Builder()
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
-                .baseUrl(BASE_URL)
+                .baseUrl(Constants.BASE_URL)
                 .client(new OkHttpClient.Builder()
                         .connectTimeout(30, TimeUnit.SECONDS)
                         .writeTimeout(30, TimeUnit.SECONDS)
@@ -169,5 +162,5 @@ public enum MultyApi implements MultyApiInterface {
         public Call<ResponseBody> sendHdTransaction(HdTransactionRequestEntity transactionRequestEntity) {
             return api.sendHdTransaction(transactionRequestEntity);
         }
-    }
+    };
 }

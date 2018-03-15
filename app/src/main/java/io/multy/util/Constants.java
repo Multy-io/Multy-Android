@@ -15,6 +15,11 @@ public class Constants {
             + " " + Build.VERSION.RELEASE
             + " " + Build.VERSION_CODES.class.getFields()[android.os.Build.VERSION.SDK_INT].getName();
 
+//    static final String BASE_URL = "http://192.168.0.121:7778/";  // local
+//    static final String BASE_URL = "http://88.198.47.112:7778/";  // remote
+//    static final String BASE_URL = "https://api.multy.io/";  // Special for Jack Bolt!
+    public static final String BASE_URL = "https://stage.multy.io/";  // Special for Jack Bolt!
+
     public static final String DONTAION_ADDRESS = "mzqiDnETWkunRDZxjUQ34JzN1LDevh5DpU";
 
     public static final int ANDROID_OS_ID = 1;
@@ -26,6 +31,7 @@ public class Constants {
 
     public static final String SPAN_DIVIDER = ",";
     public static final String SPACE = " ";
+    public static final String NEW_LINE = "\n";
     public static final String QUESTION_MARK = "?";
     public static final String EQUAL = "=";
 

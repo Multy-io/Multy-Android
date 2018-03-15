@@ -21,13 +21,73 @@
         android:textColor="@color/black"
         android:textSize="18sp" />
 
+    <View
+        android:id="@+id/divider_title"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="@color/gray_light_transparent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_title" />
+
+    <FrameLayout
+        android:id="@+id/button_copy"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="?attr/selectableItemBackground"
+        app:layout_constraintBottom_toTopOf="@id/container_push"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider_title" />
+
+    <TextView
+        android:id="@+id/text_version_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:paddingEnd="16dp"
+        android:paddingStart="56dp"
+        android:text="@string/version_title"
+        android:textColor="@color/blue_light"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider_title"
+        tools:text="Multy Ctypto Wallet v.1.0.1" />
+
+    <TextView
+        android:id="@+id/text_version_description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingBottom="16dp"
+        android:paddingEnd="16dp"
+        android:paddingStart="56dp"
+        android:paddingTop="6dp"
+        android:textColor="@color/blue_light"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_version_title"
+        tools:text="If ou already have any wallets in Multy, you’ve changed your device or lost account - you can restore your seed phrase." />
+
+    <ImageView
+        android:id="@+id/image_logo"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_marginStart="16dp"
+        android:paddingTop="4dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/text_version_title"
+        app:srcCompat="@drawable/ic_settings_about_grey" />
+
     <android.support.constraint.ConstraintLayout
         android:id="@+id/container_push"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
         android:foreground="?attr/selectableItemBackground"
-        app:layout_constraintTop_toBottomOf="@id/text_title">
+        app:layout_constraintTop_toBottomOf="@id/text_version_description">
 
         <View
             android:layout_width="0dp"

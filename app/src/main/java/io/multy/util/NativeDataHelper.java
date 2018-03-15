@@ -113,4 +113,6 @@ public class NativeDataHelper {
 
     public static native byte[] makeTransactionETH(byte[] seed, int walletIndex, int addressIndex, int chainId, int networkId, String balance, String amount, String destionationAddress, String gasLimit, String gasPrice, String nonce);
 
+    public static native String getLibraryVersion() throws JniException;
+
 }
