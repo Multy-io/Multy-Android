@@ -67,7 +67,7 @@
     <dimen name="arrow_size">24dp</dimen>
     <dimen name="divider_margin_top">25dp</dimen>
 
-    <dimen name="share_btn_width">90dp</dimen>
+    <dimen name="share_btn_width">92dp</dimen>
     <dimen name="share_btn_height">85dp</dimen>
 
     <dimen name="send_btn_height">106dp</dimen>

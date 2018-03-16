@@ -19,7 +19,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -29,6 +28,7 @@ import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetSendActivity;
 import io.multy.ui.adapters.RecentAddressesAdapter;
 import io.multy.ui.fragments.BaseFragment;
+import io.multy.ui.fragments.dialogs.DonateDialog;
 import io.multy.util.Constants;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
@@ -80,35 +80,6 @@ public class AssetSendFragment extends BaseFragment {
         super.onDestroyView();
     }
 
-    @OnClick(R.id.button_address)
-    void onClickAddressBook(){
-        Analytics.getInstance(getActivity()).logSendTo(AnalyticsConstants.SEND_TO_ADDRESS_BOOK);
-        Toast.makeText(getActivity(), R.string.not_implemented, Toast.LENGTH_SHORT).show();
-    }
-
-    @OnClick(R.id.button_scan_wireless)
-    void onClickWirelessScan(){
-        Analytics.getInstance(getActivity()).logSendTo(AnalyticsConstants.SEND_TO_WIRELESS);
-        Toast.makeText(getActivity(), R.string.not_implemented, Toast.LENGTH_SHORT).show();
-    }
-
-    @OnClick(R.id.button_scan_qr)
-    void onClickScanQr(){
-        Analytics.getInstance(getActivity()).logSendTo(AnalyticsConstants.SEND_TO_QR);
-        ((AssetSendActivity) getActivity()).showScanScreen();
-    }
-
-    @OnClick(R.id.button_next)
-    void onClickNext(){
-        viewModel.setReceiverAddress(inputAddress.getText().toString());
-        viewModel.thoseAddress.setValue(inputAddress.getText().toString());
-        ((AssetSendActivity) getActivity()).setFragment(R.string.send_from, R.id.container, WalletChooserFragment.newInstance());
-        if (getActivity().getIntent().hasCategory(Constants.EXTRA_SENDER_ADDRESS)) {
-            RealmManager.getAssetsDao().getWalletById(getActivity().getIntent().getIntExtra(Constants.EXTRA_WALLET_ID, 0));
-            ((AssetSendActivity) getActivity()).setFragment(R.string.transaction_fee, R.id.container, TransactionFeeFragment.newInstance());
-        }
-    }
-
     private void setupInputAddress(){
         inputAddress.addTextChangedListener(new TextWatcher() {
             @Override
@@ -149,4 +120,40 @@ public class AssetSendFragment extends BaseFragment {
         }
     }
 
+    @OnClick(R.id.button_address)
+    void onClickAddressBook(){
+        Analytics.getInstance(getActivity()).logSendTo(AnalyticsConstants.SEND_TO_ADDRESS_BOOK);
+//        Toast.makeText(getActivity(), R.string.not_implemented, Toast.LENGTH_SHORT).show();
+        if (getActivity() != null) {
+            DonateDialog.getInstance(Constants.DONATE_ADDING_CONTACTS)
+                    .show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
+        }
+    }
+
+    @OnClick(R.id.button_scan_wireless)
+    void onClickWirelessScan(){
+        Analytics.getInstance(getActivity()).logSendTo(AnalyticsConstants.SEND_TO_WIRELESS);
+//        Toast.makeText(getActivity(), R.string.not_implemented, Toast.LENGTH_SHORT).show();
+        if (getActivity() != null) {
+            DonateDialog.getInstance(Constants.DONATE_ADDING_WIRELESS_SCAN)
+                    .show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
+        }
+    }
+
+    @OnClick(R.id.button_scan_qr)
+    void onClickScanQr(){
+        Analytics.getInstance(getActivity()).logSendTo(AnalyticsConstants.SEND_TO_QR);
+        ((AssetSendActivity) getActivity()).showScanScreen();
+    }
+
+    @OnClick(R.id.button_next)
+    void onClickNext(){
+        viewModel.setReceiverAddress(inputAddress.getText().toString());
+        viewModel.thoseAddress.setValue(inputAddress.getText().toString());
+        ((AssetSendActivity) getActivity()).setFragment(R.string.send_from, R.id.container, WalletChooserFragment.newInstance());
+        if (getActivity().getIntent().hasCategory(Constants.EXTRA_SENDER_ADDRESS)) {
+            RealmManager.getAssetsDao().getWalletById(getActivity().getIntent().getIntExtra(Constants.EXTRA_WALLET_ID, 0));
+            ((AssetSendActivity) getActivity()).setFragment(R.string.transaction_fee, R.id.container, TransactionFeeFragment.newInstance());
+        }
+    }
 }

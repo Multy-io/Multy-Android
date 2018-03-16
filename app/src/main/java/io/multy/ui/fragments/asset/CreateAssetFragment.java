@@ -166,6 +166,16 @@ public class CreateAssetFragment extends BaseFragment {
 //        chains.add(Constants.USD);
 //        chains.add(Constants.EUR);
 //        ListDialogFragment.newInstance(chains, CurrencyType.FIAT).show(getFragmentManager(), "");
+        if (!isFirstStart && getActivity() != null) {
+            CurrencyChooserFragment fragment = (CurrencyChooserFragment) getActivity().getSupportFragmentManager()
+                    .findFragmentByTag(CurrencyChooserFragment.TAG);
+            if (fragment == null) {
+                fragment = CurrencyChooserFragment.getInstance();
+            }
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container_main, fragment).addToBackStack(ChainChooserFragment.TAG)
+                    .commit();
+        }
     }
 
     @OnClick(R.id.text_create)
