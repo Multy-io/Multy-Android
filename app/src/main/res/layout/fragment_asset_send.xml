@@ -51,32 +51,61 @@
     <TextView
         android:id="@+id/button_address"
         style="@style/SendShareButton"
-        android:drawablePadding="@dimen/margin_12dp"
-        android:drawableTop="@drawable/ic_address_book2"
-        android:paddingTop="@dimen/margin_22dp"
-        android:text="@string/address_book"
+        android:drawablePadding="8dp"
+        android:drawableTop="@drawable/ic_donation_icon_smallest"
+        android:gravity="top|center_horizontal"
+        android:paddingTop="18dp"
+        android:text="@string/contacts_bottombar"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@+id/button_scan_wireless"
         app:layout_constraintTop_toBottomOf="@id/input_address" />
 
     <TextView
+        android:id="@+id/text_contacts_progress"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:elevation="@dimen/elevation_6dp"
+        android:gravity="center_horizontal"
+        android:paddingBottom="4dp"
+        android:text="@string/work_in_progress"
+        android:textColor="@color/red_warn"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="@id/button_address"
+        app:layout_constraintEnd_toEndOf="@id/button_address"
+        app:layout_constraintStart_toStartOf="@id/button_address" />
+
+    <TextView
         android:id="@+id/button_scan_wireless"
         style="@style/SendShareButton"
-        android:drawablePadding="@dimen/margin_9dp"
-        android:drawableTop="@drawable/ic_nfc"
-        android:paddingTop="@dimen/margin_19dp"
+        android:drawablePadding="8dp"
+        android:drawableTop="@drawable/ic_donation_icon_smallest"
+        android:paddingTop="18dp"
         android:text="@string/wireless_scan"
         app:layout_constraintLeft_toRightOf="@+id/button_address"
         app:layout_constraintRight_toLeftOf="@+id/button_scan_qr"
         app:layout_constraintTop_toBottomOf="@id/input_address" />
 
     <TextView
+        android:id="@+id/text_wireless_progress"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:elevation="@dimen/elevation_6dp"
+        android:gravity="center_horizontal"
+        android:paddingBottom="4dp"
+        android:text="@string/work_in_progress"
+        android:textColor="@color/red_warn"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="@id/button_scan_wireless"
+        app:layout_constraintEnd_toEndOf="@id/button_scan_wireless"
+        app:layout_constraintStart_toStartOf="@id/button_scan_wireless" />
+
+    <TextView
         android:id="@+id/button_scan_qr"
         style="@style/SendShareButton"
-        android:drawablePadding="@dimen/margin_9dp"
+        android:drawablePadding="8dp"
         android:drawableTop="@drawable/ic_qr"
-        android:paddingTop="@dimen/margin_21dp"
+        android:paddingTop="20dp"
         android:text="@string/scan_qr"
         app:layout_constraintLeft_toRightOf="@+id/button_scan_wireless"
         app:layout_constraintRight_toRightOf="parent"

@@ -31,6 +31,8 @@ import io.multy.model.entities.UserId;
 import io.multy.storage.RealmManager;
 import io.multy.ui.activities.BaseActivity;
 import io.multy.ui.fragments.BaseFragment;
+import io.multy.ui.fragments.asset.ChainChooserFragment;
+import io.multy.ui.fragments.asset.CurrencyChooserFragment;
 import io.multy.util.Constants;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
@@ -168,7 +170,7 @@ public class SettingsFragment extends BaseFragment implements BaseActivity.OnLoc
     }
 
     @OnClick(R.id.container_exchange)
-    void onExchangeClick(View v) {
+    void onClickExchange(View v) {
         v.setEnabled(false);
         v.postDelayed(() -> v.setEnabled(true), 500);
         if (getActivity() != null) {
@@ -180,6 +182,21 @@ public class SettingsFragment extends BaseFragment implements BaseActivity.OnLoc
             getActivity().getSupportFragmentManager().beginTransaction()
                     .replace(R.id.container_frame, fragment).addToBackStack(ExchangeChooserFragment.TAG)
                     .commit();
+        }
+    }
+
+    @OnClick(R.id.container_fiat)
+    void onClickFiat(View v) {
+        v.setEnabled(false);
+        v.postDelayed(() -> v.setEnabled(true), 500);
+        if (getActivity() != null) {
+            CurrencyChooserFragment fragment = (CurrencyChooserFragment) getActivity().getSupportFragmentManager()
+                    .findFragmentByTag(CurrencyChooserFragment.TAG);
+            if (fragment == null) {
+                fragment = CurrencyChooserFragment.getInstance();
+            }
+            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.full_container, fragment)
+                    .addToBackStack(ChainChooserFragment.TAG).commit();
         }
     }
 

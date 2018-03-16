@@ -186,15 +186,20 @@ public class RequestSummaryFragment extends BaseFragment {
     }
 
     @OnClick(R.id.button_address)
-    void onClickAddressBook() {
+    void onClickAddressBook(View v) {
         Analytics.getInstance(getActivity()).logReceiveSummary(AnalyticsConstants.RECEIVE_SUMMARY_ADDRESS_BOOK, viewModel.getChainId());
-        Toast.makeText(getActivity(), R.string.not_implemented, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getActivity(), R.string.not_implemented, Toast.LENGTH_SHORT).show();
 //        viewModel.addAddress();
 //        viewModel.getAddress().observe(this, address -> {
 //            textAddress.setText(address);
 //            generateQR();
 //        });
 //        Log.i("wise", "generated");
+        v.setEnabled(false);
+        v.postDelayed(() -> v.setEnabled(true), 500);
+        if (getActivity() != null) {
+            DonateDialog.getInstance(Constants.DONATE_ADDING_CONTACTS).show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
+        }
     }
 
     @OnClick(R.id.button_scan_wireless)

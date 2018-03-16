@@ -265,10 +265,10 @@
             android:id="@+id/button_address"
             style="@style/ShareButton"
             android:layout_marginTop="@dimen/margin_10dp"
-            android:drawablePadding="@dimen/margin_12dp"
-            android:drawableTop="@drawable/ic_address_book2"
-            android:paddingTop="@dimen/margin_12dp"
-            android:text="@string/address_book"
+            android:drawablePadding="8dp"
+            android:drawableTop="@drawable/ic_donation_icon_smallest"
+            android:paddingTop="10dp"
+            android:text="@string/contacts_bottombar"
             android:textSize="12sp"
             app:layout_constraintHorizontal_chainStyle="spread"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -276,12 +276,24 @@
             app:layout_constraintTop_toBottomOf="@id/text_send_via" />
 
         <TextView
+            android:id="@+id/contacts_donate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="(work in progress)"
+            android:textColor="@color/red_warn"
+            android:textSize="10sp"
+            app:layout_constraintBottom_toBottomOf="@id/button_address"
+            app:layout_constraintEnd_toEndOf="@id/button_address"
+            app:layout_constraintStart_toStartOf="@id/button_address" />
+
+        <TextView
             android:id="@+id/button_scan_wireless"
             style="@style/ShareButton"
             android:layout_marginTop="10dp"
-            android:drawablePadding="@dimen/margin_9dp"
+            android:drawablePadding="8dp"
             android:drawableTop="@drawable/ic_donation_icon_smallest"
-            android:paddingTop="@dimen/margin_10dp"
+            android:paddingTop="10dp"
             android:text="@string/wireless_scan"
             android:textSize="12sp"
             app:layout_constraintLeft_toRightOf="@+id/button_address"
@@ -289,7 +301,7 @@
             app:layout_constraintTop_toBottomOf="@id/text_send_via" />
 
         <TextView
-            android:id="@+id/text_donate"
+            android:id="@+id/wireless_donate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"

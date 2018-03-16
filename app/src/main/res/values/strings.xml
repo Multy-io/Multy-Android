@@ -59,7 +59,7 @@
     <string name="generate_new_address">Generate New Address</string>
     <string name="request_summ">Request Summ</string>
     <string name="share">Share:</string>
-    <string name="address_book">Address \nBook</string>
+    <string name="contacts_bottombar">Contacts</string>
     <string name="wireless_scan">Wireless Scan</string>
     <string name="more_options">More \nOptions</string>
     <string name="slide_to_send">Slide to Send</string>
@@ -241,12 +241,13 @@
     <string name="donate_for_this_option">Donate for this option</string>
     <string name="chain">Chain</string>
     <string name="excepteur_sint">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
-    <string name="address_book_title">Address Book</string>
-    <string name="sync_my_address_book">Sync my address book</string>
+    <string name="address_book_title">Contacts</string>
+    <string name="sync_my_address_book">Sync my contacts</string>
     <string name="work_in_progress">(work in progress)</string>
     <string name="currency_to_convert">Currency to convert</string>
     <string name="feature_challenge">Feature Challenge</string>
     <string name="feature_challenge_message">In computer vision and image processing, a feature is a piece of information which is relevant for solving the computational task related to a certain application.</string>
+    <string name="vote_for_activity">Vote for activity</string>
     <string name="git_new_line">Git:\n</string>
     <string name="core_new_line">Core:\n</string>
     <string name="version_title">Multy Ctypto Wallet v</string>
