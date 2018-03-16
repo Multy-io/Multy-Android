@@ -554,6 +554,18 @@ Java_io_multy_util_NativeDataHelper_getDictionary(JNIEnv *env, jclass type) {
     return env->NewStringUTF(dict.get());
 }
 
+JNIEXPORT jstring JNICALL
+Java_io_multy_util_NativeDataHelper_getLibraryVersion(JNIEnv *env, jclass type) {
+
+    const jstring defaultResult{};
+    using namespace multy_core::internal;
+
+    ConstCharPtr version;
+    HANDLE_ERROR(make_version_string(reset_sp(version)));
+
+    return env->NewStringUTF(version.get());
+}
+
 JNIEXPORT void JNICALL
 Java_io_multy_util_NativeDataHelper_isValidAddress(JNIEnv *env, jclass type_, jstring address_,
                                                    jint blockchain, jint netType) {
