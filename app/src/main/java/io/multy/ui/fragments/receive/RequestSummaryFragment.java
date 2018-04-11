@@ -15,7 +15,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -28,16 +27,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.zxing.WriterException;
-
-import java.math.BigInteger;
-
 import butterknife.BindInt;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
-import io.multy.model.entities.wallet.BtcWallet;
 import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.ui.activities.AmountChooserActivity;
 import io.multy.ui.activities.AssetRequestActivity;
@@ -46,15 +40,11 @@ import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.asset.AssetInfoFragment;
 import io.multy.ui.fragments.dialogs.DonateDialog;
 import io.multy.util.Constants;
-import io.multy.util.CryptoFormatUtils;
 import io.multy.util.DeepLinkShareHelper;
 import io.multy.util.NumberFormatter;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.AssetRequestViewModel;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 
 
 public class RequestSummaryFragment extends BaseFragment {
@@ -110,8 +100,8 @@ public class RequestSummaryFragment extends BaseFragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
         if (getActivity() != null) {
             getActivity().registerReceiver(receiver, new IntentFilter());
         }
@@ -120,11 +110,9 @@ public class RequestSummaryFragment extends BaseFragment {
         textWalletName.setText(viewModel.getWallet().getWalletName());
         textBalanceCurrency.setText(viewModel.getWallet().getFiatBalanceLabel());
         textBalanceOriginal.setText(viewModel.getWallet().getBalanceLabel());
-
         if (viewModel.getAmount() != zero) {
             setBalance();
         }
-
         generateQR();
     }
 
@@ -138,6 +126,41 @@ public class RequestSummaryFragment extends BaseFragment {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == AMOUNT_CHOOSE_REQUEST && resultCode == Activity.RESULT_OK) {
+            if (data.hasExtra(Constants.EXTRA_AMOUNT)) {
+                double amount = data.getDoubleExtra(Constants.EXTRA_AMOUNT, 0);
+                viewModel.setAmount(amount);
+                setBalance();
+            }
+        }
+    }
+
+    private void generateQR() {
+        imageQr.setImageBitmap(null);
+        String strQr = viewModel.getStringQr();
+        progressBar.setVisibility(View.VISIBLE);
+        viewModel.generateQr(strQr, getResources().getColor(android.R.color.black),
+                getResources().getColor(android.R.color.white), bitmap -> {
+            imageQr.setImageBitmap(bitmap);
+            progressBar.setVisibility(View.GONE);
+                }, throwable -> viewModel.errorMessage.setValue(throwable.getLocalizedMessage()));
+    }
+
+    private void setBalance() {
+        textRequestAmount.setVisibility(View.INVISIBLE);
+        textBalanceCurrencySend.setVisibility(View.VISIBLE);
+        textBalanceOriginalSend.setVisibility(View.VISIBLE);
+        textBalanceCurrencySend.setText(NumberFormatter.getFiatInstance().format(viewModel.getAmount() * viewModel.getExchangePrice()));
+        textBalanceCurrencySend.append(Constants.SPACE);
+        textBalanceCurrencySend.append(CurrencyCode.USD.name());
+        textBalanceOriginalSend.setText(NumberFormatter.getInstance().format(viewModel.getAmount()));
+        textBalanceOriginalSend.append(Constants.SPACE);
+        textBalanceOriginalSend.append(CurrencyCode.BTC.name());
     }
 
     @OnClick(R.id.image_qr)
@@ -183,13 +206,6 @@ public class RequestSummaryFragment extends BaseFragment {
     @OnClick(R.id.button_address)
     void onClickAddressBook(View v) {
         Analytics.getInstance(getActivity()).logReceiveSummary(AnalyticsConstants.RECEIVE_SUMMARY_ADDRESS_BOOK, viewModel.getChainId());
-//        Toast.makeText(getActivity(), R.string.not_implemented, Toast.LENGTH_SHORT).show();
-//        viewModel.getBtcAddresses();
-//        viewModel.getAddress().observe(this, address -> {
-//            textAddress.setText(address);
-//            generateQR();
-//        });
-//        Log.i("wise", "generated");
         v.setEnabled(false);
         v.postDelayed(() -> v.setEnabled(true), 500);
         if (getActivity() != null) {
@@ -200,7 +216,6 @@ public class RequestSummaryFragment extends BaseFragment {
     @OnClick(R.id.button_scan_wireless)
     void onClickWirelessScan() {
         Analytics.getInstance(getActivity()).logReceiveSummary(AnalyticsConstants.RECEIVE_SUMMARY_WIRELESS, viewModel.getChainId());
-//        Toast.makeText(getActivity(), R.string.not_implemented, Toast.LENGTH_SHORT).show();
         if (getActivity() != null) {
             DonateDialog.getInstance(Constants.DONATE_ADDING_WIRELESS_SCAN).show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
         }
@@ -220,49 +235,6 @@ public class RequestSummaryFragment extends BaseFragment {
             startActivity(Intent.createChooser(sharingIntent, getResources().getString(R.string.share), pendingIntent.getIntentSender()));
         } else {
             startActivity(Intent.createChooser(sharingIntent, getResources().getString(R.string.share)));
-        }
-    }
-
-    private void generateQR() {
-        String srtQr = viewModel.getStringQr();
-        io.reactivex.Observable.create((ObservableOnSubscribe<Bitmap>) e -> {
-            Bitmap bitmap = null;
-            try {
-                bitmap = viewModel.generateQR(RequestSummaryFragment.this.getActivity(), srtQr);
-            } catch (WriterException ex) {
-                ex.printStackTrace();
-            }
-            e.onNext(bitmap);
-        }).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(bitmap -> {
-                    imageQr.setImageBitmap(bitmap);
-                }, Throwable::printStackTrace);
-
-    }
-
-    private void setBalance() {
-        textRequestAmount.setVisibility(View.INVISIBLE);
-        textBalanceCurrencySend.setVisibility(View.VISIBLE);
-        textBalanceOriginalSend.setVisibility(View.VISIBLE);
-        textBalanceCurrencySend.setText(NumberFormatter.getFiatInstance().format(viewModel.getAmount() * viewModel.getExchangePrice()));
-        textBalanceCurrencySend.append(Constants.SPACE);
-        textBalanceCurrencySend.append(CurrencyCode.USD.name());
-        textBalanceOriginalSend.setText(NumberFormatter.getInstance().format(viewModel.getAmount()));
-        textBalanceOriginalSend.append(Constants.SPACE);
-        textBalanceOriginalSend.append(CurrencyCode.BTC.name());
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == AMOUNT_CHOOSE_REQUEST && resultCode == Activity.RESULT_OK) {
-            if (data.hasExtra(Constants.EXTRA_AMOUNT)) {
-                double amount = data.getDoubleExtra(Constants.EXTRA_AMOUNT, 0);
-                viewModel.setAmount(amount);
-                generateQR();
-                setBalance();
-            }
         }
     }
 
