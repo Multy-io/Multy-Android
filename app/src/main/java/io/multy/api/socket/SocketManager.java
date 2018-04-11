@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Idealnaya rabota LLC
+ * Copyright 2018 Idealnaya rabota LLC
  * Licensed under Multy.io license.
  * See LICENSE for details
  */
@@ -32,7 +32,7 @@ public class SocketManager {
     public static final String TAG = SocketManager.class.getSimpleName();
     private static final String DEVICE_TYPE = "Android";
 
-    private static final String SOCKET_URL = "https://api.multy.io/";
+    private static final String SOCKET_URL = "https://stage.multy.io/";
     private static final String HEADER_AUTH = "jwtToken";
     private static final String HEADER_DEVICE_TYPE = "deviceType";
     private static final String HEADER_USER_ID = "userId";

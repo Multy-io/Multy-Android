@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Idealnaya rabota LLC
+ * Copyright 2018 Idealnaya rabota LLC
  * Licensed under Multy.io license.
  * See LICENSE for details
  */
@@ -93,11 +93,11 @@ public class PrivateKeyDialogFragment extends BottomSheetDialogFragment implemen
     private String getPrivateKey() {
         try {
             byte[] seed = RealmManager.getSettingsDao().getSeed().getSeed();
-            int walletIndex = viewModel.getWalletLive().getValue().getWalletIndex();
+            int walletIndex = viewModel.getWalletLive().getValue().getIndex();
             int addressIndex = address.getIndex();
             return NativeDataHelper.getMyPrivateKey(seed, walletIndex, addressIndex,
-                    NativeDataHelper.Blockchain.BLOCKCHAIN_BITCOIN.getValue(),
-                    NativeDataHelper.BlockchainNetType.BLOCKCHAIN_NET_TYPE_TESTNET.getValue());
+                    NativeDataHelper.Blockchain.BTC.getValue(),
+                    NativeDataHelper.NetworkId.TEST_NET.getValue());
         } catch (Throwable throwable) {
             throwable.printStackTrace();
             //TODO create new error message

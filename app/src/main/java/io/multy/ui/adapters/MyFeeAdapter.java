@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Idealnaya rabota LLC
+ * Copyright 2018 Idealnaya rabota LLC
  * Licensed under Multy.io license.
  * See LICENSE for details
  */
@@ -25,12 +25,6 @@ import io.multy.util.CryptoFormatUtils;
 import io.reactivex.annotations.Nullable;
 
 public class MyFeeAdapter extends RecyclerView.Adapter<MyFeeAdapter.FeeHolder> {
-
-    public interface OnCustomFeeClickListener {
-        void onClickCustomFee(long currentValue);
-
-        void logTransactionFee(int position);
-    }
 
     private ArrayList<Fee> rates;
     private OnCustomFeeClickListener listener;
@@ -145,5 +139,10 @@ public class MyFeeAdapter extends RecyclerView.Adapter<MyFeeAdapter.FeeHolder> {
             setIsRecyclable(false);
             ButterKnife.bind(this, itemView);
         }
+    }
+
+    public interface OnCustomFeeClickListener {
+        void onClickCustomFee(long currentValue);
+        void logTransactionFee(int position);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Idealnaya rabota LLC
+ * Copyright 2018 Idealnaya rabota LLC
  * Licensed under Multy.io license.
  * See LICENSE for details
  */
@@ -16,14 +16,14 @@ public class CurrenciesRate extends RealmObject {
     @PrimaryKey
     private int id = 0;
     @SerializedName("btc_usd")
-    private double btcToUsd;
+    private double btcToUsd = 0;
     @SerializedName("BTCtoEUR")
-    private double btcToEur;
+    private double btcToEur = 0;
 
     @SerializedName("ETHtoUSD")
-    private double ethToUsd;
+    private double ethToUsd = 0;
     @SerializedName("ETHtoEUR")
-    private double ethToEur;
+    private double ethToEur = 0;
 
     public double getBtcToUsd() {
         return btcToUsd;

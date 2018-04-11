@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright 2017 Idealnaya rabota LLC
+  ~ Copyright 2018 Idealnaya rabota LLC
   ~ Licensed under Multy.io license.
   ~ See LICENSE for details
   -->
@@ -19,6 +19,7 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_btc_huge" />
 
@@ -26,12 +27,15 @@
         android:id="@+id/text_address"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:ellipsize="middle"
         android:fontFamily="@font/montserrat"
+        android:gravity="center"
+        android:singleLine="true"
         android:textColor="@color/black"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toRightOf="@id/image_currency"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/image_currency"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="3DA28WCp4Cu5LQiddJnDJJmKWvmmZAKP5K" />
 

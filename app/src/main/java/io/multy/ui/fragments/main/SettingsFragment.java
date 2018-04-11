@@ -1,7 +1,7 @@
 /*
- *  Copyright 2017 Idealnaya rabota LLC
- *  Licensed under Multy.io license.
- *  See LICENSE for details
+ * Copyright 2018 Idealnaya rabota LLC
+ * Licensed under Multy.io license.
+ * See LICENSE for details
  */
 
 package io.multy.ui.fragments.main;
@@ -10,9 +10,17 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.SwitchCompat;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,7 +68,7 @@ public class SettingsFragment extends BaseFragment implements BaseActivity.OnLoc
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
         viewModel = ViewModelProviders.of(this).get(SettingsViewModel.class);
         ButterKnife.bind(this, view);
@@ -93,6 +101,7 @@ public class SettingsFragment extends BaseFragment implements BaseActivity.OnLoc
     public void onLockClosed() {
         if (isSettingsClicked) {
             showSecuritySettingsFragment();
+            isSettingsClicked = false;
         }
     }
 
@@ -123,10 +132,21 @@ public class SettingsFragment extends BaseFragment implements BaseActivity.OnLoc
         } catch (JniException e) {
             e.printStackTrace();
         }
-        String environment = getString(R.string.environment_new_line).concat(Constants.SPACE).concat(Constants.BASE_URL);
-        String complexVersion = gitVersion.concat(libVersion).concat(environment);
+        final String environment = getString(R.string.environment_new_line).concat(Constants.SPACE).concat(Constants.BASE_URL);
+        final SpannableString complexVersion = new SpannableString(gitVersion.concat(libVersion).concat(environment));
+        ClickableSpan clickableSpan = new ClickableSpan() {
+            @Override
+            public void onClick(View widget) {
+                startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(Constants.BASE_URL)));
+            }
+        };
+        final int linkStartPosition = complexVersion.toString().indexOf(Constants.BASE_URL);
+        complexVersion.setSpan(clickableSpan, linkStartPosition, linkStartPosition + Constants.BASE_URL.length(),
+                Spanned.SPAN_INCLUSIVE_INCLUSIVE);
         textVersionTitle.append(BuildConfig.VERSION_NAME);
         textVersionDescription.setText(complexVersion);
+        textVersionDescription.setMovementMethod(LinkMovementMethod.getInstance());
+        textVersionDescription.setHighlightColor(Color.TRANSPARENT);
     }
 
     private void showSecuritySettingsFragment() {
@@ -179,9 +199,8 @@ public class SettingsFragment extends BaseFragment implements BaseActivity.OnLoc
             if (fragment == null) {
                 fragment = ExchangeChooserFragment.getInstance();
             }
-            getActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container_frame, fragment).addToBackStack(ExchangeChooserFragment.TAG)
-                    .commit();
+            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.full_container, fragment)
+                    .addToBackStack(ExchangeChooserFragment.TAG).commit();
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Idealnaya rabota LLC
+ * Copyright 2018 Idealnaya rabota LLC
  * Licensed under Multy.io license.
  * See LICENSE for details
  */
@@ -47,7 +47,14 @@ public class ExchangeChooserFragment extends BaseChooserFragment implements Exch
                              @Nullable Bundle savedInstanceState) {
         View v = super.onCreateView(inflater, container, savedInstanceState);
         initialize(getActivity());
+        setContainerVisibility(View.VISIBLE);
         return v;
+    }
+
+    @Override
+    public void onDestroyView() {
+        setContainerVisibility(View.GONE);
+        super.onDestroyView();
     }
 
     @Override
@@ -74,5 +81,12 @@ public class ExchangeChooserFragment extends BaseChooserFragment implements Exch
         soonAdapter.setSoonData(exchangeSoonName, disabledExchangeDonationCodes);
         getBlockSoonRecyclerView().setLayoutManager(new LinearLayoutManager(activity));
         getBlockSoonRecyclerView().setAdapter(soonAdapter);
+    }
+
+    private void setContainerVisibility(int visibility) {
+        View fullContainer = getActivity().findViewById(R.id.full_container);
+        if (fullContainer != null) {
+            fullContainer.setVisibility(visibility);
+        }
     }
 }

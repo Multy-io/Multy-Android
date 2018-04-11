@@ -1,9 +1,15 @@
+/*
+ * Copyright 2018 Idealnaya rabota LLC
+ * Licensed under Multy.io license.
+ * See LICENSE for details
+ */
+
 package io.multy.api;
 
 
 import android.content.Context;
 
-import io.multy.model.entities.wallet.WalletRealmObject;
+import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.requests.AddWalletAddressRequest;
 import io.multy.model.requests.HdTransactionRequestEntity;
 import io.multy.model.requests.UpdateWalletNameRequest;
@@ -11,6 +17,7 @@ import io.multy.model.responses.AuthResponse;
 import io.multy.model.responses.FeeRateResponse;
 import io.multy.model.responses.ServerConfigResponse;
 import io.multy.model.responses.SingleWalletResponse;
+import io.multy.model.responses.TestWalletResponse;
 import io.multy.model.responses.TransactionHistoryResponse;
 import io.multy.model.responses.UserAssetsResponse;
 import io.multy.model.responses.WalletsResponse;
@@ -22,7 +29,7 @@ public interface MultyApiInterface {
 
     Call<AuthResponse> auth(String userId);
 
-    Call<ResponseBody> addWallet(Context context, WalletRealmObject wallet);
+    Call<ResponseBody> addWallet(Context context, Wallet wallet);
 
     void getTransactionInfo(String transactionId);
 
@@ -32,20 +39,22 @@ public interface MultyApiInterface {
 
     Call<ResponseBody> addWalletAddress(AddWalletAddressRequest addWalletAddressRequest);
 
-    Call<SingleWalletResponse> getWalletVerbose(int currencyId, int walletIndex);
+    Call<SingleWalletResponse> getWalletVerbose(int walletIndex, int currencyId, int networkId);
 
     Call<WalletsResponse> getWalletsVerbose();
 
     Call<ResponseBody> updateWalletName(UpdateWalletNameRequest updateWalletName);
 
-    Call<ResponseBody> removeWallet(int currencyId, int walletIndex);
+    Call<ResponseBody> removeWallet(int currencyId, int networkId, int walletIndex);
 
-    Call<TransactionHistoryResponse> getTransactionHistory(int currencyId, int walletIndex);
+    Call<TransactionHistoryResponse> getTransactionHistory(int currencyId, int networkId, int walletIndex);
 
     Call<ServerConfigResponse> getServerConfig();
 
-    Call<FeeRateResponse> getFeeRates(int currencyId);
+    Call<FeeRateResponse> getFeeRates(int currencyId, int networkId);
 
     Call<ResponseBody> sendHdTransaction(HdTransactionRequestEntity transactionRequestEntity);
+
+    Call<TestWalletResponse> testWalletVerbose();
 
 }

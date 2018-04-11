@@ -1,7 +1,7 @@
 /*
- *  Copyright 2017 Idealnaya rabota LLC
- *  Licensed under Multy.io license.
- *  See LICENSE for details
+ * Copyright 2018 Idealnaya rabota LLC
+ * Licensed under Multy.io license.
+ * See LICENSE for details
  */
 
 package io.multy.api;
@@ -18,11 +18,10 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
 
-import io.multy.model.DataManager;
 import io.multy.model.entities.AuthEntity;
 import io.multy.model.entities.TransactionRequestEntity;
 import io.multy.model.entities.UserId;
-import io.multy.model.entities.wallet.WalletRealmObject;
+import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.requests.AddWalletAddressRequest;
 import io.multy.model.requests.HdTransactionRequestEntity;
 import io.multy.model.requests.UpdateWalletNameRequest;
@@ -30,9 +29,11 @@ import io.multy.model.responses.AuthResponse;
 import io.multy.model.responses.FeeRateResponse;
 import io.multy.model.responses.ServerConfigResponse;
 import io.multy.model.responses.SingleWalletResponse;
+import io.multy.model.responses.TestWalletResponse;
 import io.multy.model.responses.TransactionHistoryResponse;
 import io.multy.model.responses.UserAssetsResponse;
 import io.multy.model.responses.WalletsResponse;
+import io.multy.storage.RealmManager;
 import io.multy.util.Constants;
 import io.reactivex.Observable;
 import okhttp3.Authenticator;
@@ -48,7 +49,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public enum MultyApi implements MultyApiInterface {
 
     INSTANCE {
-
         private ApiServiceInterface api = new Retrofit.Builder()
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
@@ -72,8 +72,8 @@ public enum MultyApi implements MultyApiInterface {
                             @Nullable
                             @Override
                             public Request authenticate(Route route, okhttp3.Response response) throws IOException {
-                                DataManager dataManager = DataManager.getInstance();
-                                final UserId userIdEntity = dataManager.getUserId();
+                                RealmManager.open();
+                                final UserId userIdEntity = RealmManager.getSettingsDao().getUserId();
                                 final String userId = userIdEntity == null ? "" : userIdEntity.getUserId();
                                 final String pushToken = FirebaseInstanceId.getInstance().getToken() == null ? "noPushToken" : FirebaseInstanceId.getInstance().getToken();
 
@@ -99,7 +99,7 @@ public enum MultyApi implements MultyApiInterface {
         }
 
         @Override
-        public Call<ResponseBody> addWallet(Context context, WalletRealmObject wallet) {
+        public Call<ResponseBody> addWallet(Context context, Wallet wallet) {
             return api.addWallet(wallet);
         }
 
@@ -124,8 +124,8 @@ public enum MultyApi implements MultyApiInterface {
         }
 
         @Override
-        public Call<SingleWalletResponse> getWalletVerbose(int currencyId, int walletIndex) {
-            return api.getWalletVerboseByIndex(currencyId, walletIndex);
+        public Call<SingleWalletResponse> getWalletVerbose(int walletIndex, int currencyId, int networkId) {
+            return api.getWalletVerboseByIndex(walletIndex, currencyId, networkId);
         }
 
         @Override
@@ -139,12 +139,12 @@ public enum MultyApi implements MultyApiInterface {
         }
 
         @Override
-        public Call<ResponseBody> removeWallet(int currencyId, int walletIndex) {
-            return api.removeWallet(currencyId, walletIndex);
+        public Call<ResponseBody> removeWallet(int currencyId, int networkId, int walletIndex) {
+            return api.removeWallet(currencyId, networkId, walletIndex);
         }
 
-        public Call<TransactionHistoryResponse> getTransactionHistory(int currencyId, int walletIndex) {
-            return api.getTransactionHistory(currencyId, walletIndex);
+        public Call<TransactionHistoryResponse> getTransactionHistory(int currencyId, int networkId, int walletIndex) {
+            return api.getTransactionHistory(currencyId, networkId, walletIndex);
         }
 
         @Override
@@ -154,13 +154,18 @@ public enum MultyApi implements MultyApiInterface {
         }
 
         @Override
-        public Call<FeeRateResponse> getFeeRates(int currencyId) {
-            return api.getFeeRates(currencyId);
+        public Call<FeeRateResponse> getFeeRates(int currencyId, int networkId) {
+            return api.getFeeRates(currencyId, networkId);
         }
 
         @Override
         public Call<ResponseBody> sendHdTransaction(HdTransactionRequestEntity transactionRequestEntity) {
             return api.sendHdTransaction(transactionRequestEntity);
         }
-    };
+
+        @Override
+        public Call<TestWalletResponse> testWalletVerbose() {
+            return api.testWalletVerbose();
+        }
+    }
 }

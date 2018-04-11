@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Idealnaya rabota LLC
+ * Copyright 2018 Idealnaya rabota LLC
  * Licensed under Multy.io license.
  * See LICENSE for details
  */
@@ -22,6 +22,7 @@ import butterknife.OnClick;
 import io.multy.R;
 import io.multy.ui.activities.DonationActivity;
 import io.multy.util.Constants;
+import io.multy.util.analytics.Analytics;
 
 /**
  * Created by anschutz1927@gmail.com on 05.03.18.
@@ -45,6 +46,8 @@ public class DonateDialog extends DialogFragment {
                              @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.dialog_donate_notification, container, false);
         ButterKnife.bind(this, v);
+        Analytics.getInstance(getContext()).logDonationAllertLaunch(getArguments() == null ?
+                0 : getArguments().getInt(Constants.EXTRA_DONATION_CODE, 0));
         return v;
     }
 
@@ -63,11 +66,15 @@ public class DonateDialog extends DialogFragment {
         v.setEnabled(false);
         int donationCode = getArguments() == null ? 0 : getArguments().getInt(Constants.EXTRA_DONATION_CODE, 0);
         DonationActivity.showDonation(getContext(), donationCode);
+        Analytics.getInstance(v.getContext()).logDonationAllertDonateClick(getArguments() == null ?
+                0 : getArguments().getInt(Constants.EXTRA_DONATION_CODE, 0));
         dismiss();
     }
     @OnClick(R.id.button_negative)
     void onNegativeClick(View v) {
         v.setEnabled(false);
+        Analytics.getInstance(v.getContext()).logDonationAllertClose(getArguments() == null ?
+                0 : getArguments().getInt(Constants.EXTRA_DONATION_CODE, 0));
         dismiss();
     }
 }

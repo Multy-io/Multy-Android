@@ -1,18 +1,22 @@
 /*
- * Copyright 2017 Idealnaya rabota LLC
+ * Copyright 2018 Idealnaya rabota LLC
  * Licensed under Multy.io license.
  * See LICENSE for details
  */
 
 package io.multy.model.responses;
 
+import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
+import com.samwolfand.oneprefs.Prefs;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import io.multy.model.entities.wallet.WalletRealmObject;
+import io.multy.model.entities.wallet.Wallet;
+import io.multy.util.Constants;
 import io.multy.util.NativeDataHelper;
+import io.multy.util.WalletDeserializer;
 
 public class WalletsResponse {
 
@@ -20,8 +24,9 @@ public class WalletsResponse {
     private int code;
     @SerializedName("message")
     private String message;
+    @JsonAdapter(WalletDeserializer.class)
     @SerializedName("wallets")
-    private List<WalletRealmObject> wallets;
+    private List<Wallet> wallets;
 
     @SerializedName("topindexes")
     private ArrayList<TopIndex> topIndexes;
@@ -30,13 +35,20 @@ public class WalletsResponse {
         return topIndexes;
     }
 
-    public int getBtcTopWalletIndex() {
+    public void saveBtcTopWalletIndex() {
         for (TopIndex topIndex : topIndexes) {
-            if (topIndex.getCurrencyId() == NativeDataHelper.Currency.BTC.getValue()) {
-                return topIndex.getTopWalletIndex();
+            if (topIndex.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()) {
+                Prefs.putInt(Constants.PREF_WALLET_TOP_INDEX_BTC + topIndex.getNetworkId(), topIndex.getTopWalletIndex());
             }
         }
-        return 0;
+    }
+
+    public void saveEthTopWalletIndex() {
+        for (TopIndex topIndex : topIndexes) {
+            if (topIndex.getCurrencyId() == NativeDataHelper.Blockchain.ETH.getValue()) {
+                Prefs.putInt(Constants.PREF_WALLET_TOP_INDEX_ETH + topIndex.getNetworkId(), topIndex.getTopWalletIndex());
+            }
+        }
     }
 
     public int getCode() {
@@ -55,11 +67,11 @@ public class WalletsResponse {
         this.message = message;
     }
 
-    public List<WalletRealmObject> getWallets() {
+    public List<Wallet> getWallets() {
         return wallets;
     }
 
-    public void setWallets(List<WalletRealmObject> wallets) {
+    public void setWallets(List<Wallet> wallets) {
         this.wallets = wallets;
     }
 
@@ -69,6 +81,8 @@ public class WalletsResponse {
         private int currencyId;
         @SerializedName("topindex")
         private int topWalletIndex;
+        @SerializedName("networkid")
+        private int networkId;
 
         public int getCurrencyId() {
             return currencyId;
@@ -76,6 +90,10 @@ public class WalletsResponse {
 
         public int getTopWalletIndex() {
             return topWalletIndex;
+        }
+
+        public int getNetworkId() {
+            return networkId;
         }
     }
 }

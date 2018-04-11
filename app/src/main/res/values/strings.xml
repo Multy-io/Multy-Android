@@ -1,7 +1,7 @@
 <!--
-  ~  Copyright 2017 Idealnaya rabota LLC
-  ~  Licensed under Multy.io license.
-  ~  See LICENSE for details
+  ~ Copyright 2018 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
   -->
 
 <resources>
@@ -85,7 +85,7 @@
     <string name="donation_default">0.0001</string>
     <string name="donation_format_pattern">##.##</string>
     <string name="donation_format_pattern_bitcoin">##.####</string>
-    <string name="error_balance">You are trying to spend more then you have</string>
+    <string name="error_balance">Invalid amount to spend.</string>
 
     <string name="root_message">Sorry, rooted devices is not supported yet according to our safety policy. Please use our app on authorized device.</string>
     <string name="root_title">Root detected</string>
@@ -97,6 +97,7 @@
     <string name="btc_adddresses">BTC Addresses</string>
     <string name="addresses">Addresses</string>
     <string name="eth">ETH</string>
+    <string name="tokens">Tokens</string>
     <string name="create">Create</string>
     <string name="reference_currency">Reference currency</string>
     <string name="create_wallet">Create Wallet</string>
@@ -252,5 +253,9 @@
     <string name="core_new_line">Core:\n</string>
     <string name="version_title">Multy Ctypto Wallet v</string>
     <string name="environment_new_line">Environment:\n </string>
+    <string name="gas_price">GAS Price</string>
+    <string name="gas_limit">GAS Limit</string>
+    <string name="percent_0">0%</string>
+    <string name="crypto_portfolio">Crypto portfolio</string>
 
 </resources>

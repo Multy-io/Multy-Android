@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Idealnaya rabota LLC
+ * Copyright 2018 Idealnaya rabota LLC
  * Licensed under Multy.io license.
  * See LICENSE for details
  */
@@ -16,12 +16,10 @@ import io.realm.annotations.PrimaryKey;
 public class DonateFeatureEntity extends RealmObject {
 
     public static final String FEATURE_CODE = "featureCode";
-    public static final String FEATURE_DESCRIPTION = "featureDescription";
     public static final String DONATION_ADDRESS = "donationAddress";
 
     @PrimaryKey
     private int featureCode;
-    private String featureDescription;
     private String donationAddress;
 
     public DonateFeatureEntity() {}
@@ -32,14 +30,6 @@ public class DonateFeatureEntity extends RealmObject {
 
     public int getFeatureCode() {
         return featureCode;
-    }
-
-    public String getFeatureDescription() {
-        return featureDescription;
-    }
-
-    public void setFeatureDescription(String featureDescription) {
-        this.featureDescription = featureDescription;
     }
 
     public String getDonationAddress() {

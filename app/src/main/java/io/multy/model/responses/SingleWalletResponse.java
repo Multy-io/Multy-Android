@@ -1,18 +1,21 @@
 /*
- * Copyright 2017 Idealnaya rabota LLC
+ * Copyright 2018 Idealnaya rabota LLC
  * Licensed under Multy.io license.
  * See LICENSE for details
  */
 
 package io.multy.model.responses;
 
+import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.util.NativeDataHelper;
+import io.multy.util.WalletDeserializer;
 
 public class SingleWalletResponse {
 
@@ -20,8 +23,9 @@ public class SingleWalletResponse {
     private int code;
     @SerializedName("message")
     private String message;
+    @JsonAdapter(WalletDeserializer.class)
     @SerializedName("wallet")
-    private List<WalletRealmObject> wallets;
+    private List<Wallet> wallets;
 
     @SerializedName("topindexes")
     private ArrayList<TopIndex> topIndexes;
@@ -32,7 +36,7 @@ public class SingleWalletResponse {
 
     public int getBtcTopWalletIndex() {
         for (TopIndex topIndex : topIndexes) {
-            if (topIndex.getCurrencyId() == NativeDataHelper.Currency.BTC.getValue()) {
+            if (topIndex.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()) {
                 return topIndex.getTopWalletIndex();
             }
         }
@@ -55,11 +59,11 @@ public class SingleWalletResponse {
         this.message = message;
     }
 
-    public List<WalletRealmObject> getWallets() {
+    public List<Wallet> getWallets() {
         return wallets;
     }
 
-    public void setWallets(List<WalletRealmObject> wallets) {
+    public void setWallets(List<Wallet> wallets) {
         this.wallets = wallets;
     }
 

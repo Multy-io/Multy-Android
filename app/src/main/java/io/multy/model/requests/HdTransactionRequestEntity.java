@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Idealnaya rabota LLC
+ * Copyright 2018 Idealnaya rabota LLC
  * Licensed under Multy.io license.
  * See LICENSE for details
  */
@@ -11,12 +11,15 @@ import com.google.gson.annotations.SerializedName;
 public class HdTransactionRequestEntity {
 
     @SerializedName("currencyid")
-    private int currencyid;
+    private int currencyId;
+    @SerializedName("networkid")
+    private int networkId;
     @SerializedName("payload")
     private Payload payload;
 
-    public HdTransactionRequestEntity(int currencyid, Payload payload) {
-        this.currencyid = currencyid;
+    public HdTransactionRequestEntity(int currencyId, int networkId, Payload payload) {
+        this.currencyId = currencyId;
+        this.networkId = networkId;
         this.payload = payload;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Idealnaya rabota LLC
+ * Copyright 2018 Idealnaya rabota LLC
  * Licensed under Multy.io license.
  * See LICENSE for details
  */
@@ -7,19 +7,12 @@
 package io.multy.storage;
 
 import android.content.Context;
-import android.util.Base64;
 import android.util.Log;
 
 import java.io.File;
 
-import javax.annotation.Nullable;
-
 import io.multy.Multy;
-import io.multy.util.Constants;
-import io.multy.util.analytics.Analytics;
-import io.multy.util.analytics.AnalyticsConstants;
 import io.realm.Realm;
-import io.realm.RealmConfiguration;
 
 public class RealmManager {
 
@@ -27,37 +20,13 @@ public class RealmManager {
 
     private static Realm realm;
 
-    public static Realm open(Context context) {
-        if (realm == null || realm.isClosed()) {
-            try {
-                realm = Realm.getInstance(getConfiguration(context));
-            } catch (Throwable t) {
-                t.printStackTrace();
-            }
+    public static Realm open() {
+        try {
+            realm = Realm.getInstance(Multy.getRealmConfiguration());
+        } catch (Throwable t) {
+            t.printStackTrace();
         }
         return realm;
-    }
-
-    /**
-     * TODO set config to DEFAULT ONLY ONCE SOMEWHERE, for some reason generatekey isn't working in onCreate of Multy.class
-     *
-     * @return
-     */
-    @Deprecated
-    @Nullable
-    public static RealmConfiguration getConfiguration(Context context) {
-        String key = SecurePreferencesHelper.getString(context, Constants.PREF_KEY);
-        RealmConfiguration realmConfiguration = null;
-        try {
-            realmConfiguration = new RealmConfiguration.Builder()
-                    .encryptionKey(Base64.decode(key, Base64.NO_WRAP))
-                    .schemaVersion(1)
-                    .build();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return realmConfiguration;
     }
 
     public static void close() {
@@ -78,14 +47,19 @@ public class RealmManager {
 
     public static void clear() {
         if (realm == null || realm.isClosed()) {
-            open(Multy.getContext());
+            open();
         }
         realm.executeTransaction(realm -> realm.deleteAll());
     }
 
     private static void isRealmAvailable() {
-        if (realm == null || realm.isClosed()) {
-            Log.e(TAG, "ERROR DB IS CLOSED OR NULL");
+        try {
+            if (realm == null || realm.isClosed()) {
+                Log.e(TAG, "ERROR DB IS CLOSED OR NULL");
+            }
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+            open();
         }
     }
 

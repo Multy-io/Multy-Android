@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Idealnaya rabota LLC
+ * Copyright 2018 Idealnaya rabota LLC
  * Licensed under Multy.io license.
  * See LICENSE for details
  */
@@ -64,8 +64,8 @@ public class AssetSettingsFragment extends BaseFragment {
 //        View v = inflater.inflate(R.layout.view_asset_settings, container, false);
         ButterKnife.bind(this, v);
         viewModel.getWalletLive().observe(this, walletRealmObject -> {
-            if (walletRealmObject != null && walletRealmObject.getName() != null) {
-                inputName.setText(walletRealmObject.getName());
+            if (walletRealmObject != null && walletRealmObject.getWalletName() != null) {
+                inputName.setText(walletRealmObject.getWalletName());
             }
         });
         inputName.setOnFocusChangeListener((v1, hasFocus) -> {
@@ -96,7 +96,7 @@ public class AssetSettingsFragment extends BaseFragment {
     private void saveSettings() {
         if (inputName.getText().toString().isEmpty() || viewModel.getWalletLive() == null ||
                 viewModel.getWalletLive().getValue() == null ||
-                inputName.getText().toString().equals(viewModel.getWalletLive().getValue().getName())) {
+                inputName.getText().toString().equals(viewModel.getWalletLive().getValue().getWalletName())) {
             getActivity().onBackPressed();
             return;
         }

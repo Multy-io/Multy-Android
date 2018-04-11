@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Idealnaya rabota LLC
+ * Copyright 2018 Idealnaya rabota LLC
  * Licensed under Multy.io license.
  * See LICENSE for details
  */
@@ -30,10 +30,11 @@ import io.multy.api.MultyApi;
 import io.multy.api.socket.CurrenciesRate;
 import io.multy.api.socket.SocketManager;
 import io.multy.api.socket.TransactionUpdateEntity;
-import io.multy.model.DataManager;
 import io.multy.model.entities.TransactionHistory;
+import io.multy.model.entities.wallet.BtcWallet;
+import io.multy.model.entities.wallet.EthWallet;
+import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.entities.wallet.WalletAddress;
-import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.model.requests.UpdateWalletNameRequest;
 import io.multy.model.responses.ServerConfigResponse;
 import io.multy.model.responses.TransactionHistoryResponse;
@@ -56,7 +57,7 @@ import static android.content.Intent.ACTION_SEND;
 
 public class WalletViewModel extends BaseViewModel {
 
-    public MutableLiveData<WalletRealmObject> wallet = new MutableLiveData<>();
+    public MutableLiveData<Wallet> wallet = new MutableLiveData<>();
     public MutableLiveData<String> chainCurrency = new MutableLiveData<>();
     public MutableLiveData<String> fiatCurrency = new MutableLiveData<>();
     private MutableLiveData<Boolean> isWalletUpdated = new MutableLiveData<>();
@@ -86,52 +87,65 @@ public class WalletViewModel extends BaseViewModel {
         return addresses;
     }
 
-    public WalletRealmObject getWallet(int index) {
-        WalletRealmObject wallet = RealmManager.getAssetsDao().getWalletById(index);
+    public Wallet getWallet(long id) {
+        Wallet wallet = RealmManager.getAssetsDao().getWalletById(id);
         this.wallet.setValue(wallet);
         return wallet;
     }
 
-    public MutableLiveData<WalletRealmObject> getWalletLive() {
+    public MutableLiveData<Wallet> getWalletLive() {
         return wallet;
     }
 
-    public WalletRealmObject createWallet(String walletName) {
+    public static void saveDonateAddresses() {
+        ServerConfigResponse serverConfig = EventBus.getDefault().removeStickyEvent(ServerConfigResponse.class);
+        if (serverConfig != null) {
+            RealmManager.getSettingsDao().saveDonation(serverConfig.getDonates());
+        }
+    }
+
+    public Wallet createWallet(String walletName, int blockChainId, int networkId) {
         isLoading.setValue(true);
-        WalletRealmObject walletRealmObject = null;
+        Wallet walletRealmObject = null;
         try {
             if (!Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
                 Multy.makeInitialized();
                 FirstLaunchHelper.setCredentials("");
-                ServerConfigResponse serverConfig = EventBus.getDefault().removeStickyEvent(ServerConfigResponse.class);
-                if (serverConfig != null) {
-                    RealmManager.open(Multy.getContext());
-                    RealmManager.getSettingsDao().saveDonation(serverConfig.getDonates());
-                }
+                RealmManager.open();
+                saveDonateAddresses();
             }
-            DataManager dataManager = DataManager.getInstance();
 
-            final int topIndex = Prefs.getInt(Constants.PREF_WALLET_TOP_INDEX, 0);
+            final int topIndex = blockChainId == NativeDataHelper.Blockchain.BTC.getValue() ?
+                    Prefs.getInt(Constants.PREF_WALLET_TOP_INDEX_BTC + networkId, 0) :
+                    Prefs.getInt(Constants.PREF_WALLET_TOP_INDEX_ETH + networkId, 0);
 
 //            if (!Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
 //                FirstLaunchHelper.setCredentials("");
 //            }
 
-            String creationAddress = NativeDataHelper.makeAccountAddress(dataManager.getSeed().getSeed(),
-                    topIndex, 0, NativeDataHelper.Blockchain.BLOCKCHAIN_BITCOIN.getValue(),
-                    NativeDataHelper.BlockchainNetType.BLOCKCHAIN_NET_TYPE_TESTNET.getValue());
-
-            walletRealmObject = new WalletRealmObject();
-            walletRealmObject.setName(walletName);
+            String creationAddress = NativeDataHelper.makeAccountAddress(RealmManager.getSettingsDao().getSeed().getSeed(),
+                    topIndex, 0, blockChainId, networkId);
+            walletRealmObject = new Wallet();
+            walletRealmObject.setWalletName(walletName);
 
             RealmList<WalletAddress> addresses = new RealmList<>();
             addresses.add(new WalletAddress(0, creationAddress));
 
-            walletRealmObject.setAddresses(addresses);
-            walletRealmObject.setCurrency(0);
-            walletRealmObject.setAddressIndex(0);
+            switch (NativeDataHelper.Blockchain.valueOf(blockChainId)) {
+                case BTC:
+                    walletRealmObject.setBtcWallet(new BtcWallet());
+                    walletRealmObject.getBtcWallet().setAddresses(addresses);
+                    break;
+                case ETH:
+                    walletRealmObject.setEthWallet(new EthWallet());
+                    walletRealmObject.getEthWallet().setAddresses(addresses);
+                    break;
+            }
+
+            walletRealmObject.setCurrencyId(blockChainId);
+            walletRealmObject.setNetworkId(networkId);
             walletRealmObject.setCreationAddress(creationAddress);
-            walletRealmObject.setWalletIndex(topIndex);
+            walletRealmObject.setIndex(topIndex);
         } catch (JniException e) {
             e.printStackTrace();
             isLoading.setValue(false);
@@ -141,8 +155,8 @@ public class WalletViewModel extends BaseViewModel {
         return walletRealmObject;
     }
 
-    public MutableLiveData<ArrayList<TransactionHistory>> getTransactionsHistory() {
-        MultyApi.INSTANCE.getTransactionHistory(wallet.getValue().getCurrency(), wallet.getValue().getWalletIndex()).enqueue(new Callback<TransactionHistoryResponse>() {
+    public MutableLiveData<ArrayList<TransactionHistory>> getTransactionsHistory(final int currencyId, final int networkId, final int walletIndex) {
+        MultyApi.INSTANCE.getTransactionHistory(currencyId, networkId, walletIndex).enqueue(new Callback<TransactionHistoryResponse>() {
             @Override
             public void onResponse(@NonNull Call<TransactionHistoryResponse> call, @NonNull Response<TransactionHistoryResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
@@ -159,15 +173,15 @@ public class WalletViewModel extends BaseViewModel {
     }
 
     public MutableLiveData<Boolean> updateWalletSetting(String newName) {
-        int id = wallet.getValue().getWalletIndex();
-        int currencyId = wallet.getValue().getCurrency();
-        UpdateWalletNameRequest updateWalletName = new UpdateWalletNameRequest(newName, currencyId, id);
+        int index = wallet.getValue().getIndex();
+        int currencyId = wallet.getValue().getCurrencyId();
+        UpdateWalletNameRequest updateWalletName = new UpdateWalletNameRequest(newName, currencyId, index, wallet.getValue().getNetworkId());
         MultyApi.INSTANCE.updateWalletName(updateWalletName).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.code() == 200) {
-                    RealmManager.getAssetsDao().updateWalletName(id, newName);
-                    wallet.setValue(RealmManager.getAssetsDao().getWalletById(wallet.getValue().getWalletIndex()));
+                    RealmManager.getAssetsDao().updateWalletName(wallet.getValue().getId(), newName);
+                    wallet.setValue(RealmManager.getAssetsDao().getWalletById(wallet.getValue().getId()));
                     isWalletUpdated.postValue(true);
                 } else {
                     if (response.message() != null) {
@@ -189,12 +203,17 @@ public class WalletViewModel extends BaseViewModel {
 
     public MutableLiveData<Boolean> removeWallet() {
         isLoading.setValue(true);
-        MultyApi.INSTANCE.removeWallet(0, wallet.getValue().getWalletIndex()).enqueue(new Callback<ResponseBody>() {
+        MultyApi.INSTANCE.removeWallet(wallet.getValue().getCurrencyId(), wallet.getValue().getNetworkId(),
+                wallet.getValue().getIndex()).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
-                RealmManager.getAssetsDao().removeWallet(wallet.getValue().getWalletIndex());
+                if (response.isSuccessful()) {
+                    RealmManager.getAssetsDao().removeWallet(wallet.getValue().getId());
+                    isRemoved.setValue(true);
+                } else {
+                    isRemoved.setValue(false);
+                }
                 isLoading.setValue(false);
-                isRemoved.setValue(true);
             }
 
             @Override
@@ -207,7 +226,7 @@ public class WalletViewModel extends BaseViewModel {
         return isRemoved;
     }
 
-    public int getChainId(){
+    public int getChainId() {
         return 1;
     }
 

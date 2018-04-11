@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright 2017 Idealnaya rabota LLC
+  ~ Copyright 2018 Idealnaya rabota LLC
   ~ Licensed under Multy.io license.
   ~ See LICENSE for details
   -->
@@ -129,7 +129,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/divider_soon"
-                tools:listitem="@layout/item_chain_soon" />
+                tools:listitem="@layout/item_chain" />
 
             <View
                 android:id="@+id/divider_bottom"

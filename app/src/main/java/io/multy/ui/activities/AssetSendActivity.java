@@ -1,7 +1,7 @@
 /*
- *  Copyright 2017 Idealnaya rabota LLC
- *  Licensed under Multy.io license.
- *  See LICENSE for details
+ * Copyright 2018 Idealnaya rabota LLC
+ * Licensed under Multy.io license.
+ * See LICENSE for details
  */
 
 package io.multy.ui.activities;
@@ -40,6 +40,8 @@ import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.AssetSendViewModel;
 import timber.log.Timber;
+
+import static io.multy.ui.fragments.send.WalletChooserFragment.NO_VALUE;
 
 
 public class AssetSendActivity extends BaseActivity {
@@ -111,12 +113,12 @@ public class AssetSendActivity extends BaseActivity {
     private void startFlow() {
         AssetSendViewModel viewModel = ViewModelProviders.of(this).get(AssetSendViewModel.class);
         if (getIntent().hasExtra(Constants.EXTRA_WALLET_ID)) {
-            viewModel.setWallet(RealmManager.getAssetsDao().getWalletById(getIntent().getExtras().getInt(Constants.EXTRA_WALLET_ID, -1)));
+            viewModel.setWallet(RealmManager.getAssetsDao().getWalletById(getIntent().getExtras().getLong(Constants.EXTRA_WALLET_ID, -1)));
         }
 
         if (getIntent().hasExtra(Constants.EXTRA_ADDRESS)) {
             setFragment(R.string.send_to, R.id.container, AssetSendFragment.newInstance());
-            setFragment(R.string.send_from, R.id.container, WalletChooserFragment.newInstance());
+            setFragment(R.string.send_from, R.id.container, WalletChooserFragment.newInstance(NO_VALUE, NO_VALUE));
             setTitle(R.string.send_from);
             viewModel.setReceiverAddress(getIntent().getStringExtra(Constants.EXTRA_ADDRESS));
             viewModel.thoseAddress.setValue(getIntent().getStringExtra(Constants.EXTRA_ADDRESS));
@@ -188,7 +190,7 @@ public class AssetSendActivity extends BaseActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == Constants.CAMERA_REQUEST_CODE) {
+        if (requestCode == Constants.CAMERA_REQUEST_CODE && grantResults.length > 0) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Analytics.getInstance(this).logSendTo(AnalyticsConstants.PERMISSION_GRANTED);
                 showScanScreen();

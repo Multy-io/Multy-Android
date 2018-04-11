@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Idealnaya rabota LLC
+ * Copyright 2018 Idealnaya rabota LLC
  * Licensed under Multy.io license.
  * See LICENSE for details
  */
@@ -39,6 +39,11 @@ public class AddressesAdapter extends RecyclerView.Adapter<AddressesAdapter.Hold
     public AddressesAdapter.Holder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_address, parent, false);
         return new AddressesAdapter.Holder(view);
+    }
+
+    public void addItem(WalletAddress walletAddress) {
+        addresses.add(walletAddress);
+        notifyItemInserted(addresses.size() - 1);
     }
 
     @Override

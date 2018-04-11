@@ -1,7 +1,7 @@
 /*
- *  Copyright 2017 Idealnaya rabota LLC
- *  Licensed under Multy.io license.
- *  See LICENSE for details
+ * Copyright 2018 Idealnaya rabota LLC
+ * Licensed under Multy.io license.
+ * See LICENSE for details
  */
 
 package io.multy.viewmodels;
@@ -19,7 +19,8 @@ import io.multy.api.socket.CurrenciesRate;
 import io.multy.api.socket.SocketManager;
 import io.multy.api.socket.TransactionUpdateEntity;
 import io.multy.model.DataManager;
-import io.multy.model.entities.wallet.WalletRealmObject;
+import io.multy.model.entities.wallet.Wallet;
+import io.multy.storage.RealmManager;
 import io.multy.util.Constants;
 import io.multy.util.SingleLiveEvent;
 
@@ -27,7 +28,7 @@ public class AssetsViewModel extends BaseViewModel implements LifecycleObserver 
 
     private SocketManager socketManager;
 
-    public MutableLiveData<List<WalletRealmObject>> wallets = new MutableLiveData<>();
+    public MutableLiveData<List<Wallet>> wallets = new MutableLiveData<>();
     public MutableLiveData<CurrenciesRate> rates = new MutableLiveData<>();
     public SingleLiveEvent<TransactionUpdateEntity> transactionUpdate = new SingleLiveEvent<>();
 
@@ -38,7 +39,7 @@ public class AssetsViewModel extends BaseViewModel implements LifecycleObserver 
     }
 
     private void initRates() {
-        CurrenciesRate currenciesRate = DataManager.getInstance().getCurrenciesRate();
+        CurrenciesRate currenciesRate = RealmManager.getSettingsDao().getCurrenciesRate();
         if (currenciesRate != null) {
             rates.setValue(currenciesRate);
         }
@@ -59,11 +60,11 @@ public class AssetsViewModel extends BaseViewModel implements LifecycleObserver 
         }
     }
 
-    public List<WalletRealmObject> getWalletsFromDB() {
-        return DataManager.getInstance().getWallets();
+    public List<Wallet> getWalletsFromDB() {
+        return RealmManager.getAssetsDao().getWallets();
     }
 
-    public MutableLiveData<List<WalletRealmObject>> getWallets() {
+    public MutableLiveData<List<Wallet>> getWallets() {
         return wallets;
     }
 

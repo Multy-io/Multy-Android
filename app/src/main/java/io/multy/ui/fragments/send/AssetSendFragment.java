@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Idealnaya rabota LLC
+ * Copyright 2018 Idealnaya rabota LLC
  * Licensed under Multy.io license.
  * See LICENSE for details
  */
@@ -30,7 +30,6 @@ import io.multy.ui.adapters.RecentAddressesAdapter;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.dialogs.DonateDialog;
 import io.multy.util.Constants;
-import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
@@ -49,6 +48,8 @@ public class AssetSendFragment extends BaseFragment {
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
 
+    private int blockchainId;
+    private int networkId;
     private AssetSendViewModel viewModel;
 
     @Nullable
@@ -59,7 +60,7 @@ public class AssetSendFragment extends BaseFragment {
         viewModel = ViewModelProviders.of(getActivity()).get(AssetSendViewModel.class);
         setBaseViewModel(viewModel);
         if (!TextUtils.isEmpty(viewModel.getReceiverAddress().getValue())) {
-            inputAddress.setText(viewModel.getReceiverAddress().getValue()); // to set address from scanning qr or wallet
+            inputAddress.setText(viewModel.getReceiverAddress().getValue());// to set address from scanning qr or wallet
         }
         viewModel.getReceiverAddress().observe(getActivity(), s -> inputAddress.setText(s));
         setupInputAddress();
@@ -80,7 +81,7 @@ public class AssetSendFragment extends BaseFragment {
         super.onDestroyView();
     }
 
-    private void setupInputAddress(){
+    private void setupInputAddress() {
         inputAddress.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -88,16 +89,7 @@ public class AssetSendFragment extends BaseFragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                boolean isValidAddress = false;
-                try {
-                    NativeDataHelper.isValidAddress(charSequence.toString(),
-                            NativeDataHelper.Blockchain.BLOCKCHAIN_BITCOIN.getValue(),
-                            NativeDataHelper.BlockchainNetType.BLOCKCHAIN_NET_TYPE_TESTNET.getValue());
-                    isValidAddress = true;
-                } catch (JniException e) {
-                    //TODO replace these lines with boolean isValidAddress = NativeDataHelper.isAddressValid(address); instead of try catch and code spaming.
-                    e.printStackTrace();
-                }
+                boolean isValidAddress = checkAddressForValidation(charSequence.toString());
                 if (TextUtils.isEmpty(charSequence) || !isValidAddress){
                     buttonNext.setBackgroundResource(R.color.disabled);
                     buttonNext.setEnabled(false);
@@ -112,6 +104,20 @@ public class AssetSendFragment extends BaseFragment {
 
             }
         });
+    }
+
+    private boolean checkAddressForValidation(String address) {
+        for (NativeDataHelper.Blockchain blockchain : NativeDataHelper.Blockchain.values()) {
+            for (NativeDataHelper.NetworkId networkId : NativeDataHelper.NetworkId.values()) {
+                try {
+                    NativeDataHelper.isValidAddress(address, blockchain.getValue(), networkId.getValue());
+                    AssetSendFragment.this.blockchainId = blockchain.getValue();
+                    AssetSendFragment.this.networkId = networkId.getValue();
+                    return true;
+                } catch (Throwable ignore) { }
+            }
+        }
+        return false;
     }
 
     private void logLaunch() {
@@ -150,10 +156,21 @@ public class AssetSendFragment extends BaseFragment {
     void onClickNext(){
         viewModel.setReceiverAddress(inputAddress.getText().toString());
         viewModel.thoseAddress.setValue(inputAddress.getText().toString());
-        ((AssetSendActivity) getActivity()).setFragment(R.string.send_from, R.id.container, WalletChooserFragment.newInstance());
+        ((AssetSendActivity) getActivity()).setFragment(R.string.send_from, R.id.container, WalletChooserFragment.newInstance(blockchainId, networkId));
         if (getActivity().getIntent().hasCategory(Constants.EXTRA_SENDER_ADDRESS)) {
-            RealmManager.getAssetsDao().getWalletById(getActivity().getIntent().getIntExtra(Constants.EXTRA_WALLET_ID, 0));
-            ((AssetSendActivity) getActivity()).setFragment(R.string.transaction_fee, R.id.container, TransactionFeeFragment.newInstance());
+            RealmManager.getAssetsDao().getWalletById(getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0));
+            if (viewModel.getWallet().getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()) {
+                ((AssetSendActivity) getActivity()).setFragment(R.string.transaction_fee, R.id.container, TransactionFeeFragment.newInstance());
+            } else if (viewModel.getWallet().getCurrencyId() == NativeDataHelper.Blockchain.ETH.getValue()) {
+                ((AssetSendActivity) getActivity()).setFragment(R.string.transaction_fee, R.id.container, EthTransactionFeeFragment.newInstance());
+            }
+        }
+    }
+
+    @OnClick(R.id.container)
+    void onClickContainer() {
+        if (getActivity() != null) {
+            hideKeyboard(getActivity());
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Idealnaya rabota LLC
+ * Copyright 2018 Idealnaya rabota LLC
  * Licensed under Multy.io license.
  * See LICENSE for details
  */
@@ -37,7 +37,7 @@ import io.multy.api.MultyApi;
 import io.multy.api.socket.CurrenciesRate;
 import io.multy.model.entities.Fee;
 import io.multy.model.entities.wallet.CurrencyCode;
-import io.multy.model.entities.wallet.WalletRealmObject;
+import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.requests.HdTransactionRequestEntity;
 import io.multy.model.responses.FeeRateResponse;
 import io.multy.storage.RealmManager;
@@ -61,8 +61,10 @@ import static io.multy.ui.fragments.send.SendSummaryFragment.byteArrayToHex;
 
 public class DonationFragment extends BaseFragment {
 
-    private final static String ARG_WALLET_INDEX = "wallet_index";
+    private final static String ARG_WALLET_ID = "wallet_id";
     private final static String ARG_DONATION_CODE = "donation_code";
+    public static final String TAG_SEND_SUCCESS = DonationFragment.class.getSimpleName();
+
 
     @BindView(R.id.scroll_view)
     ScrollView scrollView;
@@ -78,13 +80,13 @@ public class DonationFragment extends BaseFragment {
     String formatPattern;
 
     private BaseViewModel viewModel;
-    private WalletRealmObject wallet;
+    private Wallet wallet;
     private long maxValue;
 
-    public static DonationFragment newInstance(int walletIndex, int donationCode) {
+    public static DonationFragment newInstance(long walletId, int donationCode) {
         DonationFragment donationFragment = new DonationFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_WALLET_INDEX, walletIndex);
+        args.putLong(ARG_WALLET_ID, walletId);
         args.putInt(ARG_DONATION_CODE, donationCode);
         donationFragment.setArguments(args);
         return donationFragment;
@@ -104,9 +106,13 @@ public class DonationFragment extends BaseFragment {
         });
         inputDonation.setOnClickListener(v -> scrollDown());
 
-        pickWallet(getArguments().getInt(ARG_WALLET_INDEX));
+        pickWallet(getArguments().getLong(ARG_WALLET_ID));
         setupInput();
         requestRates();
+
+        Analytics.getInstance(getContext()).logDonationSendLaunch(getArguments() == null ?
+                0 : getArguments().getInt(ARG_DONATION_CODE, 0));
+
         return convertView;
     }
 
@@ -121,11 +127,11 @@ public class DonationFragment extends BaseFragment {
         }, 400);
     }
 
-    private void pickWallet(int walletIndex) {
-        wallet = RealmManager.getAssetsDao().getWalletById(walletIndex);
-        maxValue = wallet.getAvailableBalance();
-        textWalletName.setText(wallet.getName());
-        inputDonation.setText(CryptoFormatUtils.satoshiToBtc((wallet.getAvailableBalance() / 100) * 3));
+    private void pickWallet(long walletId) {
+        wallet = RealmManager.getAssetsDao().getWalletById(walletId);
+        maxValue = wallet.getAvailableBalanceNumeric().longValue();
+        textWalletName.setText(wallet.getWalletName());
+        inputDonation.setText(CryptoFormatUtils.satoshiToBtc((wallet.getAvailableBalanceNumeric().longValue() / 100) * 3));
     }
 
     private void setAdapter(ArrayList<Fee> rates) {
@@ -166,7 +172,7 @@ public class DonationFragment extends BaseFragment {
 
     private void requestRates() {
         viewModel.isLoading.postValue(true);
-        MultyApi.INSTANCE.getFeeRates(NativeDataHelper.Currency.BTC.getValue()).enqueue(new Callback<FeeRateResponse>() {
+        MultyApi.INSTANCE.getFeeRates(wallet.getCurrencyId(), wallet.getNetworkId()).enqueue(new Callback<FeeRateResponse>() {
             @Override
             public void onResponse(Call<FeeRateResponse> call, Response<FeeRateResponse> response) {
                 if (response.isSuccessful()) {
@@ -227,25 +233,31 @@ public class DonationFragment extends BaseFragment {
 
 
         final byte[] seed = RealmManager.getSettingsDao().getSeed().getSeed();
-        final int addressesSize = wallet.getAddresses().size();
+        final int addressesSize = wallet.getBtcWallet().getAddresses().size();
         final String fee = String.valueOf(((MyFeeAdapter) recyclerView.getAdapter()).getSelectedFee().getAmount());
         final String donationAddress = "";
         final String amount = String.valueOf(CryptoFormatUtils.btcToSatoshi(inputDonation.getText().toString()));
 
         try {
-            final String changeAddress = NativeDataHelper.makeAccountAddress(seed, wallet.getWalletIndex(), addressesSize,
-                    NativeDataHelper.Blockchain.BLOCKCHAIN_BITCOIN.getValue(),
-                    NativeDataHelper.BlockchainNetType.BLOCKCHAIN_NET_TYPE_TESTNET.getValue());
-            byte[] transactionHex = NativeDataHelper.makeTransaction(seed, wallet.getWalletIndex(), amount,
+            final String changeAddress = NativeDataHelper.makeAccountAddress(seed, wallet.getIndex(), addressesSize,
+                    wallet.getCurrencyId(),
+                    wallet.getNetworkId());
+            byte[] transactionHex = NativeDataHelper.makeTransaction(wallet.getId(), wallet.getNetworkId(), seed, wallet.getIndex(), amount,
                     fee, "0", receiverAddress, changeAddress, donationAddress, false);
 
-            MultyApi.INSTANCE.sendHdTransaction(new HdTransactionRequestEntity(NativeDataHelper.Currency.BTC.getValue(),
-                    new HdTransactionRequestEntity.Payload(changeAddress, addressesSize, wallet.getWalletIndex(), byteArrayToHex(transactionHex)))).enqueue(new Callback<ResponseBody>() {
+            MultyApi.INSTANCE.sendHdTransaction(new HdTransactionRequestEntity(wallet.getCurrencyId(), wallet.getNetworkId(),
+                    new HdTransactionRequestEntity.Payload(changeAddress, addressesSize, wallet.getIndex(), byteArrayToHex(transactionHex)))).enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     if (response.isSuccessful()) {
                         viewModel.isLoading.postValue(false);
-                        new CompleteDialogFragment().show(getActivity().getSupportFragmentManager(), "");
+                        CompleteDialogFragment completeDialog = new CompleteDialogFragment();
+                        if (getArguments() != null) {
+                            Bundle donateArgs = new Bundle();
+                            donateArgs.putInt(Constants.FEATURE_ID, getArguments().getInt(ARG_DONATION_CODE, 0));
+                            completeDialog.setArguments(donateArgs);
+                        }
+                        completeDialog.show(getActivity().getSupportFragmentManager(), TAG_SEND_SUCCESS);
                     } else {
                         Analytics.getInstance(getActivity()).logError(AnalyticsConstants.ERROR_TRANSACTION_API);
                         showError();
@@ -279,18 +291,23 @@ public class DonationFragment extends BaseFragment {
     void onClickSend(View view) {
 //        new CompleteDialogFragment().show(getActivity().getSupportFragmentManager(), "");
         view.setEnabled(false);
-        //todo: if wallet is on testnet then address for donate should be "mnUtMQcs3s8kSkSRXpREVtJamgUCWpcFj4"
-        String addressForDonate = RealmManager.getSettingsDao()
-                .getDonationAddress(getArguments().getInt(ARG_DONATION_CODE, 0));
+        //if wallet is on testnet then address for donate should be "mnUtMQcs3s8kSkSRXpREVtJamgUCWpcFj4"
+        String addressForDonate;
+        if (wallet.getNetworkId() == NativeDataHelper.NetworkId.TEST_NET.getValue()) {
+            addressForDonate = Constants.DONATION_ADDRESS_TESTNET;
+        } else {
+            addressForDonate = RealmManager.getSettingsDao().getDonationAddress(getArguments().getInt(ARG_DONATION_CODE, 0));
+        }
         if (addressForDonate != null) {
             sendTransaction(addressForDonate);
         }
+        Analytics.getInstance(view.getContext()).logDonationSendDonateClick(getArguments() == null ? 0 : getArguments().getInt(ARG_DONATION_CODE, 0));
     }
 
     @OnClick(R.id.button_wallet)
     void onClickWallet() {
         WalletChooserDialogFragment walletChooser = WalletChooserDialogFragment.newInstance();
-        walletChooser.setOnWalletClickListener(wallet -> pickWallet(wallet.getWalletIndex()));
+        walletChooser.setOnWalletClickListener(wallet -> pickWallet(wallet.getId()));
         walletChooser.show(getFragmentManager(), "");
     }
 }

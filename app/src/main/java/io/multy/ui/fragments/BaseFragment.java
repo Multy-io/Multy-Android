@@ -1,7 +1,7 @@
 /*
- *  Copyright 2017 Idealnaya rabota LLC
- *  Licensed under Multy.io license.
- *  See LICENSE for details
+ * Copyright 2018 Idealnaya rabota LLC
+ * Licensed under Multy.io license.
+ * See LICENSE for details
  */
 
 package io.multy.ui.fragments;
@@ -86,7 +86,7 @@ public class BaseFragment extends Fragment implements ConnectionReceiver.Connect
                 if (aBoolean != null) {
                     if (aBoolean) {
                         if (progressDialog == null) {
-                            progressDialog = new  Dialog(getActivity());
+                            progressDialog = new Dialog(getActivity());
                             progressDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                             progressDialog.setContentView(R.layout.dialog_spinner);
                             progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
@@ -97,9 +97,7 @@ public class BaseFragment extends Fragment implements ConnectionReceiver.Connect
                             progressDialog.show();
                         }
                     } else {
-                        if (progressDialog != null) {
-                            progressDialog.dismiss();
-                        }
+                        dismissProgressDialog();
                     }
                 }
             });
@@ -107,6 +105,12 @@ public class BaseFragment extends Fragment implements ConnectionReceiver.Connect
             baseViewModel.criticalMessage.observe(this, s -> {
                 //TODO show critical message and maybe exit?
             });
+        }
+    }
+
+    public void dismissProgressDialog() {
+        if (progressDialog != null) {
+            progressDialog.dismiss();
         }
     }
 

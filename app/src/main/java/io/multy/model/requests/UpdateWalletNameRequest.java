@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Idealnaya rabota LLC
+ * Copyright 2018 Idealnaya rabota LLC
  * Licensed under Multy.io license.
  * See LICENSE for details
  */
@@ -20,11 +20,18 @@ public class UpdateWalletNameRequest {
     private int currencyId;
     @SerializedName("walletIndex")
     private int walletIndex;
+    @SerializedName("networkID")
+    private int networkId;
 
-    public UpdateWalletNameRequest(String newName, int currencyId, int walletIndex) {
+    public UpdateWalletNameRequest(String newName, int currencyId, int walletIndex, int networkId) {
         this.newName = newName;
         this.currencyId = currencyId;
         this.walletIndex = walletIndex;
+        this.networkId = networkId;
+    }
+
+    public int getNetworkId() {
+        return networkId;
     }
 
     public String getNewName() {

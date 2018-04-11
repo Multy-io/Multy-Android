@@ -1,3 +1,9 @@
+<!--
+  ~ Copyright 2018 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
 <vector android:height="24dp" android:viewportHeight="31.0"
     android:viewportWidth="271.0" android:width="24dp" xmlns:android="http://schemas.android.com/apk/res/android">
     <path android:fillColor="#007AFF" android:fillType="evenOdd"

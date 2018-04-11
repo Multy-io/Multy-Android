@@ -1,7 +1,7 @@
 /*
- *  Copyright 2017 Idealnaya rabota LLC
- *  Licensed under Multy.io license.
- *  See LICENSE for details
+ * Copyright 2018 Idealnaya rabota LLC
+ * Licensed under Multy.io license.
+ * See LICENSE for details
  */
 
 package io.multy.api;
@@ -9,7 +9,7 @@ package io.multy.api;
 
 import io.multy.model.entities.AuthEntity;
 import io.multy.model.entities.TransactionRequestEntity;
-import io.multy.model.entities.wallet.WalletRealmObject;
+import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.requests.AddWalletAddressRequest;
 import io.multy.model.requests.HdTransactionRequestEntity;
 import io.multy.model.requests.UpdateWalletNameRequest;
@@ -18,6 +18,7 @@ import io.multy.model.responses.AuthResponse;
 import io.multy.model.responses.FeeRateResponse;
 import io.multy.model.responses.ServerConfigResponse;
 import io.multy.model.responses.SingleWalletResponse;
+import io.multy.model.responses.TestWalletResponse;
 import io.multy.model.responses.TransactionHistoryResponse;
 import io.multy.model.responses.UserAssetsResponse;
 import io.multy.model.responses.WalletsResponse;
@@ -36,13 +37,13 @@ public interface ApiServiceInterface {
     Call<AuthResponse> auth(@Body AuthEntity authEntity);
 
     @POST("api/v1/wallet")
-    Call<ResponseBody> addWallet(@Body WalletRealmObject wallet);
+    Call<ResponseBody> addWallet(@Body Wallet wallet);
 
     @POST("api/v1/gettransactioninfo/{id}")
     Call<ResponseBody> getTransactionInfo(@Path("id") String transactionId);
 
-    @GET("api/v1/transaction/feerate/{currencyId}")
-    Call<FeeRateResponse> getFeeRates(@Path("currencyId") int currencyId);
+    @GET("api/v1/transaction/feerate/{currencyId}/{networkId}")
+    Call<FeeRateResponse> getFeeRates(@Path("currencyId") int currencyId, @Path("networkId") int networkId);
 
     @GET("api/v1/getwalletaddresses/{walletId}")
     Observable<UserAssetsResponse> getWalletAddresses(@Path("walletId") int walletId);
@@ -59,21 +60,24 @@ public interface ApiServiceInterface {
     @POST("api/v1/address")
     Call<ResponseBody> addWalletAddress(@Body AddWalletAddressRequest addWalletAddressRequest);
 
-    @GET("api/v1/wallet/{walletIndex}/verbose/{currencyId}")
-    Call<SingleWalletResponse> getWalletVerboseByIndex(@Path("currencyId") int currencyId, @Path("walletIndex") int walletIndex);
+    @GET("api/v1/wallet/{walletIndex}/verbose/{currencyId}/{networkId}")
+    Call<SingleWalletResponse> getWalletVerboseByIndex(@Path("walletIndex") int walletIndex, @Path("currencyId") int currencyId, @Path("networkId") int networkId);
 
     @POST("api/v1/wallet/name")
     Call<ResponseBody> updateWalletName(@Body UpdateWalletNameRequest updateWalletName);
 
-    @DELETE("api/v1/wallet/{currencyId}/{walletIndex}")
-    Call<ResponseBody> removeWallet(@Path("currencyId") int currencyId, @Path("walletIndex") int walletIndex);
+    @DELETE("api/v1/wallet/{currencyId}/{networkId}/{walletIndex}")
+    Call<ResponseBody> removeWallet(@Path("currencyId") int currencyId, @Path("networkId") int networkId, @Path("walletIndex") int walletIndex);
 
     @GET("api/v1/wallets/verbose")
     Call<WalletsResponse> getWalletsVerbose();
 
-    @GET("api/v1/wallets/transactions/{currencyid}/{walletIndex}")
-    Call<TransactionHistoryResponse> getTransactionHistory(@Path("currencyid") int currencyId, @Path("walletIndex") int walletIndex);
+    @GET("api/v1/wallets/transactions/{currencyid}/{networkid}/{walletIndex}")
+    Call<TransactionHistoryResponse> getTransactionHistory(@Path("currencyid") int currencyId, @Path("networkid") int networkId, @Path("walletIndex") int walletIndex);
 
     @GET("/server/config")
     Call<ServerConfigResponse> getServerConfig();
+
+    @GET("api/v1/wallets/verbose")
+    Call<TestWalletResponse> testWalletVerbose();
 }

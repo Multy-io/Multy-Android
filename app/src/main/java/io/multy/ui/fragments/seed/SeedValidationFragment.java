@@ -1,7 +1,7 @@
 /*
- *  Copyright 2017 Idealnaya rabota LLC
- *  Licensed under Multy.io license.
- *  See LICENSE for details
+ * Copyright 2018 Idealnaya rabota LLC
+ * Licensed under Multy.io license.
+ * See LICENSE for details
  */
 
 package io.multy.ui.fragments.seed;
@@ -261,6 +261,7 @@ public class SeedValidationFragment extends BaseSeedFragment {
                 public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
                     if (response.isSuccessful()) {
                         Multy.makeInitialized();
+                        RealmManager.open();
                         SettingsDao settingsDao = RealmManager.getSettingsDao();
                         settingsDao.setUserId(new UserId(userId));
                         settingsDao.setByteSeed(new ByteSeed(seed));

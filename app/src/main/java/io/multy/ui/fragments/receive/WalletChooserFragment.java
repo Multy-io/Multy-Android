@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Idealnaya rabota LLC
+ * Copyright 2018 Idealnaya rabota LLC
  * Licensed under Multy.io license.
  * See LICENSE for details
  */
@@ -19,9 +19,9 @@ import butterknife.BindInt;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.multy.R;
-import io.multy.model.entities.wallet.WalletRealmObject;
+import io.multy.model.entities.wallet.Wallet;
 import io.multy.ui.activities.AssetRequestActivity;
-import io.multy.ui.adapters.WalletsAdapter;
+import io.multy.ui.adapters.MyWalletsAdapter;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
 import io.multy.util.analytics.Analytics;
@@ -29,7 +29,7 @@ import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.AssetRequestViewModel;
 
 
-public class WalletChooserFragment extends BaseFragment implements WalletsAdapter.OnWalletClickListener {
+public class WalletChooserFragment extends BaseFragment implements MyWalletsAdapter.OnWalletClickListener {
 
     public static WalletChooserFragment newInstance() {
         return new WalletChooserFragment();
@@ -42,13 +42,13 @@ public class WalletChooserFragment extends BaseFragment implements WalletsAdapte
     int zero;
 
     private AssetRequestViewModel viewModel;
-    private WalletsAdapter adapter;
+    private MyWalletsAdapter adapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = ViewModelProviders.of(getActivity()).get(AssetRequestViewModel.class);
-        viewModel.setContext(getActivity());
+//        viewModel.setContext(getActivity()); //TODO review
         setBaseViewModel(viewModel);
         if (!getActivity().getIntent().hasExtra(Constants.EXTRA_WALLET_ID)) {
             Analytics.getInstance(getActivity()).logReceiveLaunch(viewModel.getChainId());
@@ -73,7 +73,7 @@ public class WalletChooserFragment extends BaseFragment implements WalletsAdapte
     }
 
     @Override
-    public void onWalletClick(WalletRealmObject wallet) {
+    public void onWalletClick(Wallet wallet) {
         viewModel.setWallet(wallet);
         Analytics.getInstance(getActivity()).logReceive(AnalyticsConstants.RECEIVE_WALLET_CLICK, viewModel.getChainId());
         if (getActivity().getSupportFragmentManager().getBackStackEntryCount() == zero) {
@@ -85,7 +85,7 @@ public class WalletChooserFragment extends BaseFragment implements WalletsAdapte
 
     private void setupAdapter() {
         if (adapter == null) {
-            adapter = new WalletsAdapter(this, viewModel.getWalletsDB());
+            adapter = new MyWalletsAdapter(this, viewModel.getWalletsDB());
         }
         recyclerView.setAdapter(adapter);
 

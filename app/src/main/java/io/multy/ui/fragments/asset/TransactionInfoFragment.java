@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Idealnaya rabota LLC
+ * Copyright 2018 Idealnaya rabota LLC
  * Licensed under Multy.io license.
  * See LICENSE for details
  */
@@ -17,8 +17,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.samwolfand.oneprefs.Prefs;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,12 +27,14 @@ import butterknife.OnClick;
 import io.multy.R;
 import io.multy.model.entities.TransactionHistory;
 import io.multy.model.entities.wallet.WalletAddress;
+import io.multy.storage.RealmManager;
 import io.multy.ui.activities.BaseActivity;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.WebFragment;
 import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
 import io.multy.util.DateHelper;
+import io.multy.util.NativeDataHelper;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.WalletViewModel;
@@ -108,6 +108,8 @@ public class TransactionInfoFragment extends BaseFragment {
     private String txid;
     private boolean isTransactionLogged;
     private List<String> walletAddresses = new ArrayList<>();
+    private int networkId = 0;
+    private String donateAddress;
 
     public static TransactionInfoFragment newInstance(Bundle transactionInfoMode) {
         TransactionInfoFragment fragment = new TransactionInfoFragment();
@@ -115,7 +117,8 @@ public class TransactionInfoFragment extends BaseFragment {
         return fragment;
     }
 
-    public TransactionInfoFragment() {}
+    public TransactionInfoFragment() {
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -140,36 +143,36 @@ public class TransactionInfoFragment extends BaseFragment {
         }
         selectedPosition = getArguments().getInt(SELECTED_POSITION, 0);
         int mode = getArguments().getInt(TRANSACTION_INFO_MODE, 0);
-        if (mode == MODE_RECEIVE) {
-            parent.setBackgroundColor(colorGreen);
-            imageOperation.setImageResource(R.drawable.ic_receive_big_new);
-        } else if (mode == MODE_SEND) {
-            parent.setBackgroundColor(colorBlue);
-            imageOperation.setImageResource(R.drawable.ic_send_big);
-        } else {
-            return;
-        }
+        parent.setBackgroundColor(mode == MODE_RECEIVE ? colorGreen : colorBlue);
+        imageOperation.setImageResource(mode == MODE_RECEIVE ? R.drawable.ic_receive_big_new : R.drawable.ic_send_big);
         loadData();
     }
 
     private void loadData() {
-        viewModel.getWalletLive().observe(this, walletRealmObject -> {
-            if (walletRealmObject != null) {
-                toolbarWalletName.setText(walletRealmObject.getName());
-                for (WalletAddress address : walletRealmObject.getAddresses()) {
+        viewModel.getWalletLive().observe(this, wallet -> {
+            if (wallet != null) {
+                toolbarWalletName.setText(wallet.getWalletName());
+                for (WalletAddress address : wallet.getBtcWallet().getAddresses()) {
                     if (!walletAddresses.contains(address.getAddress())) {
                         walletAddresses.add(address.getAddress());
                     }
                 }
+                loadTransactionHistory(wallet.getCurrencyId(), wallet.getNetworkId(), wallet.getIndex());
             }
         });
-        viewModel.getTransactionsHistory().observe(this, transactionHistories -> {
+
+    }
+
+    private void loadTransactionHistory(final int currencyId, final int networkId, final int walletIndex) {
+        this.networkId = networkId;
+        viewModel.getTransactionsHistory(currencyId, networkId, walletIndex).observe(this, transactionHistories -> {
             if (transactionHistories == null || transactionHistories.size() == 0) {
                 return;
             } else if (transaction != null) {
                 setData();
                 return;
             }
+            donateAddress = RealmManager.getSettingsDao().getDonationAddress(Constants.DONATE_WITH_TRANSACTION);
             transaction = transactionHistories.get(selectedPosition);
             setData();
         });
@@ -179,41 +182,34 @@ public class TransactionInfoFragment extends BaseFragment {
         boolean isIncoming = transaction.getTxStatus() == TX_IN_BLOCK_INCOMING ||
                 transaction.getTxStatus() == TX_CONFIRMED_INCOMING ||
                 transaction.getTxStatus() == TX_MEMPOOL_INCOMING;
+        double exchangeRate = getPreferredExchangeRate(transaction.getStockExchangeRates());
         if (isIncoming) {
             textValue.setText("+");
             textAmount.setText("+");
             textValue.append(CryptoFormatUtils.satoshiToBtc(transaction.getTxOutAmount()));
-            if (transaction.getStockExchangeRates() != null && transaction.getStockExchangeRates().size() > 0) {
-                textAmount.append(CryptoFormatUtils.satoshiToUsd(transaction.getTxOutAmount(), transaction.getStockExchangeRates().get(0).getExchanges().getBtcUsd()));
-                textMoney.setVisibility(View.VISIBLE);
-            } else {
-                textAmount.setText("");
-                textMoney.setVisibility(View.GONE);
-            }
+            textAmount.append(CryptoFormatUtils.satoshiToUsd(transaction.getTxOutAmount(), exchangeRate));
         } else {
             textValue.setText("-");
             textAmount.setText("-");
             double outValue = 0;
             List<WalletAddress> outputs = transaction.getOutputs();
             for (WalletAddress output : outputs) {
-                if (!output.getAddress().equals(Constants.DONTAION_ADDRESS) && !walletAddresses.contains(output.getAddress())) {
+                if (!walletAddresses.contains(output.getAddress())) {
                     outValue += output.getAmount();
+                    if (isDonationAddress(output.getAddress())) {
+                        initializeDonationBlock(output, exchangeRate);
+                    }
                 }
             }
             textValue.append(CryptoFormatUtils.satoshiToBtc(outValue));
-            if (transaction.getStockExchangeRates() != null && transaction.getStockExchangeRates().size() > 0) {
-                textAmount.append(CryptoFormatUtils.satoshiToUsd(outValue,
-                        transaction.getStockExchangeRates().get(0).getExchanges().getBtcUsd()));
-                textMoney.setVisibility(View.VISIBLE);
-            }
-            getServerConfig();
+            textAmount.append(CryptoFormatUtils.satoshiToUsd(outValue, exchangeRate));
         }
-        String addressesfrom = "";
+        String addressesFrom = "";
         for (WalletAddress singleAddress : transaction.getInputs()) {
-            addressesfrom = addressesfrom.concat(System.lineSeparator()).concat(singleAddress.getAddress());
+            addressesFrom = addressesFrom.concat(System.lineSeparator()).concat(singleAddress.getAddress());
         }
-        addressesfrom = addressesfrom.substring(1);
-        textAdressesFrom.setText(addressesfrom);
+        addressesFrom = addressesFrom.substring(1);
+        textAdressesFrom.setText(addressesFrom);
         String addressesTo = "";
         for (WalletAddress singleAddress : transaction.getOutputs()) {
             addressesTo = addressesTo.concat(System.lineSeparator()).concat(singleAddress.getAddress());
@@ -248,52 +244,28 @@ public class TransactionInfoFragment extends BaseFragment {
         }
     }
 
-    private void getServerConfig() {
-        String btcDonateAddress = Prefs.getString(Constants.PREF_DONATE_ADDRESS_BTC, "no address");
-        try {
-            for (WalletAddress address : transaction.getOutputs()) {
-                if (address.getAddress().equals(btcDonateAddress)) {
-                    initializeDonationBlock(address);
-                    break;
+    private boolean isDonationAddress(String address) {
+        if (networkId == NativeDataHelper.NetworkId.TEST_NET.getValue()) {
+            return address.equals(Constants.DONATION_ADDRESS_TESTNET);
+        }
+        return donateAddress.equals(address);
+    }
+
+    private double getPreferredExchangeRate(ArrayList<TransactionHistory.StockExchangeRate> stockExchangeRates) {
+        if (stockExchangeRates != null && stockExchangeRates.size() > 0) {
+            for (TransactionHistory.StockExchangeRate rate : stockExchangeRates) {
+                if (rate.getExchanges().getBtcUsd() > 0) {
+                    return rate.getExchanges().getBtcUsd();
                 }
             }
-        } catch (Throwable t) {
-            t.printStackTrace();
         }
+        return 0.0;
     }
 
-    private void initializeDonationBlock(WalletAddress address) {
+    private void initializeDonationBlock(WalletAddress address, double exchangeRate) {
         viewDonate.setVisibility(View.VISIBLE);
         textDonateValue.setText(CryptoFormatUtils.satoshiToBtc(address.getAmount()));
-        if (transaction.getStockExchangeRates() != null && transaction.getStockExchangeRates().size() > 0) {
-            textDonateAmount.setText(CryptoFormatUtils.satoshiToUsd(address.getAmount(), transaction.getStockExchangeRates().get(0).getExchanges().getBtcUsd()));
-            textDonateMoney.setVisibility(View.VISIBLE);
-        } else {
-            textDonateAmount.setText("");
-            textDonateMoney.setVisibility(View.GONE);
-        }
-    }
-
-    @OnClick(R.id.button_view)
-    void onViewClick(View view) {
-        Analytics.getInstance(getActivity()).logWalletTransactionBlockchain(AnalyticsConstants.WALLET_TRANSACTIONS_BLOCKCHAIN,
-                viewModel.getChainId(), getLogStatus());
-        try {
-            view.setEnabled(false);
-            view.postDelayed(() -> view.setEnabled(true), 1500);
-            String url = Constants.BLOCKCHAIN_INFO_PATH + txid;
-            ((BaseActivity) view.getContext()).getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container_full, WebFragment.newInstance(url))
-                    .addToBackStack(TransactionInfoFragment.TAG)
-                    .commit();
-        } catch (Throwable t) {
-            t.printStackTrace();
-        }
-    }
-
-    @OnClick(R.id.back)
-    void onClickBack() {
-        getActivity().onBackPressed();
+        textDonateAmount.setText(CryptoFormatUtils.satoshiToUsd(address.getAmount(), exchangeRate));
     }
 
     private int getLogStatus() {
@@ -328,5 +300,28 @@ public class TransactionInfoFragment extends BaseFragment {
                 break;
             default:
         }
+    }
+
+    @OnClick(R.id.button_view)
+    void onClickView(View view) {
+        Analytics.getInstance(getActivity()).logWalletTransactionBlockchain(AnalyticsConstants.WALLET_TRANSACTIONS_BLOCKCHAIN,
+                viewModel.getChainId(), getLogStatus());
+        try {
+            view.setEnabled(false);
+            view.postDelayed(() -> view.setEnabled(true), 1500);
+            String url = (networkId == NativeDataHelper.NetworkId.TEST_NET.getValue() ?
+                    Constants.BLOCKCHAIN_TEST_INFO_PATH : Constants.BLOCKCHAIN_MAIN_INFO_PATH) + txid;
+            ((BaseActivity) view.getContext()).getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container_full, WebFragment.newInstance(url))
+                    .addToBackStack(TransactionInfoFragment.TAG)
+                    .commit();
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+    }
+
+    @OnClick(R.id.back)
+    void onClickBack() {
+        getActivity().onBackPressed();
     }
 }

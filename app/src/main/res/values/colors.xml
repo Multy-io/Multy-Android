@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~  Copyright 2017 Idealnaya rabota LLC
-  ~  Licensed under Multy.io license.
-  ~  See LICENSE for details
+  ~ Copyright 2018 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
   -->
 
 <resources>
@@ -16,6 +16,7 @@
     <color name="blue_light_divider">#6687a1c5</color>
     <color name="green">#4CAF50</color>
     <color name="green_light">#5fcc7d</color>
+    <color name="green_lightest">#7ed321</color>
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
     <color name="red">#F44336</color>

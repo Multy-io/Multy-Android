@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Idealnaya rabota LLC
+ * Copyright 2018 Idealnaya rabota LLC
  * Licensed under Multy.io license.
  * See LICENSE for details
  */
@@ -8,15 +8,14 @@ package io.multy.viewmodels;
 
 import android.arch.lifecycle.MutableLiveData;
 import android.os.Handler;
-
-import com.samwolfand.oneprefs.Prefs;
+import android.util.Log;
 
 import io.multy.Multy;
 import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.api.socket.CurrenciesRate;
 import io.multy.model.entities.Fee;
-import io.multy.model.entities.wallet.WalletRealmObject;
+import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.responses.FeeRateResponse;
 import io.multy.storage.RealmManager;
 import io.multy.util.Constants;
@@ -30,7 +29,7 @@ import retrofit2.Response;
 
 public class AssetSendViewModel extends BaseViewModel {
 
-    public MutableLiveData<WalletRealmObject> wallet = new MutableLiveData<>();
+    public MutableLiveData<Wallet> wallet = new MutableLiveData<>();
     public MutableLiveData<FeeRateResponse.Speeds> speeds = new MutableLiveData<>();
     public MutableLiveData<Fee> fee = new MutableLiveData<>();
     private MutableLiveData<String> receiverAddress = new MutableLiveData<>();
@@ -61,11 +60,11 @@ public class AssetSendViewModel extends BaseViewModel {
         return currenciesRate;
     }
 
-    public void setWallet(WalletRealmObject wallet) {
+    public void setWallet(Wallet wallet) {
         this.wallet.setValue(wallet);
     }
 
-    public WalletRealmObject getWallet() {
+    public Wallet getWallet() {
         return this.wallet.getValue();
     }
 
@@ -125,9 +124,9 @@ public class AssetSendViewModel extends BaseViewModel {
         isAmountScanned = amountScanned;
     }
 
-    public void requestFeeRates(int currencyId) {
-        isLoading.setValue(true);
-        MultyApi.INSTANCE.getFeeRates(currencyId).enqueue(new Callback<FeeRateResponse>() {
+    public void requestFeeRates(int currencyId, int networkId) {
+        isLoading.postValue(true);
+        MultyApi.INSTANCE.getFeeRates(currencyId, networkId).enqueue(new Callback<FeeRateResponse>() {
             @Override
             public void onResponse(Call<FeeRateResponse> call, Response<FeeRateResponse> response) {
                 isLoading.postValue(false);
@@ -148,7 +147,7 @@ public class AssetSendViewModel extends BaseViewModel {
     }
 
     public void scheduleUpdateTransactionPrice(long amount) {
-        final int walletIndex = getWallet().getWalletIndex();
+        final int walletIndex = getWallet().getIndex();
         final long feePerByte = getFee().getAmount();
 
         if (handler != null) {
@@ -161,26 +160,32 @@ public class AssetSendViewModel extends BaseViewModel {
 
         if (changeAddress == null) {
             try {
-                changeAddress = NativeDataHelper.makeAccountAddress(seed, walletIndex, getWallet().getAddresses().size(),
-                        NativeDataHelper.Blockchain.BLOCKCHAIN_BITCOIN.getValue(),
-                        NativeDataHelper.BlockchainNetType.BLOCKCHAIN_NET_TYPE_TESTNET.getValue());
+                changeAddress = NativeDataHelper.makeAccountAddress(seed, walletIndex, getWallet().getBtcWallet().getAddresses().size(),
+                        getWallet().getCurrencyId(), getWallet().getNetworkId());
             } catch (JniException e) {
                 e.printStackTrace();
                 errorMessage.setValue("Error creating change address " + e.getMessage());
             }
         }
 
+        if (getWallet().getNetworkId() == NativeDataHelper.NetworkId.MAIN_NET.getValue()) {
+            donationAddress = RealmManager.getSettingsDao().getDonationAddress(Constants.DONATE_WITH_TRANSACTION);
+        } else {
+            donationAddress = Constants.DONATION_ADDRESS_TESTNET;
+        }
+
         if (donationAddress == null) {
-            donationAddress = Prefs.getString(Constants.PREF_DONATE_ADDRESS_BTC);
+            donationAddress = "";
         }
 
         handler.postDelayed(() -> {
             try {
+//                Log.i("wise", getWallet().getId() + " " + getWallet().getNetworkId() + " " + amount + " " + getFee().getAmount() + " " + getDonationSatoshi() + " " + isPayForCommission);
                 //important notice - native makeTransaction() method will update UI automatically with correct transaction price
-                byte[] transactionHex = NativeDataHelper.makeTransaction(
+                byte[] transactionHex = NativeDataHelper.makeTransaction(getWallet().getId(), getWallet().getNetworkId(),
                         seed, walletIndex, String.valueOf(amount),
                         String.valueOf(getFee().getAmount()), getDonationSatoshi(),
-                        getReceiverAddress().getValue(), changeAddress, donationAddress, false);
+                        getReceiverAddress().getValue(), changeAddress, donationAddress, isPayForCommission);
             } catch (JniException e) {
                 e.printStackTrace();
                 signTransactionError = e.getMessage();
@@ -190,18 +195,20 @@ public class AssetSendViewModel extends BaseViewModel {
 
     public void signTransaction() {
         try {
-            byte[] transactionHex = NativeDataHelper.makeTransaction(
-                    seed, getWallet().getWalletIndex(), String.valueOf(CryptoFormatUtils.btcToSatoshi(String.valueOf(String.valueOf(amount)))),
+//            Log.i("wise", getWallet().getId() + " " + getWallet().getNetworkId() + " " + amount + " " + getFee().getAmount() + " " + getDonationSatoshi() + " " + isPayForCommission);
+            byte[] transactionHex = NativeDataHelper.makeTransaction(getWallet().getId(), getWallet().getNetworkId(),
+                    seed, getWallet().getIndex(), String.valueOf(CryptoFormatUtils.btcToSatoshi(String.valueOf(String.valueOf(amount)))),
                     String.valueOf(getFee().getAmount()), getDonationSatoshi(),
                     getReceiverAddress().getValue(), changeAddress, donationAddress, isPayForCommission);
             transaction.setValue(byteArrayToHex(transactionHex));
         } catch (JniException e) {
+            errorMessage.setValue("Entered sum is invalid.");
             e.printStackTrace();
         }
     }
 
     /**
-     * this methohd will be called from JNI automatically while makeTransaction is processing
+     * this method will be called from JNI automatically while makeTransaction is processing
      *
      * @param amount transactionPrice.
      */

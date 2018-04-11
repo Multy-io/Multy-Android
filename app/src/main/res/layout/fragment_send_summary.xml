@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright 2017 Idealnaya rabota LLC
+  ~ Copyright 2018 Idealnaya rabota LLC
   ~ Licensed under Multy.io license.
   ~ See LICENSE for details
   -->
@@ -103,6 +103,7 @@
             android:elevation="@dimen/elevation_4dp"
             android:gravity="center"
             android:hint="@string/hint_add_note"
+            android:imeOptions="actionDone"
             android:inputType="text"
             android:lines="@integer/one"
             app:layout_constraintLeft_toLeftOf="@+id/container_receiver"
