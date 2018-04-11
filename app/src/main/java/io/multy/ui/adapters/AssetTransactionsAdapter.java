@@ -7,6 +7,7 @@
 package io.multy.ui.adapters;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -48,19 +49,22 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
 
     private long walletId;
     private List<TransactionHistory> transactionHistoryList;
+    private RealmList<WalletAddress> addresses;
 
     public AssetTransactionsAdapter(List<TransactionHistory> transactionHistoryList, long walletId) {
         this.transactionHistoryList = transactionHistoryList;
         this.walletId = walletId;
         Collections.sort(this.transactionHistoryList, (transactionHistory, t1) -> Long.compare(t1.getMempoolTime(), transactionHistory.getMempoolTime()));
+        addresses = RealmManager.getAssetsDao().getWalletById(walletId).getBtcWallet().getAddresses();
     }
 
     public AssetTransactionsAdapter() {
         transactionHistoryList = new ArrayList<>();
     }
 
+    @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
             case TYPE_BLOCKED:
                 return new BlockedHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.view_transaction_item_blocked, parent, false));
@@ -72,7 +76,7 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         switch (getItemViewType(position)) {
             case TYPE_CONFIRMED:
                 bindConfirmed((Holder) holder, position);
@@ -113,10 +117,10 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
         });
     }
 
-    private String getStockFiatAmount(TransactionHistory transactionHistory) {
+    private String getFiatAmount(TransactionHistory transactionHistory, double btcValue) {
         if (transactionHistory.getStockExchangeRates() != null && transactionHistory.getStockExchangeRates().size() > 0) {
             double rate = getPreferredExchangeRate(transactionHistory.getStockExchangeRates());
-            return String.valueOf(CryptoFormatUtils.satoshiToUsd(transactionHistory.getTxOutAmount(), rate));
+            return CryptoFormatUtils.satoshiToUsd(btcValue, rate);
         }
         return "";
     }
@@ -135,14 +139,13 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
             lockedAmount = CryptoFormatUtils.satoshiToBtc(transactionHistory.getTxOutAmount());
             lockedFiat = CryptoFormatUtils.satoshiToUsd(transactionHistory.getTxOutAmount());
             amount = lockedAmount;
-            amountFiat = getStockFiatAmount(transactionHistory);
+            amountFiat = getFiatAmount(transactionHistory, transactionHistory.getTxOutAmount());
             setAddresses(transactionHistory.getInputs(), holder.containerAddresses);
 
             holder.amountLocked.setText(String.format("%s BTC", lockedAmount));
             holder.fiatLocked.setText(String.format("(%s USD)", lockedFiat));
         } else {
             //TODO REMOVE DRY AND OPTIMIZE
-            RealmList<WalletAddress> addresses = RealmManager.getAssetsDao().getWalletById(walletId).getBtcWallet().getAddresses();
 //            List<WalletAddress> inputs = transactionHistory.getInputs();
             List<WalletAddress> outputs = transactionHistory.getOutputs();
 //            user change address must be last, so reversing
@@ -157,15 +160,6 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
                     userChangeAddress = output;
                     break;
                 }
-//                todo check for mistakes and remove commented lines below
-//                if (!output.getAddress().equals(Constants.DONATION_ADDRESS)) {
-//                    for (WalletAddress walletAddress : addresses) {
-//                        if (output.getAddress().equals(walletAddress.getAddress())) {
-//                            userChangeAddress = output;
-//                            break;
-//                        }
-//                    }
-//                }
             }
 
             if (!lockedAmount.equals("")) {
@@ -178,7 +172,7 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
                 holder.containerLocked.setVisibility(View.GONE);
             }
             amount = CryptoFormatUtils.satoshiToBtc(outputBtcValue);
-            amountFiat = getStockFiatAmount(transactionHistory);
+            amountFiat = getFiatAmount(transactionHistory, outputBtcValue);
             setAddress(addressTo.getAddress(), holder.containerAddresses);
         }
 
@@ -198,7 +192,7 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
         holder.imageDirection.setImageResource(isIncoming ? R.drawable.ic_receive_gray : R.drawable.ic_send_gray);
         holder.textRejectedDirection.setText(isIncoming ? R.string.rejected_receive : R.string.rejected_send);
         holder.amount.setText(CryptoFormatUtils.satoshiToBtc(transactionHistory.getTxOutAmount()));
-        holder.fiat.setText(getStockFiatAmount(transactionHistory));
+        holder.fiat.setText(getFiatAmount(transactionHistory, transactionHistory.getTxOutAmount()));
 
         setItemClickListener(holder.itemView, isIncoming, position);
     }
@@ -215,11 +209,10 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
         if (isIncoming) {
             setAddresses(transactionHistory.getInputs(), holder.containerAddresses);
             holder.amount.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(transactionHistory.getTxOutAmount())));
-            String stockFiat = getStockFiatAmount(transactionHistory);
+            String stockFiat = getFiatAmount(transactionHistory, transactionHistory.getTxOutAmount());
             holder.fiat.setText(stockFiat.equals("") ? "" : String.format("%s USD", stockFiat));
         } else {
             //TODO REMOVE DRY AND OPTIMIZE
-            RealmList<WalletAddress> addresses = RealmManager.getAssetsDao().getWalletById(walletId).getBtcWallet().getAddresses();
 //            List<WalletAddress> inputs = transactionHistory.getInputs();
 
             List<WalletAddress> outputs = transactionHistory.getOutputs();
@@ -230,7 +223,7 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
 
             setAddress(addressTo.getAddress(), holder.containerAddresses);
             holder.amount.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(outputBtcValue)));
-            holder.fiat.setText(String.format("%s USD", getStockFiatAmount(transactionHistory)));
+            holder.fiat.setText(String.format("%s USD", getFiatAmount(transactionHistory, outputBtcValue)));
         }
 
         setItemClickListener(holder.itemView, isIncoming, position);
