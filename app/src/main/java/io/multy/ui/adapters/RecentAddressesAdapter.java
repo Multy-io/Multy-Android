@@ -18,6 +18,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.multy.R;
 import io.multy.model.entities.wallet.RecentAddress;
+import io.multy.util.NativeDataHelper;
 import io.realm.RealmResults;
 
 public class RecentAddressesAdapter extends RecyclerView.Adapter<RecentAddressesAdapter.RecentAddressHolder> {
@@ -43,6 +44,8 @@ public class RecentAddressesAdapter extends RecyclerView.Adapter<RecentAddresses
     public void onBindViewHolder(RecentAddressHolder holder, int position) {
         holder.textAddress.setText(data.get(position).getAddress());
         holder.itemView.setOnClickListener(v -> listener.onClickRecentAddress(data.get(position).getAddress()));
+        holder.imageCurrency.setImageResource(data.get(position).getNetworkId() == NativeDataHelper.NetworkId.MAIN_NET.getValue() ?
+                R.drawable.ic_btc_huge : R.drawable.ic_chain_btc_test);
     }
 
     @Override

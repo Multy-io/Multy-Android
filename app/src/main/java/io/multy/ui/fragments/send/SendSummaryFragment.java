@@ -192,7 +192,7 @@ public class SendSummaryFragment extends BaseFragment {
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     if (response.isSuccessful()) {
                         viewModel.isLoading.postValue(false);
-                        RealmManager.getAssetsDao().saveRecentAddress(new RecentAddress(NativeDataHelper.Blockchain.BTC.getValue(), addressTo));
+                        RealmManager.getAssetsDao().saveRecentAddress(new RecentAddress(viewModel.getWallet().getCurrencyId(), viewModel.getWallet().getNetworkId(), addressTo));
                         CompleteDialogFragment.newInstance(viewModel.getChainId()).show(getActivity().getSupportFragmentManager(), TAG_SEND_SUCCESS);
                     } else {
                         Analytics.getInstance(getActivity()).logError(AnalyticsConstants.ERROR_TRANSACTION_API);
