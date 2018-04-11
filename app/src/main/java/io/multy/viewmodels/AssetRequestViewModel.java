@@ -7,31 +7,32 @@
 package io.multy.viewmodels;
 
 import android.arch.lifecycle.MutableLiveData;
-import android.content.Context;
 import android.graphics.Bitmap;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
-import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 
 import java.util.List;
 
 import io.multy.api.MultyApi;
 import io.multy.api.socket.CurrenciesRate;
-import io.multy.model.DataManager;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.entities.wallet.WalletAddress;
-import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.model.requests.AddWalletAddressRequest;
 import io.multy.storage.RealmManager;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
+import io.reactivex.Observable;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import timber.log.Timber;
 
 public class AssetRequestViewModel extends BaseViewModel {
 
@@ -74,27 +75,32 @@ public class AssetRequestViewModel extends BaseViewModel {
         return walletLive;
     }
 
-    public Bitmap generateQR(Context context, String strQr) throws WriterException {
-        BitMatrix bitMatrix;
-        try {
-            bitMatrix = new MultiFormatWriter().encode(strQr, BarcodeFormat.QR_CODE, 200, 200, null);
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-            return null;
-        }
+    public void generateQr(String strQr, int colorDark, int colorLight,
+                           Consumer<Bitmap> consumerNext, Consumer<Throwable> consumerError) {
+        Disposable disposable = Observable.create((ObservableOnSubscribe<Bitmap>) e -> {
+            try {
+                Bitmap bitmap = generateQr(strQr, colorDark, colorLight);
+                e.onNext(bitmap);
+            } catch (Throwable throwable) {
+                e.onError(throwable);
+            }
+        }).subscribeOn(Schedulers.single())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(consumerNext, consumerError);
+        addDisposable(disposable);
+    }
+
+    private Bitmap generateQr(String strQr, int colorDark, int colorLight) throws Throwable {
+        BitMatrix bitMatrix = new MultiFormatWriter().encode(strQr, BarcodeFormat.QR_CODE, 200, 200, null);
         final int bitMatrixWidth = bitMatrix.getWidth();
         final int bitMatrixHeight = bitMatrix.getHeight();
         final int[] pixels = new int[bitMatrixWidth * bitMatrixHeight];
-
         for (int y = 0; y < bitMatrixHeight; y++) {
             int offset = y * bitMatrixWidth;
             for (int x = 0; x < bitMatrixWidth; x++) {
-                pixels[offset + x] = bitMatrix.get(x, y) ?
-                        context.getResources().getColor(android.R.color.black) :
-                        context.getResources().getColor(android.R.color.white);
+                pixels[offset + x] = bitMatrix.get(x, y) ? colorDark : colorLight;
             }
         }
-
         Bitmap bitmap = Bitmap.createBitmap(bitMatrixWidth, bitMatrixHeight, Bitmap.Config.ARGB_8888);
         bitmap.setPixels(pixels, 0, bitMatrixWidth, 0, 0, bitMatrixWidth, bitMatrixHeight);
         return bitmap;
