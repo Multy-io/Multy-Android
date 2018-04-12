@@ -301,6 +301,7 @@ public class DonationFragment extends BaseFragment {
     void onClickSend(View view) {
 //        new CompleteDialogFragment().show(getActivity().getSupportFragmentManager(), "");
         view.setEnabled(false);
+        view.postDelayed(() -> view.setEnabled(true), 1000);
         //if wallet is on testnet then address for donate should be "mnUtMQcs3s8kSkSRXpREVtJamgUCWpcFj4"
         String addressForDonate;
         if (wallet.getNetworkId() == NativeDataHelper.NetworkId.TEST_NET.getValue()) {
