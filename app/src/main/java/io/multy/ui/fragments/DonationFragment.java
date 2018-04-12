@@ -131,7 +131,12 @@ public class DonationFragment extends BaseFragment {
         wallet = RealmManager.getAssetsDao().getWalletById(walletId);
         maxValue = wallet.getAvailableBalanceNumeric().longValue();
         textWalletName.setText(wallet.getWalletName());
-        inputDonation.setText(CryptoFormatUtils.satoshiToBtc((wallet.getAvailableBalanceNumeric().longValue() / 100) * 3));
+
+        long donationSum = (wallet.getAvailableBalanceNumeric().longValue() / 100) * 3;
+        if (donationSum < Constants.DONATION_MIN_VALUE / 2) {
+            donationSum = Constants.DONATION_MIN_VALUE / 2;
+        }
+        inputDonation.setText(CryptoFormatUtils.satoshiToBtc(donationSum));
     }
 
     private void setAdapter(ArrayList<Fee> rates) {
@@ -226,6 +231,11 @@ public class DonationFragment extends BaseFragment {
         viewModel.isLoading.setValue(true);
         double btcValue = Double.parseDouble(inputDonation.getText().toString());
         long satoshiValue = (long) (btcValue * Math.pow(10, 8));
+
+        if (satoshiValue < Constants.DONATION_MIN_VALUE / 2) {
+            viewModel.errorMessage.setValue("Too low donation amount.");
+            return;
+        }
 
         if (satoshiValue > maxValue) {
             Toast.makeText(getActivity(), "Donation amount is bigger than available.", Toast.LENGTH_SHORT).show();
