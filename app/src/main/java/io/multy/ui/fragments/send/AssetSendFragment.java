@@ -89,7 +89,11 @@ public class AssetSendFragment extends BaseFragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                boolean isValidAddress = checkAddressForValidation(charSequence.toString());
+                boolean isValidAddress = getActivity() != null &&
+                        getActivity().getIntent().hasCategory(Constants.EXTRA_SENDER_ADDRESS) && viewModel.getWallet() != null ?
+                        checkAddressForValidation(charSequence.toString(),
+                                viewModel.getWallet().getCurrencyId(), viewModel.getWallet().getNetworkId()) :
+                        checkAddressForValidation(charSequence.toString());
                 if (TextUtils.isEmpty(charSequence) || !isValidAddress){
                     buttonNext.setBackgroundResource(R.color.disabled);
                     buttonNext.setEnabled(false);
@@ -109,14 +113,21 @@ public class AssetSendFragment extends BaseFragment {
     private boolean checkAddressForValidation(String address) {
         for (NativeDataHelper.Blockchain blockchain : NativeDataHelper.Blockchain.values()) {
             for (NativeDataHelper.NetworkId networkId : NativeDataHelper.NetworkId.values()) {
-                try {
-                    NativeDataHelper.isValidAddress(address, blockchain.getValue(), networkId.getValue());
-                    AssetSendFragment.this.blockchainId = blockchain.getValue();
-                    AssetSendFragment.this.networkId = networkId.getValue();
+                if (checkAddressForValidation(address, blockchain.getValue(), networkId.getValue())) {
                     return true;
-                } catch (Throwable ignore) { }
+                }
             }
         }
+        return false;
+    }
+
+    private boolean checkAddressForValidation(String address, int blockchainId, int networkId) {
+        try {
+            NativeDataHelper.isValidAddress(address, blockchainId, networkId);
+            AssetSendFragment.this.blockchainId = blockchainId;
+            AssetSendFragment.this.networkId = networkId;
+            return true;
+        } catch (Throwable ignore) { }
         return false;
     }
 

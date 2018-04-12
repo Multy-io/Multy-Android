@@ -8,7 +8,8 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -69,34 +70,30 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/layout_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#ffffff"
-        android:paddingBottom="8dp"
-        android:paddingEnd="16dp"
-        android:paddingStart="16dp"
-        android:paddingTop="8dp"
-        android:textColorHint="#87a1c5"
+    <RelativeLayout
+        android:id="@+id/name_container"
+        style="@style/ButtonChooserCreateWallet"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/divider_toolbar">
 
-        <android.support.design.widget.TextInputEditText
+        <TextView
+            android:id="@+id/text_name_title"
+            style="@style/TitleChooserCreateWallet"
+            android:text="@string/wallet_name" />
+
+        <EditText
             android:id="@+id/edit_name"
+            style="@style/TextChooserCreateWallet"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="#00000000"
-            android:fontFamily="@font/montserrat"
-            android:hint="@string/wallet_name"
+            android:layout_below="@id/text_name_title"
+            android:background="@null"
             android:inputType="textCapSentences"
             android:lines="@integer/one"
             android:maxLength="25"
             android:maxLines="1"
-            android:textColor="#363636"
-            android:textColorHint="#87a1c5"
-            android:textSize="14sp"
-            android:textStyle="bold" />
-    </android.support.design.widget.TextInputLayout>
+            tools:text="Some wallet name" />
+    </RelativeLayout>
 
     <View
         android:id="@+id/divider_name"
@@ -104,7 +101,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layout_name" />
+        app:layout_constraintTop_toBottomOf="@+id/name_container" />
 
     <RelativeLayout
         android:id="@+id/button_chain"
