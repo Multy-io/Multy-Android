@@ -218,9 +218,6 @@ public class TransactionFeeFragment extends BaseFragment implements MyFeeAdapter
         Fee selectedFee = ((MyFeeAdapter) recyclerView.getAdapter()).getSelectedFee();
 
         if (selectedFee != null) {
-            if (selectedFee.getAmount() < 2) {
-                selectedFee.setAmount(2);
-            }
             viewModel.setFee(selectedFee);
 
             if (switcher.isChecked()) {

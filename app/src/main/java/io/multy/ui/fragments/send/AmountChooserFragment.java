@@ -163,11 +163,6 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
     }
 
     private void initSpendable() {
-        long feePerByte = viewModel.getFee().getAmount();
-        if (feePerByte < 2) {
-            viewModel.getFee().setAmount(2);
-        }
-
         spendableSatoshi = 0;
 
         for (WalletAddress walletAddress : viewModel.getWallet().getBtcWallet().getAddresses()) {
