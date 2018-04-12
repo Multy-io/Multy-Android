@@ -17,7 +17,7 @@ public class Constants {
 
     public static final String BASE_URL = "https://stage.multy.io/";
 
-    public static final String DONATION_ADDRESS = "mzqiDnETWkunRDZxjUQ34JzN1LDevh5DpU";
+    public static final int DONATION_MIN_VALUE = 10000;
     public static final String DONATION_ADDRESS_TESTNET = "mnUtMQcs3s8kSkSRXpREVtJamgUCWpcFj4";
 
     public static final int ANDROID_OS_ID = 1;

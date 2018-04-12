@@ -43,11 +43,10 @@ public class DonationActivity extends BaseActivity {
         RealmResults<Wallet> wallets = RealmManager.getAssetsDao().getWallets();
 
         for (Wallet wallet : wallets) {
-            if (wallet.isPayable() && wallet.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue() &&
-                    wallet.getNetworkId() == NativeDataHelper.NetworkId.MAIN_NET.getValue()) {
-                context.startActivity(new Intent(context, DonationActivity.class)
-                        .putExtra(Constants.EXTRA_WALLET_ID, wallet.getId())
-                        .putExtra(Constants.EXTRA_DONATION_CODE, donationCode));
+            if (wallet.isPayable() && wallet.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()
+                    && wallet.getNetworkId() == NativeDataHelper.NetworkId.MAIN_NET.getValue()
+                    && wallet.getAvailableBalanceNumeric().longValue() >= Constants.DONATION_MIN_VALUE) {
+                context.startActivity(new Intent(context, DonationActivity.class).putExtra(Constants.EXTRA_WALLET_ID, wallet.getId()).putExtra(Constants.EXTRA_DONATION_CODE, donationCode));
                 return;
             }
         }
