@@ -235,14 +235,26 @@
         </android.support.constraint.ConstraintLayout>
 
         <View
+            android:id="@+id/view_left"
             android:layout_width="@dimen/dp0"
             android:layout_height="@dimen/divider_height_small"
-            android:layout_marginEnd="@dimen/activity_horizontal_margin"
-            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="@dimen/margin_4dp"
             android:background="@color/text_grey_transparent_50"
             app:layout_constraintBottom_toBottomOf="@+id/text_send_via"
             app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/text_send_via"
+            app:layout_constraintTop_toTopOf="@+id/text_send_via" />
+
+        <View
+            android:id="@+id/view_right"
+            android:layout_width="@dimen/dp0"
+            android:layout_height="@dimen/divider_height_small"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="@dimen/margin_4dp"
+            android:background="@color/text_grey_transparent_50"
+            app:layout_constraintBottom_toBottomOf="@+id/text_send_via"
+            app:layout_constraintLeft_toRightOf="@id/text_send_via"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="@+id/text_send_via" />
 
@@ -251,7 +263,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_30dp"
-            android:background="@color/background_main"
             android:paddingEnd="@dimen/activity_horizontal_margin"
             android:paddingStart="@dimen/activity_horizontal_margin"
             android:text="@string/share"
