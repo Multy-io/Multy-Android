@@ -79,7 +79,7 @@ public class AddressesFragment extends BaseFragment {
     @Override
     public void onStart() {
         super.onStart();
-        if (getArguments().getInt(Constants.EXTRA_WALLET_ID) != -1) {
+        if (getArguments().getLong(Constants.EXTRA_WALLET_ID) != -1) {
             Wallet wallet = RealmManager.getAssetsDao().getWalletById(getArguments().getLong(Constants.EXTRA_WALLET_ID, -1));
             textViewTitle.setText(wallet.getWalletName());
             recyclerView.setAdapter(new AddressesAdapter(wallet.getBtcWallet().getAddresses()));
