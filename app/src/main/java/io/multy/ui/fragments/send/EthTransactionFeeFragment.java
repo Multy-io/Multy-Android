@@ -173,9 +173,6 @@ public class EthTransactionFeeFragment extends BaseFragment
         Fee selectedFee = ((MyFeeAdapter) recyclerView.getAdapter()).getSelectedFee();
 
         if (selectedFee != null) {
-            if (selectedFee.getAmount() < 2) {
-                selectedFee.setAmount(2);
-            }
             viewModel.setFee(selectedFee);
             ((AssetSendActivity) getActivity()).setFragment(R.string.send_amount, R.id.container, AmountChooserFragment.newInstance());
 
