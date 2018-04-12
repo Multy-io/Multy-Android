@@ -274,7 +274,7 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         textAvailableFiat.setText(wallet.getAvailableFiatBalanceLabel());
         textBalanceFiat.setText(wallet.getFiatBalanceLabel());
 
-        textBalanceOriginal.setText(wallet.getBalanceLabel());
+        textBalanceOriginal.setText(wallet.getBalanceLabelTrimmed());
         textAvailableValue.setText(wallet.getAvailableBalanceLabel());
     }
 

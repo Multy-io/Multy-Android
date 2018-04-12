@@ -92,11 +92,30 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
         return new ArrayList<>();
     }
 
+    /**
+     *
+     * @return String "10 BTC"
+     */
     @Override
     public String getBalanceLabel() {
         switch (NativeDataHelper.Blockchain.valueOf(currencyId)) {
             case BTC:
                 return NumberFormatter.getInstance().format(getBtcDoubleValue()) + " BTC";
+            case ETH:
+                return convertBalance(EthWallet.DIVISOR) + " ETH";
+            default:
+                return "unsupported";
+        }
+    }
+
+    /**
+     *
+     * @return String "10"
+     */
+    public String getBalanceLabelTrimmed() {
+        switch (NativeDataHelper.Blockchain.valueOf(currencyId)) {
+            case BTC:
+                return NumberFormatter.getInstance().format(getBtcDoubleValue());
             case ETH:
                 return convertBalance(EthWallet.DIVISOR) + " ETH";
             default:
