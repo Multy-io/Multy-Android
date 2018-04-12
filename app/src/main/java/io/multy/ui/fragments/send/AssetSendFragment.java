@@ -24,6 +24,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
+import io.multy.model.entities.wallet.RecentAddress;
 import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetSendActivity;
 import io.multy.ui.adapters.RecentAddressesAdapter;
@@ -34,6 +35,7 @@ import io.multy.util.NativeDataHelper;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.AssetSendViewModel;
+import io.realm.RealmResults;
 
 public class AssetSendFragment extends BaseFragment {
 
@@ -72,7 +74,15 @@ public class AssetSendFragment extends BaseFragment {
     private void initRecentAddresses() {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter(new RecentAddressesAdapter(RealmManager.getAssetsDao().getRecentAddresses(), address -> inputAddress.setText(address)));
+        RealmResults<RecentAddress> recentAddresses;
+        if (getActivity() != null && getActivity().getIntent().hasCategory(Constants.EXTRA_SENDER_ADDRESS)
+                && viewModel.getWallet() != null) {
+            recentAddresses = RealmManager.getAssetsDao()
+                    .getRecentAddresses(viewModel.getWallet().getCurrencyId(), viewModel.getWallet().getNetworkId());
+        } else {
+            recentAddresses = RealmManager.getAssetsDao().getRecentAddresses();
+        }
+        recyclerView.setAdapter(new RecentAddressesAdapter(recentAddresses, address -> inputAddress.setText(address)));
     }
 
     @Override

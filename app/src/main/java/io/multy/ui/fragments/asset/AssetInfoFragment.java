@@ -202,13 +202,13 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
 
     private void initialize() {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(transactionsAdapter);
         if (transactionsAdapter.getItemCount() == 0) {
             swipeRefreshLayout.setEnabled(false);
             recyclerView.setAdapter(new EmptyTransactionsAdapter());
             groupEmptyState.setVisibility(View.VISIBLE);
             setToolbarScrollFlag(0);
         } else {
+            recyclerView.setAdapter(transactionsAdapter);
             swipeRefreshLayout.setEnabled(true);
             groupEmptyState.setVisibility(View.GONE);
             setToolbarScrollFlag(3);
@@ -292,6 +292,7 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
                 try {
                     transactionsAdapter.setTransactions(transactions);
                     recyclerView.setAdapter(new AssetTransactionsAdapter(transactions, viewModel.wallet.getValue().getId()));
+                    groupEmptyState.setVisibility(View.GONE);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

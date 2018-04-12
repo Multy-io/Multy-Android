@@ -125,4 +125,9 @@ public class AssetsDao {
     public RealmResults<RecentAddress> getRecentAddresses() {
         return realm.where(RecentAddress.class).findAll();
     }
+
+    public RealmResults<RecentAddress> getRecentAddresses(int currencyId, int networkId) {
+        return realm.where(RecentAddress.class).equalTo(RecentAddress.CURRENCY_ID, currencyId)
+                .equalTo(RecentAddress.NETWORK_ID, networkId).findAll();
+    }
 }
