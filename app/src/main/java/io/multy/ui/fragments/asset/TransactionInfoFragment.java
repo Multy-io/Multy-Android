@@ -151,6 +151,8 @@ public class TransactionInfoFragment extends BaseFragment {
     private void loadData() {
         viewModel.getWalletLive().observe(this, wallet -> {
             if (wallet != null) {
+                imageCoinLogo.setImageResource(wallet.getNetworkId() == NativeDataHelper.NetworkId.MAIN_NET.getValue() ?
+                        R.drawable.ic_btc_huge : R.drawable.ic_chain_btc_test);
                 toolbarWalletName.setText(wallet.getWalletName());
                 for (WalletAddress address : wallet.getBtcWallet().getAddresses()) {
                     if (!walletAddresses.contains(address.getAddress())) {

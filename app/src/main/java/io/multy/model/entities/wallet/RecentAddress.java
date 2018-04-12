@@ -10,6 +10,10 @@ import io.realm.RealmObject;
 
 public class RecentAddress extends RealmObject {
 
+    public static final String CURRENCY_ID = "currencyId";
+    public static final String ADDRESS = "address";
+    public static final String NETWORK_ID = "networkId";
+
     private int currencyId;
     private String address;
     private int networkId;

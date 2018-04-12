@@ -227,7 +227,7 @@
                 app:layout_constraintEnd_toEndOf="@+id/card_background"
                 app:layout_constraintStart_toStartOf="@+id/card_background"
                 app:layout_constraintTop_toTopOf="@+id/arrow"
-                app:srcCompat="@drawable/ic_btk_logo" />
+                tools:srcCompat="@drawable/ic_chain_btc_test" />
 
             <TextView
                 android:id="@+id/text_wallet_name"
