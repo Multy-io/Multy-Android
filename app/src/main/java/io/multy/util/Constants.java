@@ -8,7 +8,7 @@ package io.multy.util;
 
 import android.os.Build;
 
-public class Constants {
+public final class Constants {
 
     public static final String DEVICE_NAME = "Andrdoid " + Build.MANUFACTURER
             + " " + android.os.Build.MODEL + " (" + android.os.Build.PRODUCT + ")"

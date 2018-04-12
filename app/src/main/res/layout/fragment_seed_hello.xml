@@ -35,30 +35,20 @@
         android:textSize="18sp"
         app:layout_constraintTop_toBottomOf="@id/text_control_phrase" />
 
-    <ImageView
-        android:id="@+id/image_screenshot"
-        style="@style/SeedTimeImage"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
+    <android.support.v7.widget.CardView
+        android:id="@+id/image_camera_background"
+        android:layout_width="62dp"
+        android:layout_height="62dp"
+        android:layout_marginBottom="14dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginStart="12dp"
         android:layout_marginTop="8dp"
-        android:src="@drawable/ic_screenshot"
-        app:layout_constraintBottom_toBottomOf="@+id/text_screenshot"
-        app:layout_constraintEnd_toStartOf="@+id/text_screenshot"
+        app:cardCornerRadius="31dp"
+        app:cardElevation="6dp"
+        app:layout_constraintBottom_toBottomOf="@+id/text_camera"
+        app:layout_constraintEnd_toStartOf="@+id/text_camera"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/text_screenshot" />
-
-    <TextView
-        android:id="@+id/text_screenshot"
-        style="@style/SeedTipText"
-        android:layout_width="250dp"
-        android:layout_height="64dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/seed_tip_screenshot"
-        app:layout_constraintBottom_toTopOf="@+id/text_camera"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_secure"
-        app:layout_constraintVertical_chainStyle="packed" />
+        app:layout_constraintTop_toTopOf="@+id/text_camera" />
 
     <ImageView
         android:id="@+id/image_camera"
@@ -67,21 +57,78 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:src="@drawable/ic_spy_cam"
+        android:elevation="6dp"
         app:layout_constraintBottom_toBottomOf="@+id/text_camera"
         app:layout_constraintEnd_toStartOf="@+id/text_camera"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/text_camera" />
+        app:layout_constraintTop_toTopOf="@+id/text_camera"
+        app:srcCompat="@drawable/ic_spy_cam" />
 
     <TextView
         android:id="@+id/text_camera"
         style="@style/SeedTipText"
         android:layout_width="250dp"
         android:layout_height="64dp"
+        android:layout_marginTop="8dp"
         android:text="@string/seed_tip_camera"
+        app:layout_constraintBottom_toTopOf="@+id/text_screenshot"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_secure" />
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/image_screenshot_background"
+        android:layout_width="62dp"
+        android:layout_height="62dp"
+        android:layout_marginBottom="14dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="8dp"
+        app:cardCornerRadius="31dp"
+        app:cardElevation="6dp"
+        app:layout_constraintBottom_toBottomOf="@+id/text_screenshot"
+        app:layout_constraintEnd_toStartOf="@+id/text_screenshot"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/text_screenshot" />
+
+    <ImageView
+        android:id="@+id/image_screenshot"
+        style="@style/SeedTimeImage"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:adjustViewBounds="true"
+        android:elevation="6dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="@+id/text_screenshot"
+        app:layout_constraintEnd_toStartOf="@+id/text_screenshot"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/text_screenshot"
+        app:srcCompat="@drawable/ic_snap_shot" />
+
+    <TextView
+        android:id="@+id/text_screenshot"
+        style="@style/SeedTipText"
+        android:layout_width="250dp"
+        android:layout_height="64dp"
+        android:text="@string/seed_tip_screenshot"
         app:layout_constraintBottom_toTopOf="@+id/text_spy"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_screenshot" />
+        app:layout_constraintTop_toBottomOf="@+id/text_camera"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/image_spy_background"
+        android:layout_width="62dp"
+        android:layout_height="62dp"
+        android:layout_marginBottom="14dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="8dp"
+        app:cardCornerRadius="31dp"
+        app:cardElevation="6dp"
+        app:layout_constraintBottom_toBottomOf="@+id/text_spy"
+        app:layout_constraintEnd_toStartOf="@+id/text_spy"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/text_spy" />
 
     <ImageView
         android:id="@+id/image_spy"
@@ -90,11 +137,12 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:src="@drawable/ic_spy"
+        android:elevation="6dp"
         app:layout_constraintBottom_toBottomOf="@+id/text_spy"
         app:layout_constraintEnd_toStartOf="@+id/text_spy"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/text_spy" />
+        app:layout_constraintTop_toTopOf="@+id/text_spy"
+        app:srcCompat="@drawable/ic_spy" />
 
     <TextView
         android:id="@+id/text_spy"
@@ -104,7 +152,7 @@
         android:text="@string/seed_tip_spy"
         app:layout_constraintBottom_toTopOf="@+id/container_next"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_camera" />
+        app:layout_constraintTop_toBottomOf="@+id/text_screenshot" />
 
     <include
         android:id="@+id/container_next"
