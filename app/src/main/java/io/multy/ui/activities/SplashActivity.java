@@ -56,10 +56,15 @@ public class SplashActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         if (FirstLaunchHelper.preventRootIfDetected(this) && !BuildConfig.DEBUG) {
-            RealmManager.clear();
-            Prefs.clear();
+            try {
+                Prefs.clear();
+                RealmManager.clear();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             return;
         }
+
         logPushClicked();
 
         Animation emergency = AnimationUtils.loadAnimation(this, R.anim.splash_emergency);
@@ -99,7 +104,7 @@ public class SplashActivity extends AppCompatActivity {
                             //leave this clause for future possible purposes
 //                            showUpdateDialog();
                             showMainActivity();
-                        } else if (versionCode < androidConfig.getHardVersion()) {
+                        } else if (6 < androidConfig.getHardVersion()) {
                             showUpdateDialog();
                         } else {
                             showMainActivity();
@@ -162,7 +167,7 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void showUpdateDialog() {
-        SimpleDialogFragment.newInstanceNegative(R.string.error, R.string.please_update, view -> {
+        SimpleDialogFragment.newInstanceNegative("New version is coming.", "Please, uninstall Multy before using new version.", view -> {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + getPackageName())));
             finish();
         }).show(getSupportFragmentManager(), "");
