@@ -167,7 +167,7 @@
     <string name="show_all_addresses">Show All Addresses</string>
     <string name="operations_empty">You don\'t have\nany transactions</string>
     <string name="operations_create">Tap the button\nto create funds\nrequest</string>
-    <string name="please_update">Please update your version</string>
+    <string name="please_update">Please, delete your current version and install new one.</string>
     <string name="error_config_error">Unable to get config</string>
     <string name="no_internet_connection">No internet connection</string>
     <string name="no_internet_connection_message">Unfortunately you are not conencted\nto the network now. Multy needs\nconstant connection to provide it’s\nwork correctly</string>
