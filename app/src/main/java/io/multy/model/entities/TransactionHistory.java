@@ -25,7 +25,7 @@ public class TransactionHistory {
     @SerializedName("txstatus")
     private int txStatus;
     @SerializedName("txoutamount")
-    private double txOutAmount;
+    private long txOutAmount;
     @SerializedName("txoutid")
     private int txOutId;
     @SerializedName("walletindex")
@@ -72,7 +72,7 @@ public class TransactionHistory {
         return txStatus;
     }
 
-    public double getTxOutAmount() {
+    public long getTxOutAmount() {
         return txOutAmount;
     }
 

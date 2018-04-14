@@ -49,7 +49,10 @@ public class RealmManager {
         if (realm == null || realm.isClosed()) {
             open();
         }
-        realm.executeTransaction(realm -> realm.deleteAll());
+
+        if (realm != null) {
+            realm.executeTransaction(realm -> realm.deleteAll());
+        }
     }
 
     private static void isRealmAvailable() {

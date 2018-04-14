@@ -29,6 +29,7 @@ import io.multy.model.entities.TransactionHistory;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.storage.RealmManager;
 import io.multy.ui.activities.BaseActivity;
+import io.multy.ui.adapters.AssetTransactionsAdapter;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.WebFragment;
 import io.multy.util.Constants;
@@ -193,16 +194,16 @@ public class TransactionInfoFragment extends BaseFragment {
         } else {
             textValue.setText("-");
             textAmount.setText("-");
-            double outValue = 0;
-            List<WalletAddress> outputs = transaction.getOutputs();
-            for (WalletAddress output : outputs) {
-                if (!walletAddresses.contains(output.getAddress())) {
-                    outValue += output.getAmount();
-                    if (isDonationAddress(output.getAddress())) {
-                        initializeDonationBlock(output, exchangeRate);
-                    }
-                }
-            }
+            long outValue = AssetTransactionsAdapter.getOutСomingAmount(transaction, walletAddresses);
+//            List<WalletAddress> outputs = transaction.getOutputs();
+//            for (WalletAddress output : outputs) {
+//                if (!walletAddresses.contains(output.getAddress())) {
+//                    outValue += output.getAmount();
+//                    if (isDonationAddress(output.getAddress())) {
+//                        initializeDonationBlock(output, exchangeRate); //TODO need to know if address is donate not only for testnet
+//                    }
+//                }
+//            }
             textValue.append(CryptoFormatUtils.satoshiToBtc(outValue));
             textAmount.append(CryptoFormatUtils.satoshiToUsd(outValue, exchangeRate));
         }
