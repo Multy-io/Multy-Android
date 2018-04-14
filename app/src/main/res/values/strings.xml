@@ -257,5 +257,9 @@
     <string name="gas_limit">GAS Limit</string>
     <string name="percent_0">0%</string>
     <string name="crypto_portfolio">Crypto portfolio</string>
+    <string name="terms_of_service">Terms of service</string>
+    <string name="agreement_read">I have read the terms of the license agreement and agree to the processing of my personal data</string>
+    <string name="discard">Discard</string>
+    <string name="accept">Accept</string>
 
 </resources>

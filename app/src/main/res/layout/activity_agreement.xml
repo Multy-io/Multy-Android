@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2018 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_main">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="@string/terms_of_service"
+        android:textColor="@color/black"
+        android:textSize="18sp" />
+
+    <View
+        android:id="@+id/divider_title"
+        style="@style/DividerAgreement"
+        app:layout_constraintTop_toBottomOf="@id/title" />
+
+    <WebView
+        android:id="@+id/web_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/white"
+        app:layout_constraintBottom_toTopOf="@id/divider_footer"
+        app:layout_constraintTop_toBottomOf="@id/divider_title" />
+
+    <View
+        android:id="@+id/divider_footer"
+        style="@style/DividerAgreement"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@id/text_read" />
+
+    <TextView
+        android:id="@+id/text_read"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="@string/agreement_read"
+        android:textColor="@color/blue_light"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@id/divider_bottom" />
+
+    <View
+        android:id="@+id/divider_bottom"
+        style="@style/DividerAgreement"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintBottom_toTopOf="@id/button_discard" />
+
+    <Button
+        android:id="@+id/button_discard"
+        style="@style/AgreementButton"
+        android:text="@string/discard"
+        android:textColor="@color/blue_light"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <Button
+        android:id="@+id/button_accept"
+        style="@style/AgreementButton"
+        android:text="@string/accept"
+        android:textColor="@color/colorPrimaryDark"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/button_discard" />
+
+</android.support.constraint.ConstraintLayout>

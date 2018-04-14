@@ -62,6 +62,9 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".ui.activities.AgreementActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".ui.activities.AssetActivity"
             android:screenOrientation="portrait" />
         <activity
@@ -97,9 +100,9 @@
             android:name=".ui.activities.ScanActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:windowSoftInputMode="adjustResize"
             android:name=".ui.activities.DonationActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
 
         <!-- Branch install referrer tracking -->
         <receiver

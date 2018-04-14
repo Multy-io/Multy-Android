@@ -16,7 +16,7 @@ public class CryptoFormatUtils {
     private final static DecimalFormat formatBtc = new DecimalFormat("#.##################");
     private final static DecimalFormat formatUsd = new DecimalFormat("#.##");
 
-    public static String satoshiToBtc(double satoshi) {
+    public static String satoshiToBtc(long satoshi) {
         if (satoshi == 0) {
             return "0.0";
         }
@@ -27,7 +27,7 @@ public class CryptoFormatUtils {
         return result;
     }
 
-    public static String satoshiToUsd(double satoshi) {
+    public static String satoshiToUsd(long satoshi) {
         if (satoshi == 0) {
             return "0.0";
         }
@@ -52,7 +52,7 @@ public class CryptoFormatUtils {
      * @param price   usd per btc
      * @return amount in usd
      */
-    public static String satoshiToUsd(double satoshi, double price) {
+    public static String satoshiToUsd(long satoshi, double price) {
         if (satoshi == 0) {
             return "0.0";
         }
@@ -63,6 +63,19 @@ public class CryptoFormatUtils {
         }
 
         double btc = (satoshi / Math.pow(10, 8));
+        return formatUsd.format(btc * price);
+    }
+
+    public static String btcToUsd(double btc, double price) {
+        if (btc == 0) {
+            return "0.0";
+        }
+
+        final CurrenciesRate currenciesRate = RealmManager.getSettingsDao().getCurrenciesRate();
+        if (currenciesRate == null) {
+            return "";
+        }
+
         return formatUsd.format(btc * price);
     }
 
