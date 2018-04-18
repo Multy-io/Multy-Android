@@ -137,6 +137,11 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         swipeRefreshLayout.setRefreshing(false);
         viewModel.isLoading.postValue(true);
 
+        if (!viewModel.getWalletLive().getValue().isValid()) {
+            Wallet wallet = viewModel.getWallet(getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0));
+            viewModel.getWalletLive().setValue(wallet);
+        }
+
         final int walletIndex = viewModel.getWalletLive().getValue().getIndex();
         final int currencyId = viewModel.getWalletLive().getValue().getCurrencyId();
         final int networkId = viewModel.getWalletLive().getValue().getNetworkId();
