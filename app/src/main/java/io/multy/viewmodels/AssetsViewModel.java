@@ -18,7 +18,6 @@ import java.util.List;
 import io.multy.api.socket.CurrenciesRate;
 import io.multy.api.socket.SocketManager;
 import io.multy.api.socket.TransactionUpdateEntity;
-import io.multy.model.DataManager;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.storage.RealmManager;
 import io.multy.util.Constants;

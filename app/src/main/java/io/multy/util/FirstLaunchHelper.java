@@ -15,12 +15,12 @@ import com.samwolfand.oneprefs.Prefs;
 import com.scottyab.rootbeer.RootBeer;
 
 import io.multy.R;
-import io.multy.model.DataManager;
 import io.multy.model.entities.ByteSeed;
 import io.multy.model.entities.DeviceId;
 import io.multy.model.entities.Mnemonic;
 import io.multy.model.entities.UserId;
-import io.multy.storage.DatabaseHelper;
+import io.multy.storage.RealmManager;
+import io.multy.storage.SettingsDao;
 import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
 
 public class FirstLaunchHelper {
@@ -64,17 +64,16 @@ public class FirstLaunchHelper {
         final String userId = NativeDataHelper.makeAccountId(seed);
         final String deviceId = Settings.Secure.ANDROID_ID;
 
-        DataManager dataManager = DataManager.getInstance();
-        dataManager.saveSeed(new ByteSeed(seed));
-        dataManager.saveUserId(new UserId(userId));
+        SettingsDao settingsDao = RealmManager.getSettingsDao();
+        settingsDao.saveSeed(new ByteSeed(seed));
+        settingsDao.saveUserId(new UserId(userId));
         if (!TextUtils.isEmpty(mnemonic)) {
-            dataManager.setMnemonic(new Mnemonic(mnemonic));
+            settingsDao.setMnemonic(new Mnemonic(mnemonic));
         }
-        dataManager.setDeviceId(new DeviceId(deviceId));
+        settingsDao.setDeviceId(new DeviceId(deviceId));
     }
 
     public static void closeApp(Activity activity) {
-        new DatabaseHelper(activity).clear();
         Prefs.clear();
         activity.finish();
         System.exit(0);
