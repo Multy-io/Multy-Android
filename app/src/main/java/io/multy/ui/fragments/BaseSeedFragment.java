@@ -94,11 +94,12 @@ public class BaseSeedFragment extends BaseFragment {
 
     protected void redrawOne(boolean isPending) {
         BrickView brickView = (BrickView) layoutManager.getChildAt(redrawPosition);
-
-        if (isPending) {
-            brickView.makePending();
-        } else {
-            brickView.makeFull();
+        if (brickView != null && brickView.isAttachedToWindow()) {
+            if (isPending) {
+                brickView.makePending();
+            } else {
+                brickView.makeFull();
+            }
         }
         redrawPosition++;
 
