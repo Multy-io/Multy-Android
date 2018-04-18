@@ -27,6 +27,13 @@ public class CryptoFormatUtils {
         return result;
     }
 
+    public static double satoshiToBtcDouble(long satoshi) {
+        if (satoshi == 0) {
+            return 0.0;
+        }
+        return satoshi / Math.pow(10, 8);
+    }
+
     public static String satoshiToUsd(long satoshi) {
         if (satoshi == 0) {
             return "0.0";
