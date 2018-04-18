@@ -182,7 +182,7 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
             }
 
             amount = "" + CryptoFormatUtils.satoshiToBtc(outSatoshi);
-            amountFiat = getFiatAmount(transactionHistory, Double.parseDouble(CryptoFormatUtils.satoshiToBtc(outSatoshi)));
+            amountFiat = getFiatAmount(transactionHistory, CryptoFormatUtils.satoshiToBtcDouble(outSatoshi));
             setAddress(addressTo.getAddress(), holder.containerAddresses);
         }
 
@@ -243,7 +243,7 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
         if (isIncoming) {
             setAddresses(transactionHistory.getInputs(), holder.containerAddresses);
             holder.amount.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(transactionHistory.getTxOutAmount())));
-            String stockFiat = getFiatAmount(transactionHistory, transactionHistory.getTxOutAmount());
+            String stockFiat = getFiatAmount(transactionHistory, CryptoFormatUtils.satoshiToBtcDouble(transactionHistory.getTxOutAmount()));
             holder.fiat.setText(stockFiat.equals("") ? "" : String.format("%s USD", stockFiat));
         } else {
             List<WalletAddress> outputs = transactionHistory.getOutputs();
@@ -252,7 +252,7 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
 
             setAddress(addressTo.getAddress(), holder.containerAddresses);
             holder.amount.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(outSatoshi)));
-            holder.fiat.setText(String.format("%s USD", getFiatAmount(transactionHistory, Double.parseDouble(CryptoFormatUtils.satoshiToBtc(outSatoshi)))));
+            holder.fiat.setText(String.format("%s USD", getFiatAmount(transactionHistory, CryptoFormatUtils.satoshiToBtcDouble(outSatoshi))));
         }
 
         setItemClickListener(holder.itemView, isIncoming, position);
