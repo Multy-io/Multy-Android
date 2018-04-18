@@ -151,7 +151,7 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
             lockedAmount = CryptoFormatUtils.satoshiToBtc(transactionHistory.getTxOutAmount());
             lockedFiat = CryptoFormatUtils.satoshiToUsd(transactionHistory.getTxOutAmount());
             amount = lockedAmount;
-            amountFiat = getFiatAmount(transactionHistory, transactionHistory.getTxOutAmount());
+            amountFiat = getFiatAmount(transactionHistory, CryptoFormatUtils.satoshiToBtcDouble(transactionHistory.getTxOutAmount()));
             setAddresses(transactionHistory.getInputs(), holder.containerAddresses);
 
             holder.amountLocked.setText(String.format("%s BTC", lockedAmount));
@@ -226,7 +226,7 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
         holder.imageDirection.setImageResource(isIncoming ? R.drawable.ic_receive_gray : R.drawable.ic_send_gray);
         holder.textRejectedDirection.setText(isIncoming ? R.string.rejected_receive : R.string.rejected_send);
         holder.amount.setText(CryptoFormatUtils.satoshiToBtc(transactionHistory.getTxOutAmount()));
-        holder.fiat.setText(getFiatAmount(transactionHistory, transactionHistory.getTxOutAmount()));
+        holder.fiat.setText(getFiatAmount(transactionHistory, CryptoFormatUtils.satoshiToBtcDouble(transactionHistory.getTxOutAmount())));
 
         setItemClickListener(holder.itemView, isIncoming, position);
     }
