@@ -31,7 +31,13 @@ public class RealmManager {
 
     public static void close() {
         if (realm != null && realm.isClosed()) {
-            realm.close();
+            try {
+                realm.close();
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+                open();
+                realm.close();
+            }
         }
     }
 

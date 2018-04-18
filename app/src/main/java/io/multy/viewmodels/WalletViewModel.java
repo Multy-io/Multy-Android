@@ -110,8 +110,8 @@ public class WalletViewModel extends BaseViewModel {
         try {
             if (!Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
                 Multy.makeInitialized();
-                FirstLaunchHelper.setCredentials("");
                 RealmManager.open();
+                FirstLaunchHelper.setCredentials("");
                 saveDonateAddresses();
             }
 
