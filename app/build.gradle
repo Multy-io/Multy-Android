@@ -81,11 +81,15 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            manifestPlaceholders = [crashlyticsEnabled: true, analyticsDeactivated: false]
         }
         externalNativeBuild {
             cmake {
                 path "C:\\workspace\\Multy-Core\\CMakeLists.txt"
             }
+        }
+        debug {
+            manifestPlaceholders = [crashlyticsEnabled: false, analyticsDeactivated: true]
         }
     }
     compileOptions {
