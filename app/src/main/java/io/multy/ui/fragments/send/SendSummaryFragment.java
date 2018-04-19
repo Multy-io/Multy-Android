@@ -192,7 +192,10 @@ public class SendSummaryFragment extends BaseFragment {
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     if (response.isSuccessful()) {
                         viewModel.isLoading.postValue(false);
-                        RealmManager.getAssetsDao().saveRecentAddress(new RecentAddress(viewModel.getWallet().getCurrencyId(), viewModel.getWallet().getNetworkId(), addressTo));
+                        long uniqueId = RecentAddress.stringToId(addressTo);
+                        if (!RealmManager.getAssetsDao().ifAddressExist(uniqueId)) {
+                            RealmManager.getAssetsDao().saveRecentAddress(new RecentAddress(viewModel.getWallet().getCurrencyId(), viewModel.getWallet().getNetworkId(), addressTo, uniqueId));
+                        }
                         CompleteDialogFragment.newInstance(viewModel.getChainId()).show(getActivity().getSupportFragmentManager(), TAG_SEND_SUCCESS);
                     } else {
                         Analytics.getInstance(getActivity()).logError(AnalyticsConstants.ERROR_TRANSACTION_API);
@@ -211,6 +214,8 @@ public class SendSummaryFragment extends BaseFragment {
             showError();
         }
     }
+
+
 
     private void setInfo() {
         CurrenciesRate currenciesRate = RealmManager.getSettingsDao().getCurrenciesRate();
