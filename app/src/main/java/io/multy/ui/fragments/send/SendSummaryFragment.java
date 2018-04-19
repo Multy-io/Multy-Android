@@ -45,7 +45,6 @@ import io.multy.util.NumberFormatter;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.AssetSendViewModel;
-import io.realm.RealmQuery;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -193,8 +192,8 @@ public class SendSummaryFragment extends BaseFragment {
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     if (response.isSuccessful()) {
                         viewModel.isLoading.postValue(false);
-                        long uniqueId = RecentAddress.convertStringToUniqueId(addressTo);
-                        if (!RealmManager.getAssetsDao().checkIfSendAdressAlreadyExist(uniqueId)) {
+                        long uniqueId = RecentAddress.stringToId(addressTo);
+                        if (!RealmManager.getAssetsDao().ifAddressExist(uniqueId)) {
                             RealmManager.getAssetsDao().saveRecentAddress(new RecentAddress(viewModel.getWallet().getCurrencyId(), viewModel.getWallet().getNetworkId(), addressTo, uniqueId));
                         }
                         CompleteDialogFragment.newInstance(viewModel.getChainId()).show(getActivity().getSupportFragmentManager(), TAG_SEND_SUCCESS);

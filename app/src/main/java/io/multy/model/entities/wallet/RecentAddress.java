@@ -70,7 +70,7 @@ public class RecentAddress extends RealmObject {
         this.address = address;
     }
 
-    public static long convertStringToUniqueId(String inputString) {
+    public static long stringToId(String inputString) {
         StringBuilder id = new StringBuilder();
         for (int i = 0; i < inputString.length() / 6; i++) {
             id.append(String.valueOf(inputString.codePointAt(i)));

@@ -132,7 +132,7 @@ public class AssetsDao {
                 .equalTo(RecentAddress.NETWORK_ID, networkId).findAll();
     }
 
-    public boolean checkIfSendAdressAlreadyExist(long addressTo) {
+    public boolean ifAddressExist(long addressTo) {
         RealmQuery<RecentAddress> query = realm.where(RecentAddress.class).equalTo(RecentAddress.RECENT_ADDRESS_ID, addressTo);
         return query.count() != 0;
     }
