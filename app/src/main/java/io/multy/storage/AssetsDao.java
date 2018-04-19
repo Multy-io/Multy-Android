@@ -16,6 +16,7 @@ import io.multy.util.NativeDataHelper;
 import io.reactivex.annotations.NonNull;
 import io.realm.Realm;
 import io.realm.RealmObject;
+import io.realm.RealmQuery;
 import io.realm.RealmResults;
 
 public class AssetsDao {
@@ -129,5 +130,10 @@ public class AssetsDao {
     public RealmResults<RecentAddress> getRecentAddresses(int currencyId, int networkId) {
         return realm.where(RecentAddress.class).equalTo(RecentAddress.CURRENCY_ID, currencyId)
                 .equalTo(RecentAddress.NETWORK_ID, networkId).findAll();
+    }
+
+    public boolean checkIfSendAdressAlreadyExist(long addressTo) {
+        RealmQuery<RecentAddress> query = realm.where(RecentAddress.class).equalTo(RecentAddress.RECENT_ADDRESS_ID, addressTo);
+        return query.count() != 0;
     }
 }

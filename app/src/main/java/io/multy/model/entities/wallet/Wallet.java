@@ -28,7 +28,7 @@ import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class Wallet extends RealmObject implements WalletBalanceInterface {
+public class    Wallet extends RealmObject implements WalletBalanceInterface {
 
     @SerializedName("currencyid")
     private int currencyId; //chain id

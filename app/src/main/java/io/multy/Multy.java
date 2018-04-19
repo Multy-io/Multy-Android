@@ -13,8 +13,6 @@ import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.util.Base64;
 
 import com.samwolfand.oneprefs.Prefs;
@@ -33,8 +31,7 @@ import io.multy.storage.SecurePreferencesHelper;
 import io.multy.ui.activities.SplashActivity;
 import io.multy.util.Constants;
 import io.multy.util.EntropyProvider;
-import io.multy.util.analytics.Analytics;
-import io.multy.util.analytics.AnalyticsConstants;
+import io.multy.util.RealmMigrations;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import timber.log.Timber;
@@ -115,7 +112,8 @@ public class Multy extends Application {
         try {
             return realmConfiguration = new RealmConfiguration.Builder()
                     .encryptionKey(Base64.decode(key, Base64.NO_WRAP))
-                    .schemaVersion(1)
+                    .schemaVersion(2)
+                    .migration(new RealmMigrations())
                     .build();
         } catch (Exception e) {
             e.printStackTrace();
