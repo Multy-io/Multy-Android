@@ -8,11 +8,10 @@ package io.multy.util;
 
 import io.multy.model.entities.wallet.RecentAddress;
 import io.realm.DynamicRealm;
-import io.realm.RealmMigration;
 import io.realm.RealmObjectSchema;
 import io.realm.RealmSchema;
 
-public class RealmMigrations implements io.realm.RealmMigration {
+public class MultyRealmMigration implements io.realm.RealmMigration {
 
     @Override
     public void migrate(DynamicRealm realm, long oldVersion, long newVersion) {
@@ -30,7 +29,7 @@ public class RealmMigrations implements io.realm.RealmMigration {
 
     @Override
     public boolean equals(Object o) {
-        return (o instanceof RealmMigrations);
+        return (o instanceof MultyRealmMigration);
     }
 
 }

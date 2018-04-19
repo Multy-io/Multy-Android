@@ -31,7 +31,7 @@ import io.multy.storage.SecurePreferencesHelper;
 import io.multy.ui.activities.SplashActivity;
 import io.multy.util.Constants;
 import io.multy.util.EntropyProvider;
-import io.multy.util.RealmMigrations;
+import io.multy.util.MultyRealmMigration;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import timber.log.Timber;
@@ -113,7 +113,7 @@ public class Multy extends Application {
             return realmConfiguration = new RealmConfiguration.Builder()
                     .encryptionKey(Base64.decode(key, Base64.NO_WRAP))
                     .schemaVersion(2)
-                    .migration(new RealmMigrations())
+                    .migration(new MultyRealmMigration())
                     .build();
         } catch (Exception e) {
             e.printStackTrace();
