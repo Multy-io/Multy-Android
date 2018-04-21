@@ -27,7 +27,7 @@
         <item>BTC</item>
         <item>BTC</item>
         <!--<item>ETH</item>-->
-        <item>ETH</item>
+        <!--<item>ETH</item>-->
     </string-array>
     <string-array name="available_chain_name">
         <item>Bitcoin</item>
@@ -39,18 +39,18 @@
         <item>@drawable/ic_btk_logo</item>
         <item>@drawable/ic_chain_btc_test</item>
         <!--<item>@drawable/chain_eth</item>-->
-        <item>@drawable/ic_chain_eth_test</item>
+        <!--<item>@drawable/ic_chain_eth_test</item>-->
     </array>
     <integer-array name="available_chain_net_types">
         <item>0</item>
         <item>1</item>
         <!--<item>0</item>-->
-        <item>4</item>
+        <!--<item>4</item>-->
     </integer-array>
     <integer-array name="available_chain_ids">
         <item>0</item>
         <item>0</item>
-        <item>60</item>
+        <!--<item>60</item>-->
         <!--<item>60</item>-->
     </integer-array>
     <string-array name="soon_chain_abbrev">

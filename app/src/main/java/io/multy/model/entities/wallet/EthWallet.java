@@ -59,7 +59,7 @@ public class EthWallet extends RealmObject {
     }
 
     public String calculateAvailableBalance(String balance) {
-        if (balance == null || balance.equals("0")) {
+        if (balance == null) {
             return "0";
         }
 
