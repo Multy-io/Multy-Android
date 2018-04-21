@@ -33,7 +33,7 @@
         <item>Bitcoin</item>
         <item>Bitcoin</item>
         <!--<item>Ethereum</item>-->
-        <item>Ethereum</item>
+        <!--<item>Ethereum</item>-->
     </string-array>
     <array name="available_chain_image_ids">
         <item>@drawable/ic_btk_logo</item>
@@ -54,6 +54,7 @@
         <!--<item>60</item>-->
     </integer-array>
     <string-array name="soon_chain_abbrev">
+        <item>ETH</item>
         <item>LBTC</item>
         <item>GOLOS</item>
         <item>STEEM</item>
@@ -65,6 +66,7 @@
         <item>ERC20</item>
     </string-array>
     <string-array name="soon_chain_name">
+        <item>Ethereum</item>
         <item>Lightning Bitcoin</item>
         <item>Golos</item>
         <item>Steem</item>
@@ -76,6 +78,7 @@
         <item>ERC20 Tokens</item>
     </string-array>
     <array name="soon_chain_image_ids">
+        <item>@drawable/chain_eth</item>
         <item>@drawable/chain_lbtc</item>
         <item>@drawable/chain_golos</item>
         <item>@drawable/chain_steem</item>
@@ -87,6 +90,7 @@
         <item>@drawable/chain_erc_20</item>
     </array>
     <array name="soon_chain_donate_addresses">
+        <item>10101</item>
         <item>10100</item>
         <item>10102</item>
         <item>10103</item>

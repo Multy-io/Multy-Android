@@ -23,6 +23,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.samwolfand.oneprefs.Prefs;
@@ -58,6 +59,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOffsetChangedListener {
 
     public static final String TAG = AssetInfoFragment.class.getSimpleName();
@@ -76,8 +80,6 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     TextView textAddress;
     @BindView(R.id.swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
-    @BindView(R.id.group_empty_state)
-    View groupEmptyState;
     @BindView(R.id.button_warn)
     FloatingActionButton buttonWarn;
     @BindView(R.id.container_available)
@@ -92,6 +94,12 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     View containerInfo;
     @BindView(R.id.card_addresses)
     View containerAddresses;
+    @BindView(R.id.image_arrow)
+    ImageView imageArrow;
+    @BindView(R.id.text_operations_empty)
+    TextView textEmpty;
+    @BindView(R.id.text_operation_create)
+    TextView textCreate;
 
     private WalletViewModel viewModel;
     private final static DecimalFormat format = new DecimalFormat("#.##");
@@ -115,6 +123,7 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         ButterKnife.bind(this, view);
 
         viewModel = ViewModelProviders.of(getActivity()).get(WalletViewModel.class);
+        setTransactionsState();
         setBaseViewModel(viewModel);
         receiver = new SharingBroadcastReceiver();
         viewModel.rates.observe(this, currenciesRate -> updateBalanceViews());
@@ -210,12 +219,12 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         if (transactionsAdapter.getItemCount() == 0) {
             swipeRefreshLayout.setEnabled(false);
             recyclerView.setAdapter(new EmptyTransactionsAdapter());
-            groupEmptyState.setVisibility(View.VISIBLE);
+            recyclerView.setOnTouchListener((v, event) -> true);
             setToolbarScrollFlag(0);
         } else {
             recyclerView.setAdapter(transactionsAdapter);
+            recyclerView.setOnTouchListener((v, event) -> false);
             swipeRefreshLayout.setEnabled(true);
-            groupEmptyState.setVisibility(View.GONE);
             setToolbarScrollFlag(3);
         }
 
@@ -233,11 +242,11 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         if (transactionsAdapter.getItemCount() == 0) {
             swipeRefreshLayout.setEnabled(false);
             recyclerView.setAdapter(new EmptyTransactionsAdapter());
-            groupEmptyState.setVisibility(View.VISIBLE);
+            setNotificationsVisibility(VISIBLE);
             setToolbarScrollFlag(0);
         } else {
             swipeRefreshLayout.setEnabled(true);
-            groupEmptyState.setVisibility(View.GONE);
+            setNotificationsVisibility(GONE);
             setToolbarScrollFlag(3);
         }
     }
@@ -250,7 +259,7 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         textAddress.setText(wallet.getActiveAddress().getAddress()); //need test this so don't remove commented code below
 
         containerAddresses.setVisibility(viewModel.wallet.getValue().getCurrencyId() != NativeDataHelper.Blockchain.BTC.getValue() ?
-                View.GONE : View.VISIBLE);
+                GONE : VISIBLE);
 
 //        if (wallet.getAddresses() != null && !wallet.getAddresses().isEmpty()) {
 //            textAddress.setText(wallet.getAddresses().get(wallet.getAddresses().size() - 1).getAddress());
@@ -284,7 +293,7 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     }
 
     private void showAvailableAmount() {
-        containerAvailableBalance.setVisibility(View.VISIBLE);
+        containerAvailableBalance.setVisibility(VISIBLE);
     }
 
     private void hideAvailableAmount() {
@@ -295,9 +304,13 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         viewModel.getTransactionsHistory(currencyId, networkId, walletIndex).observe(this, transactions -> {
             if (transactions != null && !transactions.isEmpty()) {
                 try {
-                    transactionsAdapter.setTransactions(transactions);
-                    recyclerView.setAdapter(new AssetTransactionsAdapter(transactions, viewModel.wallet.getValue().getId()));
-                    groupEmptyState.setVisibility(View.GONE);
+                    final long walletId = viewModel.wallet.getValue().isValid() ?
+                            viewModel.wallet.getValue().getId() :
+                            viewModel.getWallet(getActivity().getIntent()
+                                    .getLongExtra(Constants.EXTRA_WALLET_ID, 0)).getId();
+                    transactionsAdapter = new AssetTransactionsAdapter(transactions, walletId);
+                    recyclerView.setAdapter(transactionsAdapter);
+                    recyclerView.setOnTouchListener((v, event) -> false);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -313,6 +326,12 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
 
     private String getAddressToShare() {
         return viewModel.wallet.getValue().getActiveAddress().getAddress();
+    }
+
+    private void setNotificationsVisibility(int visibility) {
+        imageArrow.setVisibility(visibility);
+        textEmpty.setVisibility(visibility);
+        textCreate.setVisibility(visibility);
     }
 
     @OnClick(R.id.options)

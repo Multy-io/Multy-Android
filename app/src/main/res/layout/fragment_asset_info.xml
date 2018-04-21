@@ -109,6 +109,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:paddingTop="16dp"
+                tools:itemCount="4"
                 app:layoutManager="android.support.v7.widget.LinearLayoutManager"
                 tools:listitem="@layout/view_transaction_item" />
 
@@ -150,12 +151,6 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent" />
 
-            <android.support.constraint.Group
-                android:id="@+id/group_empty_state"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                app:constraint_referenced_ids="image_arrow,text_operations_empty,text_operation_create" />
         </android.support.constraint.ConstraintLayout>
 
         <android.support.design.widget.FloatingActionButton
