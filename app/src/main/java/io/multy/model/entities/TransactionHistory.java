@@ -40,6 +40,10 @@ public class TransactionHistory {
     private int confirmations;
     @SerializedName("mempooltime")
     private long mempoolTime;
+    @SerializedName("from")
+    private String from;
+    @SerializedName("to")
+    private String to;
 
     @SerializedName("stockexchangerate")
     ArrayList<StockExchangeRate> stockExchangeRates;
@@ -110,6 +114,14 @@ public class TransactionHistory {
 
     public ArrayList<StockExchangeRate> getStockExchangeRates() {
         return stockExchangeRates;
+    }
+
+    public String getFrom() {
+        return from;
+    }
+
+    public String getTo() {
+        return to;
     }
 
     public class StockExchangeRate {

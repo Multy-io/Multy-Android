@@ -54,8 +54,18 @@ public class MyWalletsAdapter extends RecyclerView.Adapter<MyWalletsAdapter.Hold
 
         holder.name.setText(data.get(position).getWalletName());
         holder.imagePending.setVisibility(wallet.isPending() ? View.VISIBLE : View.GONE);
-        holder.amount.setText(wallet.getBalanceLabel());
-        holder.amountFiat.setText(wallet.getFiatBalanceLabel());
+
+        try {
+            holder.amount.setText(wallet.getBalanceLabel());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            holder.amountFiat.setText(wallet.getFiatBalanceLabel());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         holder.imageChain.setImageResource(wallet.getIconResourceId());
         holder.itemView.setOnClickListener(view -> listener.onWalletClick(data.get(position)));
     }

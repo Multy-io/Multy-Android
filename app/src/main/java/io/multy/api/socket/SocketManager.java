@@ -78,8 +78,8 @@ public class SocketManager {
 
             final String userId = RealmManager.getSettingsDao().getUserId().getUserId();
 
-            Log.i(TAG, "auth header " + Prefs.getString(Constants.PREF_AUTH));
-            Log.i(TAG, "userId " + userId);
+            Timber.i(TAG, "auth header " + Prefs.getString(Constants.PREF_AUTH));
+            Timber.i(TAG, "userId " + userId);
 
             socket = IO.socket(SOCKET_URL, options);
             socket.io().on(Manager.EVENT_TRANSPORT, args -> {

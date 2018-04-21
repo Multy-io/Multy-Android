@@ -64,8 +64,13 @@ public class AssetsDao {
             savedWallet.setBalance(String.valueOf(savedWallet.getBtcWallet().calculateBalance()));
             savedWallet.setAvailableBalance(String.valueOf(savedWallet.getBtcWallet().calculateAvailableBalance()));
         } else {
-            //consider ETH here. will switch
             savedWallet.setEthWallet(Objects.requireNonNull(wallet.getEthWallet()).asRealmObject(realm));
+            final String ethBalance = savedWallet.getEthWallet().getBalance();
+            final String ethPendingBalance = savedWallet.getEthWallet().getPendingBalance();
+            final String ethAvailableBalance = savedWallet.getEthWallet().calculateAvailableBalance(ethBalance);
+
+            savedWallet.setBalance(ethBalance);
+            savedWallet.setAvailableBalance(ethAvailableBalance);
         }
 
         realm.insertOrUpdate(savedWallet);

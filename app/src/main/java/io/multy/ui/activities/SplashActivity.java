@@ -18,6 +18,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Toast;
 
 import com.samwolfand.oneprefs.Prefs;
 
@@ -32,6 +33,7 @@ import io.multy.api.MultyApi;
 import io.multy.model.responses.ServerConfigResponse;
 import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
+import io.multy.ui.fragments.dialogs.TermsDialogFragment;
 import io.multy.util.Constants;
 import io.multy.util.FirstLaunchHelper;
 import io.multy.util.analytics.Analytics;
@@ -45,6 +47,7 @@ import timber.log.Timber;
 public class SplashActivity extends AppCompatActivity {
 
     public static final String RESET_FLAG = "resetflag";
+    public static final int REQUEST_CODE_TERMS = 101;
 
     @BindView(R.id.container)
     View container;
@@ -67,9 +70,9 @@ public class SplashActivity extends AppCompatActivity {
 
         logPushClicked();
 
-        Animation emergency = AnimationUtils.loadAnimation(this, R.anim.splash_emergency);
-        emergency.setDuration(350);
-        emergency.setAnimationListener(new Animation.AnimationListener() {
+        Animation animation = AnimationUtils.loadAnimation(this, R.anim.splash_emergency);
+        animation.setDuration(350);
+        animation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
                 initBranchIO();
@@ -77,13 +80,32 @@ public class SplashActivity extends AppCompatActivity {
 
             @Override
             public void onAnimationEnd(Animation animation) {
+                if (Prefs.getBoolean(Constants.PREF_TERMS_ACCEPTED, false)) {
+                    getServerConfig();
+                } else {
+                    showTerms();
+                }
             }
 
             @Override
             public void onAnimationRepeat(Animation animation) {
             }
         });
-        container.startAnimation(emergency);
+        container.startAnimation(animation);
+    }
+
+    private void showTerms() {
+        TermsDialogFragment.newInstance(new TermsDialogFragment.OnTermsInteractionListener() {
+            @Override
+            public void onAccepted() {
+                getServerConfig();
+            }
+
+            @Override
+            public void onDiscarded() {
+                Toast.makeText(SplashActivity.this, R.string.terms_please, Toast.LENGTH_LONG).show();
+            }
+        }).show(getSupportFragmentManager(), "");
     }
 
     private void getServerConfig() {
@@ -104,7 +126,7 @@ public class SplashActivity extends AppCompatActivity {
                             //leave this clause for future possible purposes
 //                            showUpdateDialog();
                             showMainActivity();
-                        } else if (6 < androidConfig.getHardVersion()) {
+                        } else if (BuildConfig.VERSION_CODE < androidConfig.getHardVersion()) {
                             showUpdateDialog();
                         } else {
                             showMainActivity();
@@ -177,7 +199,6 @@ public class SplashActivity extends AppCompatActivity {
         Thread background = new Thread() {
             public void run() {
                 try {
-//                    sleep(500);
                     Intent mainActivityIntent = new Intent(SplashActivity.this, MainActivity.class)
                             .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                     mainActivityIntent.putExtra(MainActivity.IS_ANIMATION_MUST_SHOW, true);
@@ -210,9 +231,6 @@ public class SplashActivity extends AppCompatActivity {
             } else {
                 Timber.i(error.getMessage());
             }
-
-            getServerConfig();
-
         }, this.getIntent().getData(), this);
     }
 

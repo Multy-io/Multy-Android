@@ -309,7 +309,7 @@ public class DonationFragment extends BaseFragment {
         } else {
             addressForDonate = RealmManager.getSettingsDao().getDonationAddress(getArguments().getInt(ARG_DONATION_CODE, 0));
         }
-        if (addressForDonate != null) {
+        if (addressForDonate != null && recyclerView.getAdapter() != null) {
             sendTransaction(addressForDonate);
         }
         Analytics.getInstance(view.getContext()).logDonationSendDonateClick(getArguments() == null ? 0 : getArguments().getInt(ARG_DONATION_CODE, 0));

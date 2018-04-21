@@ -9,6 +9,7 @@ package io.multy.util;
 import java.text.DecimalFormat;
 
 import io.multy.api.socket.CurrenciesRate;
+import io.multy.model.entities.wallet.EthWallet;
 import io.multy.storage.RealmManager;
 
 public class CryptoFormatUtils {
@@ -92,5 +93,26 @@ public class CryptoFormatUtils {
         } catch (Exception e) {
             return -1;
         }
+    }
+
+    public static double weiToEth(String wei) {
+        return wei.equals("0") ? 0 : (Long.valueOf(wei) / (EthWallet.DIVISOR).doubleValue());
+    }
+
+    public static String wetToEthLabel(String wei) {
+        return wei.equals("0") ? "0" : (Long.valueOf(wei) / (EthWallet.DIVISOR).doubleValue()) + " ETH";
+    }
+
+    public static String ethTousd(double eth, double price) {
+        if (eth == 0) {
+            return "0.0";
+        }
+
+        final CurrenciesRate currenciesRate = RealmManager.getSettingsDao().getCurrenciesRate();
+        if (currenciesRate == null) {
+            return "";
+        }
+
+        return formatUsd.format(eth * price);
     }
 }

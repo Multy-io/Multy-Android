@@ -41,7 +41,10 @@ public class WalletDeserializer implements JsonDeserializer<List<Wallet>> {
 
                 switch (NativeDataHelper.Blockchain.valueOf(currencyId)) {
                     case ETH:
-                        wallet.setEthWallet(gson.fromJson(jsonItemString, EthWallet.class));
+                        EthWallet ethWallet = gson.fromJson(jsonItemString, EthWallet.class);
+                        wallet.setBalance(ethWallet.getBalance());
+                        wallet.setAvailableBalance(ethWallet.getBalance());
+                        wallet.setEthWallet(ethWallet);
                         break;
                     case BTC:
                         BtcWallet btcWallet = gson.fromJson(jsonItemString, BtcWallet.class);

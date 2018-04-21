@@ -68,14 +68,11 @@ public class EthTransactionFeeFragment extends BaseFragment
         viewModel.speeds.observe(this, speeds -> setAdapter());
         viewModel.requestFeeRates(viewModel.getWallet().getCurrencyId(), viewModel.getWallet().getNetworkId());
         Analytics.getInstance(getActivity()).logTransactionFeeLaunch(viewModel.getChainId());
-
-        recyclerView.setAdapter(feeAdapter);
         return view;
     }
 
     private void setAdapter() {
-        //todo remake myfeeadapter for btc and eth?
-//        recyclerView.setAdapter(new MyFeeAdapter(viewModel.speeds.getValue().asList(), this));
+        recyclerView.setAdapter(new MyFeeAdapter(viewModel.speeds.getValue().asList(), this));
     }
 
     @Override
