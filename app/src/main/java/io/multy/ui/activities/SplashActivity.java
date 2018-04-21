@@ -98,6 +98,7 @@ public class SplashActivity extends AppCompatActivity {
         TermsDialogFragment.newInstance(new TermsDialogFragment.OnTermsInteractionListener() {
             @Override
             public void onAccepted() {
+                Prefs.putBoolean(Constants.PREF_TERMS_ACCEPTED, true);
                 getServerConfig();
             }
 

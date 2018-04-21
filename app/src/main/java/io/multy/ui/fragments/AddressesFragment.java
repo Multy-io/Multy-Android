@@ -71,8 +71,8 @@ public class AddressesFragment extends BaseFragment {
             toolbar.setVisibility(View.GONE);
         }
         Analytics.getInstance(getActivity()).logWalletAddressesLaunch(1);
-//        buttonAddAddress.setVisibility(BuildConfig.DEBUG ? View.VISIBLE : View.GONE);
-        buttonAddAddress.setVisibility(View.GONE);
+        buttonAddAddress.setVisibility(BuildConfig.DEBUG ? View.VISIBLE : View.GONE);
+//        buttonAddAddress.setVisibility(View.GONE);
         return convertView;
     }
 

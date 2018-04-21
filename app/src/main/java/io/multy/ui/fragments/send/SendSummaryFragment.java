@@ -230,7 +230,7 @@ public class SendSummaryFragment extends BaseFragment {
         textWalletName.setText(viewModel.getWallet().getWalletName());
         long balance = viewModel.getWallet().getBalanceNumeric().longValue();
         textSenderBalanceOriginal.setText(balance != 0 ? CryptoFormatUtils.satoshiToBtc(balance) + " BTC" : String.valueOf(balance));
-        textSenderBalanceCurrency.setText(String.format("%s USD", NumberFormatter.getFiatInstance().format(viewModel.getAmount() * currenciesRate.getBtcToUsd())));
+        textSenderBalanceCurrency.setText(viewModel.getWallet().getFiatBalanceLabel());
         textFeeSpeed.setText(viewModel.getFee().getName());
         textFeeSpeedLabel.setText(viewModel.getFee().getTime());
 
