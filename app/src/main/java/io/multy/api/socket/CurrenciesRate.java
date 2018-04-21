@@ -20,9 +20,9 @@ public class CurrenciesRate extends RealmObject {
     @SerializedName("BTCtoEUR")
     private double btcToEur = 0;
 
-    @SerializedName("ETHtoUSD")
+    @SerializedName("eth_usd")
     private double ethToUsd = 0;
-    @SerializedName("ETHtoEUR")
+    @SerializedName("eth_eur")
     private double ethToEur = 0;
 
     public double getBtcToUsd() {

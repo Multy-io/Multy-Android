@@ -42,6 +42,14 @@ public class HdTransactionRequestEntity {
             this.transaction = transaction;
         }
 
+        public Payload(String address, int addressIndex, int walletIndex, String transaction, boolean isHd) {
+            this.address = address;
+            this.addressIndex = addressIndex;
+            this.walletIndex = walletIndex;
+            this.transaction = transaction;
+            this.isHd = isHd;
+        }
+
         public String getAddress() {
             return address;
         }

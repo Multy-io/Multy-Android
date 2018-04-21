@@ -21,10 +21,6 @@ import io.multy.R;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
-/**
- * Created by anschutz1927@gmail.com on 22.03.18.
- */
-
 public class EthFeeAdapter extends RecyclerView.Adapter<EthFeeAdapter.Holder> {
 
     private OnItemClickListener listener;

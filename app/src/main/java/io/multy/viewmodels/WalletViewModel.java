@@ -94,6 +94,9 @@ public class WalletViewModel extends BaseViewModel {
     }
 
     public MutableLiveData<Wallet> getWalletLive() {
+//        if (!wallet.getValue().isValid()) {
+//            wallet.setValue(getWallet());
+//        }
         return wallet;
     }
 

@@ -235,7 +235,7 @@
     <string name="select_speed">Select speed</string>
     <string name="send_donation">Send</string>
     <string name="error_donation">Error sending donation</string>
-    <string name="error_donation_message">Error while sending donation. Please try again later.</string>
+    <string name="error_donation_message">Can\'t send a donation. Please check that donation sum is not too small(&lt; 5000 Satoshi) and wallet`s balance is sufficient.</string>
     <string name="by_donationg">By donationg for this option you\nhelp the development team\nwork more diligently and\ndevelop new application\nfunctionality</string>
     <string name="DONATE">DONATE</string>
     <string name="CANCEL">CANCEL</string>

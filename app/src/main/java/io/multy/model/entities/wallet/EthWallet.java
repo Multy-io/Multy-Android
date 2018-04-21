@@ -26,6 +26,8 @@ public class EthWallet extends RealmObject {
     private String balance;
     @SerializedName("addresses")
     private RealmList<WalletAddress> addresses;
+    @SerializedName("pendingbalance")
+    private String pendingBalance;
 
     public String getNonce() {
         return nonce;
@@ -43,8 +45,24 @@ public class EthWallet extends RealmObject {
         this.balance = balance;
     }
 
+    public String getPendingBalance() {
+        return pendingBalance;
+    }
+
+    public void setPendingBalance(String pendingBalance) {
+        this.pendingBalance = pendingBalance;
+    }
+
     public RealmList<WalletAddress> getAddresses() {
         return addresses;
+    }
+
+    public String calculateAvailableBalance(String balance) {
+        if (balance == null || balance.equals("0")) {
+            return "0";
+        }
+
+        return balance;
     }
 
     public void setAddresses(RealmList<WalletAddress> addresses) {
@@ -59,6 +77,7 @@ public class EthWallet extends RealmObject {
             ethWallet.getAddresses().add(realm.copyToRealm(walletAddress));
         }
         ethWallet.setNonce(nonce);
+        ethWallet.setPendingBalance(pendingBalance);
         ethWallet.setBalance(balance);
         return ethWallet;
     }

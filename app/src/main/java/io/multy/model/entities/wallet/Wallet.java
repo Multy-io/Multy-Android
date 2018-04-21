@@ -93,7 +93,6 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
     }
 
     /**
-     *
      * @return String "10 BTC"
      */
     @Override
@@ -102,14 +101,13 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
             case BTC:
                 return NumberFormatter.getInstance().format(getBtcDoubleValue()) + " BTC";
             case ETH:
-                return convertBalance(EthWallet.DIVISOR) + " ETH";
+                return NumberFormatter.getInstance().format(getEthDoubleValue()) + " ETH";
             default:
                 return "unsupported";
         }
     }
 
     /**
-     *
      * @return String "10"
      */
     public String getBalanceLabelTrimmed() {
@@ -117,7 +115,7 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
             case BTC:
                 return NumberFormatter.getInstance().format(getBtcDoubleValue());
             case ETH:
-                return convertBalance(EthWallet.DIVISOR) + " ETH";
+                return NumberFormatter.getInstance().format(getEthDoubleValue());
             default:
                 return "unsupported";
         }
@@ -128,7 +126,7 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
             case BTC:
                 return NumberFormatter.getInstance().format(getBtcAvailableDoubleValue()) + " BTC";
             case ETH:
-                return convertBalance(EthWallet.DIVISOR) + " ETH";
+                return NumberFormatter.getInstance().format(getEthAvailableDoubleValue()) + " ETH";
             default:
                 return "unsupported";
         }
@@ -143,7 +141,7 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
             case BTC:
                 return String.valueOf(NumberFormatter.getFiatInstance().format(getBtcDoubleValue() * currenciesRate.getBtcToUsd()) + getFiatString()); //convert from satoshi
             case ETH:
-                return String.valueOf(convertBalance(EthWallet.DIVISOR).doubleValue() * currenciesRate.getEthToUsd() + getFiatString()); //convert from wev
+                return String.valueOf(NumberFormatter.getFiatInstance().format(getEthDoubleValue() * currenciesRate.getEthToUsd()) + getFiatString()); //convert from gwei
             default:
                 return "unsupported";
         }
@@ -156,7 +154,7 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
             case BTC:
                 return String.valueOf(NumberFormatter.getFiatInstance().format(getBtcAvailableDoubleValue() * currenciesRate.getBtcToUsd()) + getFiatString()); //convert from satoshi
             case ETH:
-                return String.valueOf(convertBalance(EthWallet.DIVISOR).doubleValue() * currenciesRate.getEthToUsd() + getFiatString()); //convert from wev
+                return String.valueOf(NumberFormatter.getFiatInstance().format(getEthAvailableDoubleValue() * currenciesRate.getEthToUsd()) + getFiatString()); //convert from gwei
             default:
                 return "unsupported";
         }
@@ -166,8 +164,16 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
         return balance.equals("0") ? 0 : (getBalanceNumeric().longValue() / BtcWallet.DIVISOR.doubleValue());
     }
 
+    public double getEthDoubleValue() {
+        return balance.equals("0") ? 0 : (getBalanceNumeric().longValue() / (EthWallet.DIVISOR).doubleValue());
+    }
+
     public double getBtcAvailableDoubleValue() {
         return availableBalance.equals("0") ? 0 : (getAvailableBalanceNumeric().longValue() / BtcWallet.DIVISOR.doubleValue());
+    }
+
+    public double getEthAvailableDoubleValue() {
+        return availableBalance.equals("0") ? 0 : (getAvailableBalanceNumeric().longValue() / (EthWallet.DIVISOR).doubleValue());
     }
 
     public String getFiatString() {
@@ -198,13 +204,13 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
             case BTC:
                 return getAvailableBalanceNumeric().longValue() > 150;
             case ETH:
-                return true; //TODO change for positive balance ETH
+                return getAvailableBalanceNumeric().longValue() > 0;
         }
         return false;
     }
 
     public BigInteger getBalanceNumeric() {
-        return new BigInteger(balance);
+        return balance == null ? new BigInteger("0") : new BigInteger(balance);
     }
 
     public BigInteger getPendingBalance() {

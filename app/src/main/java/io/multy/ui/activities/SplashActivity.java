@@ -104,7 +104,7 @@ public class SplashActivity extends AppCompatActivity {
                             //leave this clause for future possible purposes
 //                            showUpdateDialog();
                             showMainActivity();
-                        } else if (6 < androidConfig.getHardVersion()) {
+                        } else if (BuildConfig.VERSION_CODE < androidConfig.getHardVersion()) {
                             showUpdateDialog();
                         } else {
                             showMainActivity();

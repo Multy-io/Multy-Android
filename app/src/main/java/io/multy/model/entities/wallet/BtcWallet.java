@@ -94,9 +94,11 @@ public class BtcWallet extends RealmObject {
     public long calculateAvailableBalance() {
         availableBalance = 0;
         for (WalletAddress walletAddress : addresses) {
-            for (Output output : walletAddress.getOutputs()) {
-                if (output.getStatus() == Constants.TX_CONFIRMED_INCOMING || output.getStatus() == Constants.TX_IN_BLOCK_INCOMING) {
-                    availableBalance += Long.valueOf(output.getTxOutAmount());
+            if (walletAddress.getOutputs() != null) {
+                for (Output output : walletAddress.getOutputs()) {
+                    if (output.getStatus() == Constants.TX_CONFIRMED_INCOMING || output.getStatus() == Constants.TX_IN_BLOCK_INCOMING) {
+                        availableBalance += Long.valueOf(output.getTxOutAmount());
+                    }
                 }
             }
         }

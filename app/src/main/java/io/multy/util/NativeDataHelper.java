@@ -57,7 +57,8 @@ public class NativeDataHelper {
 
     public enum NetworkId {
         MAIN_NET(0),
-        TEST_NET(1);
+        TEST_NET(1),
+        RINKEBY(4);
 
         private final int value;
 
