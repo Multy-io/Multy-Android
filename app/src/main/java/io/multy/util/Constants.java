@@ -15,7 +15,7 @@ public final class Constants {
             + " " + Build.VERSION.RELEASE
             + " " + Build.VERSION_CODES.class.getFields()[android.os.Build.VERSION.SDK_INT].getName();
 
-    public static final String BASE_URL = "https://test.multy.io/";
+    public static final String BASE_URL = "https://stage.multy.io/";
 
     public static final int DONATION_MIN_VALUE = 10000;
     public static final String DONATION_ADDRESS_TESTNET = "mnUtMQcs3s8kSkSRXpREVtJamgUCWpcFj4";
@@ -55,6 +55,7 @@ public final class Constants {
     public static final String PREF_DONATE_ADDRESS_ETH = "PREF_DONATE_ADDRESS_ETH";
     public static final String FLAG_VIEW_SEED_PHRASE = "view_seed_phrase";
     public static final String PREF_IS_PUSH_ENABLED = "PREF_IS_PUSH_ENABLED";
+    public static final String PREF_TERMS_ACCEPTED = "TERMS_TERMS_ACCEPTED";
 
     public static final int REQUEST_CODE_SET_CHAIN = 560;
     public static final int REQUEST_CODE_SET_GAS = 560;

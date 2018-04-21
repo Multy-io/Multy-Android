@@ -19,6 +19,7 @@ import io.realm.RealmObject;
 public class EthWallet extends RealmObject {
 
     public final static BigInteger DIVISOR = BigInteger.valueOf((long) Math.pow(10, 18));
+    public final static String PENDING_BALANCE = "pendingBalance";
 
     @SerializedName("nonce")
     private String nonce;

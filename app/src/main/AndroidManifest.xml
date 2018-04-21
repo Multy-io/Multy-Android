@@ -62,9 +62,6 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.activities.AgreementActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".ui.activities.AssetActivity"
             android:screenOrientation="portrait" />
         <activity
