@@ -289,7 +289,7 @@ public class DonationFragment extends BaseFragment {
     }
 
     private void showError() {
-        SimpleDialogFragment simpleDialogFragment = SimpleDialogFragment.newInstance(R.string.error_donation, R.string.error_donation_message, v -> getActivity().finish());
+        SimpleDialogFragment simpleDialogFragment = SimpleDialogFragment.newInstanceNegative(R.string.error_donation, R.string.error_donation_message, v -> getActivity().finish());
         simpleDialogFragment.show(getActivity().getSupportFragmentManager(), "");
     }
 
