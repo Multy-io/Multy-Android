@@ -162,7 +162,7 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
             WalletAddress addressTo = outputs.get(0);
             List<String> walletAddresses = getWalletAddresses(addresses);
 
-            long outSatoshi = getOutСomingAmount(transactionHistory, walletAddresses);
+            long outSatoshi = getOutComingAmount(transactionHistory, walletAddresses);
 
             for (WalletAddress output : outputs) {
                 if (walletAddresses.contains(output.getAddress())) {
@@ -199,7 +199,7 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
      * @param walletAddresses
      * @return
      */
-    public static long getOutСomingAmount(TransactionHistory transactionHistory, List<String> walletAddresses) {
+    public static long getOutComingAmount(TransactionHistory transactionHistory, List<String> walletAddresses) {
         long totalAmount = 0;
         long outAmount = 0;
 
@@ -248,7 +248,7 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
         } else {
             List<WalletAddress> outputs = transactionHistory.getOutputs();
             WalletAddress addressTo = outputs.get(0);
-            long outSatoshi = getOutСomingAmount(transactionHistory, getWalletAddresses(addresses));
+            long outSatoshi = getOutComingAmount(transactionHistory, getWalletAddresses(addresses));
 
             setAddress(addressTo.getAddress(), holder.containerAddresses);
             holder.amount.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(outSatoshi)));
