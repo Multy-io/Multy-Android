@@ -20,6 +20,7 @@ import io.multy.model.responses.ServerConfigResponse;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.annotations.Nullable;
 import io.realm.Realm;
+import io.realm.RealmResults;
 
 public class SettingsDao {
 
@@ -112,6 +113,10 @@ public class SettingsDao {
                 }
             }
         }, Throwable::printStackTrace);
+    }
+
+    public RealmResults<DonateFeatureEntity> getDonationAddresses() {
+        return realm.where(DonateFeatureEntity.class).findAll();
     }
 
     public String getDonationAddress(int donationCode) {

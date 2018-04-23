@@ -68,6 +68,7 @@ public class WalletViewModel extends BaseViewModel {
     public SingleLiveEvent<TransactionUpdateEntity> transactionUpdate = new SingleLiveEvent<>();
 
     private SocketManager socketManager;
+    private long walletId = -1;
 
     public WalletViewModel() {
     }
@@ -90,13 +91,14 @@ public class WalletViewModel extends BaseViewModel {
     public Wallet getWallet(long id) {
         Wallet wallet = RealmManager.getAssetsDao().getWalletById(id);
         this.wallet.setValue(wallet);
+        this.walletId = id;
         return wallet;
     }
 
     public MutableLiveData<Wallet> getWalletLive() {
-//        if (!wallet.getValue().isValid()) {
-//            wallet.setValue(getWallet());
-//        }
+        if (!wallet.getValue().isValid() && walletId != -1) {
+            wallet.setValue(getWallet(walletId));
+        }
         return wallet;
     }
 

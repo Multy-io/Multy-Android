@@ -8,6 +8,8 @@ package io.multy.model.entities;
 
 import com.google.gson.annotations.SerializedName;
 
+import io.multy.BuildConfig;
+
 public class AuthEntity {
 
     @SerializedName("userID")
@@ -18,6 +20,9 @@ public class AuthEntity {
     private String token;
     @SerializedName("deviceType")
     private int deviceType;
+    @SerializedName("appVersion")
+    private String appVersion = BuildConfig.VERSION_NAME;
+
 
     public AuthEntity(String userId, String deviceId, String token, int deviceType) {
         this.userId = userId;

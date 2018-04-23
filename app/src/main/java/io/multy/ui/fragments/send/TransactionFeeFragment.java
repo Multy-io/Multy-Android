@@ -228,9 +228,9 @@ public class TransactionFeeFragment extends BaseFragment implements MyFeeAdapter
 
             ((AssetSendActivity) getActivity()).setFragment(R.string.send_amount, R.id.container, AmountChooserFragment.newInstance());
 
-            if (viewModel.isAmountScanned()) {
-                ((AssetSendActivity) getActivity()).setFragment(R.string.send_summary, R.id.container, SendSummaryFragment.newInstance());
-            }
+//            if (viewModel.isAmountScanned()) {
+//                ((AssetSendActivity) getActivity()).setFragment(R.string.send_summary, R.id.container, SendSummaryFragment.newInstance());
+//            }
         } else {
             Toast.makeText(getActivity(), R.string.choose_transaction_speed, Toast.LENGTH_SHORT).show();
         }
