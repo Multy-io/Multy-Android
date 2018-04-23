@@ -33,7 +33,7 @@
         <item>Bitcoin</item>
         <item>Bitcoin</item>
         <!--<item>Ethereum</item>-->
-        <item>Ethereum</item>
+        <!--<item>Ethereum</item>-->
     </string-array>
     <array name="available_chain_image_ids">
         <item>@drawable/ic_btk_logo</item>

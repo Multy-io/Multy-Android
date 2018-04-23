@@ -239,6 +239,7 @@ public class DonationFragment extends BaseFragment {
 
         if (satoshiValue > maxValue) {
             Toast.makeText(getActivity(), "Donation amount is bigger than available.", Toast.LENGTH_SHORT).show();
+            return;
         }
 
 
@@ -289,7 +290,7 @@ public class DonationFragment extends BaseFragment {
 
     private void showError() {
         SimpleDialogFragment simpleDialogFragment = SimpleDialogFragment.newInstance(R.string.error_donation, R.string.error_donation_message, v -> getActivity().finish());
-        simpleDialogFragment.show(getFragmentManager(), "");
+        simpleDialogFragment.show(getActivity().getSupportFragmentManager(), "");
     }
 
     @OnClick(R.id.button_cancel)
