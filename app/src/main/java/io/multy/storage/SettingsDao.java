@@ -106,11 +106,9 @@ public class SettingsDao {
     public void saveDonation(List<ServerConfigResponse.Donate> donates) {
         realm.executeTransactionAsync(realm -> {
             for (ServerConfigResponse.Donate donate : donates) {
-                if (donate.getFeatureCode() < 20000) {
-                    DonateFeatureEntity donateFeature = new DonateFeatureEntity(donate.getFeatureCode());
-                    donateFeature.setDonationAddress(donate.getDonationAddress());
-                    realm.insertOrUpdate(donateFeature);
-                }
+                DonateFeatureEntity donateFeature = new DonateFeatureEntity(donate.getFeatureCode());
+                donateFeature.setDonationAddress(donate.getDonationAddress());
+                realm.insertOrUpdate(donateFeature);
             }
         }, Throwable::printStackTrace);
     }
