@@ -106,6 +106,7 @@
             android:imeOptions="actionDone"
             android:inputType="text"
             android:lines="@integer/one"
+            android:visibility="gone"
             app:layout_constraintLeft_toLeftOf="@+id/container_receiver"
             app:layout_constraintRight_toRightOf="@+id/container_receiver"
             app:layout_constraintTop_toBottomOf="@+id/container_receiver" />

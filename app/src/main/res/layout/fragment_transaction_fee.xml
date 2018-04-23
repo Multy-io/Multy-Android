@@ -127,6 +127,7 @@
                 android:layout_height="@dimen/dimen_40dp"
                 android:elevation="@dimen/elevation_3dp"
                 android:hint="@string/donation_default"
+                android:imeOptions="actionDone"
                 android:inputType="numberDecimal"
                 android:maxLength="@integer/ten"
                 android:maxWidth="@dimen/dimen_150dp"
