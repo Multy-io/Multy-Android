@@ -24,6 +24,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.multy.R;
+import io.multy.model.entities.DonateFeatureEntity;
 import io.multy.model.entities.TransactionHistory;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.storage.RealmManager;
@@ -33,6 +34,7 @@ import io.multy.util.DateHelper;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 import io.realm.RealmList;
+import io.realm.RealmResults;
 
 import static io.multy.ui.fragments.asset.TransactionInfoFragment.MODE_RECEIVE;
 import static io.multy.ui.fragments.asset.TransactionInfoFragment.MODE_SEND;
@@ -50,12 +52,14 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
     private long walletId;
     private List<TransactionHistory> transactionHistoryList;
     private RealmList<WalletAddress> addresses;
+    private RealmResults<DonateFeatureEntity> donations;
 
     public AssetTransactionsAdapter(List<TransactionHistory> transactionHistoryList, long walletId) {
         this.transactionHistoryList = transactionHistoryList;
         this.walletId = walletId;
         Collections.sort(this.transactionHistoryList, (transactionHistory, t1) -> Long.compare(t1.getMempoolTime(), transactionHistory.getMempoolTime()));
         addresses = RealmManager.getAssetsDao().getWalletById(walletId).getBtcWallet().getAddresses();
+        donations = RealmManager.getSettingsDao().getDonationAddresses();
     }
 
     public AssetTransactionsAdapter() {
@@ -156,6 +160,8 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
 
             holder.amountLocked.setText(String.format("%s BTC", lockedAmount));
             holder.fiatLocked.setText(String.format("(%s USD)", lockedFiat));
+
+
         } else {
             List<WalletAddress> outputs = transactionHistory.getOutputs();
             WalletAddress userChangeAddress = null;
@@ -169,17 +175,21 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
                     userChangeAddress = output;
                     break;
                 }
+
+                if (!walletAddresses.contains(output.getAddress()) && !isAddressDonation(output.getAddress())) {
+                    addressTo = output;
+                }
             }
 
-            if (!lockedAmount.equals("")) {
-                holder.containerLocked.setVisibility(View.VISIBLE);
-                lockedAmount = CryptoFormatUtils.satoshiToBtc(userChangeAddress.getAmount());
-                lockedFiat = CryptoFormatUtils.satoshiToUsd(userChangeAddress.getAmount());
-                holder.amountLocked.setText(String.format("%s BTC", lockedAmount));
-                holder.fiatLocked.setText(String.format("(%s USD)", lockedFiat));
-            } else {
-                holder.containerLocked.setVisibility(View.GONE);
-            }
+//            if (!lockedAmount.equals("")) {
+            holder.containerLocked.setVisibility(View.VISIBLE);
+            lockedAmount = CryptoFormatUtils.satoshiToBtc(userChangeAddress.getAmount());
+            lockedFiat = CryptoFormatUtils.satoshiToUsd(userChangeAddress.getAmount());
+            holder.amountLocked.setText(String.format("%s BTC", lockedAmount));
+            holder.fiatLocked.setText(String.format("(%s USD)", lockedFiat));
+//            } else {
+//                holder.containerLocked.setVisibility(View.GONE);
+//            }
 
             amount = "" + CryptoFormatUtils.satoshiToBtc(outSatoshi);
             amountFiat = getFiatAmount(transactionHistory, CryptoFormatUtils.satoshiToBtcDouble(outSatoshi));
@@ -190,6 +200,26 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
         holder.fiat.setText(String.format("%s USD", amountFiat));
 
         setItemClickListener(holder.itemView, isIncoming, position);
+    }
+
+    private boolean isAddressDonation(String address) {
+        for (DonateFeatureEntity donateFeatureEntity : donations) {
+            if (donateFeatureEntity.getDonationAddress().equals(address)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isAddressUser(String address) {
+        for (WalletAddress walletAddress : addresses) {
+            if (walletAddress.equals(address)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -248,7 +278,15 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
         } else {
             List<WalletAddress> outputs = transactionHistory.getOutputs();
             WalletAddress addressTo = outputs.get(0);
-            long outSatoshi = getOutComingAmount(transactionHistory, getWalletAddresses(addresses));
+            List<String> walletAddresses = getWalletAddresses(addresses);
+
+            long outSatoshi = getOutСomingAmount(transactionHistory, walletAddresses);
+
+            for (WalletAddress output : outputs) {
+                if (!walletAddresses.contains(output.getAddress()) && !isAddressDonation(output.getAddress())) {
+                    addressTo = output;
+                }
+            }
 
             setAddress(addressTo.getAddress(), holder.containerAddresses);
             holder.amount.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(outSatoshi)));
@@ -339,6 +377,7 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
         @BindView(R.id.container_addresses)
         LinearLayout containerAddresses;
 
+      
         @BindView(R.id.container_locked)
         View containerLocked;
 

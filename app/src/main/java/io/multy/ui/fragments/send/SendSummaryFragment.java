@@ -235,7 +235,7 @@ public class SendSummaryFragment extends BaseFragment {
         textFeeSpeedLabel.setText(viewModel.getFee().getTime());
 
         MutableLiveData<Long> transactionPrice = AssetSendViewModel.transactionPrice;
-        if (transactionPrice != null) {
+        if (transactionPrice.getValue() != null) {
             textFeeAmount.setText(String.format("%s BTC / %s USD", CryptoFormatUtils.satoshiToBtc(transactionPrice.getValue()), CryptoFormatUtils.satoshiToUsd(transactionPrice.getValue())));
         }
     }

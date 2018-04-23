@@ -111,6 +111,8 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
         viewModel.setPayForCommission(switcher.isChecked());
         if (!viewModel.isAmountScanned()) {
             Analytics.getInstance(getActivity()).logSendChooseAmountLaunch(viewModel.getChainId());
+        } else {
+            inputOriginal.setText(String.valueOf(viewModel.getAmount()));
         }
         return view;
     }
