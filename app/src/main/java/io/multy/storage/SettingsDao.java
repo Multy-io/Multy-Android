@@ -124,4 +124,9 @@ public class SettingsDao {
                 .equalTo(DonateFeatureEntity.FEATURE_CODE, donationCode).findFirst();
         return donateFeature == null ? null : donateFeature.getDonationAddress();
     }
+
+    public boolean isDonateAddress(String possibleDonateAddress) {
+        return realm.where(DonateFeatureEntity.class)
+                .equalTo(DonateFeatureEntity.DONATION_ADDRESS, possibleDonateAddress).findFirst() != null;
+    }
 }
