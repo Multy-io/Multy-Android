@@ -7,8 +7,10 @@
 package io.multy.ui.fragments.dialogs;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.text.TextUtils;
@@ -78,6 +80,11 @@ public class TermsDialogFragment extends DialogFragment {
         webView.loadUrl("https://raw.githubusercontent.com/wiki/Appscrunch/Multy/Legal:-Terms-of-service.md");
     }
 
+    private void showPrivacy() {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://raw.githubusercontent.com/wiki/Appscrunch/Multy/Legal:-Privacy-Policy.md"));
+        startActivity(browserIntent);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_agreement, container, false);
@@ -98,6 +105,11 @@ public class TermsDialogFragment extends DialogFragment {
     public void onClickNegative() {
         listener.onDiscarded();
         dismiss();
+    }
+
+    @OnClick(R.id.text_read)
+    public void onClickPrivacy() {
+        showPrivacy();
     }
 
     public OnTermsInteractionListener getListener() {

@@ -6,6 +6,8 @@
 
 package io.multy.encryption;
 
+import android.security.keystore.KeyGenParameterSpec;
+
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;

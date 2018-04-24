@@ -75,9 +75,11 @@ public class AddressesFragment extends BaseFragment {
 
         if (getActivity() instanceof AssetRequestActivity) {
             toolbar.setVisibility(View.GONE);
+            buttonAddAddress.setVisibility(View.GONE);
+        } else {
+            buttonAddAddress.setVisibility(View.VISIBLE);
         }
         Analytics.getInstance(getActivity()).logWalletAddressesLaunch(1);
-        buttonAddAddress.setVisibility(BuildConfig.DEBUG ? View.VISIBLE : View.GONE);
 
         viewModel = ViewModelProviders.of(getActivity()).get(WalletViewModel.class);
         setBaseViewModel(viewModel);
@@ -141,7 +143,7 @@ public class AddressesFragment extends BaseFragment {
             final int nextAddressIndex = wallet.getBtcWallet().getAddresses().size();
             final String address = NativeDataHelper.makeAccountAddress(RealmManager.getSettingsDao().getSeed().getSeed(), wallet.getIndex(), nextAddressIndex, wallet.getCurrencyId(), wallet.getNetworkId());
 
-            MultyApi.INSTANCE.addWalletAddress(new AddWalletAddressRequest(wallet.getIndex(), address, nextAddressIndex)).enqueue(new Callback<ResponseBody>() {
+            MultyApi.INSTANCE.addWalletAddress(new AddWalletAddressRequest(wallet.getIndex(), address, nextAddressIndex, wallet.getNetworkId(), wallet.getCurrencyId())).enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     if (response.isSuccessful()) {
