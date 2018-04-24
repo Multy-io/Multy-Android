@@ -124,7 +124,7 @@ public class AssetRequestViewModel extends BaseViewModel {
             final String creationAddress = NativeDataHelper.makeAccountAddress(seed, wallet.getIndex(), addressIndex,
                     NativeDataHelper.Blockchain.BTC.getValue(), NativeDataHelper.NetworkId.TEST_NET.getValue());
 
-            MultyApi.INSTANCE.addWalletAddress(new AddWalletAddressRequest(wallet.getIndex(), creationAddress, addressIndex)).enqueue(new Callback<ResponseBody>() {
+            MultyApi.INSTANCE.addWalletAddress(new AddWalletAddressRequest(wallet.getIndex(), creationAddress, addressIndex, wallet.getNetworkId(), wallet.getCurrencyId())).enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     RealmManager.getAssetsDao().saveBtcAddress(wallet.getId(), new WalletAddress(addressIndex, creationAddress));

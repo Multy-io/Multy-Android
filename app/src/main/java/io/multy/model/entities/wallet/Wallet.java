@@ -147,6 +147,14 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
         }
     }
 
+    /**
+     *
+     * @return fiat string balance without fiat symbol. example 2600 (mean usd)
+     */
+    public String getFiatBalanceLabelTrimmed() {
+        return getFiatBalanceLabel().replace(getFiatString(), "");
+    }
+
     public String getAvailableFiatBalanceLabel() {
         CurrenciesRate currenciesRate = RealmManager.getSettingsDao().getCurrenciesRate();
         //TODO support different fiat currencies here

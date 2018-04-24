@@ -109,6 +109,11 @@ public class Multy extends Application {
     public static RealmConfiguration getRealmConfiguration() {
         String key = SecurePreferencesHelper.getString(context, Constants.PREF_KEY);
         RealmConfiguration realmConfiguration = null;
+
+        if (key == null) {
+            return null;
+        }
+
         try {
             return realmConfiguration = new RealmConfiguration.Builder()
                     .encryptionKey(Base64.decode(key, Base64.NO_WRAP))

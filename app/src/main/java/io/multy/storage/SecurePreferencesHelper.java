@@ -13,6 +13,7 @@ import android.util.Base64;
 import com.samwolfand.oneprefs.Prefs;
 
 import javax.annotation.Nullable;
+import javax.crypto.BadPaddingException;
 import javax.crypto.SecretKey;
 
 import io.multy.Multy;
@@ -57,6 +58,8 @@ public class SecurePreferencesHelper {
             byte[] encrypted = Base64.decode(encryptedString, Base64.NO_WRAP);
             final String result = new String(CryptoUtils.decrypt(iv, secretKey.getEncoded(), encrypted));
             return result;
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
             clear();
