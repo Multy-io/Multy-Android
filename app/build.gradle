@@ -81,7 +81,6 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            manifestPlaceholders = [crashlyticsEnabled: true, analyticsDeactivated: false]
         }
         externalNativeBuild {
             cmake {
@@ -89,7 +88,24 @@ android {
             }
         }
         debug {
-            manifestPlaceholders = [crashlyticsEnabled: false, analyticsDeactivated: true]
+            applicationIdSuffix ".debug"
+        }
+    }
+    flavorDimensions "default"
+    productFlavors {
+        prod {
+            resValue "string", "base_url", "https://api.multy.io/"
+        }
+        stage {
+            resValue "string", "base_url", "http://stage.multy.io/"
+        }
+        multyTest {
+            resValue "string", "base_url", "http://test.multy.io/"
+        }
+    }
+    variantFilter { variant ->
+        if (variant.buildType.name.contains("externalNativeBuild")) {
+            variant.setIgnore(true)
         }
     }
     compileOptions {
