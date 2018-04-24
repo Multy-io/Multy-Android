@@ -15,7 +15,7 @@ public final class Constants {
             + " " + Build.VERSION.RELEASE
             + " " + Build.VERSION_CODES.class.getFields()[android.os.Build.VERSION.SDK_INT].getName();
 
-    public static final String BASE_URL = "https://stage.multy.io/";
+    public static final String BASE_URL = "https://api.multy.io/";
 
     public static final int DONATION_MIN_VALUE = 10000;
     public static final String DONATION_ADDRESS_TESTNET = "mnUtMQcs3s8kSkSRXpREVtJamgUCWpcFj4";
@@ -105,4 +105,6 @@ public final class Constants {
     public static final int DONATE_ADDING_IMPORT_WALLET = 10300;
     public static final int DONATE_ADDING_EXCHANGE = 10301;
     public static final int DONATE_ADDING_WIRELESS_SCAN = 10302;
+
+    public static final int MIN_SATOSHI = 546;
 }

@@ -7,7 +7,6 @@
 package io.multy.api.socket;
 
 import android.arch.lifecycle.MutableLiveData;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.samwolfand.oneprefs.Prefs;
@@ -32,7 +31,7 @@ public class SocketManager {
     public static final String TAG = SocketManager.class.getSimpleName();
     private static final String DEVICE_TYPE = "Android";
 
-    private static final String SOCKET_URL = "https://stage.multy.io/";
+    private static final String SOCKET_URL = "https://api.multy.io/";
     private static final String HEADER_AUTH = "jwtToken";
     private static final String HEADER_DEVICE_TYPE = "deviceType";
     private static final String HEADER_USER_ID = "userId";
@@ -117,7 +116,7 @@ public class SocketManager {
     }
 
     private void log(String message) {
-        Log.i(TAG, message);
+        Timber.i(TAG, message);
     }
 
     public void disconnect() {
