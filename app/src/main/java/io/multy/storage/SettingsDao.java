@@ -17,6 +17,7 @@ import io.multy.model.entities.RootKey;
 import io.multy.model.entities.Token;
 import io.multy.model.entities.UserId;
 import io.multy.model.responses.ServerConfigResponse;
+import io.multy.util.Constants;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.annotations.Nullable;
 import io.realm.Realm;
@@ -125,6 +126,7 @@ public class SettingsDao {
 
     public boolean isDonateAddress(String possibleDonateAddress) {
         return realm.where(DonateFeatureEntity.class)
-                .equalTo(DonateFeatureEntity.DONATION_ADDRESS, possibleDonateAddress).findFirst() != null;
+                .equalTo(DonateFeatureEntity.DONATION_ADDRESS, possibleDonateAddress).findFirst() != null
+                && possibleDonateAddress.equals(Constants.DONATION_ADDRESS_TESTNET);
     }
 }
