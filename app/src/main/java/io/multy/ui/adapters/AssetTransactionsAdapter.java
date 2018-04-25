@@ -29,6 +29,7 @@ import io.multy.model.entities.TransactionHistory;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.asset.TransactionInfoFragment;
+import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
 import io.multy.util.DateHelper;
 import io.multy.util.analytics.Analytics;
@@ -163,7 +164,8 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
         } else {
             List<WalletAddress> outputs = transactionHistory.getOutputs();
             WalletAddress userChangeAddress = null;
-            WalletAddress addressTo = outputs.get(0);
+            WalletAddress addressTo = null;
+            WalletAddress donationAddress = null;
             List<String> walletAddresses = getWalletAddresses(addresses);
 
             long outSatoshi = getOutComingAmount(transactionHistory, walletAddresses);
@@ -174,9 +176,17 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
                     break;
                 }
 
-                if (!walletAddresses.contains(output.getAddress()) && !isAddressDonation(output.getAddress())) {
+                if (isAddressDonation(output.getAddress())) {
+                    donationAddress = output;
+                } else if (!walletAddresses.contains(output.getAddress())) {
                     addressTo = output;
                 }
+            }
+
+            if (addressTo == null && donationAddress != null) {
+                addressTo = donationAddress;
+            } else {
+                addressTo = outputs.get(0);
             }
 
             if (userChangeAddress != null) {
@@ -207,7 +217,8 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
             }
         }
 
-        return false;
+        return address.equals(Constants.DONATION_ADDRESS_TESTNET);
+
     }
 
     private boolean isAddressUser(String address) {
@@ -275,15 +286,24 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
             holder.fiat.setText(stockFiat.equals("") ? "" : String.format("%s USD", stockFiat));
         } else {
             List<WalletAddress> outputs = transactionHistory.getOutputs();
-            WalletAddress addressTo = outputs.get(0);
+            WalletAddress addressTo = null;
+            WalletAddress donationAddress = null;
             List<String> walletAddresses = getWalletAddresses(addresses);
 
             long outSatoshi = getOutComingAmount(transactionHistory, walletAddresses);
 
             for (WalletAddress output : outputs) {
-                if (!walletAddresses.contains(output.getAddress()) && !isAddressDonation(output.getAddress())) {
+                if (isAddressDonation(output.getAddress())) {
+                    donationAddress = output;
+                } else if (!walletAddresses.contains(output.getAddress())) {
                     addressTo = output;
                 }
+            }
+
+            if (addressTo == null && donationAddress != null) {
+                addressTo = donationAddress;
+            } else {
+                addressTo = outputs.get(0);
             }
 
             setAddress(addressTo.getAddress(), holder.containerAddresses);
