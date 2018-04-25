@@ -3,60 +3,201 @@
   ~ Licensed under Multy.io license.
   ~ See LICENSE for details
   -->
-
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scrollview"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_main"
     tools:showIn="io.multy.android.AssetSendActivity">
 
-    <TextView
-        android:id="@+id/text_select_speed"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:text="@string/fee_rate"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-        android:textColor="@color/text_grey"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_view"
-        android:layout_width="@dimen/dp0"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/activity_horizontal_margin"
-        android:background="@drawable/shape_squircle_white"
-        android:elevation="@dimen/elevation_4dp"
-        android:nestedScrollingEnabled="false"
-        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_select_speed" />
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/background_main"
+            tools:showIn="io.multy.android.AssetSendActivity">
 
-    <TextView
-        android:id="@+id/text_donation_description"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:text="@string/fee_description"
-        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-        android:textColor="@color/text_grey"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/recycler_view" />
+            <TextView
+                android:id="@+id/text_select_speed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:text="@string/fee_rate"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:textColor="@color/text_grey"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/button_next"
-        style="@style/ButtonNext"
-        android:text="@string/next"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="@dimen/dp0"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/activity_horizontal_margin"
+                android:background="@drawable/shape_squircle_white"
+                android:elevation="@dimen/elevation_4dp"
+                android:nestedScrollingEnabled="false"
+                app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_select_speed" />
 
-</android.support.constraint.ConstraintLayout>
+            <TextView
+                android:id="@+id/text_donation_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:text="@string/fee_description"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                android:textColor="@color/text_grey"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/recycler_view" />
+
+            <TextView
+                android:id="@+id/text_donation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="@dimen/donation_margin_top"
+                android:text="@string/donation_for_multy"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+                android:textColor="@color/text_grey"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_donation_description" />
+
+            <TextView
+                android:id="@+id/text_donation_allow"
+                android:layout_width="@dimen/dp0"
+                android:layout_height="@dimen/donation_height"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:background="@drawable/shape_top_round_white"
+                android:elevation="@dimen/elevation_3dp"
+                android:gravity="center_vertical"
+                android:paddingEnd="@dimen/activity_horizontal_margin"
+                android:paddingStart="@dimen/activity_horizontal_margin"
+                android:text="@string/allow_donation_for_multy"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+                android:textColor="@color/text_main_dark"
+                android:textStyle="bold"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_donation" />
+
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/switcher"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/activity_horizontal_margin"
+                android:checked="true"
+                android:elevation="@dimen/elevation_3dp"
+                app:layout_constraintBottom_toBottomOf="@+id/text_donation_allow"
+                app:layout_constraintRight_toRightOf="@+id/text_donation_allow"
+                app:layout_constraintTop_toTopOf="@+id/text_donation_allow" />
+
+            <TextView
+                android:id="@+id/text_donation_summ"
+                android:layout_width="@dimen/dp0"
+                android:layout_height="@dimen/donation_summ_height"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:background="@drawable/shape_bottom_round_white"
+                android:elevation="@dimen/elevation_3dp"
+                android:gravity="center_vertical"
+                android:paddingEnd="@dimen/activity_horizontal_margin"
+                android:paddingStart="@dimen/activity_horizontal_margin"
+                android:text="@string/donation_summ"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+                android:textColor="@color/text_main_dark"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_donation_allow" />
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/input_donation"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/dimen_40dp"
+                android:elevation="@dimen/elevation_3dp"
+                android:hint="@string/donation_default"
+                android:inputType="numberDecimal"
+                android:maxLength="@integer/ten"
+                android:maxWidth="@dimen/dimen_150dp"
+                android:text="@string/donation_default"
+                android:textAlignment="textEnd"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+                android:textColor="@color/text_main"
+                app:layout_constraintBottom_toTopOf="@+id/text_fee_currency"
+                app:layout_constraintRight_toLeftOf="@+id/text_fee_original"
+                app:layout_constraintTop_toTopOf="@+id/text_donation_summ"
+                app:layout_constraintVertical_chainStyle="packed"
+                tools:ignoreContentDescription="true" />
+
+            <TextView
+                android:id="@+id/text_fee_original"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/margin_5dp"
+                android:layout_marginEnd="@dimen/margin_18dp"
+                android:elevation="@dimen/elevation_4dp"
+                android:text="@string/eth"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+                android:textColor="@color/text_main"
+                app:layout_constraintBottom_toBottomOf="@+id/input_donation"
+                app:layout_constraintRight_toRightOf="@+id/text_donation_summ"
+                app:layout_constraintTop_toTopOf="@+id/input_donation" />
+
+            <TextView
+                android:id="@+id/text_fee_currency"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_18dp"
+                android:elevation="@dimen/elevation_4dp"
+                android:text="@string/usd"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@color/text_grey"
+                app:layout_constraintBottom_toBottomOf="@+id/text_donation_summ"
+                app:layout_constraintRight_toRightOf="@+id/text_donation_summ"
+                app:layout_constraintTop_toBottomOf="@+id/input_donation" />
+
+            <TextView
+                android:id="@+id/text_fee_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:text="@string/donation_description"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                android:textColor="@color/text_grey"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_donation_summ" />
+
+            <TextView
+                android:id="@+id/button_next"
+                style="@style/ButtonNext"
+                android:text="@string/next"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_fee_description" />
+
+            <android.support.constraint.Group
+                android:id="@+id/group_donation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="text_fee_original, text_fee_currency,text_donation_summ,input_donation" />
+
+        </android.support.constraint.ConstraintLayout>
+    </RelativeLayout>
+</ScrollView>

@@ -15,6 +15,7 @@ import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.api.socket.CurrenciesRate;
 import io.multy.model.entities.Fee;
+import io.multy.model.entities.FeeEth;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.responses.FeeRateResponse;
 import io.multy.storage.RealmManager;
@@ -32,6 +33,7 @@ public class AssetSendViewModel extends BaseViewModel {
     public MutableLiveData<Wallet> wallet = new MutableLiveData<>();
     public MutableLiveData<FeeRateResponse.Speeds> speeds = new MutableLiveData<>();
     public MutableLiveData<Fee> fee = new MutableLiveData<>();
+    public MutableLiveData<FeeEth> feeEth = new MutableLiveData<>();
     private MutableLiveData<String> receiverAddress = new MutableLiveData<>();
     public MutableLiveData<String> thoseAddress = new MutableLiveData<>();
     public static MutableLiveData<Long> transactionPrice = new MutableLiveData<>();
@@ -74,6 +76,14 @@ public class AssetSendViewModel extends BaseViewModel {
 
     public Fee getFee() {
         return fee.getValue();
+    }
+
+    public void setFeeEth(FeeEth feeEth) {
+        this.feeEth.setValue(feeEth);
+    }
+
+    public FeeEth getFeeEth() {
+        return feeEth.getValue();
     }
 
     public void setAmount(double amount) {

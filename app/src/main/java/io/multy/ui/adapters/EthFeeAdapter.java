@@ -14,9 +14,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.multy.R;
+import io.multy.model.entities.FeeEth;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -27,6 +30,11 @@ public class EthFeeAdapter extends RecyclerView.Adapter<EthFeeAdapter.Holder> {
     private String gasPrice;
     private String gasLimit;
     private int checkedPosition = -1;
+    private ArrayList<FeeEth> feeList = new ArrayList<>();
+
+    public EthFeeAdapter() {
+        feeList.add(new FeeEth("21000", "100"));
+    }
 
     @NonNull
     @Override
@@ -46,6 +54,14 @@ public class EthFeeAdapter extends RecyclerView.Adapter<EthFeeAdapter.Holder> {
             holder.itemView.setOnClickListener(v -> listener.onClickCustom());
         } else {
             //todo bind fee rates
+            holder.textName.setText("Default");
+            holder.divider.setVisibility(GONE);
+            holder.imageLogo.setImageResource(R.drawable.ic_fast);
+            holder.textBalanceOriginal.setText("GAS Prise - " + feeList.get(position).getGasPrice() + "\n" + "GAS Limit - " + feeList.get(position).getGasLimit());
+            holder.itemView.setOnClickListener(v -> {
+                setItemSelected(position);
+                checkedPosition = position;
+            });
         }
         if (checkedPosition == position) {
             holder.imageMark.setVisibility(VISIBLE);
@@ -54,9 +70,23 @@ public class EthFeeAdapter extends RecyclerView.Adapter<EthFeeAdapter.Holder> {
         }
     }
 
+    private void setItemSelected(int position) {
+        for (int i = 0; i < feeList.size(); i++) {
+            feeList.get(i).setSelected(i == position);
+        }
+        notifyDataSetChanged();
+    }
+
+    public FeeEth getSelectedFee() {
+        if (checkedPosition == 0) {
+            return feeList.get(0);
+        }
+        return new FeeEth(gasLimit, gasPrice);
+    }
+
     @Override
     public int getItemCount() {
-        return 1;
+        return 2;
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
