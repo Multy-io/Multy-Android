@@ -17,29 +17,22 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.lang.annotation.Native;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.multy.BuildConfig;
 import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.model.entities.wallet.Wallet;
-import io.multy.model.entities.wallet.WalletAddress;
-import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.model.requests.AddWalletAddressRequest;
 import io.multy.model.responses.SingleWalletResponse;
 import io.multy.storage.AssetsDao;
 import io.multy.storage.RealmManager;
-import io.multy.storage.SettingsDao;
 import io.multy.ui.activities.AssetRequestActivity;
 import io.multy.ui.adapters.AddressesAdapter;
 import io.multy.util.Constants;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
 import io.multy.util.analytics.Analytics;
-import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.WalletViewModel;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -93,7 +86,9 @@ public class AddressesFragment extends BaseFragment {
         if (getArguments().getLong(Constants.EXTRA_WALLET_ID) != -1) {
             Wallet wallet = RealmManager.getAssetsDao().getWalletById(getArguments().getLong(Constants.EXTRA_WALLET_ID, -1));
             textViewTitle.setText(wallet.getWalletName());
-            recyclerView.setAdapter(new AddressesAdapter(wallet.getBtcWallet().getAddresses()));
+            recyclerView.setAdapter(new AddressesAdapter(wallet.getBtcWallet().getAddresses(), selectedAddress -> {
+                viewModel.copyToClipboard(getActivity(), selectedAddress.getAddress());
+            }));
         } else {
             Toast.makeText(getActivity(), R.string.addresses_empty, Toast.LENGTH_SHORT).show();
         }
@@ -124,7 +119,9 @@ public class AddressesFragment extends BaseFragment {
                     AssetsDao assetsDao = RealmManager.getAssetsDao();
                     assetsDao.saveWallet(response.body().getWallets().get(0));
                     viewModel.wallet.postValue(assetsDao.getWalletById(walletId));
-                    recyclerView.setAdapter(new AddressesAdapter(response.body().getWallets().get(0).getBtcWallet().getAddresses()));
+                    recyclerView.setAdapter(new AddressesAdapter(response.body().getWallets().get(0).getBtcWallet().getAddresses(), selectedAddress -> {
+                        viewModel.copyToClipboard(getActivity(), selectedAddress.getAddress());
+                    }));
                 }
             }
 
