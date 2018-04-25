@@ -45,17 +45,24 @@ public class EthFeeAdapter extends RecyclerView.Adapter<EthFeeAdapter.Holder> {
 
     @Override
     public void onBindViewHolder(@NonNull Holder holder, int position) {
+        holder.textBlocks.setVisibility(GONE);
         if (position == getItemCount() - 1) {
             holder.textName.setText("Custom");
             holder.divider.setVisibility(GONE);
             holder.imageLogo.setImageResource(R.drawable.ic_custom);
             holder.textBalanceOriginal.setText(gasPrice == null || gasLimit == null ?
-                    "" : "GAS Prise - " + gasPrice + "\n" + "GAS Limit - " + gasLimit);
+                    "" : "GAS Prise - " + gasPrice + " " + "GAS Limit - " + gasLimit);
             holder.itemView.setOnClickListener(v -> listener.onClickCustom());
+            if (gasPrice == null || gasLimit == null) {
+                holder.textBalanceOriginal.setVisibility(GONE);
+            } else {
+                holder.textBalanceOriginal.setVisibility(VISIBLE);
+                holder.textBalanceOriginal.setText("GAS Prise - " + gasPrice + "\n" + "GAS Limit - " + gasLimit);
+            }
         } else {
             //todo bind fee rates
             holder.textName.setText("Default");
-            holder.divider.setVisibility(GONE);
+            holder.divider.setVisibility(VISIBLE);
             holder.imageLogo.setImageResource(R.drawable.ic_fast);
             holder.textBalanceOriginal.setText("GAS Prise - " + feeList.get(position).getGasPrice() + "\n" + "GAS Limit - " + feeList.get(position).getGasLimit());
             holder.itemView.setOnClickListener(v -> {
