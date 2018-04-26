@@ -134,13 +134,13 @@ public class WalletChooserFragment extends BaseFragment implements MyWalletsAdap
 
     private void launchTransactionFee(Wallet wallet) {
         viewModel.setWallet(wallet);
-//        if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()) {
-//            ((AssetSendActivity) getActivity()).setFragment(R.string.transaction_fee, R.id.container,
-//                    TransactionFeeFragment.newInstance());
-//        } else if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.ETH.getValue()) {
+        if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()) {
+            ((AssetSendActivity) getActivity()).setFragment(R.string.transaction_fee, R.id.container,
+                    TransactionFeeFragment.newInstance());
+        } else if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.ETH.getValue()) {
             ((AssetSendActivity) getActivity()).setFragment(R.string.transaction_fee, R.id.container,
                     EthTransactionFeeFragment.newInstance());
-//        }
+        }
     }
 
 }

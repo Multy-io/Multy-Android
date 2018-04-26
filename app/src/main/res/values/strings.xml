@@ -265,5 +265,6 @@
     <string name="create_or_import_new_wallet">Create or Import New Wallet</string>
     <string name="create_new">Create New</string>
     <string name="import_wallet">Import Wallet</string>
+    <string name="wei">WEI</string>
 
 </resources>

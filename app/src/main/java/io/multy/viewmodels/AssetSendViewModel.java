@@ -33,7 +33,6 @@ public class AssetSendViewModel extends BaseViewModel {
     public MutableLiveData<Wallet> wallet = new MutableLiveData<>();
     public MutableLiveData<FeeRateResponse.Speeds> speeds = new MutableLiveData<>();
     public MutableLiveData<Fee> fee = new MutableLiveData<>();
-    public MutableLiveData<FeeEth> feeEth = new MutableLiveData<>();
     private MutableLiveData<String> receiverAddress = new MutableLiveData<>();
     public MutableLiveData<String> thoseAddress = new MutableLiveData<>();
     public static MutableLiveData<Long> transactionPrice = new MutableLiveData<>();
@@ -76,14 +75,6 @@ public class AssetSendViewModel extends BaseViewModel {
 
     public Fee getFee() {
         return fee.getValue();
-    }
-
-    public void setFeeEth(FeeEth feeEth) {
-        this.feeEth.setValue(feeEth);
-    }
-
-    public FeeEth getFeeEth() {
-        return feeEth.getValue();
     }
 
     public void setAmount(double amount) {

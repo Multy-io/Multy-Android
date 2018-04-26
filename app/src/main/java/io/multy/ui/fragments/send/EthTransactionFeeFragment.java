@@ -28,7 +28,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 
 import butterknife.BindString;
 import butterknife.BindView;
@@ -36,10 +35,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.model.entities.Fee;
-import io.multy.model.entities.FeeEth;
 import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.ui.activities.AssetSendActivity;
-import io.multy.ui.adapters.EthFeeAdapter;
 import io.multy.ui.adapters.MyFeeAdapter;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
@@ -48,7 +45,7 @@ import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.AssetSendViewModel;
 
 public class EthTransactionFeeFragment extends BaseFragment
-        implements MyFeeAdapter.OnCustomFeeClickListener, EthFeeAdapter.OnItemClickListener {
+        implements MyFeeAdapter.OnCustomFeeClickListener {
 
     public static EthTransactionFeeFragment newInstance() {
         return new EthTransactionFeeFragment();
@@ -70,29 +67,28 @@ public class EthTransactionFeeFragment extends BaseFragment
     EditText inputDonation;
     @BindView(R.id.text_fee_currency)
     TextView textFeeCurrency;
+    @BindView(R.id.text_fee_original)
+    TextView textFeeOriginal;
     @BindView(R.id.group_donation)
     Group groupDonation;
     private AssetSendViewModel viewModel;
-    private EthFeeAdapter feeAdapter;
     private boolean isDonationChanged;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        feeAdapter = new EthFeeAdapter();
-        feeAdapter.setOnItemClickListener(this);
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_eth_transaction_fee, container, false);
+        View view = inflater.inflate(R.layout.fragment_transaction_fee, container, false);
         ButterKnife.bind(this, view);
         viewModel = ViewModelProviders.of(getActivity()).get(AssetSendViewModel.class);
         setBaseViewModel(viewModel);
-        setAdapter();
-//        viewModel.speeds.observe(this, speeds -> setAdapter());
-//        viewModel.requestFeeRates(viewModel.getWallet().getCurrencyId(), viewModel.getWallet().getNetworkId());
+        textFeeOriginal.setText(Constants.ETH);
+        viewModel.speeds.observe(this, speeds -> setAdapter());
+        viewModel.requestFeeRates(viewModel.getWallet().getCurrencyId(), viewModel.getWallet().getNetworkId());
         Analytics.getInstance(getActivity()).logTransactionFeeLaunch(viewModel.getChainId());
         inputDonation.setOnFocusChangeListener((view1, hasFocus) -> {
             if (hasFocus) {
@@ -110,7 +106,7 @@ public class EthTransactionFeeFragment extends BaseFragment
     }
 
     private void setAdapter() {
-        recyclerView.setAdapter(feeAdapter);
+        recyclerView.setAdapter(new MyFeeAdapter(viewModel.speeds.getValue().asList(), this, MyFeeAdapter.FeeType.ETH));
     }
 
     @Override
@@ -125,42 +121,42 @@ public class EthTransactionFeeFragment extends BaseFragment
             String gasPrice = data.getExtras().getString(Constants.GAS_PRICE, "");
             String gasLimit = data.getExtras().getString(Constants.GAS_LIMIT, "");
             if (!TextUtils.isEmpty(gasPrice) && !TextUtils.isEmpty(gasLimit)) {
-                feeAdapter.setCustomFee(gasPrice, gasLimit);
+//                feeAdapter.setCustomFee(gasPrice, gasLimit);
             }
             //todo insert selected rate into viewmodel
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    @Override
-    public void onClickCustom() {
-        logTransactionFee(5);
-        if (getActivity() != null) {
-            EthCustomSpeedFragment fragment = (EthCustomSpeedFragment) getActivity().getSupportFragmentManager()
-                    .findFragmentByTag(EthCustomSpeedFragment.TAG);
-            if (fragment == null) {
-                fragment = EthCustomSpeedFragment.getInstance();
-            }
-            fragment.setTargetFragment(this, Constants.REQUEST_CODE_SET_GAS);
-            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment)
-                    .addToBackStack(EthCustomSpeedFragment.TAG).commit();
-        }
-    }
-
-    @Override
-    public void onClickFee(int position) {
-        //todo insert selected rate into viewmodel
-        logTransactionFee(position);
-    }
+//    @Override
+//    public void onClickCustom() {
+//        logTransactionFee(5);
+//        if (getActivity() != null) {
+//            EthCustomSpeedFragment fragment = (EthCustomSpeedFragment) getActivity().getSupportFragmentManager()
+//                    .findFragmentByTag(EthCustomSpeedFragment.TAG);
+//            if (fragment == null) {
+//                fragment = EthCustomSpeedFragment.getInstance();
+//            }
+//            fragment.setTargetFragment(this, Constants.REQUEST_CODE_SET_GAS);
+//            getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment)
+//                    .addToBackStack(EthCustomSpeedFragment.TAG).commit();
+//        }
+//    }
+//
+//    @Override
+//    public void onClickFee(int position) {
+//        //todo insert selected rate into viewmodel
+//        logTransactionFee(position);
+//    }
 
     public void showCustomFeeDialog(long currentValue) {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = this.getLayoutInflater();
-        final View dialogView = inflater.inflate(R.layout.dialog_custom_fee, null);
+        final View dialogView = inflater.inflate(R.layout.dialog_custom_eth_fee, null);
         dialogBuilder.setView(dialogView);
 
         final TextInputEditText input = dialogView.findViewById(R.id.input_custom);
-        input.setText(currentValue == -1 ? String.valueOf(20) : String.valueOf(currentValue));
+        input.setText(currentValue == -1 ? String.valueOf(2000000000) : String.valueOf(currentValue));
 
         dialogBuilder.setTitle(R.string.custom_fee);
         dialogBuilder.setPositiveButton(R.string.done, (dialog, whichButton) -> {
@@ -205,7 +201,7 @@ public class EthTransactionFeeFragment extends BaseFragment
 
     @OnClick(R.id.button_next)
     void onClickNext() {
-        FeeEth selectedFee = ((EthFeeAdapter) recyclerView.getAdapter()).getSelectedFee();
+        Fee selectedFee = ((MyFeeAdapter) recyclerView.getAdapter()).getSelectedFee();
 
         if (selectedFee != null) {
             if (switcher.isChecked()) {
@@ -213,7 +209,7 @@ public class EthTransactionFeeFragment extends BaseFragment
             } else {
                 viewModel.setDonationAmount(null);
             }
-            viewModel.setFeeEth(selectedFee);
+            viewModel.setFee(selectedFee);
             ((AssetSendActivity) getActivity()).setFragment(R.string.send_amount, R.id.container, AmountChooserFragment.newInstance());
 
             if (viewModel.isAmountScanned()) {
