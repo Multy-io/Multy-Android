@@ -16,7 +16,7 @@
         android:layout_width="@dimen/reset_data_dialog_width"
         android:layout_height="@dimen/reset_data_dialog_height"
         android:background="@drawable/shape_white_rounded"
-        android:elevation="@dimen/elevation_12dp"
+        android:elevation="@dimen/base_view_elevation"
         android:paddingBottom="@dimen/reset_data_dialog_padding_bottom"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"

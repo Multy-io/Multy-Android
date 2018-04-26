@@ -96,7 +96,7 @@
         android:id="@+id/container_main"
         android:layout_width="@dimen/dp0"
         android:layout_height="@dimen/dp0"
-        android:elevation="15dp"
+        android:elevation="@dimen/base_view_elevation"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

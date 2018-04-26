@@ -35,6 +35,7 @@
     <dimen name="elevation_6dp">6dp</dimen>
     <dimen name="elevation_10dp">10dp</dimen>
     <dimen name="elevation_12dp">12dp</dimen>
+    <dimen name="base_view_elevation">10dp</dimen>
 
     <dimen name="dimen_60dp">60dp</dimen>
     <dimen name="qr_size">170dp</dimen>
@@ -107,5 +108,7 @@
     <dimen name="dialog_button_padding">8dp</dimen>
     <dimen name="card_challenge_radius">16dp</dimen>
     <dimen name="fee_block_title_margin">36dp</dimen>
+    <dimen name="radius_12dp">12dp</dimen>
     <dimen name="fee_screen_margin_22dp">22dp</dimen>
+
 </resources>
