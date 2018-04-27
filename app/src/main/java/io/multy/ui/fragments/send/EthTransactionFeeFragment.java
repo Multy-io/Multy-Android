@@ -82,7 +82,7 @@ public class EthTransactionFeeFragment extends BaseFragment
         setBaseViewModel(viewModel);
         textFeeOriginal.setText(Constants.ETH);
         viewModel.speeds.observe(this, speeds -> setAdapter());
-        viewModel.requestFeeRates(60, 4);
+        viewModel.requestFeeRates(viewModel.getWallet().getCurrencyId(), viewModel.getWallet().getNetworkId());
         Analytics.getInstance(getActivity()).logTransactionFeeLaunch(viewModel.getChainId());
         groupDonation.setVisibility(View.GONE);
         return view;
@@ -139,7 +139,7 @@ public class EthTransactionFeeFragment extends BaseFragment
         dialogBuilder.setView(dialogView);
 
         final TextInputEditText input = dialogView.findViewById(R.id.input_custom);
-        input.setText(currentValue == -1 ? String.valueOf(2000000000) : String.valueOf(currentValue));
+        input.setText(currentValue == -1 ? "2000000000" : String.valueOf(currentValue));
 
         dialogBuilder.setTitle(R.string.custom_fee);
         dialogBuilder.setPositiveButton(R.string.done, (dialog, whichButton) -> {
