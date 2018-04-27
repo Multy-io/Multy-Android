@@ -262,5 +262,6 @@
     <string name="discard">Discard</string>
     <string name="accept">Accept</string>
     <string name="terms_please">In order to use Multy you have to accept Terms of Service.   By pressing \"Accept\" you confirm that you have read, understood and agree to the following Terms of Service and that you have the right, power and authority to do so.</string>
+    <string name="error_initializing_wallet">Error initializing wallet.</string>
 
 </resources>

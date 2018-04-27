@@ -260,7 +260,13 @@ public class SeedValidationFragment extends BaseSeedFragment {
                 @Override
                 public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
                     if (response.isSuccessful()) {
-                        Multy.makeInitialized();
+
+                        final boolean initialized = Multy.makeInitialized();
+                        if (!initialized) {
+                            onSeedRestoreFailure(callback);
+                            return;
+                        }
+
                         RealmManager.open();
                         SettingsDao settingsDao = RealmManager.getSettingsDao();
                         settingsDao.setUserId(new UserId(userId));
@@ -270,6 +276,8 @@ public class SeedValidationFragment extends BaseSeedFragment {
                         if (serverConfig != null) {
                             settingsDao.saveDonation(serverConfig.getDonates());
                         }
+                        RealmManager.close();
+
                         Prefs.putString(Constants.PREF_AUTH, response.body().getToken());
                         seedModel.isLoading.setValue(false);
                         seedModel.failed.setValue(false);

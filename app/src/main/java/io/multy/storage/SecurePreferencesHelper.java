@@ -40,7 +40,6 @@ public class SecurePreferencesHelper {
             Prefs.putString(key, encodedString);
         } catch (Exception e) {
             e.printStackTrace();
-            clear();
         }
     }
 
@@ -62,7 +61,6 @@ public class SecurePreferencesHelper {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
-            clear();
         }
         return null;
     }
@@ -70,22 +68,5 @@ public class SecurePreferencesHelper {
     private static void clear() {
         RealmManager.clear();
         Prefs.clear();
-    }
-
-    public static long getLong(Context context, String key) {
-        String longString = getString(context, key);
-        long result = 0;
-
-        if (longString == null) {
-            //TODO is not exist or something is broken
-        }
-
-        try {
-            result = Long.parseLong(longString);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return result;
     }
 }

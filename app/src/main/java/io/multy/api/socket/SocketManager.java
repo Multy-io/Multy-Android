@@ -77,9 +77,6 @@ public class SocketManager {
 
             final String userId = RealmManager.getSettingsDao().getUserId().getUserId();
 
-            Timber.i(TAG, "auth header " + Prefs.getString(Constants.PREF_AUTH));
-            Timber.i(TAG, "userId " + userId);
-
             socket = IO.socket(SOCKET_URL, options);
             socket.io().on(Manager.EVENT_TRANSPORT, args -> {
                 Transport transport = (Transport) args[0];
