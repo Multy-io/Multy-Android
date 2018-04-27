@@ -16,9 +16,7 @@ import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,15 +25,12 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.text.DecimalFormat;
-
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.model.entities.Fee;
-import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.ui.activities.AssetSendActivity;
 import io.multy.ui.adapters.MyFeeAdapter;
 import io.multy.ui.fragments.BaseFragment;
@@ -69,10 +64,9 @@ public class EthTransactionFeeFragment extends BaseFragment
     TextView textFeeCurrency;
     @BindView(R.id.text_fee_original)
     TextView textFeeOriginal;
-    @BindView(R.id.group_donation)
+    @BindView(R.id.group_donation_views)
     Group groupDonation;
     private AssetSendViewModel viewModel;
-    private boolean isDonationChanged;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -88,20 +82,9 @@ public class EthTransactionFeeFragment extends BaseFragment
         setBaseViewModel(viewModel);
         textFeeOriginal.setText(Constants.ETH);
         viewModel.speeds.observe(this, speeds -> setAdapter());
-        viewModel.requestFeeRates(viewModel.getWallet().getCurrencyId(), viewModel.getWallet().getNetworkId());
+        viewModel.requestFeeRates(60, 4);
         Analytics.getInstance(getActivity()).logTransactionFeeLaunch(viewModel.getChainId());
-        inputDonation.setOnFocusChangeListener((view1, hasFocus) -> {
-            if (hasFocus) {
-                scrollView.postDelayed(() -> scrollView.fullScroll(ScrollView.FOCUS_DOWN), 500);
-            } else {
-                if (!TextUtils.isEmpty(inputDonation.getText())
-                        && !inputDonation.getText().toString().equals(getString(R.string.donation_default))) {
-                    Analytics.getInstance(getActivity()).logTransactionFee(AnalyticsConstants.TRANSACTION_FEE_DONATION_CHANGED, viewModel.getChainId());
-                }
-            }
-        });
-        setupSwitcher();
-        setupInput();
+        groupDonation.setVisibility(View.GONE);
         return view;
     }
 
@@ -204,11 +187,6 @@ public class EthTransactionFeeFragment extends BaseFragment
         Fee selectedFee = ((MyFeeAdapter) recyclerView.getAdapter()).getSelectedFee();
 
         if (selectedFee != null) {
-            if (switcher.isChecked()) {
-                viewModel.setDonationAmount(inputDonation.getText().toString());
-            } else {
-                viewModel.setDonationAmount(null);
-            }
             viewModel.setFee(selectedFee);
             ((AssetSendActivity) getActivity()).setFragment(R.string.send_amount, R.id.container, AmountChooserFragment.newInstance());
 
@@ -218,54 +196,6 @@ public class EthTransactionFeeFragment extends BaseFragment
         } else {
             Toast.makeText(getActivity(), R.string.choose_transaction_speed, Toast.LENGTH_SHORT).show();
         }
-    }
-
-    private void setupSwitcher() {
-        switcher.setOnCheckedChangeListener((compoundButton, b) -> {
-            if (b) {
-                textDonationAllow.setBackground(getResources().getDrawable(R.drawable.shape_top_round_white, null));
-                groupDonation.setVisibility(View.VISIBLE);
-                Analytics.getInstance(getActivity()).logTransactionFee(AnalyticsConstants.TRANSACTION_FEE_DONATION_ENABLE, viewModel.getChainId());
-            } else {
-                textDonationAllow.setBackground(getResources().getDrawable(R.drawable.shape_squircle_white, null));
-                groupDonation.setVisibility(View.GONE);
-                hideKeyboard(getActivity());
-                Analytics.getInstance(getActivity()).logTransactionFee(AnalyticsConstants.TRANSACTION_FEE_DONATION_DISABLE, viewModel.getChainId());
-            }
-        });
-    }
-
-    private void setupInput() {
-        if (viewModel.getCurrenciesRate() != null) {
-            textFeeCurrency.setText(new DecimalFormat(formatPattern).format(Double.parseDouble(inputDonation.getText().toString()) * viewModel.getCurrenciesRate().getBtcToUsd()));
-        }
-        textFeeCurrency.append(Constants.SPACE);
-        textFeeCurrency.append(CurrencyCode.USD.name());
-
-        inputDonation.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (!TextUtils.isEmpty(charSequence)) {
-                    textFeeCurrency.setText(new DecimalFormat(formatPattern)
-                            .format(Double.parseDouble(charSequence.toString()) * viewModel.getCurrenciesRate().getEthToUsd()));
-                    textFeeCurrency.append(Constants.SPACE);
-                    textFeeCurrency.append(CurrencyCode.USD.name());
-                } else {
-                    textFeeCurrency.setText(Constants.SPACE);
-                }
-                isDonationChanged = true;
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
     }
 
 }

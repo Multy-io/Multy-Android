@@ -48,10 +48,12 @@ public class MyFeeAdapter extends RecyclerView.Adapter<MyFeeAdapter.FeeHolder> {
     @Override
     public void onBindViewHolder(FeeHolder holder, int position) {
         Fee rate = rates.get(position);
-        long price = rate.getAmount() == 0 ? 1000 : rate.getAmount();
+        long price;
+        double ethPrice;
         holder.imageMark.setVisibility(rate.isSelected() ? View.VISIBLE : View.INVISIBLE);
         switch (feeType) {
             case BTC:
+                price = rate.getAmount() == 0 ? 1000 : rate.getAmount();
                 if (position == rates.size() - 1) {
                     holder.textName.setText(rate.getName());
                     holder.divider.setVisibility(View.GONE);
@@ -72,16 +74,17 @@ public class MyFeeAdapter extends RecyclerView.Adapter<MyFeeAdapter.FeeHolder> {
                 break;
             case ETH:
                 holder.textBlocks.setVisibility(View.GONE);
+                ethPrice = CryptoFormatUtils.weiToEth(String.valueOf(rate.getAmount()));
                 if (position == rates.size() - 1) {
                     holder.textName.setText(rate.getName());
                     holder.divider.setVisibility(View.GONE);
                     holder.imageLogo.setImageResource(R.drawable.ic_custom);
-                    holder.textBalanceOriginal.setText(price == -1 ? "" : String.format("%s WEI", price));
+                    holder.textBalanceOriginal.setText(ethPrice == -1 ? "" : String.format("%s ETH", ethPrice));
                     holder.root.setOnClickListener(v -> listener.onClickCustomFee(rate.getAmount()));
                 } else {
                     holder.imageLogo.setImageResource(getIconResId(position));
                     holder.textName.setText(String.format("%s · %s", rate.getName(), rate.getTime()));
-                    holder.textBalanceOriginal.setText(String.format("%s WEI", price));
+                    holder.textBalanceOriginal.setText(String.format("%s ETH", ethPrice));
                     holder.root.setOnClickListener(v -> {
                         setItemSelected(position);
                         listener.logTransactionFee(position);
