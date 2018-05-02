@@ -1,0 +1,73 @@
+{
+  "project_info": {
+    "project_number": "144249744533",
+    "firebase_url": "https://multy-wallet.firebaseio.com",
+    "project_id": "multy-wallet",
+    "storage_bucket": "multy-wallet.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:144249744533:android:3cc6273553a14902",
+        "android_client_info": {
+          "package_name": "io.multy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "144249744533-im1k4jguodhhi5jjl9tm8vcgb1v4t6nk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAl_AO2LWuPgSvmbuZRPQJFgKkw9daLEn4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:144249744533:android:232136440b4e23d9",
+        "android_client_info": {
+          "package_name": "io.multy.debug"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "144249744533-im1k4jguodhhi5jjl9tm8vcgb1v4t6nk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAl_AO2LWuPgSvmbuZRPQJFgKkw9daLEn4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

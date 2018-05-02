@@ -8,6 +8,9 @@ package io.multy.util;
 
 import android.os.Build;
 
+import io.multy.Multy;
+import io.multy.R;
+
 public final class Constants {
 
     public static final String DEVICE_NAME = "Andrdoid " + Build.MANUFACTURER
@@ -15,7 +18,8 @@ public final class Constants {
             + " " + Build.VERSION.RELEASE
             + " " + Build.VERSION_CODES.class.getFields()[android.os.Build.VERSION.SDK_INT].getName();
 
-    public static final String BASE_URL = "https://api.multy.io/";
+    public static final String BASE_URL = Multy.getContext().getString(R.string.base_url);
+//     public static final String BASE_URL = "https://api.multy.io/";
 
     public static final int DONATION_MIN_VALUE = 10000;
     public static final String DONATION_ADDRESS_TESTNET = "mnUtMQcs3s8kSkSRXpREVtJamgUCWpcFj4";
