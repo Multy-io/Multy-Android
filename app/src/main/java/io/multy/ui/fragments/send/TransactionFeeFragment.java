@@ -99,7 +99,7 @@ public class TransactionFeeFragment extends BaseFragment implements MyFeeAdapter
     }
 
     private void setAdapter() {
-        recyclerView.setAdapter(new MyFeeAdapter(viewModel.speeds.getValue().asList(), this));
+        recyclerView.setAdapter(new MyFeeAdapter(viewModel.speeds.getValue().asList(), this, MyFeeAdapter.FeeType.BTC));
     }
 
     @Override

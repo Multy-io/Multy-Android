@@ -10,6 +10,7 @@
     android:layout_height="wrap_content">
 
     <View
+        android:elevation="@dimen/base_view_elevation"
         android:id="@+id/button_create"
         style="@style/FirstStartCard"
         android:layout_margin="@dimen/activity_vertical_margin"
@@ -28,6 +29,7 @@
         app:layout_constraintTop_toTopOf="@+id/button_create" />
 
     <View
+        android:elevation="@dimen/base_view_elevation"
         android:id="@+id/button_restore"
         style="@style/FirstStartCard"
         android:layout_margin="@dimen/activity_vertical_margin"

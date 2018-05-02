@@ -4,18 +4,20 @@
   ~ See LICENSE for details
   -->
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/scrollview"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/background_main"
-    tools:showIn="io.multy.android.AssetSendActivity">
+    android:layout_height="match_parent">
 
-    <RelativeLayout
+    <ScrollView
+        android:id="@+id/scrollview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:layout_above="@+id/button_next"
+        android:background="@color/background_main"
+        tools:showIn="io.multy.android.AssetSendActivity">
+
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
@@ -25,7 +27,7 @@
                 android:id="@+id/text_select_speed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/activity_horizontal_margin"
+                android:layout_marginStart="@dimen/fee_block_title_margin"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
                 android:text="@string/fee_rate"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2"
@@ -39,8 +41,10 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/activity_horizontal_margin"
                 android:background="@drawable/shape_squircle_white"
-                android:elevation="@dimen/elevation_4dp"
+                android:elevation="@dimen/base_view_elevation"
                 android:nestedScrollingEnabled="false"
+                android:paddingBottom="@dimen/margin_8dp"
+                android:paddingTop="@dimen/margin_8dp"
                 app:layoutManager="android.support.v7.widget.LinearLayoutManager"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
@@ -50,7 +54,7 @@
                 android:id="@+id/text_donation_description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:layout_marginTop="@dimen/fee_screen_margin_22dp"
                 android:paddingLeft="@dimen/activity_horizontal_margin"
                 android:paddingRight="@dimen/activity_horizontal_margin"
                 android:text="@string/fee_description"
@@ -64,10 +68,10 @@
                 android:id="@+id/text_donation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/activity_horizontal_margin"
+                android:layout_marginStart="@dimen/fee_block_title_margin"
                 android:layout_marginTop="@dimen/donation_margin_top"
                 android:text="@string/donation_for_multy"
-                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                 android:textColor="@color/text_grey"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_donation_description" />
@@ -77,10 +81,10 @@
                 android:layout_width="@dimen/dp0"
                 android:layout_height="@dimen/donation_height"
                 android:layout_marginLeft="@dimen/activity_horizontal_margin"
-                android:layout_marginTop="@dimen/activity_vertical_margin"
                 android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
                 android:background="@drawable/shape_top_round_white"
-                android:elevation="@dimen/elevation_3dp"
+                android:elevation="@dimen/base_view_elevation"
                 android:gravity="center_vertical"
                 android:paddingEnd="@dimen/activity_horizontal_margin"
                 android:paddingStart="@dimen/activity_horizontal_margin"
@@ -98,7 +102,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/activity_horizontal_margin"
                 android:checked="true"
-                android:elevation="@dimen/elevation_3dp"
+                android:elevation="@dimen/base_view_elevation"
                 app:layout_constraintBottom_toBottomOf="@+id/text_donation_allow"
                 app:layout_constraintRight_toRightOf="@+id/text_donation_allow"
                 app:layout_constraintTop_toTopOf="@+id/text_donation_allow" />
@@ -110,7 +114,7 @@
                 android:layout_marginLeft="@dimen/activity_horizontal_margin"
                 android:layout_marginRight="@dimen/activity_horizontal_margin"
                 android:background="@drawable/shape_bottom_round_white"
-                android:elevation="@dimen/elevation_3dp"
+                android:elevation="@dimen/base_view_elevation"
                 android:gravity="center_vertical"
                 android:paddingEnd="@dimen/activity_horizontal_margin"
                 android:paddingStart="@dimen/activity_horizontal_margin"
@@ -125,7 +129,7 @@
                 android:id="@+id/input_donation"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/dimen_40dp"
-                android:elevation="@dimen/elevation_3dp"
+                android:elevation="@dimen/base_view_elevation"
                 android:hint="@string/donation_default"
                 android:imeOptions="actionDone"
                 android:inputType="numberDecimal"
@@ -145,9 +149,9 @@
                 android:id="@+id/text_fee_original"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/margin_18dp"
                 android:layout_marginBottom="@dimen/margin_5dp"
-                android:elevation="@dimen/elevation_4dp"
+                android:layout_marginEnd="@dimen/margin_18dp"
+                android:elevation="@dimen/base_view_elevation"
                 android:text="@string/btc"
                 android:textAppearance="@style/TextAppearance.AppCompat.Menu"
                 android:textColor="@color/text_main"
@@ -160,7 +164,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/margin_18dp"
-                android:elevation="@dimen/elevation_4dp"
+                android:elevation="@dimen/base_view_elevation"
                 android:text="@string/usd"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 android:textColor="@color/text_grey"
@@ -172,8 +176,8 @@
                 android:id="@+id/text_fee_description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/activity_vertical_margin"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="@dimen/fee_screen_margin_22dp"
+                android:layout_marginTop="@dimen/fee_screen_margin_22dp"
                 android:paddingLeft="@dimen/activity_horizontal_margin"
                 android:paddingRight="@dimen/activity_horizontal_margin"
                 android:text="@string/donation_description"
@@ -183,14 +187,6 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_donation_summ" />
 
-            <TextView
-                android:id="@+id/button_next"
-                style="@style/ButtonNext"
-                android:text="@string/next"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/text_fee_description" />
 
             <android.support.constraint.Group
                 android:id="@+id/group_donation"
@@ -198,7 +194,21 @@
                 android:layout_height="wrap_content"
                 app:constraint_referenced_ids="text_fee_original, text_fee_currency,text_donation_summ,input_donation" />
 
+            <android.support.constraint.Group
+                android:id="@+id/group_donation_views"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="text_donation, text_donation_allow, switcher, text_fee_description, text_fee_original, text_fee_currency,text_donation_summ,input_donation" />
+
+
         </android.support.constraint.ConstraintLayout>
 
-    </RelativeLayout>
-</ScrollView>
+    </ScrollView>
+
+    <TextView
+        android:id="@+id/button_next"
+        style="@style/ButtonNext"
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"
+        android:text="@string/next" />
+</RelativeLayout>

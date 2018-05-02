@@ -152,7 +152,7 @@ public class DonationFragment extends BaseFragment {
             public void logTransactionFee(int position) {
 
             }
-        }));
+        }, MyFeeAdapter.FeeType.BTC));
     }
 
     public void showCustomFeeDialog(long currentValue) {
