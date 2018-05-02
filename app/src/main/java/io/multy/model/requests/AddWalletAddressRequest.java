@@ -6,6 +6,8 @@
 
 package io.multy.model.requests;
 
+import com.google.gson.annotations.SerializedName;
+
 import retrofit2.http.Query;
 
 
@@ -15,10 +17,25 @@ public class AddWalletAddressRequest {
     private String address;
     private int addressIndex;
 
-    public AddWalletAddressRequest(int walletIndex, String address, int addressIndex) {
+    @SerializedName("networkID")
+    private int networkId;
+    @SerializedName("currencyID")
+    private int currencyId;
+
+    public AddWalletAddressRequest(int walletIndex, String address, int addressIndex, int networkId, int currencyId) {
         this.walletIndex = walletIndex;
         this.address = address;
         this.addressIndex = addressIndex;
+        this.networkId = networkId;
+        this.currencyId = currencyId;
+    }
+
+    public int getNetworkId() {
+        return networkId;
+    }
+
+    public int getCurrencyId() {
+        return currencyId;
     }
 
     public int getWalletIndex() {

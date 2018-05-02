@@ -17,9 +17,11 @@ import io.multy.model.entities.RootKey;
 import io.multy.model.entities.Token;
 import io.multy.model.entities.UserId;
 import io.multy.model.responses.ServerConfigResponse;
+import io.multy.util.Constants;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.annotations.Nullable;
 import io.realm.Realm;
+import io.realm.RealmResults;
 
 public class SettingsDao {
 
@@ -105,18 +107,26 @@ public class SettingsDao {
     public void saveDonation(List<ServerConfigResponse.Donate> donates) {
         realm.executeTransactionAsync(realm -> {
             for (ServerConfigResponse.Donate donate : donates) {
-                if (donate.getFeatureCode() < 20000) {
-                    DonateFeatureEntity donateFeature = new DonateFeatureEntity(donate.getFeatureCode());
-                    donateFeature.setDonationAddress(donate.getDonationAddress());
-                    realm.insertOrUpdate(donateFeature);
-                }
+                DonateFeatureEntity donateFeature = new DonateFeatureEntity(donate.getFeatureCode());
+                donateFeature.setDonationAddress(donate.getDonationAddress());
+                realm.insertOrUpdate(donateFeature);
             }
         }, Throwable::printStackTrace);
+    }
+
+    public RealmResults<DonateFeatureEntity> getDonationAddresses() {
+        return realm.where(DonateFeatureEntity.class).findAll();
     }
 
     public String getDonationAddress(int donationCode) {
         DonateFeatureEntity donateFeature = realm.where(DonateFeatureEntity.class)
                 .equalTo(DonateFeatureEntity.FEATURE_CODE, donationCode).findFirst();
         return donateFeature == null ? null : donateFeature.getDonationAddress();
+    }
+
+    public boolean isDonateAddress(String possibleDonateAddress) {
+        return realm.where(DonateFeatureEntity.class)
+                .equalTo(DonateFeatureEntity.DONATION_ADDRESS, possibleDonateAddress).findFirst() != null
+                && possibleDonateAddress.equals(Constants.DONATION_ADDRESS_TESTNET);
     }
 }

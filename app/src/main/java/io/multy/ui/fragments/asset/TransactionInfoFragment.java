@@ -29,7 +29,6 @@ import io.multy.model.entities.TransactionHistory;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.storage.RealmManager;
 import io.multy.ui.activities.BaseActivity;
-import io.multy.ui.adapters.AssetTransactionsAdapter;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.WebFragment;
 import io.multy.util.Constants;
@@ -181,6 +180,25 @@ public class TransactionInfoFragment extends BaseFragment {
         });
     }
 
+    private long getOutComingAmount(TransactionHistory transactionHistory, List<String> walletAddresses, double exchangeRate) {
+        long totalAmount = 0;
+        long outAmount = 0;
+
+        for (WalletAddress walletAddress : transactionHistory.getInputs()) {
+            totalAmount += walletAddress.getAmount();
+        }
+
+        for (WalletAddress walletAddress : transactionHistory.getOutputs()) {
+            if (walletAddresses.contains(walletAddress.getAddress())) {
+                outAmount += walletAddress.getAmount();
+            } else if (isDonationAddress(walletAddress.getAddress())) {
+                initializeDonationBlock(walletAddress, exchangeRate);
+            }
+        }
+
+        return totalAmount - outAmount;
+    }
+
     private void setData() {
         boolean isIncoming = transaction.getTxStatus() == TX_IN_BLOCK_INCOMING ||
                 transaction.getTxStatus() == TX_CONFIRMED_INCOMING ||
@@ -194,16 +212,7 @@ public class TransactionInfoFragment extends BaseFragment {
         } else {
             textValue.setText("-");
             textAmount.setText("-");
-            long outValue = AssetTransactionsAdapter.getOutСomingAmount(transaction, walletAddresses);
-//            List<WalletAddress> outputs = transaction.getOutputs();
-//            for (WalletAddress output : outputs) {
-//                if (!walletAddresses.contains(output.getAddress())) {
-//                    outValue += output.getAmount();
-//                    if (isDonationAddress(output.getAddress())) {
-//                        initializeDonationBlock(output, exchangeRate); //TODO need to know if address is donate not only for testnet
-//                    }
-//                }
-//            }
+            long outValue = getOutComingAmount(transaction, walletAddresses, exchangeRate);
             textValue.append(CryptoFormatUtils.satoshiToBtc(outValue));
             textAmount.append(CryptoFormatUtils.satoshiToUsd(outValue, exchangeRate));
         }
@@ -251,7 +260,7 @@ public class TransactionInfoFragment extends BaseFragment {
         if (networkId == NativeDataHelper.NetworkId.TEST_NET.getValue()) {
             return address.equals(Constants.DONATION_ADDRESS_TESTNET);
         }
-        return donateAddress.equals(address);
+        return RealmManager.getSettingsDao().isDonateAddress(address);
     }
 
     private double getPreferredExchangeRate(ArrayList<TransactionHistory.StockExchangeRate> stockExchangeRates) {

@@ -258,7 +258,7 @@
     <string name="percent_0">0%</string>
     <string name="crypto_portfolio">Crypto portfolio</string>
     <string name="terms_of_service">Terms of service</string>
-    <string name="agreement_read">I have read the terms of the license agreement and agree to the processing of my personal data</string>
+    <string name="agreement_read">I agree with Terms of Service and processing of my personal data according to the Multy Privacy Policy.</string>
     <string name="discard">Discard</string>
     <string name="accept">Accept</string>
     <string name="terms_please">In order to use Multy you have to accept Terms of Service.   By pressing \"Accept\" you confirm that you have read, understood and agree to the following Terms of Service and that you have the right, power and authority to do so.</string>

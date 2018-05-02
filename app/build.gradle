@@ -39,6 +39,14 @@ def getCommitDescription = { ->
 }
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'sign'
+            keyPassword '6vmc6WXuEr#I14@'
+            storeFile file('C:/Users/andre/Downloads/Telegram Desktop/multyKey.jks')
+            storePassword '6vmc6WXuEr#I14@'
+        }
+    }
     compileSdkVersion 27
     defaultConfig {
         vectorDrawables.useSupportLibrary = true
@@ -46,7 +54,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 27
         versionCode 9
-        versionName "0.0.9"
+        versionName "1.0.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
@@ -81,6 +89,8 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            manifestPlaceholders = [crashlyticsEnabled: true, analyticsDeactivated: false]
+            signingConfig signingConfigs.config
         }
         externalNativeBuild {
             cmake {

@@ -38,6 +38,7 @@ import io.multy.ui.activities.AssetSendActivity;
 import io.multy.ui.adapters.MyFeeAdapter;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
+import io.multy.util.CryptoFormatUtils;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.AssetSendViewModel;
@@ -217,6 +218,15 @@ public class TransactionFeeFragment extends BaseFragment implements MyFeeAdapter
     void onClickNext() {
         Fee selectedFee = ((MyFeeAdapter) recyclerView.getAdapter()).getSelectedFee();
 
+        if (switcher.isChecked()) {
+            final long donateSatoshi = CryptoFormatUtils.btcToSatoshi(inputDonation.getText().toString());
+
+            if (donateSatoshi < Constants.MIN_SATOSHI) {
+                Toast.makeText(getActivity(), "Too low donation amount", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+
         if (selectedFee != null) {
             viewModel.setFee(selectedFee);
 
@@ -228,9 +238,9 @@ public class TransactionFeeFragment extends BaseFragment implements MyFeeAdapter
 
             ((AssetSendActivity) getActivity()).setFragment(R.string.send_amount, R.id.container, AmountChooserFragment.newInstance());
 
-            if (viewModel.isAmountScanned()) {
-                ((AssetSendActivity) getActivity()).setFragment(R.string.send_summary, R.id.container, SendSummaryFragment.newInstance());
-            }
+//            if (viewModel.isAmountScanned()) {
+//                ((AssetSendActivity) getActivity()).setFragment(R.string.send_summary, R.id.container, SendSummaryFragment.newInstance());
+//            }
         } else {
             Toast.makeText(getActivity(), R.string.choose_transaction_speed, Toast.LENGTH_SHORT).show();
         }

@@ -27,7 +27,6 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -111,6 +110,8 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
         viewModel.setPayForCommission(switcher.isChecked());
         if (!viewModel.isAmountScanned()) {
             Analytics.getInstance(getActivity()).logSendChooseAmountLaunch(viewModel.getChainId());
+        } else {
+            inputOriginal.setText(String.valueOf(viewModel.getAmount()));
         }
         return view;
     }
@@ -249,7 +250,7 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
         inputCurrency.setText(CryptoFormatUtils.satoshiToUsd(spendableSatoshi));
 //        inputCurrency.setText(NumberFormatter.getInstance().format(viewModel.getWallet().getBalance() * viewModel.getCurrenciesRate().getBtcToUsd()));
         textTotal.setText(CryptoFormatUtils.satoshiToUsd(spendableSatoshi) + " BTC");
-        setTotalAmountWithWallet();
+        setMaxAmountToSpend();
     }
 
     private void animateOriginalBalance() {
@@ -428,9 +429,9 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
      * Sets total spending amount from wallet.
      * Checks if amount are set in original currency or usd, eur, etc.
      */
-    private void setTotalAmountWithWallet() {
+    private void setMaxAmountToSpend() {
         if (isAmountSwapped) {
-            textTotal.setText(NumberFormatter.getFiatInstance().format(String.valueOf(viewModel.getWallet().getBalanceNumeric().longValue() * currenciesRate.getBtcToUsd())));
+            textTotal.setText(viewModel.getWallet().getFiatBalanceLabelTrimmed());
             textTotal.append(Constants.SPACE);
             textTotal.append(CurrencyCode.USD.name());
         } else {

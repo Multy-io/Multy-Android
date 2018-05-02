@@ -34,6 +34,8 @@ import io.multy.util.analytics.Analytics;
 
 public class WalletChooserDialogFragment extends DialogFragment {
 
+    public static final String ARG_PAYABLE = "arg_payable";
+
     public static WalletChooserDialogFragment newInstance() {
         WalletChooserDialogFragment walletChooserDialogFragment = new WalletChooserDialogFragment();
         return new WalletChooserDialogFragment();
@@ -88,7 +90,8 @@ public class WalletChooserDialogFragment extends DialogFragment {
     public ArrayList<Wallet> getAvailableWallets() {
         ArrayList<Wallet> wallets = new ArrayList<>();
         for (Wallet walletRealmObject : RealmManager.getAssetsDao().getWallets()) {
-            if (Long.valueOf(walletRealmObject.getAvailableBalance()) > 150 &&
+            if (walletRealmObject.isPayable() &&
+                    Long.valueOf(walletRealmObject.getAvailableBalance()) > 150 &&
                     walletRealmObject.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue() &&
                     walletRealmObject.getNetworkId() == NativeDataHelper.NetworkId.MAIN_NET.getValue()) {
                 wallets.add(walletRealmObject);

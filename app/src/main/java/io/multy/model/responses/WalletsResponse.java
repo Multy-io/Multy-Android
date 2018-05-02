@@ -36,17 +36,21 @@ public class WalletsResponse {
     }
 
     public void saveBtcTopWalletIndex() {
-        for (TopIndex topIndex : topIndexes) {
-            if (topIndex.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()) {
-                Prefs.putInt(Constants.PREF_WALLET_TOP_INDEX_BTC + topIndex.getNetworkId(), topIndex.getTopWalletIndex());
+        if (topIndexes != null) {
+            for (TopIndex topIndex : topIndexes) {
+                if (topIndex.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()) {
+                    Prefs.putInt(Constants.PREF_WALLET_TOP_INDEX_BTC + topIndex.getNetworkId(), topIndex.getTopWalletIndex());
+                }
             }
         }
     }
 
     public void saveEthTopWalletIndex() {
-        for (TopIndex topIndex : topIndexes) {
-            if (topIndex.getCurrencyId() == NativeDataHelper.Blockchain.ETH.getValue()) {
-                Prefs.putInt(Constants.PREF_WALLET_TOP_INDEX_ETH + topIndex.getNetworkId(), topIndex.getTopWalletIndex());
+        if (topIndexes != null) {
+            for (TopIndex topIndex : topIndexes) {
+                if (topIndex.getCurrencyId() == NativeDataHelper.Blockchain.ETH.getValue()) {
+                    Prefs.putInt(Constants.PREF_WALLET_TOP_INDEX_ETH + topIndex.getNetworkId(), topIndex.getTopWalletIndex());
+                }
             }
         }
     }
