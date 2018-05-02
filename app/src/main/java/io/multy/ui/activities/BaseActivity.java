@@ -228,6 +228,9 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
             startActivity(splashIntent);
         }
         Prefs.putBoolean(Constants.PREF_UNLOCKED, true);
+        if (onLockCLoseListener != null) {
+            onLockCLoseListener.onLockClosed();
+        }
     }
 
     @Override
@@ -257,9 +260,7 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
                 }
             } else {
                 new Handler().postDelayed(this::hideLock, 500);
-                if (onLockCLoseListener != null) {
-                    onLockCLoseListener.onLockClosed();
-                }
+
             }
         }
     }
