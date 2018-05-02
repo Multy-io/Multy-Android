@@ -8,6 +8,9 @@ package io.multy.encryption;
 
 import android.security.keystore.KeyGenParameterSpec;
 
+import com.tozny.crypto.android.AesCbcWithIntegrity;
+
+import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
@@ -22,6 +25,17 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class CryptoUtils {
+
+    public static byte[] generateIV() {
+        try {
+            byte[] iv = AesCbcWithIntegrity.generateIv();
+            return iv;
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 
     public static byte[] encrypt(byte[] ivBytes, byte[] keyBytes, byte[] textBytes)
             throws java.io.UnsupportedEncodingException,

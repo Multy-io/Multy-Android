@@ -266,5 +266,6 @@
     <string name="create_new">Create New</string>
     <string name="import_wallet">Import Wallet</string>
     <string name="wei">WEI</string>
+    <string name="error_initializing_wallet">Error initializing wallet.</string>
 
 </resources>

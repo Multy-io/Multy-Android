@@ -114,7 +114,13 @@ public class WalletViewModel extends BaseViewModel {
         Wallet walletRealmObject = null;
         try {
             if (!Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
-                Multy.makeInitialized();
+
+                final boolean initialized = Multy.makeInitialized();
+                if (!initialized) {
+                    errorMessage.setValue(Multy.getContext().getString(R.string.error_initializing_wallet));
+                    return null;
+                }
+
                 RealmManager.open();
                 FirstLaunchHelper.setCredentials("");
                 saveDonateAddresses();
