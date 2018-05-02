@@ -31,8 +31,9 @@ public class AddressesAdapter extends RecyclerView.Adapter<AddressesAdapter.Hold
     private List<WalletAddress> addresses;
     private OnAddressClickListener listener;
 
-    public AddressesAdapter(List<WalletAddress> addresses) {
+    public AddressesAdapter(List<WalletAddress> addresses, OnAddressClickListener listener) {
         this.addresses = addresses;
+        this.listener = listener;
     }
 
     @Override
@@ -49,6 +50,7 @@ public class AddressesAdapter extends RecyclerView.Adapter<AddressesAdapter.Hold
     @Override
     public void onBindViewHolder(AddressesAdapter.Holder holder, int position) {
         holder.bind(addresses.get(position));
+        holder.itemView.setOnClickListener(v -> listener.onAddressClick(addresses.get(position)));
     }
 
     @Override
