@@ -93,7 +93,8 @@ public class CreateAssetFragment extends BaseFragment {
                 chainNet = data.getExtras().getInt(Constants.CHAIN_NET, 0);
                 chainId = data.getExtras().getInt(Constants.CHAIN_ID, 0);
                 String chainCurrency = data.getExtras().getString(Constants.CHAIN_NAME, "");
-                if (chainNet == NativeDataHelper.NetworkId.TEST_NET.getValue()) {
+                if (chainNet == NativeDataHelper.NetworkId.TEST_NET.getValue() ||
+                        chainNet == NativeDataHelper.NetworkId.RINKEBY.getValue()) {
                     chainCurrency = chainCurrency.concat("*Testnet");
                 }
                 walletViewModel.chainCurrency.setValue(chainCurrency);

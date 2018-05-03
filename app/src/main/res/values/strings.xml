@@ -207,12 +207,14 @@
     <string name="success">Success!</string>
     <string name="error_sending_tx">Error while sending transaction</string>
     <string name="confirmation">Confirmation</string>
+    <string name="confirmations">Confirmations</string>
     <string name="failed_html_page">Failed to loading page!</string>
     <string name="view_in_blockchain">View in Blockchain</string>
+    <string name="view_in_etherscan">View in Etherscan</string>
     <string name="multy_item_thanks">We really appreciate your support of Multy. By donating you help us to bring blockchain technology one step closer to ordinary life</string>
     <string name="thank_you">Thank you for donation!</string>
     <string name="zero">0</string>
-    <string name="in_mempool">Tansaction In Mempool</string>
+    <string name="in_mempool">Transaction In Mempool</string>
     <string name="no_information">Information not found</string>
     <string name="database_error">Database error</string>
     <string name="reset_db_with_wrong_key">The database is corrupted. The application will reset the settings. Please, restore data by seed phrase.</string>
