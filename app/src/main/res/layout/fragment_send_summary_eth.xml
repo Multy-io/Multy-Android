@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2018 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scrollview"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/container_receiver"
+            android:layout_width="@dimen/dp0"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/shape_squircle_white"
+            android:elevation="@dimen/base_view_elevation"
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:paddingTop="@dimen/activity_vertical_margin"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/text_receiver_balance_original"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:textColor="@color/text_main"
+                android:textSize="28sp"
+                android:gravity="center"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="234444.44444444 BTC" />
+
+            <TextView
+                android:id="@+id/text_receiver_balance_currency"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_4dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+                android:textColor="@color/text_grey"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_receiver_balance_original"
+                tools:text=" 583980 $" />
+
+            <View
+                android:id="@+id/divider"
+                android:layout_width="@dimen/dp0"
+                android:layout_height="@dimen/divider_height_medium"
+                android:layout_marginTop="@dimen/margin_10dp"
+                android:background="@color/grey_light"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_receiver_balance_currency" />
+
+            <TextView
+                android:id="@+id/text_receiver_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                android:textColor="@color/text_main"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/divider"
+                tools:text="To: v03049vn1034nv-1nnv'13v[134vv" />
+        </android.support.constraint.ConstraintLayout>
+
+        <ImageView
+            android:id="@+id/image_logo"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:elevation="@dimen/base_view_elevation"
+            app:layout_constraintBottom_toTopOf="@+id/container_receiver"
+            app:layout_constraintLeft_toLeftOf="@+id/container_receiver"
+            app:layout_constraintRight_toRightOf="@+id/container_receiver"
+            app:layout_constraintTop_toTopOf="@+id/container_receiver"
+            app:srcCompat="@drawable/ic_btc"
+            tools:ignore="ContentDescription" />
+
+        <EditText
+            android:id="@+id/input_note"
+            android:layout_width="@dimen/dp0"
+            android:layout_height="@dimen/dimen_40dp"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:background="@drawable/shape_bottom_round_main"
+            android:elevation="@dimen/base_view_elevation"
+            android:gravity="center"
+            android:hint="@string/hint_add_note"
+            android:imeOptions="actionDone"
+            android:inputType="text"
+            android:lines="@integer/one"
+            android:visibility="gone"
+            app:layout_constraintLeft_toLeftOf="@+id/container_receiver"
+            app:layout_constraintRight_toRightOf="@+id/container_receiver"
+            app:layout_constraintTop_toBottomOf="@+id/container_receiver" />
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/container_from"
+            android:layout_width="@dimen/dp0"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:background="@drawable/shape_squircle_white"
+            android:elevation="@dimen/base_view_elevation"
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:paddingTop="@dimen/margin_8dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/input_note">
+
+            <TextView
+                android:id="@+id/text_from"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/sending_from"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+                android:textColor="@color/text_main"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/text_wallet_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_5dp"
+                android:textColor="@color/orange"
+                android:textSize="17sp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_from"
+                tools:text="BTC Personal" />
+
+            <TextView
+                android:id="@+id/text_sender_balance_original"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@color/text_grey"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_wallet_name"
+                tools:text="B 23" />
+
+            <TextView
+                android:id="@+id/text_sender_balance_currency"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@color/text_grey"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_sender_balance_original"
+                tools:text="$ 583980" />
+
+            <View
+                android:layout_width="@dimen/dp0"
+                android:layout_height="@dimen/divider_height_medium"
+                android:layout_marginTop="@dimen/margin_8dp"
+                android:background="@color/grey_light"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_sender_balance_currency" />
+
+            <TextView
+                android:id="@+id/text_transaction_fee"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:text="@string/fee_rate"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@color/text_main"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_sender_balance_currency" />
+
+            <TextView
+                android:id="@+id/text_fee_speed_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_7dp"
+                android:paddingEnd="8dp"
+                android:textColor="@color/black"
+                android:textSize="17sp"
+                app:layout_constraintEnd_toStartOf="@+id/text_fee_speed"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_transaction_fee"
+                tools:text="Fast" />
+
+            <TextView
+                android:id="@+id/text_fee_speed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_7dp"
+                android:textColor="@color/text_grey"
+                android:textSize="17sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/text_fee_speed_label"
+                app:layout_constraintTop_toBottomOf="@+id/text_transaction_fee"
+                tools:text="6 hours" />
+
+            <TextView
+                android:id="@+id/text_fee_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_5dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@color/text_grey"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_fee_speed"
+                tools:text="0.002 BTC/1.54 USD" />
+
+        </android.support.constraint.ConstraintLayout>
+
+        <Space
+            android:id="@+id/space"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="6dp"
+            app:layout_constraintBottom_toTopOf="@id/button_next"
+            app:layout_constraintTop_toBottomOf="@id/container_from" />
+
+        <TextView
+            android:id="@+id/button_next"
+            style="@style/ButtonNext"
+            android:text="@string/slide_to_send"
+            android:textColor="@color/white_transparent"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/space" />
+
+        <ImageView
+            android:id="@+id/image_slider"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:clickable="true"
+            android:elevation="10dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:foreground="@drawable/selectable_item_background"
+            android:paddingEnd="24dp"
+            android:paddingStart="24dp"
+            app:layout_constraintBottom_toBottomOf="@+id/button_next"
+            app:layout_constraintStart_toStartOf="@+id/button_next"
+            app:layout_constraintTop_toTopOf="@+id/button_next"
+            app:srcCompat="@drawable/ic_slide_to_send" />
+
+        <ImageView
+            android:id="@+id/image_slider_finish"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:clickable="true"
+            android:elevation="10dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:paddingEnd="24dp"
+            android:paddingStart="24dp"
+            app:layout_constraintBottom_toBottomOf="@+id/button_next"
+            app:layout_constraintEnd_toEndOf="@+id/button_next"
+            app:layout_constraintTop_toTopOf="@+id/button_next"
+            app:srcCompat="@drawable/ic_slide_to_send_finish" />
+    </android.support.constraint.ConstraintLayout>
+
+</ScrollView>

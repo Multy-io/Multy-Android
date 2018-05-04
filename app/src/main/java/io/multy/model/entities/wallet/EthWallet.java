@@ -8,27 +8,31 @@ package io.multy.model.entities.wallet;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 
 import io.multy.R;
+import io.multy.util.Constants;
+import io.multy.util.CryptoFormatUtils;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 
+
 public class EthWallet extends RealmObject {
 
-    public final static BigInteger DIVISOR = BigInteger.valueOf((long) Math.pow(10, 18));
+    public final static BigDecimal DIVISOR = new BigDecimal(Math.pow(10, 18));
     public final static String PENDING_BALANCE = "pendingBalance";
 
     @SerializedName("nonce")
-    private String nonce;
+    private String nonce = "0";
     @SerializedName("balance")
-    private String balance;
+    private String balance = "0";
     @SerializedName("addresses")
     private RealmList<WalletAddress> addresses;
     @SerializedName("pendingbalance")
-    private String pendingBalance;
+    private String pendingBalance = "0";
 
     public String getNonce() {
         return nonce;
@@ -81,5 +85,9 @@ public class EthWallet extends RealmObject {
         ethWallet.setPendingBalance(pendingBalance);
         ethWallet.setBalance(balance);
         return ethWallet;
+    }
+
+    public static double getTransactionPrice(long gasPrice) {
+        return CryptoFormatUtils.weiToEth(String.valueOf(Constants.GAS_LIMIT_VALUE * gasPrice));
     }
 }

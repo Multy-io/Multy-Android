@@ -20,7 +20,7 @@ public class WalletAddress extends RealmObject {
     @SerializedName("address")
     private String address;
     @SerializedName("amount")
-    private long amount;
+    private String amount;
     @SerializedName("spendableoutputs")
     private RealmList<Output> outputs;
     @SerializedName("lastActionTime")
@@ -51,11 +51,11 @@ public class WalletAddress extends RealmObject {
     }
 
     public long getAmount() {
-        return amount;
+        return Long.valueOf(amount);
     }
 
-    public void setAmount(long amount) {
-        this.amount = amount;
+    public String getAmountString() {
+        return amount;
     }
 
     public RealmList<Output> getOutputs() {

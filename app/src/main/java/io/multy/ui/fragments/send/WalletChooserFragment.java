@@ -25,6 +25,7 @@ import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetSendActivity;
 import io.multy.ui.adapters.MyWalletsAdapter;
 import io.multy.ui.fragments.BaseFragment;
+import io.multy.ui.fragments.send.ethereum.EthTransactionFeeFragment;
 import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
 import io.multy.util.NativeDataHelper;

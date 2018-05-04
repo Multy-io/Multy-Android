@@ -32,8 +32,6 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.text.DecimalFormat;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -52,10 +50,8 @@ import io.multy.ui.adapters.EmptyTransactionsAdapter;
 import io.multy.ui.adapters.EthTransactionsAdapter;
 import io.multy.ui.fragments.AddressesFragment;
 import io.multy.ui.fragments.BaseFragment;
-import io.multy.ui.fragments.send.EthTransactionFeeFragment;
 import io.multy.ui.fragments.send.SendSummaryFragment;
 import io.multy.util.Constants;
-import io.multy.util.CryptoFormatUtils;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
 import io.multy.util.analytics.Analytics;

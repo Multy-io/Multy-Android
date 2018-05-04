@@ -25,7 +25,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
+import io.multy.model.entities.DonateFeatureEntity;
 import io.multy.model.entities.TransactionHistory;
+import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.storage.RealmManager;
 import io.multy.ui.activities.BaseActivity;
@@ -183,6 +185,7 @@ public class TransactionInfoFragment extends BaseFragment {
     private long getOutComingAmount(TransactionHistory transactionHistory, List<String> walletAddresses, double exchangeRate) {
         long totalAmount = 0;
         long outAmount = 0;
+        Wallet wallet = viewModel.getWalletLive().getValue();
 
         for (WalletAddress walletAddress : transactionHistory.getInputs()) {
             totalAmount += walletAddress.getAmount();
@@ -191,7 +194,7 @@ public class TransactionInfoFragment extends BaseFragment {
         for (WalletAddress walletAddress : transactionHistory.getOutputs()) {
             if (walletAddresses.contains(walletAddress.getAddress())) {
                 outAmount += walletAddress.getAmount();
-            } else if (isDonationAddress(walletAddress.getAddress())) {
+            } else if (DonateFeatureEntity.isAddressDonation(walletAddress.getAddress(), wallet.getCurrencyId(), wallet.getNetworkId())) {
                 initializeDonationBlock(walletAddress, exchangeRate);
             }
         }
@@ -256,12 +259,7 @@ public class TransactionInfoFragment extends BaseFragment {
         }
     }
 
-    private boolean isDonationAddress(String address) {
-        if (networkId == NativeDataHelper.NetworkId.TEST_NET.getValue()) {
-            return address.equals(Constants.DONATION_ADDRESS_TESTNET);
-        }
-        return RealmManager.getSettingsDao().isDonateAddress(address);
-    }
+
 
     private double getPreferredExchangeRate(ArrayList<TransactionHistory.StockExchangeRate> stockExchangeRates) {
         if (stockExchangeRates != null && stockExchangeRates.size() > 0) {

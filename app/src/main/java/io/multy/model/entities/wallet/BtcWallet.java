@@ -8,6 +8,7 @@ package io.multy.model.entities.wallet;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import io.multy.R;
@@ -19,7 +20,7 @@ import io.realm.RealmObject;
 
 public class BtcWallet extends RealmObject {
 
-    public final static BigInteger DIVISOR = BigInteger.valueOf((long) Math.pow(10, 8));
+    public final static BigDecimal DIVISOR = new BigDecimal(Math.pow(10, 8));
 
     @SerializedName("address")
     private String creationAddress;

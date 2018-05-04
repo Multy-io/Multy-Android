@@ -228,7 +228,8 @@
     <string name="push_id">push_id</string>
     <string name="chain_id">chain_id</string>
     <string name="no_balance">Wallet doesn\'t have enough balance to send from</string>
-    <string name="available_amount">Available: %s BTC</string>
+    <string name="available_amount">Available: %s</string>
+    <string name="available_amount_eth">Available: %s ETH</string>
     <string name="select_an_addresses">SELECT AN ADDRESS TO VIEW PRIVATE KEY</string>
     <string name="select_wallet_donation">Select wallet and donation summ</string>
     <string name="wallet">Wallet</string>

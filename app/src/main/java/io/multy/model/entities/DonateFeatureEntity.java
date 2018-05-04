@@ -6,6 +6,9 @@
 
 package io.multy.model.entities;
 
+import io.multy.storage.RealmManager;
+import io.multy.util.Constants;
+import io.multy.util.NativeDataHelper;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -38,5 +41,13 @@ public class DonateFeatureEntity extends RealmObject {
 
     public void setDonationAddress(String donationAddress) {
         this.donationAddress = donationAddress;
+    }
+
+    public static boolean isAddressDonation(String address, int currencyId, int networkId) {
+        //TODO implement currencyId check for other chains and rinkeby
+        if (networkId == NativeDataHelper.NetworkId.TEST_NET.getValue()) {
+            return address.equals(Constants.DONATION_ADDRESS_TESTNET);
+        }
+        return RealmManager.getSettingsDao().getDonationFeature(address) != null;
     }
 }

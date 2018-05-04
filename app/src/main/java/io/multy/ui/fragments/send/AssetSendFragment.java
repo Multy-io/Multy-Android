@@ -30,6 +30,7 @@ import io.multy.ui.activities.AssetSendActivity;
 import io.multy.ui.adapters.RecentAddressesAdapter;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.dialogs.DonateDialog;
+import io.multy.ui.fragments.send.ethereum.EthTransactionFeeFragment;
 import io.multy.util.Constants;
 import io.multy.util.NativeDataHelper;
 import io.multy.util.analytics.Analytics;

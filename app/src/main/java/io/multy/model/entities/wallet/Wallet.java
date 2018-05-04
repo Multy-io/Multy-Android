@@ -9,6 +9,7 @@ package io.multy.model.entities.wallet;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +47,7 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
 
     private int fiatId; //id of chosen fiat currency for this walelt
 
-    private String balance = "0"; //satoshi for btc,
+    private String balance = "0"; //satoshi for btc, wei for eth
     private String availableBalance = "0";
 
     @Nullable
@@ -97,7 +98,7 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
             case BTC:
                 return NumberFormatter.getInstance().format(getBtcDoubleValue()) + " BTC";
             case ETH:
-                return NumberFormatter.getInstance().format(getEthDoubleValue()) + " ETH";
+                return NumberFormatter.getEthInstance().format(getEthValue()) + " ETH";
             default:
                 return "unsupported";
         }
@@ -111,7 +112,7 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
             case BTC:
                 return NumberFormatter.getInstance().format(getBtcDoubleValue());
             case ETH:
-                return NumberFormatter.getInstance().format(getEthDoubleValue());
+                return NumberFormatter.getEthInstance().format(getEthValue());
             default:
                 return "unsupported";
         }
@@ -122,7 +123,7 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
             case BTC:
                 return NumberFormatter.getInstance().format(getBtcAvailableDoubleValue()) + " BTC";
             case ETH:
-                return NumberFormatter.getInstance().format(getEthAvailableDoubleValue()) + " ETH";
+                return NumberFormatter.getEthInstance().format(getEthAvailableValue()) + " ETH";
             default:
                 return "unsupported";
         }
@@ -137,14 +138,13 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
             case BTC:
                 return String.valueOf(NumberFormatter.getFiatInstance().format(getBtcDoubleValue() * currenciesRate.getBtcToUsd()) + getFiatString()); //convert from satoshi
             case ETH:
-                return String.valueOf(NumberFormatter.getFiatInstance().format(getEthDoubleValue() * currenciesRate.getEthToUsd()) + getFiatString()); //convert from gwei
+                return String.valueOf(NumberFormatter.getFiatInstance().format(getEthValue().multiply(new BigDecimal(currenciesRate.getEthToUsd()))) + getFiatString()); //convert from wei
             default:
                 return "unsupported";
         }
     }
 
     /**
-     *
      * @return fiat string balance without fiat symbol. example 2600 (mean usd)
      */
     public String getFiatBalanceLabelTrimmed() {
@@ -158,26 +158,10 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
             case BTC:
                 return String.valueOf(NumberFormatter.getFiatInstance().format(getBtcAvailableDoubleValue() * currenciesRate.getBtcToUsd()) + getFiatString()); //convert from satoshi
             case ETH:
-                return String.valueOf(NumberFormatter.getFiatInstance().format(getEthAvailableDoubleValue() * currenciesRate.getEthToUsd()) + getFiatString()); //convert from gwei
+                return String.valueOf(NumberFormatter.getFiatInstance().format(getEthAvailableValue().multiply(new BigDecimal(currenciesRate.getEthToUsd()))) + getFiatString()); //convert from gwei
             default:
                 return "unsupported";
         }
-    }
-
-    public double getBtcDoubleValue() {
-        return balance.equals("0") ? 0 : (getBalanceNumeric().longValue() / BtcWallet.DIVISOR.doubleValue());
-    }
-
-    public double getEthDoubleValue() {
-        return balance.equals("0") ? 0 : (getBalanceNumeric().longValue() / (EthWallet.DIVISOR).doubleValue());
-    }
-
-    public double getBtcAvailableDoubleValue() {
-        return availableBalance.equals("0") ? 0 : (getAvailableBalanceNumeric().longValue() / BtcWallet.DIVISOR.doubleValue());
-    }
-
-    public double getEthAvailableDoubleValue() {
-        return availableBalance.equals("0") ? 0 : (getAvailableBalanceNumeric().longValue() / (EthWallet.DIVISOR).doubleValue());
     }
 
     public String getFiatString() {
@@ -213,12 +197,32 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
         return false;
     }
 
-    public BigInteger getBalanceNumeric() {
-        return balance == null ? new BigInteger("0") : new BigInteger(balance);
+    public BigDecimal getBalanceNumeric() {
+        return balance == null ? new BigDecimal("0") : new BigDecimal(balance);
     }
 
     public BigInteger getPendingBalance() {
         return new BigInteger(balance).subtract(new BigInteger(availableBalance));
+    }
+
+    public BigDecimal getAvailableBalanceNumeric() {
+        return new BigDecimal(availableBalance);
+    }
+
+    public double getBtcDoubleValue() {
+        return balance.equals("0") ? 0 : (getBalanceNumeric().divide(BtcWallet.DIVISOR, 3, BigDecimal.ROUND_FLOOR)).doubleValue();
+    }
+
+    public BigDecimal getEthValue() {
+        return balance.equals("0") ? new BigDecimal(0) : (getBalanceNumeric().divide(EthWallet.DIVISOR));
+    }
+
+    public double getBtcAvailableDoubleValue() {
+        return availableBalance.equals("0") ? 0 : (getAvailableBalanceNumeric().divide(BtcWallet.DIVISOR)).doubleValue();
+    }
+
+    public BigDecimal getEthAvailableValue() {
+        return availableBalance.equals("0") ? new BigDecimal(0) : (getAvailableBalanceNumeric().divide(EthWallet.DIVISOR));
     }
 
     public int getCurrencyId() {
@@ -295,10 +299,6 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
 
     public String getAvailableBalance() {
         return availableBalance;
-    }
-
-    public BigInteger getAvailableBalanceNumeric() {
-        return new BigInteger(availableBalance);
     }
 
     public void setAvailableBalance(String availableBalance) {

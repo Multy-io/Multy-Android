@@ -218,7 +218,6 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
         }
 
         return address.equals(Constants.DONATION_ADDRESS_TESTNET);
-
     }
 
     private boolean isAddressUser(String address) {

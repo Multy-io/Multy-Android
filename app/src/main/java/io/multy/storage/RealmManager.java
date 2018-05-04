@@ -35,7 +35,7 @@ public class RealmManager {
                 realm.close();
             } catch (IllegalStateException e) {
                 e.printStackTrace();
-                open();
+                open(); //since we can't call realm from different threads, we need to reopen and close realm on the same thread
                 realm.close();
             }
         }
@@ -59,6 +59,8 @@ public class RealmManager {
         if (realm != null) {
             realm.executeTransaction(realm -> realm.deleteAll());
         }
+
+        close();
     }
 
     private static void isRealmAvailable() {

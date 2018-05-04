@@ -185,6 +185,7 @@
         android:layout_marginStart="8dp"
         app:cardBackgroundColor="@color/green_lightest"
         app:cardCornerRadius="6dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/text_money"
         app:layout_constraintStart_toEndOf="@id/text_money"
         app:layout_constraintTop_toTopOf="@id/text_money">
