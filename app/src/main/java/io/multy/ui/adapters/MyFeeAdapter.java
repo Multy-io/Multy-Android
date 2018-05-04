@@ -74,13 +74,13 @@ public class MyFeeAdapter extends RecyclerView.Adapter<MyFeeAdapter.FeeHolder> {
                 break;
             case ETH:
                 holder.textBlocks.setVisibility(View.GONE);
-                ethPrice = CryptoFormatUtils.weiToEth(String.valueOf(rate.getAmount()));
+                ethPrice = Math.abs(CryptoFormatUtils.weiToEth(String.valueOf(rate.getAmount())));
                 String stringEth = CryptoFormatUtils.FORMAT_ETH.format(ethPrice);
                 if (position == rates.size() - 1) {
                     holder.textName.setText(rate.getName());
                     holder.divider.setVisibility(View.GONE);
                     holder.imageLogo.setImageResource(R.drawable.ic_custom);
-                    holder.textBalanceOriginal.setText(ethPrice == -1 ? "" : String.format("%s ETH", stringEth));
+                    holder.textBalanceOriginal.setText(ethPrice <= 0 ? "" : String.format("%s ETH", stringEth));
                     holder.root.setOnClickListener(v -> listener.onClickCustomFee(rate.getAmount()));
                 } else {
                     holder.imageLogo.setImageResource(getIconResId(position));
