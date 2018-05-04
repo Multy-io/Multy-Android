@@ -139,7 +139,7 @@ public class EthTransactionFeeFragment extends BaseFragment
         dialogBuilder.setView(dialogView);
 
         final TextInputEditText input = dialogView.findViewById(R.id.input_custom);
-        input.setText(currentValue == -1 ? "2000000000" : String.valueOf(currentValue / Math.pow(10, 9)));
+        input.setText(currentValue == -1 ? "1" : String.valueOf(currentValue / Math.pow(10, 9)));
 
         dialogBuilder.setTitle(R.string.custom_fee);
         dialogBuilder.setPositiveButton(R.string.done, (dialog, whichButton) -> {

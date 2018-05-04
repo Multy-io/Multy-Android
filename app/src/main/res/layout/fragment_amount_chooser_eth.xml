@@ -230,7 +230,7 @@
         android:gravity="center_vertical"
         android:text="@string/max"
         android:textAppearance="@style/TextAppearance.AppCompat.Menu"
-        android:textColor="@drawable/selector_button_max"
+        android:textColor="@color/colorPrimaryDark"
         app:layout_constraintBottom_toTopOf="@+id/button_next"
         app:layout_constraintEnd_toEndOf="parent" />
 
