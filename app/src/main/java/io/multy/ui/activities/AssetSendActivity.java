@@ -35,6 +35,9 @@ import io.multy.ui.fragments.send.AssetSendFragment;
 import io.multy.ui.fragments.send.SendSummaryFragment;
 import io.multy.ui.fragments.send.TransactionFeeFragment;
 import io.multy.ui.fragments.send.WalletChooserFragment;
+import io.multy.ui.fragments.send.ethereum.EthAmountChooserFragment;
+import io.multy.ui.fragments.send.ethereum.EthSendSummaryFragment;
+import io.multy.ui.fragments.send.ethereum.EthTransactionFeeFragment;
 import io.multy.util.Constants;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
@@ -92,15 +95,15 @@ public class AssetSendActivity extends BaseActivity {
         if (getSupportFragmentManager().getBackStackEntryCount() >= one) {
             List<Fragment> backStackFragments = getSupportFragmentManager().getFragments();
             for (Fragment backStackFragment : backStackFragments) {
-                if (backStackFragment instanceof SendSummaryFragment) {
+                if (backStackFragment instanceof SendSummaryFragment || backStackFragment instanceof EthSendSummaryFragment) {
                     toolbar.setTitle(R.string.send_amount);
-                } else if (backStackFragment instanceof AmountChooserFragment) {
+                } else if (backStackFragment instanceof AmountChooserFragment || backStackFragment instanceof EthAmountChooserFragment) {
                     toolbar.setTitle(R.string.transaction_fee);
-                } else if (backStackFragment instanceof TransactionFeeFragment) {
+                } else if (backStackFragment instanceof TransactionFeeFragment || backStackFragment instanceof EthTransactionFeeFragment) {
                     toolbar.setTitle(R.string.send_from);
                 } else if (backStackFragment instanceof WalletChooserFragment) {
                     toolbar.setTitle(R.string.send_to);
-                } else if (backStackFragment instanceof AssetSendFragment) {
+                } else if (backStackFragment instanceof AssetSendFragment || backStackFragment instanceof EthSendSummaryFragment) {
                     toolbar.setTitle(R.string.send_to);
                 }
             }

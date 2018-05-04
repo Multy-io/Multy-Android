@@ -222,11 +222,11 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
 
     @OnClick(R.id.text_max)
     void onClickMax() {
-        if (textMax.isSelected()) {
-            textMax.setSelected(false);
-        } else {
-            textMax.setSelected(true);
-        }
+//        if (textMax.isSelected()) {
+//            textMax.setSelected(false);
+//        } else {
+//            textMax.setSelected(true);
+//        }
 
         String maxSpendableEth = CryptoFormatUtils.FORMAT_ETH.format(initSpendable());
         if (maxSpendableEth.contains(",")) {
@@ -283,6 +283,7 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
         textTotal.setText(sum);
         textTotal.append(Constants.SPACE);
         textTotal.append(isAmountSwapped ? CurrencyCode.USD.name() : CurrencyCode.ETH.name());
+        viewModel.setAmount(Double.parseDouble(sum));
     }
 
     @SuppressLint("ClickableViewAccessibility")
