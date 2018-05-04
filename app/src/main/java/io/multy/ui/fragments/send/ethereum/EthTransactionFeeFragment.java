@@ -139,12 +139,14 @@ public class EthTransactionFeeFragment extends BaseFragment
         dialogBuilder.setView(dialogView);
 
         final TextInputEditText input = dialogView.findViewById(R.id.input_custom);
-        input.setText(currentValue == -1 ? "2000000000" : String.valueOf(currentValue));
+        input.setText(currentValue == -1 ? "2000000000" : String.valueOf(currentValue / Math.pow(10, 9)));
 
         dialogBuilder.setTitle(R.string.custom_fee);
         dialogBuilder.setPositiveButton(R.string.done, (dialog, whichButton) -> {
-            ((MyFeeAdapter) recyclerView.getAdapter()).setCustomFee(Long.valueOf(input.getText().toString()));
-            Analytics.getInstance(getActivity()).logTransactionFee(AnalyticsConstants.TRANSACTION_FEE_CUSTOM_SET, viewModel.getChainId());
+            if (!input.getText().toString().isEmpty() && Integer.parseInt(input.getText().toString()) > 1) {
+                ((MyFeeAdapter) recyclerView.getAdapter()).setCustomFee((long) (Long.valueOf(input.getText().toString()) * Math.pow(10, 9)));
+                Analytics.getInstance(getActivity()).logTransactionFee(AnalyticsConstants.TRANSACTION_FEE_CUSTOM_SET, viewModel.getChainId());
+            }
         });
         dialogBuilder.setNegativeButton(R.string.cancel, (dialog, whichButton) -> {
             Analytics.getInstance(getActivity()).logTransactionFee(AnalyticsConstants.TRANSACTION_FEE_CUSTOM_CANCEL, viewModel.getChainId());

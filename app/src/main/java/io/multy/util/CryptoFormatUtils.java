@@ -103,6 +103,10 @@ public class CryptoFormatUtils {
         return wei.equals("0") ? 0 : new BigDecimal(wei).divide(EthWallet.DIVISOR).doubleValue();
     }
 
+    public static double gweiToEth(String wei) {
+        return wei.equals("0") ? 0 : (Long.valueOf(wei) / (EthWallet.DIVISOR_GWEI).doubleValue());
+    }
+
     public static String wetToEthLabel(String wei) {
         return wei.equals("0") ? "0" : new BigDecimal(wei).divide(EthWallet.DIVISOR).doubleValue() + " ETH";
     }

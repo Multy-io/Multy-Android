@@ -18,9 +18,8 @@
             android:id="@+id/input_custom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/wei"
-            android:inputType="numberDecimal"
-            android:maxLength="6" />
+            android:hint="@string/gwei"
+            android:inputType="numberDecimal" />
 
     </android.support.design.widget.TextInputLayout>
 </android.support.constraint.ConstraintLayout>

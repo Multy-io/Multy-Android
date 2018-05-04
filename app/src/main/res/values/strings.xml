@@ -270,5 +270,6 @@
     <string name="import_wallet">Import Wallet</string>
     <string name="wei">WEI</string>
     <string name="error_initializing_wallet">Error initializing wallet.</string>
+    <string name="gwei">GWEI</string>
 
 </resources>
