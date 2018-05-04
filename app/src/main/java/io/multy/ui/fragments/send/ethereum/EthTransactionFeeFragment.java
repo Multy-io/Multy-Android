@@ -4,7 +4,7 @@
  * See LICENSE for details
  */
 
-package io.multy.ui.fragments.send;
+package io.multy.ui.fragments.send.ethereum;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -188,11 +188,7 @@ public class EthTransactionFeeFragment extends BaseFragment
 
         if (selectedFee != null) {
             viewModel.setFee(selectedFee);
-            ((AssetSendActivity) getActivity()).setFragment(R.string.send_amount, R.id.container, AmountChooserFragment.newInstance());
-
-            if (viewModel.isAmountScanned()) {
-                ((AssetSendActivity) getActivity()).setFragment(R.string.send_summary, R.id.container, SendSummaryFragment.newInstance());
-            }
+            ((AssetSendActivity) getActivity()).setFragment(R.string.send_amount, R.id.container, EthAmountChooserFragment.newInstance());
         } else {
             Toast.makeText(getActivity(), R.string.choose_transaction_speed, Toast.LENGTH_SHORT).show();
         }

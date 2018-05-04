@@ -38,8 +38,11 @@ public class SecurePreferencesHelper {
             final byte[] encryptedValue = CryptoUtils.encrypt(iv, secretKey.getEncoded(), value.getBytes());
             final String encodedString = new String(Base64.encode(encryptedValue, Base64.NO_WRAP));
             Prefs.putString(key, encodedString);
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
+//            clear();
         }
     }
 
@@ -61,6 +64,7 @@ public class SecurePreferencesHelper {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
+//            clear();
         }
         return null;
     }

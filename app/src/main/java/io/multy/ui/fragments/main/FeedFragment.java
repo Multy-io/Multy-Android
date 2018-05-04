@@ -29,11 +29,6 @@ import io.multy.util.RoundedCornersDrawable;
 import io.multy.util.analytics.Analytics;
 import io.multy.viewmodels.FeedViewModel;
 
-/**
- * Created by Ihar Paliashchuk on 02.11.2017.
- * ihar.paliashchuk@gmail.com
- */
-
 public class FeedFragment extends BaseFragment {
 
     @BindView(R.id.image)

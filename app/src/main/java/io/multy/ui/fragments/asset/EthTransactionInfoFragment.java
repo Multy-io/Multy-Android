@@ -165,7 +165,7 @@ public class EthTransactionInfoFragment extends BaseFragment {
         textAmount.setText(symbol);
         double exchangeRate = getPreferredExchangeRate(transaction.getStockExchangeRates());
         textValue.append(String.valueOf(CryptoFormatUtils.weiToEth(String.valueOf(transaction.getTxOutAmount()))));
-        textAmount.append(CryptoFormatUtils.ethTousd(CryptoFormatUtils
+        textAmount.append(CryptoFormatUtils.ethToUsd(CryptoFormatUtils
                 .weiToEth(String.valueOf(transaction.getTxOutAmount())), exchangeRate));
         textAdressesFrom.setText(transaction.getFrom());
         textAddressesTo.setText(transaction.getTo());

@@ -123,8 +123,8 @@ public class SettingsDao {
         return donateFeature == null ? null : donateFeature.getDonationAddress();
     }
 
-    public boolean isDonateAddress(String possibleDonateAddress) {
+    public DonateFeatureEntity getDonationFeature(String address) {
         return realm.where(DonateFeatureEntity.class)
-                .equalTo(DonateFeatureEntity.DONATION_ADDRESS, possibleDonateAddress).findFirst() != null;
+                .equalTo(DonateFeatureEntity.DONATION_ADDRESS, address).findFirst();
     }
 }

@@ -27,6 +27,7 @@ import io.multy.R;
 import io.multy.model.entities.TransactionHistory;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.ui.fragments.asset.EthTransactionInfoFragment;
+import io.multy.ui.fragments.asset.TransactionInfoFragment;
 import io.multy.util.CryptoFormatUtils;
 import io.multy.util.DateHelper;
 import io.multy.util.analytics.Analytics;
@@ -116,7 +117,7 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     private String getFiatAmount(TransactionHistory transactionHistory, double btcValue) {
         if (transactionHistory.getStockExchangeRates() != null && transactionHistory.getStockExchangeRates().size() > 0) {
             double rate = getPreferredExchangeRate(transactionHistory.getStockExchangeRates());
-            return CryptoFormatUtils.ethTousd(btcValue, rate);
+            return CryptoFormatUtils.ethToUsd(btcValue, rate);
         }
         return "";
     }

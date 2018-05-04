@@ -10,6 +10,8 @@ import android.arch.lifecycle.MutableLiveData;
 import android.os.Handler;
 import android.util.Log;
 
+import java.lang.annotation.Native;
+
 import io.multy.Multy;
 import io.multy.R;
 import io.multy.api.MultyApi;
@@ -202,6 +204,18 @@ public class AssetSendViewModel extends BaseViewModel {
                     String.valueOf(getFee().getAmount()), getDonationSatoshi(),
                     getReceiverAddress().getValue(), changeAddress, donationAddress, isPayForCommission);
             transaction.setValue(byteArrayToHex(transactionHex));
+        } catch (JniException e) {
+            errorMessage.setValue("Entered sum is invalid.");
+            e.printStackTrace();
+        }
+    }
+
+    public void signTransactionEth() {
+        try {
+//            Log.i("wise", getWallet().getId() + " " + getWallet().getNetworkId() + " " + amount + " " + getFee().getAmount() + " " + getDonationSatoshi() + " " + isPayForCommission);
+            byte[] tx = NativeDataHelper.makeTransactionETH(RealmManager.getSettingsDao().getSeed().getSeed(), getWallet().getIndex(), 0, wallet.getValue().getCurrencyId(), wallet.getValue().getNetworkId(),
+                    String.valueOf(getWallet().getActiveAddress().getAmount()), CryptoFormatUtils.ethToWei(String.valueOf(amount)), getReceiverAddress().getValue().substring(2), "21000", String.valueOf(fee.getValue().getAmount()), getWallet().getEthWallet().getNonce());
+            transaction.setValue(byteArrayToHex(tx));
         } catch (JniException e) {
             errorMessage.setValue("Entered sum is invalid.");
             e.printStackTrace();

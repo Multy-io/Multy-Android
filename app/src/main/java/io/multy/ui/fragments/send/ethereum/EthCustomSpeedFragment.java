@@ -4,7 +4,7 @@
  * See LICENSE for details
  */
 
-package io.multy.ui.fragments.send;
+package io.multy.ui.fragments.send.ethereum;
 
 import android.app.Activity;
 import android.content.Intent;
