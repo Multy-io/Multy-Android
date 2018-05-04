@@ -31,7 +31,7 @@ public class BtcWallet extends RealmObject {
     @SerializedName("addressindex")
     private int addressIndex;
 
-    private long availableBalance;
+    private long availableBalance = 0;
 
     public String getCreationAddress() {
         return creationAddress;
