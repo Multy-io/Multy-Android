@@ -26,16 +26,14 @@ import butterknife.ButterKnife;
 import io.multy.R;
 import io.multy.model.entities.TransactionHistory;
 import io.multy.model.entities.wallet.WalletAddress;
-import io.multy.storage.RealmManager;
-import io.multy.ui.fragments.asset.TransactionInfoFragment;
+import io.multy.ui.fragments.asset.EthTransactionInfoFragment;
 import io.multy.util.CryptoFormatUtils;
 import io.multy.util.DateHelper;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
-import io.realm.RealmList;
 
-import static io.multy.ui.fragments.asset.TransactionInfoFragment.MODE_RECEIVE;
-import static io.multy.ui.fragments.asset.TransactionInfoFragment.MODE_SEND;
+import static io.multy.ui.fragments.asset.EthTransactionInfoFragment.MODE_RECEIVE;
+import static io.multy.ui.fragments.asset.EthTransactionInfoFragment.MODE_SEND;
 import static io.multy.util.Constants.TX_CONFIRMED_INCOMING;
 import static io.multy.util.Constants.TX_IN_BLOCK_INCOMING;
 import static io.multy.util.Constants.TX_MEMPOOL_INCOMING;
@@ -51,6 +49,7 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     private List<TransactionHistory> transactionHistoryList;
 
     public EthTransactionsAdapter(List<TransactionHistory> transactionHistoryList, long walletId) {
+        Collections.reverse(transactionHistoryList);
         this.transactionHistoryList = transactionHistoryList;
         this.walletId = walletId;
     }
@@ -104,12 +103,12 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             Analytics.getInstance(v.getContext()).logWallet(AnalyticsConstants.WALLET_TRANSACTION, 1);
             Bundle transactionInfo = new Bundle();
             int mode = isIncoming ? MODE_RECEIVE : MODE_SEND;
-            transactionInfo.putInt(TransactionInfoFragment.SELECTED_POSITION, position);
-            transactionInfo.putInt(TransactionInfoFragment.TRANSACTION_INFO_MODE, mode);
-            transactionInfo.putLong(TransactionInfoFragment.WALLET_INDEX, walletId);
+            transactionInfo.putInt(EthTransactionInfoFragment.SELECTED_POSITION, position);
+            transactionInfo.putInt(EthTransactionInfoFragment.TRANSACTION_INFO_MODE, mode);
+            transactionInfo.putLong(EthTransactionInfoFragment.WALLET_INDEX, walletId);
             ((FragmentActivity) v.getContext()).getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container_full, TransactionInfoFragment.newInstance(transactionInfo))
-                    .addToBackStack(TransactionInfoFragment.TAG)
+                    .replace(R.id.container_full, EthTransactionInfoFragment.newInstance(transactionInfo))
+                    .addToBackStack(EthTransactionInfoFragment.TAG)
                     .commit();
         });
     }
@@ -126,7 +125,7 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         if (stockExchangeRates != null && stockExchangeRates.size() > 0) {
             for (TransactionHistory.StockExchangeRate rate : stockExchangeRates) {
                 if (rate.getExchanges().getEthUsd() > 0) {
-                    return rate.getExchanges().getBtcUsd();
+                    return rate.getExchanges().getEthUsd();
                 }
             }
         }

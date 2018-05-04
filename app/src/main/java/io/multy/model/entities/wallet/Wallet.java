@@ -7,10 +7,6 @@
 package io.multy.model.entities.wallet;
 
 
-import android.text.TextUtils;
-
-import com.google.gson.annotations.SerializedName;
-
 import com.google.gson.annotations.SerializedName;
 
 import java.math.BigInteger;

@@ -22,6 +22,7 @@ import io.multy.R;
 import io.multy.ui.activities.AssetActivity;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
+import io.multy.util.NativeDataHelper;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.WalletViewModel;
@@ -120,7 +121,8 @@ public class AssetSettingsFragment extends BaseFragment {
     }
 
     private void showMyPrivateKey() {
-        if (getActivity() != null && getActivity() instanceof AssetActivity) {
+        if (getActivity() != null && getActivity() instanceof AssetActivity &&
+                viewModel.getWalletLive().getValue().getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()) {
             ((AssetActivity) getActivity()).setFragment(R.id.container_full, SettingAssetAddressesFragment.getInstance());
         }
     }
