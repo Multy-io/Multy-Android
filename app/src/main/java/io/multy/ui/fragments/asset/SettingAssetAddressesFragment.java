@@ -19,9 +19,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
+import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.ui.adapters.AssetSettingAddressesAdapter;
 import io.multy.ui.fragments.BaseFragment;
+import io.multy.util.NativeDataHelper;
 import io.multy.viewmodels.WalletViewModel;
+import io.realm.RealmList;
 
 /**
  * Created by anschutz1927@gmail.com on 22.02.18.
@@ -64,10 +67,19 @@ public class SettingAssetAddressesFragment extends BaseFragment {
         recyclerAddresses.setAdapter(addressesAdapter);
         viewModel = ViewModelProviders.of(getActivity()).get(WalletViewModel.class);
         viewModel.getWalletLive().observe(this, walletRealmObject -> {
-            if (walletRealmObject == null || walletRealmObject.getBtcWallet().getAddresses() == null) {
+            if (walletRealmObject == null) {
                 return;
             }
-            addressesAdapter.setData(walletRealmObject.getBtcWallet().getAddresses());
+            RealmList<WalletAddress> addresses = null;
+            switch (NativeDataHelper.Blockchain.valueOf(walletRealmObject.getCurrencyId())) {
+                case BTC:
+                    addresses = walletRealmObject.getBtcWallet().getAddresses();
+                    break;
+                case ETH:
+                    addresses = walletRealmObject.getEthWallet().getAddresses();
+                    break;
+            }
+            addressesAdapter.setData(addresses, walletRealmObject.getCurrencyId(), walletRealmObject.getNetworkId());
         });
     }
 

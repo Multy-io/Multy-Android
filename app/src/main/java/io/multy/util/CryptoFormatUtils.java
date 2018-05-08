@@ -32,6 +32,10 @@ public class CryptoFormatUtils {
         return result;
     }
 
+    public static String satoshiToBtcLabel(long satoshi) {
+        return satoshiToBtc(satoshi) + " BTC";
+    }
+
     public static double satoshiToBtcDouble(long satoshi) {
         if (satoshi == 0) {
             return 0.0;

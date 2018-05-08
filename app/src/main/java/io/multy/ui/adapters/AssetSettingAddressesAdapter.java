@@ -19,6 +19,7 @@ import io.multy.R;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.ui.fragments.dialogs.PrivateKeyDialogFragment;
 import io.multy.util.CryptoFormatUtils;
+import io.multy.util.NativeDataHelper;
 import io.realm.RealmList;
 
 /**
@@ -27,6 +28,8 @@ import io.realm.RealmList;
 
 public class AssetSettingAddressesAdapter extends RecyclerView.Adapter<AssetSettingAddressesAdapter.Holder> {
 
+    private int currencyId;
+    private int networkId;
     private boolean isItemSelected = false;
     private FragmentManager fragmentManager;
     private RealmList<WalletAddress> addresses;
@@ -46,11 +49,12 @@ public class AssetSettingAddressesAdapter extends RecyclerView.Adapter<AssetSett
         try {
             WalletAddress address = addresses.get(position);
             holder.textAddress.setText(address.getAddress());
-            holder.textBalance.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(address.getAmount())));
+            holder.textBalance.setText(getAddressAmount(address));
             holder.itemView.setOnClickListener(view -> {
                 if (!isItemSelected) {
                     isItemSelected = true;
-                    PrivateKeyDialogFragment dialog = PrivateKeyDialogFragment.getInstance(address);
+                    PrivateKeyDialogFragment dialog = PrivateKeyDialogFragment
+                            .getInstance(address, currencyId, networkId);
                     dialog.show(fragmentManager, dialog.getTag());
                     dialog.setListener(() -> isItemSelected = false);
                 }
@@ -62,14 +66,26 @@ public class AssetSettingAddressesAdapter extends RecyclerView.Adapter<AssetSett
 
     @Override
     public int getItemCount() {
-        if (addresses == null) {
-            return 0;
-        }
-        return addresses.size();
+        return addresses == null ? 0 : addresses.size();
     }
 
-    public void setData(RealmList<WalletAddress> addresses) {
+    private String getAddressAmount(WalletAddress address) {
+        String result = null;
+        switch (NativeDataHelper.Blockchain.valueOf(currencyId)) {
+            case BTC:
+                result = CryptoFormatUtils.satoshiToBtcLabel(address.getAmount());
+                break;
+            case ETH:
+                result = CryptoFormatUtils.wetToEthLabel(address.getAmountString());
+                break;
+        }
+        return result;
+    }
+
+    public void setData(RealmList<WalletAddress> addresses, int currencyId, int networkId) {
         this.addresses = addresses;
+        this.currencyId = currencyId;
+        this.networkId = networkId;
         notifyDataSetChanged();
     }
 
