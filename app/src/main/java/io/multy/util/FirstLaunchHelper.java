@@ -50,10 +50,7 @@ public class FirstLaunchHelper {
 
     public static boolean isRooted(AppCompatActivity activity){
         RootBeer rootBeer = new RootBeer(activity);
-        if (rootBeer.detectRootManagementApps(Constants.rootApplications) || rootBeer.isRootedWithoutBusyBoxCheck() || checkForBinaries()) {
-            return true;
-        }
-        return false;
+        return rootBeer.detectRootManagementApps(Constants.rootApplications) || rootBeer.isRootedWithoutBusyBoxCheck() || checkForBinaries();
     }
 
     public static boolean preventRootIfDetected(AppCompatActivity activity) {
