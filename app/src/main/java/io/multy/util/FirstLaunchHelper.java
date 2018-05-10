@@ -31,7 +31,7 @@ public class FirstLaunchHelper {
     public static boolean checkForBinary(String filename) {
         for (String path : Constants.rootPaths) {
             final String completePath = path + filename;
-            File f = new File(completePath);
+            final File f = new File(completePath);
             if (f.exists()) {
                 return true;
             }
