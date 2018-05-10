@@ -7,7 +7,6 @@
 package io.multy.util;
 
 import android.app.Activity;
-import android.os.Debug;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
