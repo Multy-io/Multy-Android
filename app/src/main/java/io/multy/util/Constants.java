@@ -114,4 +114,48 @@ public final class Constants {
     public static final int DONATE_ADDING_WIRELESS_SCAN = 10302;
 
     public static final int MIN_SATOSHI = 546;
+
+
+    public static final String[] rootFiles = {
+            "init.magisk.rc",
+            "magisk",
+            "Superuser.apk",
+            "daemonsu",
+            "su",
+            "frida",
+            "frida-server",
+            "fridaserver",
+            "magisk.log",
+            "last_magisk.log",
+            "superuser"
+    };
+
+    public static final String[] rootApplications = {
+            "com.saurik.substrate",
+            "com.topjohnwu.magisk",
+            "com.android.vending.billing.InAppBillingService.COIN",
+            "com.chelpus.luckypatcher",
+            "com.noshufou.android.su",
+            "com.thirdparty.superuser",
+            "eu.chainfire.supersu",
+            "com.koushikdutta.superuser",
+            "com.zachspong.temprootremovejb",
+            "com.ramdroid.appquarantine"
+    };
+
+    public static final String[] rootPaths = {
+            "/data/",
+            "/data/data",
+            "/data/local/",
+            "/data/local/tmp/",
+            "/cache/",
+            "/",
+            "/system/xbin/",
+            "/system/",
+            "/dev/",
+            "/etc/init.d/",
+            "/system/bin/",
+            "/sbin/",
+            "/system/bin/.ext/"
+    };
 }

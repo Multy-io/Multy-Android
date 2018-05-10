@@ -7,12 +7,15 @@
 package io.multy.util;
 
 import android.app.Activity;
+import android.os.Debug;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 
 import com.samwolfand.oneprefs.Prefs;
 import com.scottyab.rootbeer.RootBeer;
+
+import java.io.File;
 
 import io.multy.R;
 import io.multy.model.entities.ByteSeed;
@@ -23,11 +26,38 @@ import io.multy.storage.RealmManager;
 import io.multy.storage.SettingsDao;
 import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
 
+
 public class FirstLaunchHelper {
+
+    public static boolean checkForBinary(String filename) {
+        for (String path : Constants.rootPaths) {
+            String completePath = path + filename;
+            File f = new File(completePath);
+            if (f.exists()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean checkForBinaries(){
+        for (String filename : Constants.rootFiles){
+            if (checkForBinary(filename)){
+                return true;
+            }
+        }
+        return false;
+    }
 
     public static boolean preventRootIfDetected(AppCompatActivity activity) {
         RootBeer rootBeer = new RootBeer(activity);
-        if (rootBeer.isRootedWithoutBusyBoxCheck()) {
+        Boolean isRooted = false;
+
+        if (rootBeer.detectRootManagementApps(Constants.rootApplications) || rootBeer.isRootedWithoutBusyBoxCheck() || checkForBinaries()) {
+            isRooted = true;
+        }
+
+        if (isRooted) {
             SimpleDialogFragment.newInstanceNegative(R.string.root_title, R.string.root_message, view -> {
                 closeApp(activity);
             }).show(activity.getSupportFragmentManager(), "");

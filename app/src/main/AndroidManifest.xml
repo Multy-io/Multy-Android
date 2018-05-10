@@ -14,7 +14,8 @@
 
     <application
         android:name=".Multy"
-        android:allowBackup="true"
+        tools:replace="android:allowBackup"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher_app"
         android:label="@string/app_name"
         android:resizeableActivity="false"
