@@ -30,7 +30,7 @@ public class FirstLaunchHelper {
 
     public static boolean checkForBinary(String filename) {
         for (String path : Constants.rootPaths) {
-            String completePath = path + filename;
+            final String completePath = path + filename;
             File f = new File(completePath);
             if (f.exists()) {
                 return true;
@@ -48,21 +48,21 @@ public class FirstLaunchHelper {
         return false;
     }
 
-    public static boolean preventRootIfDetected(AppCompatActivity activity) {
+    public static boolean isRooted(AppCompatActivity activity){
         RootBeer rootBeer = new RootBeer(activity);
-        Boolean isRooted = false;
-
         if (rootBeer.detectRootManagementApps(Constants.rootApplications) || rootBeer.isRootedWithoutBusyBoxCheck() || checkForBinaries()) {
-            isRooted = true;
+            return true;
         }
+        return false;
+    }
 
-        if (isRooted) {
+    public static boolean preventRootIfDetected(AppCompatActivity activity) {
+        if (isRooted(activity)) {
             SimpleDialogFragment.newInstanceNegative(R.string.root_title, R.string.root_message, view -> {
                 closeApp(activity);
             }).show(activity.getSupportFragmentManager(), "");
             return true;
         }
-
         return false;
     }
 
