@@ -27,13 +27,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import butterknife.BindInt;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.model.entities.wallet.CurrencyCode;
-import io.multy.ui.activities.AmountChooserActivity;
 import io.multy.ui.activities.AssetRequestActivity;
 import io.multy.ui.fragments.AddressesFragment;
 import io.multy.ui.fragments.BaseFragment;
@@ -76,9 +74,6 @@ public class RequestSummaryFragment extends BaseFragment {
     @BindView(R.id.container_wallet)
     ConstraintLayout containerWallet;
 
-    @BindInt(R.integer.zero)
-    int zero;
-
     private AssetRequestViewModel viewModel;
     private SharingBroadcastReceiver receiver;
 
@@ -105,12 +100,11 @@ public class RequestSummaryFragment extends BaseFragment {
         if (getActivity() != null) {
             getActivity().registerReceiver(receiver, new IntentFilter());
         }
-
         textAddress.setText(viewModel.getWalletAddress());
         textWalletName.setText(viewModel.getWallet().getWalletName());
         textBalanceCurrency.setText(viewModel.getWallet().getFiatBalanceLabel());
         textBalanceOriginal.setText(viewModel.getWallet().getBalanceLabel());
-        if (viewModel.getAmount() != zero) {
+        if (viewModel.getAmount() != 0) {
             setBalance();
         }
         generateQR();
@@ -148,7 +142,7 @@ public class RequestSummaryFragment extends BaseFragment {
                 getResources().getColor(android.R.color.white), bitmap -> {
             imageQr.setImageBitmap(bitmap);
             progressBar.setVisibility(View.GONE);
-                }, throwable -> viewModel.errorMessage.setValue(throwable.getLocalizedMessage()));
+            }, throwable -> viewModel.errorMessage.setValue(throwable.getLocalizedMessage()));
     }
 
     private void setBalance() {
@@ -160,7 +154,7 @@ public class RequestSummaryFragment extends BaseFragment {
         textBalanceCurrencySend.append(CurrencyCode.USD.name());
         textBalanceOriginalSend.setText(NumberFormatter.getInstance().format(viewModel.getAmount()));
         textBalanceOriginalSend.append(Constants.SPACE);
-        textBalanceOriginalSend.append(CurrencyCode.BTC.name());
+        textBalanceOriginalSend.append(viewModel.getWallet().getCurrencyName());
     }
 
     @OnClick(R.id.image_qr)
@@ -184,14 +178,19 @@ public class RequestSummaryFragment extends BaseFragment {
     @OnClick(R.id.container_summ)
     void onClickRequestAmount() {
         Analytics.getInstance(getActivity()).logReceiveSummary(AnalyticsConstants.RECEIVE_SUMMARY_REQUEST_SUM, viewModel.getChainId());
-//        ((AssetRequestActivity) getActivity()).setFragment(R.string.receive_amount, AmountChooserFragment.newInstance());
-        startActivityForResult(new Intent(getContext(), AmountChooserActivity.class).putExtra(Constants.EXTRA_AMOUNT, viewModel.getAmount()), AMOUNT_CHOOSE_REQUEST);
+        if (getActivity() instanceof AssetRequestActivity) {
+            AmountChooserFragment fragment =  AmountChooserFragment.newInstance();
+            fragment.setTargetFragment(this, AMOUNT_CHOOSE_REQUEST);
+            ((AssetRequestActivity) getActivity()).setFragment(R.string.receive_amount, fragment);
+        }
     }
 
     @OnClick(R.id.container_wallet)
     void onClickWallet() {
         Analytics.getInstance(getActivity()).logReceiveSummary(AnalyticsConstants.RECEIVE_SUMMARY_CHANGE_WALLET, viewModel.getChainId());
-        ((AssetRequestActivity) getActivity()).setFragment(R.string.receive, WalletChooserFragment.newInstance());
+        if (getActivity() instanceof AssetRequestActivity) {
+            ((AssetRequestActivity) getActivity()).setFragment(R.string.receive, WalletChooserFragment.newInstance());
+        }
     }
 
     @OnClick(R.id.button_generate_address)
@@ -246,7 +245,8 @@ public class RequestSummaryFragment extends BaseFragment {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getExtras() != null && intent.getExtras().get(Intent.EXTRA_CHOSEN_COMPONENT) != null) {
+            if (intent.getExtras() != null && intent.getExtras().get(Intent.EXTRA_CHOSEN_COMPONENT) != null &&
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
                 String component = intent.getExtras().get(Intent.EXTRA_CHOSEN_COMPONENT).toString();
                 String packageName = component.substring(component.indexOf("{") + 1, component.indexOf("/"));
                 Analytics.getInstance(context).logWalletSharing(intent.getIntExtra(context.getString(R.string.chain_id), 1), packageName);

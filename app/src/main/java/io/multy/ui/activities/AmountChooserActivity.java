@@ -21,6 +21,7 @@ import io.multy.ui.fragments.receive.AmountChooserFragment;
 import io.multy.util.Constants;
 import io.multy.viewmodels.AssetRequestViewModel;
 
+@Deprecated
 public class AmountChooserActivity extends BaseActivity {
 
     @BindView(R.id.toolbar)
@@ -38,6 +39,7 @@ public class AmountChooserActivity extends BaseActivity {
         }
 
         AssetRequestViewModel viewModel = ViewModelProviders.of(this).get(AssetRequestViewModel.class);
+        viewModel.getWallet(getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, -1));
         viewModel.setAmount(getIntent().getDoubleExtra(Constants.EXTRA_AMOUNT, 0));
         setFragment(R.string.receive_amount, AmountChooserFragment.newInstance());
     }

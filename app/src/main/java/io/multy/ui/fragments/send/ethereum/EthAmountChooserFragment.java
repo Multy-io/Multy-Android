@@ -41,7 +41,6 @@ import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetSendActivity;
 import io.multy.ui.activities.BaseActivity;
 import io.multy.ui.fragments.BaseFragment;
-import io.multy.ui.fragments.send.SendSummaryFragment;
 import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
 import io.multy.util.NumberFormatter;
@@ -508,7 +507,7 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
             viewModel.setPayForCommission(isChecked);
             checkCommas();
             initSpendable();
-
+            showTotalSum(isAmountSwapped ? inputCurrency.getText().toString() : inputOriginal.getText().toString());
             if (isChecked) {
                 Analytics.getInstance(getActivity()).logSendChooseAmount(AnalyticsConstants.SEND_AMOUNT_COMMISSION_ENABLED, viewModel.getChainId());
             } else {

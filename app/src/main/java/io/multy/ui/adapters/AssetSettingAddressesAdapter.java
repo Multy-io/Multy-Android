@@ -13,14 +13,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.multy.R;
+import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.ui.fragments.dialogs.PrivateKeyDialogFragment;
-import io.multy.util.CryptoFormatUtils;
-import io.multy.util.NativeDataHelper;
-import io.realm.RealmList;
 
 /**
  * Created by anschutz1927@gmail.com on 22.02.18.
@@ -32,7 +32,7 @@ public class AssetSettingAddressesAdapter extends RecyclerView.Adapter<AssetSett
     private int networkId;
     private boolean isItemSelected = false;
     private FragmentManager fragmentManager;
-    private RealmList<WalletAddress> addresses;
+    private List<WalletAddress> addresses;
 
     public AssetSettingAddressesAdapter(FragmentManager childFragmentManager) {
         this.fragmentManager = childFragmentManager;
@@ -49,7 +49,7 @@ public class AssetSettingAddressesAdapter extends RecyclerView.Adapter<AssetSett
         try {
             WalletAddress address = addresses.get(position);
             holder.textAddress.setText(address.getAddress());
-            holder.textBalance.setText(getAddressAmount(address));
+            holder.textBalance.setText(Wallet.getAddressAmount(address, currencyId));
             holder.itemView.setOnClickListener(view -> {
                 if (!isItemSelected) {
                     isItemSelected = true;
@@ -69,20 +69,7 @@ public class AssetSettingAddressesAdapter extends RecyclerView.Adapter<AssetSett
         return addresses == null ? 0 : addresses.size();
     }
 
-    private String getAddressAmount(WalletAddress address) {
-        String result = null;
-        switch (NativeDataHelper.Blockchain.valueOf(currencyId)) {
-            case BTC:
-                result = CryptoFormatUtils.satoshiToBtcLabel(address.getAmount());
-                break;
-            case ETH:
-                result = CryptoFormatUtils.wetToEthLabel(address.getAmountString());
-                break;
-        }
-        return result;
-    }
-
-    public void setData(RealmList<WalletAddress> addresses, int currencyId, int networkId) {
+    public void setData(List<WalletAddress> addresses, int currencyId, int networkId) {
         this.addresses = addresses;
         this.currencyId = currencyId;
         this.networkId = networkId;

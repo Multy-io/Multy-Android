@@ -15,6 +15,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -22,9 +24,7 @@ import io.multy.R;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.ui.adapters.AssetSettingAddressesAdapter;
 import io.multy.ui.fragments.BaseFragment;
-import io.multy.util.NativeDataHelper;
 import io.multy.viewmodels.WalletViewModel;
-import io.realm.RealmList;
 
 /**
  * Created by anschutz1927@gmail.com on 22.02.18.
@@ -70,15 +70,7 @@ public class SettingAssetAddressesFragment extends BaseFragment {
             if (walletRealmObject == null) {
                 return;
             }
-            RealmList<WalletAddress> addresses = null;
-            switch (NativeDataHelper.Blockchain.valueOf(walletRealmObject.getCurrencyId())) {
-                case BTC:
-                    addresses = walletRealmObject.getBtcWallet().getAddresses();
-                    break;
-                case ETH:
-                    addresses = walletRealmObject.getEthWallet().getAddresses();
-                    break;
-            }
+            List<WalletAddress> addresses = walletRealmObject.getAddresses();
             addressesAdapter.setData(addresses, walletRealmObject.getCurrencyId(), walletRealmObject.getNetworkId());
         });
     }

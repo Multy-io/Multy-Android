@@ -7,6 +7,8 @@
 package io.multy.model.entities.wallet;
 
 
+import android.support.annotation.NonNull;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.math.BigDecimal;
@@ -19,6 +21,7 @@ import javax.annotation.Nullable;
 import io.multy.R;
 import io.multy.api.socket.CurrenciesRate;
 import io.multy.storage.RealmManager;
+import io.multy.util.CryptoFormatUtils;
 import io.multy.util.NativeDataHelper;
 import io.multy.util.NumberFormatter;
 import io.realm.RealmList;
@@ -144,6 +147,18 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
         }
     }
 
+    @Override
+    public int getIconResourceId() {
+        switch (NativeDataHelper.Blockchain.valueOf(currencyId)) {
+            case BTC:
+                return networkId == NativeDataHelper.NetworkId.MAIN_NET.getValue() ? R.drawable.ic_btc : R.drawable.ic_chain_btc_test;
+            case ETH:
+                return networkId == NativeDataHelper.NetworkId.MAIN_NET.getValue() ? R.drawable.ic_eth_medium_icon : R.drawable.ic_chain_eth_test;
+            default:
+                return 0;
+        }
+    }
+
     /**
      * @return fiat string balance without fiat symbol. example 2600 (mean usd)
      */
@@ -164,22 +179,21 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
         }
     }
 
+    @NonNull
+    public String getCurrencyName() {
+        switch (NativeDataHelper.Blockchain.valueOf(currencyId)) {
+            case BTC:
+                return CurrencyCode.BTC.name();
+            case ETH:
+                return CurrencyCode.ETH.name();
+        }
+        return "";
+    }
+
     public String getFiatString() {
         switch (fiatId) {
             default:
                 return "$";
-        }
-    }
-
-    @Override
-    public int getIconResourceId() {
-        switch (NativeDataHelper.Blockchain.valueOf(currencyId)) {
-            case BTC:
-                return networkId == NativeDataHelper.NetworkId.MAIN_NET.getValue() ? R.drawable.ic_btc : R.drawable.ic_chain_btc_test;
-            case ETH:
-                return networkId == NativeDataHelper.NetworkId.MAIN_NET.getValue() ? R.drawable.ic_eth_medium_icon : R.drawable.ic_chain_eth_test;
-            default:
-                return 0;
         }
     }
 
@@ -333,5 +347,18 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
 
     public long getId() {
         return dateOfCreation;
+    }
+
+    public static String getAddressAmount(WalletAddress address, int currencyId) {
+        String result = null;
+        switch (NativeDataHelper.Blockchain.valueOf(currencyId)) {
+            case BTC:
+                result = CryptoFormatUtils.satoshiToBtcLabel(address.getAmount());
+                break;
+            case ETH:
+                result = CryptoFormatUtils.wetToEthLabel(address.getAmountString());
+                break;
+        }
+        return result;
     }
 }

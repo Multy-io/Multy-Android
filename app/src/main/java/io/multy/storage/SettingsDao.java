@@ -17,6 +17,7 @@ import io.multy.model.entities.RootKey;
 import io.multy.model.entities.Token;
 import io.multy.model.entities.UserId;
 import io.multy.model.responses.ServerConfigResponse;
+import io.multy.util.NativeDataHelper;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.annotations.Nullable;
 import io.realm.Realm;
@@ -101,6 +102,21 @@ public class SettingsDao {
             currenciesRate = new CurrenciesRate();
         }
         return currenciesRate;
+    }
+
+    @Nullable
+    public double getCurrenciesRateById(int currencyId) {
+        CurrenciesRate currenciesRate = realm.where(CurrenciesRate.class).findFirst();
+        if (currenciesRate == null) {
+            return 0;
+        }
+        switch (NativeDataHelper.Blockchain.valueOf(currencyId)) {
+            case BTC:
+                return currenciesRate.getBtcToUsd();
+            case ETH:
+                return currenciesRate.getEthToUsd();
+                default: return 0;
+        }
     }
 
     public void saveDonation(List<ServerConfigResponse.Donate> donates) {
