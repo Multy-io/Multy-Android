@@ -90,7 +90,7 @@
             app:layout_constraintLeft_toLeftOf="@+id/container_receiver"
             app:layout_constraintRight_toRightOf="@+id/container_receiver"
             app:layout_constraintTop_toTopOf="@+id/container_receiver"
-            app:srcCompat="@drawable/ic_btc"
+            app:srcCompat="@drawable/ic_eth_medium_icon"
             tools:ignore="ContentDescription" />
 
         <EditText

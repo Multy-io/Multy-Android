@@ -32,6 +32,7 @@ import io.multy.storage.SecurePreferencesHelper;
 import io.multy.ui.activities.SplashActivity;
 import io.multy.util.Constants;
 import io.multy.util.EntropyProvider;
+import io.multy.util.FileLoggingTree;
 import io.multy.util.MultyRealmMigration;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -47,6 +48,7 @@ public class Multy extends Application {
         Realm.init(this);
         Branch.getAutoInstance(this);
         Timber.plant(new Timber.DebugTree());
+//        Timber.plant(new FileLoggingTree(getApplicationContext()));
 
         new Prefs.Builder()
                 .setContext(this)
@@ -83,6 +85,7 @@ public class Multy extends Application {
         String key = SecurePreferencesHelper.getString(context, Constants.PREF_KEY);
 
         try {
+            Base64.decode(key, Base64.NO_WRAP);
             return new RealmConfiguration.Builder()
                     .encryptionKey(Base64.decode(key, Base64.NO_WRAP))
                     .schemaVersion(2)
@@ -109,13 +112,13 @@ public class Multy extends Application {
                 }
 
                 String ivString = new String(Base64.encode(iv, Base64.NO_WRAP));
+
                 Prefs.putString(Constants.PREF_IV, ivString);
             } catch (GeneralSecurityException e) {
                 e.printStackTrace();
                 return false;
             }
         }
-
 
         try {
             String key = new String(Base64.encode(EntropyProvider.generateKey(512), Base64.NO_WRAP));

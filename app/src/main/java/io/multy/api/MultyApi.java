@@ -83,6 +83,7 @@ public enum MultyApi implements MultyApiInterface {
                                 if (body != null) {
                                     Prefs.putString(Constants.PREF_AUTH, body.getToken());
                                 }
+                                RealmManager.close();
 
                                 return response.request().newBuilder()
                                         .header("Authorization", "Bearer " + Prefs.getString(Constants.PREF_AUTH, ""))

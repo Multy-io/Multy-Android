@@ -11,6 +11,8 @@ import com.google.gson.annotations.SerializedName;
 import com.samwolfand.oneprefs.Prefs;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import io.multy.model.entities.wallet.Wallet;
@@ -72,6 +74,7 @@ public class WalletsResponse {
     }
 
     public List<Wallet> getWallets() {
+        Collections.sort(wallets, (o1, o2) -> Long.compare(o1.getLastActionTime(), o2.getLastActionTime()));
         return wallets;
     }
 

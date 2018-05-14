@@ -18,6 +18,7 @@ import io.realm.Realm;
 import io.realm.RealmObject;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
+import io.realm.Sort;
 
 public class AssetsDao {
 
@@ -77,7 +78,7 @@ public class AssetsDao {
     }
 
     public RealmResults<Wallet> getWallets() {
-        return realm.where(Wallet.class).findAll();
+        return realm.where(Wallet.class).sort("lastActionTime", Sort.ASCENDING).findAll();
     }
 
     public RealmResults<Wallet> getWallets(int blockChainId) {

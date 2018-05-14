@@ -13,6 +13,7 @@ import java.io.File;
 
 import io.multy.Multy;
 import io.realm.Realm;
+import timber.log.Timber;
 
 public class RealmManager {
 
