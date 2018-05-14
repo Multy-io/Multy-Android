@@ -84,6 +84,8 @@ public class SendSummaryFragment extends BaseFragment {
     ImageView sliderFinish;
     @BindView(R.id.scrollview)
     ScrollView scrollView;
+    @BindView(R.id.image_logo)
+    ImageView imageLogo;
 
     @BindString(R.string.donation_format_pattern)
     String formatPattern;
@@ -238,6 +240,8 @@ public class SendSummaryFragment extends BaseFragment {
         if (transactionPrice.getValue() != null) {
             textFeeAmount.setText(String.format("%s BTC / %s USD", CryptoFormatUtils.satoshiToBtc(transactionPrice.getValue()), CryptoFormatUtils.satoshiToUsd(transactionPrice.getValue())));
         }
+
+        imageLogo.setImageResource(viewModel.getWallet().getIconResourceId());
     }
 
     private void showError() {
