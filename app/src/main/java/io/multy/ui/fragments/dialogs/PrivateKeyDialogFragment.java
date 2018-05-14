@@ -34,18 +34,20 @@ import io.multy.viewmodels.WalletViewModel;
 
 public class PrivateKeyDialogFragment extends BottomSheetDialogFragment implements DialogInterface.OnShowListener {
 
-    public static PrivateKeyDialogFragment getInstance(WalletAddress address) {
-        PrivateKeyDialogFragment fragment = new PrivateKeyDialogFragment();
-        fragment.setAddress(address);
-        return fragment;
-    }
-
     @BindView(R.id.text_key)
     TextView textKey;
 
+    private int currencyId;
+    private int networkId;
     private WalletAddress address;
     private WalletViewModel viewModel;
     private Listener listener;
+
+    public static PrivateKeyDialogFragment getInstance(WalletAddress address, int currencyId, int networkId) {
+        PrivateKeyDialogFragment fragment = new PrivateKeyDialogFragment();
+        fragment.setParams(address, currencyId, networkId);
+        return fragment;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -86,8 +88,10 @@ public class PrivateKeyDialogFragment extends BottomSheetDialogFragment implemen
         }
     }
 
-    private void setAddress(WalletAddress address) {
+    private void setParams(WalletAddress address, int currencyId, int networkId) {
         this.address = address;
+        this.currencyId = currencyId;
+        this.networkId = networkId;
     }
 
     private String getPrivateKey() {
@@ -95,9 +99,7 @@ public class PrivateKeyDialogFragment extends BottomSheetDialogFragment implemen
             byte[] seed = RealmManager.getSettingsDao().getSeed().getSeed();
             int walletIndex = viewModel.getWalletLive().getValue().getIndex();
             int addressIndex = address.getIndex();
-            return NativeDataHelper.getMyPrivateKey(seed, walletIndex, addressIndex,
-                    NativeDataHelper.Blockchain.BTC.getValue(),
-                    NativeDataHelper.NetworkId.TEST_NET.getValue());
+            return NativeDataHelper.getMyPrivateKey(seed, walletIndex, addressIndex, currencyId, networkId);
         } catch (Throwable throwable) {
             throwable.printStackTrace();
             //TODO create new error message

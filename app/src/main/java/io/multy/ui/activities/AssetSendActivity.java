@@ -210,6 +210,10 @@ public class AssetSendActivity extends BaseActivity {
                 AssetSendViewModel viewModel = ViewModelProviders.of(this).get(AssetSendViewModel.class);
                 viewModel.setReceiverAddress(data.getStringExtra(Constants.EXTRA_QR_CONTENTS));
                 viewModel.thoseAddress.setValue(data.getStringExtra(Constants.EXTRA_QR_CONTENTS));
+                if (data.hasExtra(Constants.EXTRA_AMOUNT) && data.getExtras() != null) {
+                    viewModel.setAmountScanned(true);
+                    viewModel.setAmount(Double.valueOf(data.getExtras().getString(Constants.EXTRA_AMOUNT, "0")));
+                }
             }
         }
         super.onActivityResult(requestCode, resultCode, data);

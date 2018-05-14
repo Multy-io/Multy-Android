@@ -6,7 +6,6 @@
 
 package io.multy.ui.fragments.receive;
 
-import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,7 +26,6 @@ import android.view.animation.AccelerateInterpolator;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import butterknife.BindInt;
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -38,6 +36,8 @@ import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
 import io.multy.util.NumberFormatter;
 import io.multy.viewmodels.AssetRequestViewModel;
+
+import static android.app.Activity.RESULT_OK;
 
 
 public class AmountChooserFragment extends BaseFragment implements BaseActivity.OnLockCloseListener {
@@ -50,6 +50,8 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
     Group groupSend;
     @BindView(R.id.input_balance_original)
     EditText inputOriginal;
+    @BindView(R.id.text_currency_code_original)
+    TextView textCurrencyOriginal;
     @BindView(R.id.input_balance_currency)
     EditText inputCurrency;
     @BindView(R.id.button_next)
@@ -59,10 +61,6 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
     @BindView(R.id.container_input_currency)
     ConstraintLayout containerInputCurrency;
 
-    @BindInt(R.integer.zero)
-    int zero;
-    @BindInt(R.integer.one)
-    int one;
     @BindString(R.string.point)
     String point;
     @BindString(R.string.donation_format_pattern)
@@ -92,11 +90,12 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
 
         setupInputOriginal();
         setupInputCurrency();
-        if (viewModel.getAmount() != zero) {
+        if (viewModel.getAmount() != 0) {
             inputOriginal.setText(NumberFormatter.getInstance().format(viewModel.getAmount()));
             inputCurrency.setText(NumberFormatter.getFiatInstance()
                     .format((viewModel.getExchangePrice() * viewModel.getAmount())));
         }
+        textCurrencyOriginal.setText(viewModel.getWallet().getCurrencyName());
         groupSend.setVisibility(View.GONE);
         buttonNext.setGravity(Gravity.CENTER);
         buttonNext.setText(R.string.done);
@@ -191,7 +190,6 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
         inputCurrency.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
             }
 
             @Override
@@ -200,8 +198,7 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
                     if (!TextUtils.isEmpty(charSequence)) {
                         if (isParsable(charSequence.toString())) {
                             inputOriginal.setText(NumberFormatter.getInstance()
-                                    .format(Double.parseDouble(charSequence.toString())
-                                            / viewModel.getExchangePrice()));
+                                    .format(Double.parseDouble(charSequence.toString()) / viewModel.getExchangePrice()));
                         }
                     } else {
                         inputCurrency.getText().clear();
@@ -254,7 +251,7 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
     private void checkForPointAndZeros(String input, EditText inputView) {
         int selection = inputView.getSelectionStart();
         if (!TextUtils.isEmpty(input)
-                && input.length() == one
+                && input.length() == 1
                 && input.contains(point)) {
             String result = input.replaceAll(point, "");
             inputView.setText(result);
@@ -329,15 +326,14 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
 
     @OnClick(R.id.button_next)
     void onClickNext() {
-//        if (!TextUtils.isEmpty(inputOriginal.getText())) {
-//            viewModel.setAmount(Double.valueOf(inputOriginal.getText().toString()));
-//        }
-//        getActivity().onBackPressed();
         double amount = 0;
         if (!TextUtils.isEmpty(inputOriginal.getText())) {
             amount = Double.valueOf(inputOriginal.getText().toString());
         }
-        getActivity().setResult(Activity.RESULT_OK, new Intent().putExtra(Constants.EXTRA_AMOUNT, amount));
-        getActivity().onBackPressed();
+        if (getActivity() != null && getTargetFragment() != null) {
+            Intent data = new Intent().putExtra(Constants.EXTRA_AMOUNT, amount);
+            getTargetFragment().onActivityResult(RequestSummaryFragment.AMOUNT_CHOOSE_REQUEST, RESULT_OK, data);
+            getActivity().onBackPressed();
+        }
     }
 }

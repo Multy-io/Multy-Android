@@ -17,7 +17,6 @@ import android.widget.Toast;
 
 import java.util.List;
 
-import butterknife.BindInt;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -36,11 +35,6 @@ public class AssetRequestActivity extends BaseActivity {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-
-    @BindInt(R.integer.zero)
-    int zero;
-    @BindInt(R.integer.one_negative)
-    int oneNegative;
 
     private boolean isFirstFragmentCreation;
     private AssetRequestViewModel viewModel;
@@ -74,7 +68,7 @@ public class AssetRequestActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
-        if (getSupportFragmentManager().getBackStackEntryCount() > zero) {
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
             List<Fragment> backStackFragments = getSupportFragmentManager().getFragments();
             for (Fragment backStackFragment : backStackFragments) {
                 if (backStackFragment instanceof AddressesFragment) {
@@ -105,7 +99,6 @@ public class AssetRequestActivity extends BaseActivity {
         if (getIntent().hasExtra(Constants.EXTRA_WALLET_ID)) {
             if (getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, -1) != -1) {
                 AssetRequestViewModel viewModel = ViewModelProviders.of(this).get(AssetRequestViewModel.class);
-//                viewModel.setContext(this);
                 viewModel.getWallet(getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, -1));
                 viewModel.getWalletLive().observe(this, walletRealmObject -> setFragment(R.string.receive_summary, RequestSummaryFragment.newInstance()));
             } else {

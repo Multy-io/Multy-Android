@@ -16,7 +16,6 @@ import com.google.zxing.common.BitMatrix;
 import java.util.List;
 
 import io.multy.api.MultyApi;
-import io.multy.api.socket.CurrenciesRate;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.requests.AddWalletAddressRequest;
@@ -45,8 +44,7 @@ public class AssetRequestViewModel extends BaseViewModel {
     }
 
     public Double getExchangePrice() {
-        final CurrenciesRate currenciesRate = RealmManager.getSettingsDao().getCurrenciesRate();
-        return currenciesRate != null ? currenciesRate.getBtcToUsd() : 0;
+        return RealmManager.getSettingsDao().getCurrenciesRateById(wallet.getCurrencyId());
     }
 
     public void setWallet(Wallet wallet) {

@@ -15,10 +15,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
+import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.ui.adapters.AssetSettingAddressesAdapter;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.viewmodels.WalletViewModel;
@@ -64,10 +67,11 @@ public class SettingAssetAddressesFragment extends BaseFragment {
         recyclerAddresses.setAdapter(addressesAdapter);
         viewModel = ViewModelProviders.of(getActivity()).get(WalletViewModel.class);
         viewModel.getWalletLive().observe(this, walletRealmObject -> {
-            if (walletRealmObject == null || walletRealmObject.getBtcWallet().getAddresses() == null) {
+            if (walletRealmObject == null) {
                 return;
             }
-            addressesAdapter.setData(walletRealmObject.getBtcWallet().getAddresses());
+            List<WalletAddress> addresses = walletRealmObject.getAddresses();
+            addressesAdapter.setData(addresses, walletRealmObject.getCurrencyId(), walletRealmObject.getNetworkId());
         });
     }
 
