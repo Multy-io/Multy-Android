@@ -224,45 +224,4 @@
         app:layout_constraintTop_toBottomOf="@+id/container_available"
         tools:text="83T28WCp4Cu5LQiddJnDJJmKWvmmXJSP9L" />
 
-    <android.support.v7.widget.CardView
-        android:id="@+id/card_addresses"
-        android:layout_width="240dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        android:layout_marginTop="10dp"
-        android:background="?android:attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true"
-        android:stateListAnimator="@drawable/z_animation"
-        android:visibility="gone"
-        app:cardBackgroundColor="@color/blue_dark"
-        app:cardCornerRadius="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_address">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="36dp"
-            android:layout_marginRight="36dp"
-            android:layout_marginTop="10dp"
-            android:drawablePadding="20dp"
-            android:fontFamily="@font/montserrat"
-            android:maxLines="1"
-            android:text="@string/show_all_addresses"
-            android:textColor="@android:color/white"
-            android:textSize="14sp" />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|right"
-            android:layout_marginRight="24dp"
-            android:src="@drawable/ic_chevron_transparent" />
-
-    </android.support.v7.widget.CardView>
 </android.support.constraint.ConstraintLayout>

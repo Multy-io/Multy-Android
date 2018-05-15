@@ -93,8 +93,9 @@
     <string name="main">Main</string>
     <string name="my_wallets">My Wallets</string>
     <string name="all_addresses">All addresses</string>
-    <string name="btc_adddress">BTC Address</string>
-    <string name="btc_adddresses">BTC Addresses</string>
+    <string name="btc_address">BTC Address</string>
+    <string name="btc_addresses">BTC Addresses</string>
+    <string name="address_formatted">%s Address</string>
     <string name="addresses">Addresses</string>
     <string name="eth">ETH</string>
     <string name="tokens">Tokens</string>
@@ -272,4 +273,6 @@
     <string name="error_initializing_wallet">Error initializing wallet.</string>
     <string name="gwei">GWEI</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

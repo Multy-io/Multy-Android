@@ -238,7 +238,14 @@ public class WalletViewModel extends BaseViewModel {
     }
 
     public int getChainId() {
-        return 1;
+        if (wallet.getValue() != null) {
+            return wallet.getValue().getCurrencyId();
+        }
+        return 0;
+    }
+
+    public void shareAddress(Activity activity) {
+        share(activity, wallet.getValue().getActiveAddress().getAddress());
     }
 
     public void share(Activity activity, String stringToShare) {
@@ -253,6 +260,10 @@ public class WalletViewModel extends BaseViewModel {
         } else {
             activity.startActivity(Intent.createChooser(sharingIntent, activity.getResources().getString(R.string.share)));
         }
+    }
+
+    public void copyToClipboardAddress(Activity activity) {
+        copyToClipboard(activity, wallet.getValue().getActiveAddress().getAddress());
     }
 
     public void copyToClipboard(Activity activity, String stringToShare) {

@@ -36,6 +36,8 @@ public class PrivateKeyDialogFragment extends BottomSheetDialogFragment implemen
 
     @BindView(R.id.text_key)
     TextView textKey;
+    @BindView(R.id.text_currency)
+    TextView textCurrency;
 
     private int currencyId;
     private int networkId;
@@ -65,6 +67,9 @@ public class PrivateKeyDialogFragment extends BottomSheetDialogFragment implemen
         String key = getPrivateKey();
         if (key != null && !key.isEmpty()) {
             textKey.setText(getPrivateKey());
+            final String currency = String.format(getString(R.string.address_formatted),
+                            viewModel.getWalletLive().getValue().getCurrencyName());
+            textCurrency.setText(currency);
         } else {
             dismiss();
         }

@@ -15,6 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import java.math.BigDecimal;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.multy.R;
@@ -93,8 +95,8 @@ public class WalletChooserFragment extends BaseFragment implements MyWalletsAdap
                 if (response.isSuccessful() && response.body().getWallets() != null && response.body().getWallets().size() > 0) {
                     Wallet wallet = response.body().getWallets().get(0);
                     RealmManager.getAssetsDao().saveWallet(wallet);
-                    viewModel.setWallet(wallet);
-                    proceed(wallet);
+                    viewModel.setWallet(RealmManager.getAssetsDao().getWalletById(wallet.getId()));
+                    proceed(viewModel.getWallet());
                 } else {
                     proceed(wallet);
                 }
@@ -111,6 +113,10 @@ public class WalletChooserFragment extends BaseFragment implements MyWalletsAdap
     }
 
     private void proceed(Wallet wallet) {
+        if (viewModel.getWallet().getAvailableBalanceNumeric().compareTo(BigDecimal.ZERO) <= 0) {
+            Toast.makeText(getContext(), R.string.no_balance, Toast.LENGTH_SHORT).show();
+            return;
+        }
         if (viewModel.isAmountScanned()) {
             if (Double.parseDouble(CryptoFormatUtils
                     .satoshiToBtc(wallet.getPendingBalance().longValue())) >= viewModel.getAmount()) {
@@ -127,6 +133,8 @@ public class WalletChooserFragment extends BaseFragment implements MyWalletsAdap
         RealmResults<Wallet> wallets;
         if (blockchainId == NO_VALUE || networkId == NO_VALUE) {
             wallets = RealmManager.getAssetsDao().getWallets();
+        } else if (blockchainId == NativeDataHelper.Blockchain.ETH.getValue()) {
+            wallets = RealmManager.getAssetsDao().getWallets(blockchainId);
         } else {
             wallets = RealmManager.getAssetsDao().getWallets(blockchainId, networkId);
         }

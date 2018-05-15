@@ -20,7 +20,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +38,6 @@ import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.events.TransactionUpdateEvent;
-import io.multy.model.requests.HdTransactionRequestEntity;
 import io.multy.model.responses.SingleWalletResponse;
 import io.multy.storage.AssetsDao;
 import io.multy.storage.RealmManager;
@@ -48,16 +46,11 @@ import io.multy.ui.activities.SeedActivity;
 import io.multy.ui.adapters.AssetTransactionsAdapter;
 import io.multy.ui.adapters.EmptyTransactionsAdapter;
 import io.multy.ui.adapters.EthTransactionsAdapter;
-import io.multy.ui.fragments.AddressesFragment;
 import io.multy.ui.fragments.BaseFragment;
-import io.multy.ui.fragments.send.SendSummaryFragment;
 import io.multy.util.Constants;
-import io.multy.util.JniException;
-import io.multy.util.NativeDataHelper;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.WalletViewModel;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -92,10 +85,6 @@ public class EthAssetInfoFragment extends BaseFragment implements AppBarLayout.O
     TextView textAvailableFiat;
     @BindView(R.id.appbar_layout)
     AppBarLayout appBarLayout;
-    @BindView(R.id.container_info)
-    View containerInfo;
-    @BindView(R.id.card_addresses)
-    View containerAddresses;
 
     private WalletViewModel viewModel;
     private AssetTransactionsAdapter transactionsAdapter;
@@ -130,12 +119,79 @@ public class EthAssetInfoFragment extends BaseFragment implements AppBarLayout.O
         });
 
         Wallet wallet = viewModel.getWallet(getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0));
-        viewModel.getWalletLive().observe(this, wallet1 -> EthAssetInfoFragment.this.setupWalletInfo(wallet1));
-        viewModel.getWalletLive().setValue(wallet);
+        setupWalletInfo(wallet);
         Analytics.getInstance(getActivity()).logWalletLaunch(AnalyticsConstants.WALLET_SCREEN, viewModel.getChainId());
 
         hideAvailableAmount();
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (getActivity() != null) {
+            getActivity().registerReceiver(receiver, new IntentFilter());
+        }
+        viewModel.subscribeSocketsUpdate();
+        appBarLayout.addOnOffsetChangedListener(this);
+        checkWarnVisibility();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (getActivity() != null) {
+            try {
+                getActivity().unregisterReceiver(receiver);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        viewModel.unsubscribeSocketsUpdate();
+        appBarLayout.removeOnOffsetChangedListener(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
+//        final int total = appBarLayout.getTotalScrollRange();
+//        final int offset = Math.abs(i);
+//        final int percentage = offset == 0 ? 0 : offset / total;
+//        containerInfo.setBackgroundColor((Integer) argbEvaluator.evaluate(colorOffset, colorTransparent, colorPrimaryDark));
+        swipeRefreshLayout.setEnabled(i == 0);
+//        containerInfo.setAlpha(1 - percentage);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onTransactionUpdateEvent(TransactionUpdateEvent event) {
+        refreshWallet();
+    }
+
+    private void initialize() {
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        if (transactionsAdapter.getItemCount() == 0) {
+            swipeRefreshLayout.setEnabled(false);
+            recyclerView.setAdapter(new EmptyTransactionsAdapter());
+            groupEmptyState.setVisibility(View.VISIBLE);
+            setToolbarScrollFlag(0);
+        } else {
+            recyclerView.setAdapter(transactionsAdapter);
+            swipeRefreshLayout.setEnabled(true);
+            groupEmptyState.setVisibility(View.GONE);
+            setToolbarScrollFlag(3);
+        }
+        checkWarnVisibility();
     }
 
     private void refreshWallet() {
@@ -143,8 +199,7 @@ public class EthAssetInfoFragment extends BaseFragment implements AppBarLayout.O
         viewModel.isLoading.postValue(true);
 
         if (!viewModel.getWalletLive().getValue().isValid()) {
-            Wallet wallet = viewModel.getWallet(getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0));
-            viewModel.getWalletLive().setValue(wallet);
+            viewModel.getWallet(getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0));
         }
 
         final int walletIndex = viewModel.getWalletLive().getValue().getIndex();
@@ -175,58 +230,6 @@ public class EthAssetInfoFragment extends BaseFragment implements AppBarLayout.O
         });
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (getActivity() != null) {
-            getActivity().registerReceiver(receiver, new IntentFilter());
-        }
-        viewModel.subscribeSocketsUpdate();
-        appBarLayout.addOnOffsetChangedListener(this);
-        checkWarnVisibility();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (getActivity() != null) {
-            try {
-                getActivity().unregisterReceiver(receiver);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        viewModel.unsubscribeSocketsUpdate();
-        appBarLayout.removeOnOffsetChangedListener(this);
-    }
-
-    @Override
-    public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
-//        final int total = appBarLayout.getTotalScrollRange();
-//        final int offset = Math.abs(i);
-//        final int percentage = offset == 0 ? 0 : offset / total;
-//        containerInfo.setBackgroundColor((Integer) argbEvaluator.evaluate(colorOffset, colorTransparent, colorPrimaryDark));
-        swipeRefreshLayout.setEnabled(i == 0);
-//        containerInfo.setAlpha(1 - percentage);
-    }
-
-    private void initialize() {
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        if (transactionsAdapter.getItemCount() == 0) {
-            swipeRefreshLayout.setEnabled(false);
-            recyclerView.setAdapter(new EmptyTransactionsAdapter());
-            groupEmptyState.setVisibility(View.VISIBLE);
-            setToolbarScrollFlag(0);
-        } else {
-            recyclerView.setAdapter(transactionsAdapter);
-            swipeRefreshLayout.setEnabled(true);
-            groupEmptyState.setVisibility(View.GONE);
-            setToolbarScrollFlag(3);
-        }
-
-        checkWarnVisibility();
-    }
-
     private void checkWarnVisibility() {
         if (Prefs.getBoolean(Constants.PREF_BACKUP_SEED)) {
             buttonWarn.setVisibility(View.GONE);
@@ -250,19 +253,8 @@ public class EthAssetInfoFragment extends BaseFragment implements AppBarLayout.O
     private void setupWalletInfo(Wallet wallet) {
         initialize();
         requestTransactions(wallet.getCurrencyId(), wallet.getNetworkId(), wallet.getIndex());
-
         textWalletName.setText(wallet.getWalletName());
-        textAddress.setText(wallet.getActiveAddress().getAddress()); //need test this so don't remove commented code below
-
-        containerAddresses.setVisibility(viewModel.wallet.getValue().getCurrencyId() != NativeDataHelper.Blockchain.BTC.getValue() ?
-                View.GONE : View.VISIBLE);
-
-//        if (wallet.getAddresses() != null && !wallet.getAddresses().isEmpty()) {
-//            textAddress.setText(wallet.getAddresses().get(wallet.getAddresses().size() - 1).getAddress());
-//        } else {
-//            textAddress.setText(wallet.getCreationAddress());
-//        }
-
+        textAddress.setText(wallet.getActiveAddress().getAddress());
         updateBalanceViews();
     }
 
@@ -274,12 +266,11 @@ public class EthAssetInfoFragment extends BaseFragment implements AppBarLayout.O
 
         final long balance = wallet.getBalanceNumeric().longValue();
         final long availableBalance = wallet.getAvailableBalanceNumeric().longValue();
-
-//        if (balance == availableBalance) {
-//            hideAvailableAmount();
-//        } else {
-//            showAvailableAmount();
-//        }
+        if (balance == availableBalance) {
+            hideAvailableAmount();
+        } else {
+            showAvailableAmount();
+        }
 
         textAvailableFiat.setText(wallet.getAvailableFiatBalanceLabel());
         textBalanceFiat.setText(wallet.getFiatBalanceLabel());
@@ -316,39 +307,22 @@ public class EthAssetInfoFragment extends BaseFragment implements AppBarLayout.O
         params.setScrollFlags(flag);
     }
 
-    private String getAddressToShare() {
-        return viewModel.wallet.getValue().getActiveAddress().getAddress();
-    }
-
     @OnClick(R.id.options)
     void onClickOptions() {
         Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_SETTINGS, viewModel.getChainId());
         ((AssetActivity) getActivity()).setFragment(R.id.container_full, AssetSettingsFragment.newInstance());
     }
 
-    @OnClick(R.id.card_addresses)
-    void onClickAddress() {
-        Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_ADDRESSES, viewModel.getChainId());
-        if (viewModel.getWalletLive().getValue() != null) {
-            ((AssetActivity) getActivity()).setFragment(R.id.container_full,
-                    AddressesFragment.newInstance(viewModel.getWalletLive().getValue().getId()));
-        } else {
-            Wallet wallet = viewModel.getWallet(getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0));
-            ((AssetActivity) getActivity()).setFragment(R.id.container_full,
-                    AddressesFragment.newInstance(wallet.getId()));
-        }
-    }
-
     @OnClick(R.id.button_share)
     void onClickShare() {
         Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_SHARE, viewModel.getChainId());
-        viewModel.share(getActivity(), getAddressToShare());
+        viewModel.shareAddress(getActivity());
     }
 
     @OnClick(R.id.text_address)
     void onClickCopy() {
         Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_ADDRESS, viewModel.getChainId());
-        viewModel.copyToClipboard(getActivity(), getAddressToShare());
+        viewModel.copyToClipboardAddress(getActivity());
     }
 
     @OnClick(R.id.close)
@@ -383,23 +357,6 @@ public class EthAssetInfoFragment extends BaseFragment implements AppBarLayout.O
         Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_BALANCE_FIAT, viewModel.getChainId());
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        EventBus.getDefault().register(this);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        EventBus.getDefault().unregister(this);
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onTransactionUpdateEvent(TransactionUpdateEvent event) {
-        refreshWallet();
-    }
-
     public static class SharingBroadcastReceiver extends BroadcastReceiver {
 
         public SharingBroadcastReceiver() {
@@ -413,30 +370,6 @@ public class EthAssetInfoFragment extends BaseFragment implements AppBarLayout.O
                 String packageName = component.substring(component.indexOf("{") + 1, component.indexOf("/"));
                 Analytics.getInstance(context).logWalletSharing(intent.getIntExtra(context.getString(R.string.chain_id), 1), packageName);
             }
-        }
-    }
-
-    private void sendEth() {
-        Wallet wallet = viewModel.getWalletLive().getValue();
-        try {
-            byte[] tx = NativeDataHelper.makeTransactionETH(RealmManager.getSettingsDao().getSeed().getSeed(), wallet.getIndex(), 0, wallet.getCurrencyId(), wallet.getNetworkId(),
-                    String.valueOf(wallet.getAddresses().get(0).getAmount()), "10000000000000000", "81afbff278e84f4d4b80d4a1d04aecfc54fa0253", "21000", "5000000000", "1");
-            MultyApi.INSTANCE.sendHdTransaction(new HdTransactionRequestEntity(wallet.getCurrencyId(), wallet.getNetworkId(),
-                    new HdTransactionRequestEntity.Payload("", 0, wallet.getIndex(), "0x"+SendSummaryFragment.byteArrayToHex(tx), false))).enqueue(new Callback<ResponseBody>() {
-                @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                    Log.i("wise", response.isSuccessful() + " success");
-                }
-
-                @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
-
-                }
-            });
-            String txString = SendSummaryFragment.byteArrayToHex(tx);
-            Log.i("wise", "tx=" + txString);
-        } catch (JniException e) {
-            e.printStackTrace();
         }
     }
 }

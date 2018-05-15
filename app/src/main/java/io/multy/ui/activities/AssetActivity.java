@@ -13,7 +13,9 @@ import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.widget.Toast;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -57,15 +59,14 @@ public class AssetActivity extends BaseActivity {
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        ViewModelProviders.of(this).get(WalletViewModel.class).destroy();
-        super.onDestroy();
-    }
-
     @OnClick(R.id.send)
     void onClickSend() {
         Analytics.getInstance(this).logWallet(AnalyticsConstants.WALLET_SEND, viewModel.getChainId());
+        if (viewModel.getWalletLive().getValue() != null &&
+                viewModel.getWalletLive().getValue().getAvailableBalanceNumeric().compareTo(BigDecimal.ZERO) <= 0) {
+            Toast.makeText(this, R.string.no_balance, Toast.LENGTH_SHORT).show();
+            return;
+        }
         startActivity(new Intent(this, AssetSendActivity.class)
                 .addCategory(Constants.EXTRA_SENDER_ADDRESS)
                 .putExtra(Constants.EXTRA_WALLET_ID, getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0)));

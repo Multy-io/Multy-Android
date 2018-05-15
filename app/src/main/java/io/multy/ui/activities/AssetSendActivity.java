@@ -142,12 +142,6 @@ public class AssetSendActivity extends BaseActivity {
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        ViewModelProviders.of(this).get(AssetSendViewModel.class).destroy();
-        super.onDestroy();
-    }
-
     public void setFragment(@StringRes int title, @IdRes int container, Fragment fragment) {
         toolbar.setTitle(title);
 
