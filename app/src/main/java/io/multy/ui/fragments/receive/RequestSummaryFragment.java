@@ -39,6 +39,7 @@ import io.multy.ui.fragments.asset.AssetInfoFragment;
 import io.multy.ui.fragments.dialogs.DonateDialog;
 import io.multy.util.Constants;
 import io.multy.util.DeepLinkShareHelper;
+import io.multy.util.NativeDataHelper;
 import io.multy.util.NumberFormatter;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
@@ -157,22 +158,36 @@ public class RequestSummaryFragment extends BaseFragment {
         textBalanceOriginalSend.append(viewModel.getWallet().getCurrencyName());
     }
 
+    private void copyAddressToClipboard() {
+        Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_ADDRESS, viewModel.getWallet().getCurrencyId());
+        String address = viewModel.getWallet().getActiveAddress().getAddress();
+        ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+        if (clipboard == null) {
+            return;
+        }
+        ClipData clip = ClipData.newPlainText(address, address);
+        clipboard.setPrimaryClip(clip);
+        Toast.makeText(getActivity(), R.string.address_copied, Toast.LENGTH_SHORT).show();
+    }
+
     @OnClick(R.id.image_qr)
     void onClickQR() {
         Analytics.getInstance(getActivity()).logReceiveSummary(AnalyticsConstants.RECEIVE_SUMMARY_QR, viewModel.getChainId());
-        String address = viewModel.getWalletAddress();
-        ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData clip = ClipData.newPlainText(address, address);
-        assert clipboard != null;
-        clipboard.setPrimaryClip(clip);
-        Toast.makeText(getActivity(), R.string.address_copied, Toast.LENGTH_SHORT).show();
+        copyAddressToClipboard();
     }
 
     @OnClick(R.id.text_address)
     void onClickAddress() {
         Analytics.getInstance(getActivity()).logReceiveSummary(AnalyticsConstants.RECEIVE_SUMMARY_ADDRESS, viewModel.getChainId());
-        ((AssetRequestActivity) getActivity()).setFragment(R.string.all_addresses,
-                AddressesFragment.newInstance(viewModel.getWallet().getId()));
+        switch (NativeDataHelper.Blockchain.valueOf(viewModel.getWallet().getCurrencyId())) {
+            case BTC:
+                ((AssetRequestActivity) getActivity()).setFragment(R.string.all_addresses,
+                        AddressesFragment.newInstance(viewModel.getWallet().getId()));
+                break;
+            case ETH:
+                copyAddressToClipboard();
+                break;
+        }
     }
 
     @OnClick(R.id.container_summ)

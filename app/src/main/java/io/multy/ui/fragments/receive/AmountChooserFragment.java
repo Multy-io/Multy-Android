@@ -111,6 +111,12 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
     }
 
     @Override
+    public void onDestroyView() {
+        hideKeyboard(getActivity());
+        super.onDestroyView();
+    }
+
+    @Override
     public void onDestroy() {
         if (getActivity() instanceof BaseActivity) {
             ((BaseActivity) getActivity()).setOnLockCLoseListener(null);

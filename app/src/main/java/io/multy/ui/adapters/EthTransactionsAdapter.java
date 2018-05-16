@@ -27,7 +27,6 @@ import io.multy.R;
 import io.multy.model.entities.TransactionHistory;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.ui.fragments.asset.EthTransactionInfoFragment;
-import io.multy.ui.fragments.asset.TransactionInfoFragment;
 import io.multy.util.CryptoFormatUtils;
 import io.multy.util.DateHelper;
 import io.multy.util.analytics.Analytics;
@@ -50,13 +49,9 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     private List<TransactionHistory> transactionHistoryList;
 
     public EthTransactionsAdapter(List<TransactionHistory> transactionHistoryList, long walletId) {
-        Collections.reverse(transactionHistoryList);
+        Collections.sort(transactionHistoryList, (transactionHistory, t1) -> Long.compare(t1.getMempoolTime(), transactionHistory.getMempoolTime()));
         this.transactionHistoryList = transactionHistoryList;
         this.walletId = walletId;
-    }
-
-    public EthTransactionsAdapter() {
-        transactionHistoryList = new ArrayList<>();
     }
 
     @NonNull

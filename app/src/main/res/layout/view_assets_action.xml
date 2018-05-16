@@ -40,7 +40,7 @@
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:background="?android:attr/selectableItemBackground"
-            android:drawableLeft="@drawable/ic_wallet_create_new"
+            android:drawableLeft="@drawable/ic_wallet_add"
             android:drawablePadding="32dp"
             android:fontFamily="@font/montserrat"
             android:gravity="center_vertical"

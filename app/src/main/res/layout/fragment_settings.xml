@@ -21,316 +21,326 @@
         android:textColor="@color/black"
         android:textSize="18sp" />
 
-    <View
-        android:id="@+id/divider_title"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:background="@color/gray_light_transparent"
+    <android.support.v4.widget.NestedScrollView
+        app:layout_constraintTop_toBottomOf="@id/text_title"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_title" />
-
-    <FrameLayout
-        android:id="@+id/button_copy"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="?attr/selectableItemBackground"
-        app:layout_constraintBottom_toTopOf="@id/container_push"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/divider_title" />
+        android:layout_height="0dp">
 
-    <TextView
-        android:id="@+id/text_version_title"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:paddingEnd="16dp"
-        android:paddingStart="56dp"
-        android:text="@string/version_title"
-        android:textColor="@color/blue_light"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/divider_title"
-        tools:text="Multy Ctypto Wallet v.1.0.1" />
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/text_version_description"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:paddingBottom="16dp"
-        android:paddingEnd="16dp"
-        android:paddingStart="56dp"
-        android:paddingTop="6dp"
-        android:textColor="@color/blue_light"
-        android:textSize="12sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_version_title"
-        tools:text="If ou already have any wallets in Multy, you’ve changed your device or lost account - you can restore your seed phrase." />
+            <View
+                android:id="@+id/divider_title"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:background="@color/gray_light_transparent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/image_logo"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
-        android:layout_marginStart="16dp"
-        android:paddingTop="4dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/text_version_title"
-        app:srcCompat="@drawable/ic_settings_about_grey" />
+            <FrameLayout
+                android:id="@+id/button_copy"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="?attr/selectableItemBackground"
+                app:layout_constraintBottom_toTopOf="@id/container_push"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/divider_title" />
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/container_push"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:foreground="?attr/selectableItemBackground"
-        app:layout_constraintTop_toBottomOf="@id/text_version_description">
+            <TextView
+                android:id="@+id/text_version_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:paddingEnd="16dp"
+                android:paddingStart="56dp"
+                android:text="@string/version_title"
+                android:textColor="@color/blue_light"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/divider_title"
+                tools:text="Multy Ctypto Wallet v.1.0.1" />
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0.5dp"
-            android:background="@color/gray_light_transparent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            <TextView
+                android:id="@+id/text_version_description"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:paddingBottom="16dp"
+                android:paddingEnd="16dp"
+                android:paddingStart="56dp"
+                android:paddingTop="6dp"
+                android:textColor="@color/blue_light"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/text_version_title"
+                tools:text="If ou already have any wallets in Multy, you’ve changed your device or lost account - you can restore your seed phrase." />
 
-        <ImageView
-            android:id="@+id/image_push"
-            style="@style/ImageSettings"
-            android:src="@drawable/ic_settings_notifications"
-            app:layout_constraintBottom_toBottomOf="@id/text_push"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="@id/text_push" />
+            <ImageView
+                android:id="@+id/image_logo"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginStart="16dp"
+                android:paddingTop="4dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/text_version_title"
+                app:srcCompat="@drawable/ic_settings_about_grey" />
 
-        <TextView
-            android:id="@+id/text_push"
-            style="@style/TitleSettings"
-            android:text="@string/push_notifications"
-            app:layout_constraintLeft_toRightOf="@id/image_push" />
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/container_push"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/selector_white"
+                app:layout_constraintTop_toBottomOf="@id/text_version_description">
 
-        <android.support.v7.widget.SwitchCompat
-            android:id="@+id/switch_push"
-            style="@style/SwitchStyle"
-            app:layout_constraintBottom_toBottomOf="@id/text_push"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="@id/text_push" />
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0.5dp"
+                    android:background="@color/gray_light_transparent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0.5dp"
-            android:background="@color/gray_light_transparent"
-            app:layout_constraintLeft_toLeftOf="@id/text_push"
-            app:layout_constraintTop_toBottomOf="@id/text_push" />
-    </android.support.constraint.ConstraintLayout>
+                <ImageView
+                    android:id="@+id/image_push"
+                    style="@style/ImageSettings"
+                    android:src="@drawable/ic_settings_notifications"
+                    app:layout_constraintBottom_toBottomOf="@id/text_push"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/text_push" />
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/container_security"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/selector_white"
-        app:layout_constraintTop_toBottomOf="@id/container_push">
+                <TextView
+                    android:id="@+id/text_push"
+                    style="@style/TitleSettings"
+                    android:text="@string/push_notifications"
+                    app:layout_constraintLeft_toRightOf="@id/image_push" />
 
-        <ImageView
-            android:id="@+id/image_security"
-            style="@style/ImageSettings"
-            android:src="@drawable/ic_settings_security"
-            app:layout_constraintBottom_toBottomOf="@id/text_security"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="@id/text_security" />
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/switch_push"
+                    style="@style/SwitchStyle"
+                    app:layout_constraintBottom_toBottomOf="@id/text_push"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/text_push" />
 
-        <TextView
-            android:id="@+id/text_security"
-            style="@style/TitleSettings"
-            android:text="@string/security_settings"
-            app:layout_constraintLeft_toRightOf="@id/image_security" />
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0.5dp"
+                    android:background="@color/gray_light_transparent"
+                    app:layout_constraintLeft_toLeftOf="@id/text_push"
+                    app:layout_constraintTop_toBottomOf="@id/text_push" />
+            </android.support.constraint.ConstraintLayout>
 
-        <ImageView
-            android:id="@+id/chevron_security"
-            style="@style/ControlSettings"
-            android:src="@drawable/ic_chevron"
-            app:layout_constraintBottom_toBottomOf="@id/text_security"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="@id/text_security" />
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/container_security"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/selector_white"
+                app:layout_constraintTop_toBottomOf="@id/container_push">
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0.5dp"
-            android:background="@color/gray_light_transparent"
-            app:layout_constraintLeft_toLeftOf="@id/text_security"
-            app:layout_constraintTop_toBottomOf="@id/text_security" />
-    </android.support.constraint.ConstraintLayout>
+                <ImageView
+                    android:id="@+id/image_security"
+                    style="@style/ImageSettings"
+                    android:src="@drawable/ic_settings_security"
+                    app:layout_constraintBottom_toBottomOf="@id/text_security"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/text_security" />
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/container_fiat"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/selector_white"
-        app:layout_constraintTop_toBottomOf="@id/container_security">
+                <TextView
+                    android:id="@+id/text_security"
+                    style="@style/TitleSettings"
+                    android:text="@string/security_settings"
+                    app:layout_constraintLeft_toRightOf="@id/image_security" />
 
-        <ImageView
-            android:id="@+id/image_fiat"
-            style="@style/ImageSettings"
-            android:src="@drawable/ic_settings_fiat"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+                <ImageView
+                    android:id="@+id/chevron_security"
+                    style="@style/ControlSettings"
+                    android:src="@drawable/ic_chevron"
+                    app:layout_constraintBottom_toBottomOf="@id/text_security"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/text_security" />
 
-        <TextView
-            android:id="@+id/text_fiat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:paddingTop="10dp"
-            android:text="Default Fiat"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            app:layout_constraintLeft_toRightOf="@id/image_fiat"
-            app:layout_constraintTop_toTopOf="parent" />
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0.5dp"
+                    android:background="@color/gray_light_transparent"
+                    app:layout_constraintLeft_toLeftOf="@id/text_security"
+                    app:layout_constraintTop_toBottomOf="@id/text_security" />
+            </android.support.constraint.ConstraintLayout>
 
-        <TextView
-            android:id="@+id/text_fiat_current"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingBottom="10dp"
-            android:text="US Dollars ∙ USD"
-            android:textColor="@color/blue_light"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/text_fiat"
-            app:layout_constraintTop_toBottomOf="@id/text_fiat" />
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/container_fiat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/selector_white"
+                app:layout_constraintTop_toBottomOf="@id/container_security">
 
-        <ImageView
-            android:id="@+id/chevron_fiat"
-            style="@style/ControlSettings"
-            android:src="@drawable/ic_chevron"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+                <ImageView
+                    android:id="@+id/image_fiat"
+                    style="@style/ImageSettings"
+                    android:src="@drawable/ic_settings_fiat"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0.5dp"
-            android:background="@color/gray_light_transparent"
-            app:layout_constraintLeft_toLeftOf="@id/text_fiat"
-            app:layout_constraintTop_toBottomOf="@id/text_fiat_current" />
+                <TextView
+                    android:id="@+id/text_fiat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:paddingTop="10dp"
+                    android:text="Default Fiat"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    app:layout_constraintLeft_toRightOf="@id/image_fiat"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-    </android.support.constraint.ConstraintLayout>
+                <TextView
+                    android:id="@+id/text_fiat_current"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="10dp"
+                    android:text="US Dollars ∙ USD"
+                    android:textColor="@color/blue_light"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/text_fiat"
+                    app:layout_constraintTop_toBottomOf="@id/text_fiat" />
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/container_exchange"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/selector_white"
-        app:layout_constraintTop_toBottomOf="@id/container_fiat">
+                <ImageView
+                    android:id="@+id/chevron_fiat"
+                    style="@style/ControlSettings"
+                    android:src="@drawable/ic_chevron"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/image_exchange"
-            style="@style/ImageSettings"
-            android:src="@drawable/ic_settings_exchange"
-            app:layout_constraintBottom_toBottomOf="@id/text_exchange"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="@id/text_exchange" />
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0.5dp"
+                    android:background="@color/gray_light_transparent"
+                    app:layout_constraintLeft_toLeftOf="@id/text_fiat"
+                    app:layout_constraintTop_toBottomOf="@id/text_fiat_current" />
 
-        <TextView
-            android:id="@+id/text_exchange"
-            style="@style/TitleSettings"
-            android:text="Exchange"
-            app:layout_constraintLeft_toRightOf="@id/image_exchange" />
+            </android.support.constraint.ConstraintLayout>
 
-        <ImageView
-            android:id="@+id/chevron_exchange"
-            style="@style/ControlSettings"
-            android:src="@drawable/ic_chevron"
-            app:layout_constraintBottom_toBottomOf="@id/text_exchange"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="@id/text_exchange" />
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/container_exchange"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/selector_white"
+                app:layout_constraintTop_toBottomOf="@id/container_fiat">
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0.5dp"
-            android:background="@color/gray_light_transparent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/text_exchange" />
-    </android.support.constraint.ConstraintLayout>
+                <ImageView
+                    android:id="@+id/image_exchange"
+                    style="@style/ImageSettings"
+                    android:src="@drawable/ic_settings_exchange"
+                    app:layout_constraintBottom_toBottomOf="@id/text_exchange"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/text_exchange" />
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/container_about"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:visibility="gone"
-        android:foreground="?attr/selectableItemBackground"
-        app:layout_constraintTop_toBottomOf="@id/container_fiat">
+                <TextView
+                    android:id="@+id/text_exchange"
+                    style="@style/TitleSettings"
+                    android:text="@string/exchange"
+                    app:layout_constraintLeft_toRightOf="@id/image_exchange" />
 
-        <ImageView
-            android:id="@+id/image_about"
-            style="@style/ImageSettings"
-            android:src="@drawable/ic_settings_about"
-            app:layout_constraintBottom_toBottomOf="@id/text_about"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="@id/text_about" />
+                <ImageView
+                    android:id="@+id/chevron_exchange"
+                    style="@style/ControlSettings"
+                    android:src="@drawable/ic_chevron"
+                    app:layout_constraintBottom_toBottomOf="@id/text_exchange"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/text_exchange" />
 
-        <TextView
-            android:id="@+id/text_about"
-            style="@style/TitleSettings"
-            android:text="@string/about_multy"
-            app:layout_constraintLeft_toRightOf="@id/image_about" />
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0.5dp"
+                    android:background="@color/gray_light_transparent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/text_exchange" />
+            </android.support.constraint.ConstraintLayout>
 
-        <ImageView
-            android:id="@+id/chevron_about"
-            style="@style/ControlSettings"
-            android:src="@drawable/ic_chevron"
-            app:layout_constraintBottom_toBottomOf="@id/text_about"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="@id/text_about" />
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/container_about"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/selector_white"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@id/container_exchange">
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0.5dp"
-            android:background="@color/gray_light_transparent"
-            app:layout_constraintLeft_toLeftOf="@id/text_about"
-            app:layout_constraintTop_toBottomOf="@id/text_about" />
-    </android.support.constraint.ConstraintLayout>
+                <ImageView
+                    android:id="@+id/image_about"
+                    style="@style/ImageSettings"
+                    android:src="@drawable/ic_settings_about"
+                    app:layout_constraintBottom_toBottomOf="@id/text_about"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/text_about" />
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/container_feedback"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:visibility="gone"
-        android:foreground="?attr/selectableItemBackground"
-        app:layout_constraintTop_toBottomOf="@id/container_about">
+                <TextView
+                    android:id="@+id/text_about"
+                    style="@style/TitleSettings"
+                    android:text="@string/about_multy"
+                    app:layout_constraintLeft_toRightOf="@id/image_about" />
 
-        <ImageView
-            android:id="@+id/image_feedback"
-            style="@style/ImageSettings"
-            android:src="@drawable/ic_settings_feedback"
-            app:layout_constraintBottom_toBottomOf="@id/text_feedback"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="@id/text_feedback" />
+                <ImageView
+                    android:id="@+id/chevron_about"
+                    style="@style/ControlSettings"
+                    android:src="@drawable/ic_chevron"
+                    app:layout_constraintBottom_toBottomOf="@id/text_about"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/text_about" />
 
-        <TextView
-            android:id="@+id/text_feedback"
-            style="@style/TitleSettings"
-            android:text="@string/leave_feedback"
-            app:layout_constraintLeft_toRightOf="@id/image_feedback" />
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0.5dp"
+                    android:background="@color/gray_light_transparent"
+                    app:layout_constraintLeft_toLeftOf="@id/text_about"
+                    app:layout_constraintTop_toBottomOf="@id/text_about" />
+            </android.support.constraint.ConstraintLayout>
 
-        <ImageView
-            android:id="@+id/chevron_feedback"
-            style="@style/ControlSettings"
-            android:src="@drawable/ic_chevron"
-            app:layout_constraintBottom_toBottomOf="@id/text_feedback"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="@id/text_feedback" />
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/container_feedback"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/selector_white"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@id/container_about">
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0.5dp"
-            android:background="@color/gray_light_transparent"
-            app:layout_constraintLeft_toLeftOf="@id/text_feedback"
-            app:layout_constraintTop_toBottomOf="@id/text_feedback" />
-    </android.support.constraint.ConstraintLayout>
+                <ImageView
+                    android:id="@+id/image_feedback"
+                    style="@style/ImageSettings"
+                    android:src="@drawable/ic_settings_feedback"
+                    app:layout_constraintBottom_toBottomOf="@id/text_feedback"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/text_feedback" />
 
+                <TextView
+                    android:id="@+id/text_feedback"
+                    style="@style/TitleSettings"
+                    android:text="@string/leave_feedback"
+                    app:layout_constraintLeft_toRightOf="@id/image_feedback" />
+
+                <ImageView
+                    android:id="@+id/chevron_feedback"
+                    style="@style/ControlSettings"
+                    android:src="@drawable/ic_chevron"
+                    app:layout_constraintBottom_toBottomOf="@id/text_feedback"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/text_feedback" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0.5dp"
+                    android:background="@color/gray_light_transparent"
+                    app:layout_constraintLeft_toLeftOf="@id/text_feedback"
+                    app:layout_constraintTop_toBottomOf="@id/text_feedback" />
+            </android.support.constraint.ConstraintLayout>
+        </android.support.constraint.ConstraintLayout>
+    </android.support.v4.widget.NestedScrollView>
 </android.support.constraint.ConstraintLayout>

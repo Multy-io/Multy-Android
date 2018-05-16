@@ -139,17 +139,25 @@ public class EthTransactionFeeFragment extends BaseFragment
         dialogBuilder.setView(dialogView);
 
         final TextInputEditText input = dialogView.findViewById(R.id.input_custom);
-        input.setText(currentValue == -1 ? "1" : String.valueOf(currentValue / Math.pow(10, 9)));
+        String fee = currentValue == -1 ? "1" : String.valueOf(currentValue / Math.pow(10, 9));
+        if (fee.contains(".")) {
+            fee = fee.split("\\.")[0];
+        }
+        input.setText(fee);
+        input.setSelection(input.getText().length());
 
         dialogBuilder.setTitle(R.string.custom_fee);
         dialogBuilder.setPositiveButton(R.string.done, (dialog, whichButton) -> {
-            if (!input.getText().toString().isEmpty() && Integer.parseInt(input.getText().toString()) > 1) {
+            if (!input.getText().toString().isEmpty() && Integer.parseInt(input.getText().toString()) >= 1) {
                 ((MyFeeAdapter) recyclerView.getAdapter()).setCustomFee((long) (Long.valueOf(input.getText().toString()) * Math.pow(10, 9)));
                 Analytics.getInstance(getActivity()).logTransactionFee(AnalyticsConstants.TRANSACTION_FEE_CUSTOM_SET, viewModel.getChainId());
             }
         });
         dialogBuilder.setNegativeButton(R.string.cancel, (dialog, whichButton) -> {
             Analytics.getInstance(getActivity()).logTransactionFee(AnalyticsConstants.TRANSACTION_FEE_CUSTOM_CANCEL, viewModel.getChainId());
+        });
+        dialogBuilder.setOnDismissListener(dialog -> {
+            hideKeyboard(getActivity());
         });
         dialogBuilder.create().show();
     }
