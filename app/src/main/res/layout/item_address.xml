@@ -31,6 +31,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/blue_light"
+        android:letterSpacing="-0.02"
         app:layout_constraintTop_toBottomOf="@id/text_address"
         tools:text="0.0002BTC" />
 
@@ -39,6 +40,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/blue_light"
+        android:letterSpacing="-0.02"
+        android:lineSpacingExtra="10sp"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/text_address"
         tools:text="1.11.2017 ∙  23:15" />

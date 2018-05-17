@@ -18,12 +18,12 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="end"
-        android:gravity="center"
+        android:gravity="end"
         android:background="?attr/selectableItemBackground"
         android:fontFamily="@font/montserrat"
         android:padding="@dimen/activity_vertical_margin"
         android:text="@string/cancel"
         android:textAppearance="@style/TextAppearance.AppCompat.Menu"
-        android:textColor="@color/text_main" />
+        android:textColor="@color/text_main_dark" />
 
 </android.support.v7.widget.Toolbar>

@@ -136,7 +136,7 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         });
 
         Wallet wallet = viewModel.getWallet(getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0));
-        viewModel.getWalletLive().observe(this, wallet1 -> AssetInfoFragment.this.setupWalletInfo(wallet1));
+        viewModel.getWalletLive().observe(this, AssetInfoFragment.this::setupWalletInfo);
         viewModel.getWalletLive().setValue(wallet);
         Analytics.getInstance(getActivity()).logWalletLaunch(AnalyticsConstants.WALLET_SCREEN, viewModel.getChainId());
         return view;
@@ -252,6 +252,9 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     }
 
     private void setupWalletInfo(Wallet wallet) {
+        if (wallet == null) {
+            return;
+        }
         initialize();
         requestTransactions(wallet.getCurrencyId(), wallet.getNetworkId(), wallet.getIndex());
 

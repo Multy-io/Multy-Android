@@ -64,6 +64,7 @@
                     android:text="@string/wallet_settings"
                     android:textColor="@color/black"
                     android:textSize="18sp"
+                    android:lineSpacingExtra="10sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -110,6 +111,7 @@
                 style="@style/SettingSubtite"
                 android:layout_marginTop="24dp"
                 android:text="@string/general"
+                android:letterSpacing="-0.02"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -135,6 +137,7 @@
                     android:id="@+id/edit_name"
                     style="@style/InputEdit"
                     android:hint="@string/wallet_name"
+                    android:lineSpacingExtra="6sp"
                     android:maxLength="25"
                     android:inputType="textCapSentences"
                     android:text="@string/personal"
@@ -169,6 +172,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="11dp"
                 android:fontFamily="@font/montserrat"
+                android:lineSpacingExtra="10sp"
                 android:text="@string/reference_currency"
                 android:textColor="@color/text_grey"
                 android:textSize="12sp"
@@ -187,6 +191,7 @@
                 android:textColor="@color/text_main_dark"
                 android:textSize="16sp"
                 android:textStyle="bold"
+                android:lineSpacingExtra="6sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_hint" />
@@ -214,6 +219,7 @@
                 style="@style/SettingSubtite"
                 android:layout_marginTop="24dp"
                 android:text="@string/security"
+                android:letterSpacing="-0.02"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/divider_currency" />
@@ -243,6 +249,7 @@
                 android:textColor="@color/text_main_dark"
                 android:textSize="16sp"
                 android:textStyle="bold"
+                android:lineSpacingExtra="6sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/divider_security" />
@@ -260,6 +267,8 @@
                 android:text="@string/about_private_key"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                android:letterSpacing="-0.02"
+                android:lineSpacingExtra="5sp"
                 app:layout_constraintTop_toBottomOf="@+id/divider_key" />
 
             <View
@@ -282,6 +291,7 @@
                 android:text="@string/delete_wallet"
                 android:textColor="@color/text_red"
                 android:textSize="16sp"
+                android:lineSpacingExtra="6sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/divider_notice" />
@@ -296,6 +306,8 @@
             <TextView
                 android:id="@+id/notice_delete"
                 style="@style/NotificationSettings"
+                android:letterSpacing="-0.02"
+                android:lineSpacingExtra="5sp"
                 android:text="@string/about_delete_wallet"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

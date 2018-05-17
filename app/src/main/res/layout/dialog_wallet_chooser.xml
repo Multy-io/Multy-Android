@@ -27,6 +27,7 @@
         android:text="@string/wallet"
         android:textColor="@color/black"
         android:textSize="18sp"
+        android:lineSpacingExtra="10sp"
         app:layout_constraintLeft_toRightOf="@id/button_back" />
 
     <TextView

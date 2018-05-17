@@ -33,6 +33,7 @@
         android:singleLine="true"
         android:textColor="@color/black"
         android:textSize="14sp"
+        android:letterSpacing="-0.02"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/image_currency"

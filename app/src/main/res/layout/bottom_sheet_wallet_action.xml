@@ -5,11 +5,11 @@
   ~ See LICENSE for details
   -->
 
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <View
         android:id="@+id/background"
@@ -27,7 +27,7 @@
         android:layout_height="56dp"
         android:gravity="center_vertical"
         android:paddingStart="16dp"
-        android:text="Create or Import New Wallet"
+        android:text="@string/create_or_import_new_wallet"
         android:textColor="@color/blue_light"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@id/button_create"
@@ -43,13 +43,15 @@
         android:drawableStart="@drawable/ic_wallet_create_new_bigger"
         android:gravity="center_vertical"
         android:paddingStart="16dp"
-        android:text="Create New"
-        android:textColor="@color/black"
+        android:text="@string/create_new"
+        android:textColor="@color/black_light"
+        android:lineSpacingExtra="8sp"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@id/button_import"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="RtlSymmetry" />
 
     <View
         android:id="@+id/button_import"
@@ -62,8 +64,8 @@
 
     <ImageView
         android:id="@+id/image_import"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         android:layout_marginStart="16dp"
         app:layout_constraintBottom_toBottomOf="@id/button_import"
         app:layout_constraintStart_toStartOf="@id/button_import"
@@ -75,10 +77,12 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:text="Import Wallet"
-        android:textColor="@color/black"
+        android:text="@string/import_wallet"
+        android:textColor="@color/black_light"
         android:textSize="16sp"
         android:textStyle="bold"
+        android:lineSpacingExtra="8sp"
+        android:layout_marginTop="6dp"
         app:layout_constraintBottom_toTopOf="@id/text_in_progress"
         app:layout_constraintEnd_toStartOf="@id/image_donate"
         app:layout_constraintStart_toEndOf="@id/image_import"
@@ -91,6 +95,8 @@
         android:text="@string/work_in_progress"
         android:textColor="@color/red_warn"
         android:textSize="10sp"
+        android:letterSpacing="0.01"
+        android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="@id/button_import"
         app:layout_constraintEnd_toStartOf="@id/image_donate"
         app:layout_constraintStart_toStartOf="@id/text_import"
@@ -98,8 +104,8 @@
 
     <ImageView
         android:id="@+id/image_donate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_marginEnd="16dp"
         app:layout_constraintBottom_toBottomOf="@id/button_import"
         app:layout_constraintEnd_toEndOf="@id/button_import"
@@ -119,11 +125,13 @@
         android:gravity="center_vertical"
         android:paddingStart="16dp"
         android:text="@string/cancel"
-        android:textColor="@color/black"
+        android:textColor="@color/black_light"
         android:textSize="16sp"
         android:textStyle="bold"
+        android:lineSpacingExtra="8sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="RtlSymmetry" />
 
 </android.support.constraint.ConstraintLayout>

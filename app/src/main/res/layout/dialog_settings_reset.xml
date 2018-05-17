@@ -7,7 +7,6 @@
 
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_black_transparent">
@@ -45,8 +44,9 @@
             android:layout_marginLeft="@dimen/reset_data_dialog_margin"
             android:layout_marginTop="@dimen/reset_data_dialog_title_margin_top"
             android:text="@string/are_you_sure"
-            android:textColor="@color/gray_dark"
+            android:textColor="@color/text_main"
             android:textSize="@dimen/text_size_head"
+            android:lineSpacingExtra="8sp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/background_top" />
 
@@ -61,6 +61,7 @@
             android:text="@string/reset_data"
             android:textColor="@color/gray"
             android:textSize="@dimen/text_size_body"
+            android:lineSpacingExtra="6sp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/text_title" />
@@ -75,7 +76,7 @@
             android:minWidth="0dp"
             android:padding="@dimen/dialog_button_padding"
             android:text="@string/cancel"
-            android:textColor="@color/black"
+            android:textColor="@color/text_main_dark"
             android:textSize="@dimen/text_size_body"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent" />

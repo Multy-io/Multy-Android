@@ -41,7 +41,7 @@
                 android:textAlignment="center"
                 android:textColor="#000000"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:lineSpacingExtra="10sp" />
 
             <TextView
                 android:id="@+id/text_cancel"
@@ -80,6 +80,7 @@
         <TextView
             android:id="@+id/text_name_title"
             style="@style/TitleChooserCreateWallet"
+            android:lineSpacingExtra="10sp"
             android:text="@string/wallet_name" />
 
         <EditText
@@ -92,6 +93,7 @@
             android:lines="@integer/one"
             android:maxLength="25"
             android:maxLines="1"
+            android:lineSpacingExtra="6sp"
             tools:text="Some wallet name" />
     </RelativeLayout>
 
@@ -113,6 +115,7 @@
         <TextView
             android:id="@+id/text_chain"
             style="@style/TitleChooserCreateWallet"
+            android:lineSpacingExtra="10sp"
             android:text="@string/blockchain" />
 
         <TextView
@@ -120,6 +123,7 @@
             style="@style/TextChooserCreateWallet"
             android:layout_below="@id/text_chain"
             android:text="@string/btc"
+            android:lineSpacingExtra="6sp"
             android:textAllCaps="false" />
 
         <ImageView
@@ -148,6 +152,7 @@
         <TextView
             android:id="@+id/text_fiat"
             style="@style/TitleChooserCreateWallet"
+            android:lineSpacingExtra="10sp"
             android:text="@string/reference_currency" />
 
         <TextView
@@ -155,6 +160,7 @@
             style="@style/TextChooserCreateWallet"
             android:layout_below="@id/text_fiat"
             android:text="@string/usd"
+            android:lineSpacingExtra="6sp"
             android:textAllCaps="false" />
 
         <ImageView

@@ -46,6 +46,7 @@
             android:textColor="#000000"
             android:textSize="18sp"
             android:textStyle="bold"
+            android:lineSpacingExtra="10sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/button_back"
@@ -75,7 +76,8 @@
 
             <TextView
                 android:id="@+id/text_available"
-                android:text="AVALIABLE"
+                android:text="@string/avaliable"
+                android:letterSpacing="-0.02"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -108,7 +110,8 @@
             <TextView
                 android:id="@+id/text_soon"
                 style="@style/ChooseChainText"
-                android:text="SOON"
+                android:text="@string/soon"
+                android:letterSpacing="-0.02"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/divider_recycler_available" />

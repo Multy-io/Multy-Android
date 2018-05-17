@@ -22,6 +22,8 @@
         style="@style/SeedButtonContinue"
         android:background="?attr/selectableItemBackground"
         android:text="@string/seed_continue"
+        android:letterSpacing="0.01"
+        android:lineSpacingExtra="13sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintLeft_toLeftOf="parent" />

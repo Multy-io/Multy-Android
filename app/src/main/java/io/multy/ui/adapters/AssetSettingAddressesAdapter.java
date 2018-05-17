@@ -6,8 +6,11 @@
 
 package io.multy.ui.adapters;
 
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,14 +31,16 @@ import io.multy.ui.fragments.dialogs.PrivateKeyDialogFragment;
 
 public class AssetSettingAddressesAdapter extends RecyclerView.Adapter<AssetSettingAddressesAdapter.Holder> {
 
+    private final int leftMargin;
     private int currencyId;
     private int networkId;
     private boolean isItemSelected = false;
     private FragmentManager fragmentManager;
     private List<WalletAddress> addresses;
 
-    public AssetSettingAddressesAdapter(FragmentManager childFragmentManager) {
+    public AssetSettingAddressesAdapter(FragmentManager childFragmentManager, DisplayMetrics displayMetrics) {
         this.fragmentManager = childFragmentManager;
+        leftMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, displayMetrics);
     }
 
     @Override
@@ -59,6 +64,9 @@ public class AssetSettingAddressesAdapter extends RecyclerView.Adapter<AssetSett
                     dialog.setListener(() -> isItemSelected = false);
                 }
             });
+            ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) holder.divider.getLayoutParams();
+            params.leftMargin = position == getItemCount() - 1? 0 : leftMargin;
+            holder.divider.setLayoutParams(params);
         } catch (Throwable t) {
             t.printStackTrace();
         }
@@ -82,6 +90,8 @@ public class AssetSettingAddressesAdapter extends RecyclerView.Adapter<AssetSett
         TextView textAddress;
         @BindView(R.id.text_balance_original)
         TextView textBalance;
+        @BindView(R.id.divider)
+        View divider;
 
         Holder(View itemView) {
             super(itemView);

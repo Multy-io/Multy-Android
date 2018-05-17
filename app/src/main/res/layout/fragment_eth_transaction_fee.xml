@@ -60,6 +60,8 @@
                 android:text="@string/fee_description"
                 android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                 android:textColor="@color/text_grey"
+                android:letterSpacing="-0.02"
+                android:lineSpacingExtra="5sp"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/recycler_view" />
@@ -199,6 +201,8 @@
     <TextView
         android:id="@+id/button_next"
         style="@style/ButtonNext"
+        android:letterSpacing="0.01"
+        android:lineSpacingExtra="13sp"
         android:layout_width="match_parent"
         android:layout_alignParentBottom="true"
         android:text="@string/next" />

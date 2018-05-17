@@ -37,6 +37,8 @@
         android:text="@string/btc_address"
         android:textColor="@color/white"
         android:textSize="16sp"
+        android:letterSpacing="-0.02"
+        android:lineSpacingExtra="6sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/notification_warning"
         app:layout_constraintEnd_toEndOf="parent"
@@ -71,6 +73,7 @@
         android:text="@string/my_private_key_title"
         android:textAlignment="center"
         android:textAllCaps="true"
+        android:letterSpacing="-0.02"
         android:textColor="@color/blue_light"
         android:textSize="12sp"
         app:layout_constraintBottom_toTopOf="@+id/text_key"
@@ -88,6 +91,9 @@
         android:textAlignment="center"
         android:textColor="@color/text_main_dark"
         android:textSize="12sp"
+        android:letterSpacing="-0.02"
+        android:lineSpacingExtra="10sp"
+        android:gravity="center_horizontal"
         app:layout_constraintBottom_toTopOf="@+id/divider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -106,7 +112,7 @@
         android:id="@+id/control_background"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@color/white_and_light_green"
+        android:background="@color/grey_lightest"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -124,9 +130,9 @@
         android:gravity="center_vertical"
         android:paddingStart="16dp"
         android:text="@string/copy_to_clipboard"
-        android:textColor="@color/black"
+        android:textColor="@color/black_light"
         android:textSize="16sp"
-        android:textStyle="bold"
+        android:lineSpacingExtra="8sp"
         app:layout_constraintBottom_toTopOf="@+id/button_share"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -146,10 +152,11 @@
         android:text="@string/share_key"
         android:textColor="@color/black"
         android:textSize="16sp"
-        android:textStyle="bold"
+        android:lineSpacingExtra="8sp"
         app:layout_constraintBottom_toTopOf="@+id/button_cancel"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="RtlSymmetry" />
 
     <TextView
         android:id="@+id/button_cancel"
@@ -166,9 +173,10 @@
         android:text="@string/cancel"
         android:textColor="@color/black"
         android:textSize="16sp"
-        android:textStyle="bold"
+        android:lineSpacingExtra="8sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="RtlSymmetry" />
 
 </android.support.constraint.ConstraintLayout>

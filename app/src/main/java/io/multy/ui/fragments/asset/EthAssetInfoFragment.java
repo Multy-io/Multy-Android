@@ -253,7 +253,9 @@ public class EthAssetInfoFragment extends BaseFragment implements AppBarLayout.O
     private void setupWalletInfo(Wallet wallet) {
         initialize();
         requestTransactions(wallet.getCurrencyId(), wallet.getNetworkId(), wallet.getIndex());
-        textWalletName.setText(wallet.getWalletName());
+        viewModel.getWalletLive().observe(getActivity(), walletLive -> {
+            textWalletName.setText(walletLive == null ? "" : walletLive.getWalletName());
+        });
         textAddress.setText(wallet.getActiveAddress().getAddress());
         updateBalanceViews();
     }

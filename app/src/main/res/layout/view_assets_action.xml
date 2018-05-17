@@ -50,6 +50,7 @@
             android:textColor="#de000000"
             android:textSize="16sp"
             android:textStyle="bold"
+            android:lineSpacingExtra="8sp"
             app:layout_constraintBottom_toTopOf="@+id/text_import"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -69,6 +70,7 @@
             android:textColor="#de000000"
             android:textSize="16sp"
             android:textStyle="bold"
+            android:lineSpacingExtra="8sp"
             app:layout_constraintBottom_toTopOf="@+id/text_cancel"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -89,6 +91,7 @@
             android:textColor="#de000000"
             android:textSize="16sp"
             android:textStyle="bold"
+            android:lineSpacingExtra="8sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

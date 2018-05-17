@@ -21,7 +21,7 @@ import butterknife.OnClick;
 import io.multy.R;
 import io.multy.ui.activities.AssetActivity;
 import io.multy.ui.fragments.BaseFragment;
-import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
+import io.multy.ui.fragments.dialogs.DeleteAssetDialogFragment;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.WalletViewModel;
@@ -61,16 +61,11 @@ public class AssetSettingsFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_asset_settings, container, false);
-//        View v = inflater.inflate(R.layout.view_asset_settings, container, false);
         ButterKnife.bind(this, v);
         viewModel.getWalletLive().observe(this, walletRealmObject -> {
             if (walletRealmObject != null && walletRealmObject.getWalletName() != null) {
                 inputName.setText(walletRealmObject.getWalletName());
             }
-        });
-        inputName.setOnFocusChangeListener((v1, hasFocus) -> {
-            if (hasFocus)
-            Analytics.getInstance(getActivity()).logWalletSettings(AnalyticsConstants.WALLET_SETTINGS_RENAME, viewModel.getChainId());
         });
         Analytics.getInstance(getActivity()).logWalletSettingsLaunch(viewModel.getChainId());
         return v;
@@ -94,8 +89,7 @@ public class AssetSettingsFragment extends BaseFragment {
     }
 
     private void saveSettings() {
-        if (inputName.getText().toString().isEmpty() || viewModel.getWalletLive() == null ||
-                viewModel.getWalletLive().getValue() == null ||
+        if (inputName.getText().toString().isEmpty() || viewModel.getWalletLive().getValue() == null ||
                 inputName.getText().toString().equals(viewModel.getWalletLive().getValue().getWalletName())) {
             getActivity().onBackPressed();
             return;
@@ -103,6 +97,7 @@ public class AssetSettingsFragment extends BaseFragment {
         viewModel.isLoading.setValue(true);
         inputName.setEnabled(false);
         viewModel.updateWalletSetting(inputName.getText().toString()).observe(this, isUpdated -> {
+            Analytics.getInstance(getActivity()).logWalletSettings(AnalyticsConstants.WALLET_SETTINGS_RENAME, viewModel.getChainId());
             if (isUpdated == null || !isUpdated) {
                 Toast.makeText(getActivity(), "Error, changes not applied!", Toast.LENGTH_SHORT).show();
                 inputName.setEnabled(true);
@@ -185,11 +180,9 @@ public class AssetSettingsFragment extends BaseFragment {
         Analytics.getInstance(getActivity()).logWalletSettings(AnalyticsConstants.WALLET_SETTINGS_DELETE, viewModel.getChainId());
         view.setEnabled(false);
         view.postDelayed(() -> view.setEnabled(true), 500);
-        SimpleDialogFragment dialogConfirmation = SimpleDialogFragment
-                .newInstance(R.string.delete_wallet, R.string.delete_confirm, v -> {
+        DeleteAssetDialogFragment.getInstance(() -> {
                     Analytics.getInstance(getActivity()).logWalletSettings(AnalyticsConstants.WALLET_SETTINGS_DELETE_YES, viewModel.getChainId());
                     deleteWallet();
-                });
-        dialogConfirmation.show(getChildFragmentManager(), SimpleDialogFragment.class.getSimpleName());
+                }).show(getChildFragmentManager(), DeleteAssetDialogFragment.TAG);
     }
 }

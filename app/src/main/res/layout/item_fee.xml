@@ -15,9 +15,9 @@
     >
     <android.support.v7.widget.AppCompatImageView
         android:id="@+id/image_logo"
-        android:layout_width="@dimen/fee_image_size"
-        android:layout_height="@dimen/fee_image_size"
-        android:layout_marginStart="@dimen/margin_14dp"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginStart="14dp"
         android:scaleType="centerInside"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -39,29 +39,30 @@
 
         <TextView
             android:id="@+id/textName"
-            android:layout_width="@dimen/dp0"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_14dp"
+            android:layout_marginStart="14dp"
             android:ellipsize="end"
-            android:maxLines="@integer/one"
+            android:maxLines="1"
             android:textAppearance="@style/TextAppearance.AppCompat.Menu"
             android:textColor="@color/text_main"
             android:textStyle="bold"
+            android:lineSpacingExtra="6sp"
             app:layout_constraintBottom_toTopOf="@+id/text_balance_original"
-
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed"
             tools:text="name" />
 
         <TextView
             android:id="@+id/text_balance_original"
-            android:layout_width="@dimen/dp0"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/activity_horizontal_margin"
-            android:layout_marginStart="@dimen/margin_14dp"
-            android:layout_marginTop="@dimen/margin_2dp"
+            android:layout_marginStart="14dp"
+            android:layout_marginTop="2dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             android:textColor="@color/text_grey"
+            android:lineSpacingExtra="8sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textName"
             tools:text="0239429834" />
@@ -70,9 +71,11 @@
             android:id="@+id/text_blocks"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/margin_12dp"
+            android:layout_marginEnd="12dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Caption"
             android:textColor="@color/text_grey"
+            android:letterSpacing="-0.02"
+            android:lineSpacingExtra="8sp"
             app:layout_constraintBottom_toBottomOf="@+id/text_balance_original"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="@+id/text_balance_original"
@@ -80,19 +83,20 @@
 
         <ImageView
             android:id="@+id/image_mark"
-            android:layout_width="@dimen/checkmark_size"
-            android:layout_height="@dimen/checkmark_size"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginBottom="16dp"
             android:layout_marginEnd="@dimen/margin_14dp"
-            android:layout_marginTop="@dimen/margin_12dp"
             android:src="@drawable/ic_checkmark"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </android.support.constraint.ConstraintLayout>
+
     <View
         android:id="@+id/divider"
-        android:layout_width="@dimen/dp0"
+        android:layout_width="0dp"
         android:layout_height="@dimen/divider_height_small"
+        android:alpha="0.2"
         android:background="@color/text_grey"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="@+id/text_container"

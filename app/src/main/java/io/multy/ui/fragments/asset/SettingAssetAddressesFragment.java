@@ -63,7 +63,8 @@ public class SettingAssetAddressesFragment extends BaseFragment {
     }
 
     private void init() {
-        addressesAdapter = new AssetSettingAddressesAdapter(getChildFragmentManager());
+        addressesAdapter = new AssetSettingAddressesAdapter(getChildFragmentManager(),
+                getResources().getDisplayMetrics());
         recyclerAddresses.setAdapter(addressesAdapter);
         viewModel = ViewModelProviders.of(getActivity()).get(WalletViewModel.class);
         viewModel.getWalletLive().observe(this, walletRealmObject -> {
