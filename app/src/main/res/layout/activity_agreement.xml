@@ -15,6 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
+        android:lineSpacingExtra="10sp"
         android:text="@string/terms_of_service"
         android:textColor="@color/black"
         android:textSize="18sp" />
@@ -42,20 +43,25 @@
         android:id="@+id/text_read"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="14dp"
         android:background="?android:attr/selectableItemBackground"
         android:clickable="true"
         android:focusable="true"
         android:text="@string/agreement_read"
         android:textColor="@color/blue_light"
         android:textSize="12sp"
+        android:letterSpacing="-0.02"
+        android:lineSpacingExtra="5sp"
         app:layout_constraintBottom_toTopOf="@id/divider_bottom" />
 
     <View
         android:id="@+id/divider_bottom"
         style="@style/DividerAgreement"
-        android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
         app:layout_constraintBottom_toTopOf="@id/button_discard" />
 
     <Button

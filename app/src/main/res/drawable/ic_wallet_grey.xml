@@ -1,0 +1,12 @@
+<!--
+  ~ Copyright 2017 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<vector android:height="24dp" android:viewportHeight="20"
+    android:viewportWidth="20" android:width="24dp" xmlns:android="http://schemas.android.com/apk/res/android">
+    <path android:fillColor="#87A1C5" android:fillType="nonZero"
+        android:pathData="M16.4348,2.6033L2.2128,4.0034C2.0989,4.0145 2,4.1266 2,4.2726C2,4.4327 2.1118,4.5476 2.2389,4.5476L16.4348,4.5476L16.4348,2.6033ZM18.4348,4.5476L19,4.5476C19.5523,4.5476 20,4.9953 20,5.5476L20,15.2619C20,17.595 18.1583,19.5 15.8696,19.5L4.1304,19.5C1.8417,19.5 0,17.595 0,15.2619L0,4.3333C0.0003,4.3132 0,4.2929 0,4.2726C0,3.109 0.8682,2.1248 2.018,2.013L17.3368,0.5048C17.925,0.4469 18.4348,0.909 18.4348,1.5L18.4348,4.5476ZM17,11.5C17,10.396 16.105,9.5 15,9.5C13.895,9.5 13,10.396 13,11.5C13,12.604 13.895,13.5 15,13.5C16.105,13.5 17,12.604 17,11.5Z"
+        android:strokeColor="#00000000" android:strokeWidth="1"/>
+</vector>

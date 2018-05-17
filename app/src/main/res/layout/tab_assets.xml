@@ -14,23 +14,15 @@
     android:gravity="center"
     android:orientation="vertical">
 
-    <ImageButton
+    <ImageView
         android:id="@+id/image_logo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@null"
-        android:clickable="false"
-        android:src="@drawable/wallet_tab" />
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        app:srcCompat="@drawable/ic_wallet_grey" />
 
     <TextView
         android:id="@+id/title"
         style="@style/TabInactiveText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="3dp"
-        android:clickable="false"
-        android:fontFamily="@font/montserrat"
-        android:text="Main"
-        android:textSize="10sp" />
+        android:text="@string/main" />
 
 </LinearLayout>

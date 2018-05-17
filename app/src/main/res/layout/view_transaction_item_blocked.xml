@@ -49,6 +49,8 @@
         android:text="@string/pending_continue"
         android:textColor="@color/blue_light"
         android:textSize="12sp"
+        android:letterSpacing="-0.02"
+        android:lineSpacingExtra="10sp"
         app:layout_constraintStart_toStartOf="@+id/container_addresses"
         app:layout_constraintTop_toBottomOf="@+id/container_addresses" />
 
@@ -64,6 +66,7 @@
         android:textAlignment="textEnd"
         android:textColor="#363636"
         android:textSize="14sp"
+        android:lineSpacingExtra="8sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/container_addresses"
         tools:text="0.052509 BTC" />
@@ -75,6 +78,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:textAlignment="textEnd"
+        android:textSize="12sp"
+        android:letterSpacing="-0.02"
+        android:lineSpacingExtra="10sp"
         app:layout_constraintEnd_toEndOf="@+id/text_amount"
         app:layout_constraintTop_toBottomOf="@+id/text_amount"
         app:layout_constraintTop_toTopOf="@id/text_pending"
@@ -102,6 +108,8 @@
             android:text="@string/locked_funds"
             android:textColor="@color/blue_light"
             android:textSize="10sp"
+            android:letterSpacing="-0.02"
+            android:lineSpacingExtra="11sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -112,6 +120,8 @@
             android:layout_marginRight="4dp"
             android:textColor="@color/black"
             android:textSize="10sp"
+            android:letterSpacing="-0.02"
+            android:lineSpacingExtra="11sp"
             app:layout_constraintRight_toLeftOf="@id/text_locked_fiat"
             app:layout_constraintTop_toTopOf="@id/text_locked"
             tools:text="28.052598 BTC" />
@@ -122,6 +132,8 @@
             android:layout_height="wrap_content"
             android:textColor="@color/blue_light"
             android:textSize="10sp"
+            android:letterSpacing="-0.02"
+            android:lineSpacingExtra="11sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/text_locked"
             tools:text="(200.400 USD)" />

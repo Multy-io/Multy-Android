@@ -48,6 +48,8 @@
         android:maxLines="1"
         android:textColor="@color/blue_light"
         android:textSize="12sp"
+        android:letterSpacing="-0.02"
+        android:lineSpacingExtra="10sp"
         app:layout_constraintStart_toStartOf="@+id/container_addresses"
         app:layout_constraintTop_toBottomOf="@+id/container_addresses"
         tools:text="16 january 2018 14:00" />
@@ -64,6 +66,7 @@
         android:textAlignment="textEnd"
         android:textColor="#363636"
         android:textSize="14sp"
+        android:lineSpacingExtra="8sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/container_addresses"
         tools:text="0.052509 BTC" />
@@ -75,6 +78,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:textAlignment="textEnd"
+        android:letterSpacing="-0.02"
+        android:lineSpacingExtra="10sp"
+        android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="@+id/text_amount"
         app:layout_constraintTop_toBottomOf="@+id/text_amount"
         app:layout_constraintTop_toTopOf="@id/text_date"

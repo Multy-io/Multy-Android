@@ -11,6 +11,7 @@
     android:id="@+id/container_info"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background_gradient_blue"
     android:layout_marginTop="56dp"
     android:paddingBottom="28dp"
     tools:showIn="@layout/fragment_eth_asset_info">
@@ -25,6 +26,7 @@
         android:text="@string/zero_zero"
         android:textColor="@android:color/white"
         android:textSize="32sp"
+        android:lineSpacingExtra="-3sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/text_coin"
         app:layout_constraintHorizontal_chainStyle="packed"
@@ -43,6 +45,7 @@
         android:textColor="@color/blue_light_bright"
         android:textSize="32sp"
         android:textStyle="bold"
+        android:lineSpacingExtra="-3sp"
         app:layout_constraintBottom_toBottomOf="@+id/text_value"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -93,6 +96,7 @@
         android:textColor="@android:color/white"
         android:textSize="16sp"
         android:textStyle="bold"
+        android:lineSpacingExtra="13sp"
         app:layout_constraintEnd_toStartOf="@+id/text_money"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
@@ -109,6 +113,7 @@
         android:textColor="@color/blue_light_bright"
         android:textSize="16sp"
         android:textStyle="bold"
+        android:lineSpacingExtra="13sp"
         app:layout_constraintBottom_toBottomOf="@+id/text_amount"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/text_amount"
@@ -144,6 +149,7 @@
             android:text="@string/zero_zero"
             android:textColor="@android:color/white"
             android:textSize="12sp"
+            android:letterSpacing="-0.02"
             android:textStyle="bold" />
 
         <TextView
@@ -154,6 +160,7 @@
             android:text="@string/btc"
             android:textColor="@color/blue_light_bright"
             android:textSize="12sp"
+            android:letterSpacing="-0.02"
             android:textStyle="bold" />
 
         <TextView
@@ -165,6 +172,7 @@
             android:text="@string/zero_zero"
             android:textColor="@android:color/white"
             android:textSize="12sp"
+            android:letterSpacing="-0.02"
             android:textStyle="bold" />
 
         <TextView
@@ -175,6 +183,7 @@
             android:text="@string/usd"
             android:textColor="@color/blue_light_bright"
             android:textSize="12sp"
+            android:letterSpacing="-0.02"
             android:textStyle="bold" />
     </LinearLayout>
 
@@ -219,6 +228,7 @@
         android:paddingStart="34dp"
         android:textColor="@android:color/white"
         android:textSize="12sp"
+        android:letterSpacing="-0.02"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/container_available"

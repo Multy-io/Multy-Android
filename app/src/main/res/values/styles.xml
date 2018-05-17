@@ -127,6 +127,8 @@
         <item name="android:clickable">false</item>
         <item name="android:fontFamily">@font/montserrat</item>
         <item name="android:textColor">#87a1c5</item>
+        <item name="android:lineSpacingExtra">6sp</item>
+        <item name="android:gravity">center_horizontal</item>
         <item name="android:textSize">10sp</item>
     </style>
 
@@ -319,6 +321,8 @@
         <item name="android:textAlignment">center</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:textSize">18sp</item>
+        <item name="android:letterSpacing">0.01</item>
+        <item name="android:lineSpacingExtra">11sp</item>
     </style>
 
     <style name="SplashTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -341,7 +345,9 @@
         <item name="android:layout_marginStart">16dp</item>
         <item name="android:paddingBottom">24dp</item>
         <item name="android:paddingTop">24dp</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/text_main_dark</item>
+        <item name="android:lineSpacingExtra">6sp</item>
+        <item name="android:textSize">16sp</item>
     </style>
 
     <style name="ControlSettings">
@@ -355,10 +361,13 @@
     <style name="SettingsTextHint">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingBottom">8dp</item>
+        <item name="android:paddingBottom">20dp</item>
         <item name="android:paddingLeft">16dp</item>
         <item name="android:paddingRight">16dp</item>
-        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:letterSpacing">-0.02</item>
+        <item name="android:lineSpacingExtra">5sp</item>
         <item name="android:textColor">@color/blue_light</item>
     </style>
 
@@ -411,7 +420,7 @@
     <style name="DividerAgreement">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">0.5dp</item>
-        <item name="android:background">@color/blue_divider</item>
+        <item name="android:background">@color/blue_divider_agreement</item>
     </style>
 
     <style name="AgreementButton">

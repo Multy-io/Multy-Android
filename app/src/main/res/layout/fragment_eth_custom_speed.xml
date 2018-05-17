@@ -32,6 +32,7 @@
         android:text="@string/gas_price"
         android:textColor="@color/blue_light"
         android:textSize="12sp"
+        android:lineSpacingExtra="10sp"
         app:layout_constraintBottom_toTopOf="@id/text_price_value"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -42,6 +43,7 @@
     <EditText
         android:id="@+id/text_price_value"
         style="@style/GasInputs"
+        android:lineSpacingExtra="6sp"
         android:layout_marginBottom="12dp"
         android:inputType="number"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -71,6 +73,7 @@
         android:text="@string/gas_limit"
         android:textColor="@color/blue_light"
         android:textSize="12sp"
+        android:lineSpacingExtra="10sp"
         app:layout_constraintBottom_toTopOf="@id/text_limit_value"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -81,6 +84,7 @@
     <EditText
         android:id="@+id/text_limit_value"
         style="@style/GasInputs"
+        android:lineSpacingExtra="6sp"
         android:layout_marginBottom="12dp"
         android:inputType="number"
         app:layout_constraintBottom_toBottomOf="parent"

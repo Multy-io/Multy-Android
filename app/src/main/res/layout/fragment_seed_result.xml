@@ -19,6 +19,8 @@
     <TextView
         android:id="@+id/text_title"
         style="@style/SeedTitleText"
+        android:letterSpacing="0.01"
+        android:lineSpacingExtra="5sp"
         android:text="@string/seed_congrats"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

@@ -18,6 +18,7 @@
         android:layout_height="wrap_content"
         android:padding="16dp"
         android:text="@string/settings"
+        android:lineSpacingExtra="10sp"
         android:textColor="@color/black"
         android:textSize="18sp" />
 
@@ -62,7 +63,8 @@
                 android:text="@string/version_title"
                 android:textColor="@color/blue_light"
                 android:textSize="16sp"
-                android:textStyle="bold"
+                android:letterSpacing="-0.02"
+                android:lineSpacingExtra="6sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/divider_title"
@@ -78,6 +80,8 @@
                 android:paddingTop="6dp"
                 android:textColor="@color/blue_light"
                 android:textSize="12sp"
+                android:letterSpacing="-0.02"
+                android:lineSpacingExtra="5sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/text_version_title"
@@ -110,10 +114,10 @@
                 <ImageView
                     android:id="@+id/image_push"
                     style="@style/ImageSettings"
-                    android:src="@drawable/ic_settings_notifications"
                     app:layout_constraintBottom_toBottomOf="@id/text_push"
                     app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/text_push" />
+                    app:layout_constraintTop_toTopOf="@id/text_push"
+                    app:srcCompat="@drawable/ic_settings_notifications" />
 
                 <TextView
                     android:id="@+id/text_push"
@@ -146,10 +150,10 @@
                 <ImageView
                     android:id="@+id/image_security"
                     style="@style/ImageSettings"
-                    android:src="@drawable/ic_settings_security"
                     app:layout_constraintBottom_toBottomOf="@id/text_security"
                     app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/text_security" />
+                    app:layout_constraintTop_toTopOf="@id/text_security"
+                    app:srcCompat="@drawable/ic_settings_security" />
 
                 <TextView
                     android:id="@+id/text_security"
@@ -183,10 +187,10 @@
                 <ImageView
                     android:id="@+id/image_fiat"
                     style="@style/ImageSettings"
-                    android:src="@drawable/ic_settings_fiat"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_settings_fiat" />
 
                 <TextView
                     android:id="@+id/text_fiat"
@@ -208,6 +212,8 @@
                     android:text="US Dollars ∙ USD"
                     android:textColor="@color/blue_light"
                     android:textSize="12sp"
+                    android:letterSpacing="-0.02"
+                    android:lineSpacingExtra="10sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/text_fiat"
                     app:layout_constraintTop_toBottomOf="@id/text_fiat" />
@@ -239,10 +245,10 @@
                 <ImageView
                     android:id="@+id/image_exchange"
                     style="@style/ImageSettings"
-                    android:src="@drawable/ic_settings_exchange"
                     app:layout_constraintBottom_toBottomOf="@id/text_exchange"
                     app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/text_exchange" />
+                    app:layout_constraintTop_toTopOf="@id/text_exchange"
+                    app:srcCompat="@drawable/ic_settings_exchange" />
 
                 <TextView
                     android:id="@+id/text_exchange"

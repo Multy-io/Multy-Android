@@ -190,7 +190,7 @@ public class WalletViewModel extends BaseViewModel {
         MultyApi.INSTANCE.updateWalletName(updateWalletName).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.code() == 200) {
+                if (response.isSuccessful()) {
                     RealmManager.getAssetsDao().updateWalletName(wallet.getValue().getId(), newName);
                     wallet.setValue(RealmManager.getAssetsDao().getWalletById(wallet.getValue().getId()));
                     isWalletUpdated.postValue(true);
@@ -200,6 +200,7 @@ public class WalletViewModel extends BaseViewModel {
                     }
                     isWalletUpdated.setValue(false);
                 }
+                isLoading.setValue(false);
             }
 
             @Override

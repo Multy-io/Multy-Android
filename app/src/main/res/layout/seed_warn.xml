@@ -36,6 +36,7 @@
         android:gravity="center_vertical"
         android:text="@string/backup_is_not_executed"
         android:textColor="@android:color/white"
+        android:letterSpacing="-0.02"
         app:layout_constraintLeft_toRightOf="@id/image_warn"
         app:layout_constraintRight_toLeftOf="@id/image_chevron" />
 

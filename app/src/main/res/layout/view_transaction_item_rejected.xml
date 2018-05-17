@@ -36,8 +36,9 @@
         android:ellipsize="end"
         android:fontFamily="@font/montserrat"
         android:maxLines="1"
-        android:textColor="@color/blue_light"
+        android:textColor="@color/text_main_dark"
         android:textSize="14sp"
+        android:lineSpacingExtra="8sp"
         app:layout_constraintEnd_toStartOf="@+id/text_amount"
         app:layout_constraintStart_toEndOf="@+id/image_rejected_direction"
         tools:text="3DA28W4 ∙ ∙ ∙ ∙ XJSP9L" />
@@ -59,11 +60,12 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:layout_marginTop="6dp"
-        android:fontFamily="@font/montserrat"
         android:maxLines="1"
         android:text="@string/rejected_receive"
         android:textColor="@color/pink"
         android:textSize="12sp"
+        android:letterSpacing="-0.02"
+        android:lineSpacingExtra="10sp"
         app:layout_constraintStart_toEndOf="@+id/image_rejected"
         app:layout_constraintTop_toBottomOf="@+id/text_address" />
 
@@ -79,6 +81,7 @@
         android:textAlignment="textEnd"
         android:textColor="#363636"
         android:textSize="14sp"
+        android:lineSpacingExtra="8sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/text_address"
         tools:text="0.052509 BTC" />
@@ -90,6 +93,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:textAlignment="textEnd"
+        android:textSize="12sp"
+        android:letterSpacing="-0.02"
+        android:lineSpacingExtra="10sp"
         app:layout_constraintEnd_toEndOf="@+id/text_amount"
         app:layout_constraintTop_toBottomOf="@+id/text_amount"
         app:layout_constraintTop_toTopOf="@id/text_rejected"
