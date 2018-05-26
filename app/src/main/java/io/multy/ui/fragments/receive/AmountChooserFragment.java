@@ -56,6 +56,10 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
     EditText inputCurrency;
     @BindView(R.id.button_next)
     TextView buttonNext;
+    @BindView(R.id.button_clear_original)
+    View buttonClearOriginal;
+    @BindView(R.id.button_clear_currency)
+    View buttonClearCurrency;
     @BindView(R.id.container_input_original)
     ConstraintLayout containerInputOriginal;
     @BindView(R.id.container_input_currency)
@@ -144,6 +148,8 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
             if (hasFocus) {
                 animateOriginalBalance();
                 inputOriginal.setSelection(inputOriginal.getText().length());
+                buttonClearOriginal.setVisibility(View.VISIBLE);
+                buttonClearCurrency.setVisibility(View.GONE);
             }
         });
 
@@ -190,6 +196,8 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
             if (hasFocus) {
                 animateCurrencyBalance();
                 inputCurrency.setSelection(inputCurrency.getText().length());
+                buttonClearOriginal.setVisibility(View.GONE);
+                buttonClearCurrency.setVisibility(View.VISIBLE);
             }
         });
 
@@ -221,6 +229,7 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
 
             @Override
             public void afterTextChanged(Editable editable) {
+                checkForPointAndZeros(editable.toString(), inputCurrency);
             }
         });
     }
@@ -256,13 +265,12 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
 
     private void checkForPointAndZeros(String input, EditText inputView) {
         int selection = inputView.getSelectionStart();
-        if (!TextUtils.isEmpty(input)
-                && input.length() == 1
-                && input.contains(point)) {
-            String result = input.replaceAll(point, "");
+        if (!TextUtils.isEmpty(input) && input.length() == 1 && input.contains(".")) {
+            String result = input.replaceAll(".", "0.");
             inputView.setText(result);
-        } else if (!TextUtils.isEmpty(input)
-                && input.startsWith("00")) {
+            inputView.setSelection(result.length());
+        } else if (!TextUtils.isEmpty(input) && input.startsWith("0") &&
+                !input.startsWith("0.") && input.length() > 1) {
             inputView.setText(input.substring(1, input.length()));
             inputView.setSelection(selection - 1);
         }
@@ -341,5 +349,31 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
             getTargetFragment().onActivityResult(RequestSummaryFragment.AMOUNT_CHOOSE_REQUEST, RESULT_OK, data);
             getActivity().onBackPressed();
         }
+    }
+
+    @OnClick(R.id.button_clear_original)
+    void onClickClearOriginal() {
+        inputOriginal.setText("");
+    }
+
+    @OnClick(R.id.button_clear_currency)
+    void onClickClearCurrency() {
+        inputCurrency.setText("");
+    }
+
+    @OnClick(R.id.container_input_original)
+    void onClickInputOriginal() {
+        if (!inputOriginal.hasFocus()) {
+            inputOriginal.requestFocus();
+        }
+        showKeyboard(getActivity(), inputOriginal);
+    }
+
+    @OnClick(R.id.container_input_currency)
+    void onClickInputCurrency() {
+        if (!inputCurrency.hasFocus()) {
+            inputCurrency.requestFocus();
+        }
+        showKeyboard(getActivity(), inputCurrency);
     }
 }
