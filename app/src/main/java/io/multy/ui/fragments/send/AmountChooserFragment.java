@@ -21,7 +21,6 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
@@ -72,6 +71,10 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
     TextView textMax;
     @BindView(R.id.switcher)
     SwitchCompat switcher;
+    @BindView(R.id.button_clear_original)
+    View buttonClearOriginal;
+    @BindView(R.id.button_clear_currency)
+    View buttonClearCurrency;
     @BindView(R.id.container_input_original)
     ConstraintLayout containerInputOriginal;
     @BindView(R.id.container_input_currency)
@@ -94,7 +97,7 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+//        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         View view = inflater.inflate(R.layout.fragment_amount_chooser, container, false);
         ButterKnife.bind(this, view);
         viewModel = ViewModelProviders.of(getActivity()).get(AssetSendViewModel.class);
@@ -297,6 +300,8 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
                 if (!TextUtils.isEmpty(inputOriginal.getText().toString())) {
                     setTotalAmountForInput();
                 }
+                buttonClearOriginal.setVisibility(View.VISIBLE);
+                buttonClearCurrency.setVisibility(View.GONE);
             }
         });
 
@@ -362,6 +367,8 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
                 if (!TextUtils.isEmpty(inputCurrency.getText().toString())) {
                     setTotalAmountForInput();
                 }
+                buttonClearOriginal.setVisibility(View.GONE);
+                buttonClearCurrency.setVisibility(View.VISIBLE);
             }
         });
 
@@ -386,6 +393,7 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
                         inputOriginal.getText().clear();
 //                        textTotal.getEditableText().clear();
                     }
+                    inputCurrency.setSelection(inputCurrency.length());
                 }
                 checkMaxLengthAfterPoint(inputCurrency, 3, i, i2);
                 if (isAmountSwapped) {
@@ -397,11 +405,12 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if (!TextUtils.isEmpty(editable)
-                        && editable.toString().length() == 0
-                        && editable.toString().contains(".")) {
-                    String result = editable.toString().replaceAll(".", "");
-                    inputOriginal.setText(result);
+                if (!TextUtils.isEmpty(editable)) {
+                    checkForPointAndZeros(editable.toString(), inputCurrency);
+//                        && editable.toString().length() == 0
+//                        && editable.toString().contains(".")) {
+//                    String result = editable.toString().replaceAll(".", "");
+//                    inputOriginal.setText(result);
                 }
             }
         });
@@ -529,7 +538,8 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
             String result = input.replaceAll(".", "0.");
             inputView.setText(result);
             inputView.setSelection(result.length());
-        } else if (!TextUtils.isEmpty(input) && input.startsWith("00")) {
+        } else if (!TextUtils.isEmpty(input) && input.startsWith("0") &&
+                !input.startsWith("0.") && input.length() > 1) {
             inputView.setText(input.substring(1, input.length()));
             inputView.setSelection(selection - 1);
         }
@@ -581,5 +591,31 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
                 input.setSelection(start);
             }
         }
+    }
+
+    @OnClick(R.id.button_clear_original)
+    void onClickClearOriginal() {
+        inputOriginal.setText("");
+    }
+
+    @OnClick(R.id.button_clear_currency)
+    void onClickClearCurrency() {
+        inputCurrency.setText("");
+    }
+
+    @OnClick(R.id.container_input_original)
+    void onClickInputOriginal() {
+        if (!inputOriginal.hasFocus()) {
+            inputOriginal.requestFocus();
+        }
+        showKeyboard(getActivity(), inputOriginal);
+    }
+
+    @OnClick(R.id.container_input_currency)
+    void onClickInputCurrency() {
+        if (!inputCurrency.hasFocus()) {
+            inputCurrency.requestFocus();
+        }
+        showKeyboard(getActivity(), inputCurrency);
     }
 }
