@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.ColorUtils;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -34,6 +35,7 @@ import io.multy.api.MultyApi;
 import io.multy.api.socket.CurrenciesRate;
 import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.model.entities.wallet.RecentAddress;
+import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.requests.HdTransactionRequestEntity;
 import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.BaseFragment;
@@ -65,11 +67,9 @@ public class SendSummaryFragment extends BaseFragment {
     @BindView(R.id.text_wallet_name)
     TextView textWalletName;
     @BindView(R.id.text_sender_balance_original)
-    TextView textSenderBalanceOriginal;
+    TextView textSenderAddresses;
     @BindView(R.id.text_sender_balance_currency)
-    TextView textSenderBalanceCurrency;
-    @BindView(R.id.text_fee_speed)
-    TextView textFeeSpeed;
+    TextView textSenderBalance;
     @BindView(R.id.text_fee_amount)
     TextView textFeeAmount;
     @BindView(R.id.text_fee_speed_label)
@@ -230,11 +230,21 @@ public class SendSummaryFragment extends BaseFragment {
 //        textReceiverAddress.setText(viewModel.getReceiverAddress().getValue());
         textReceiverAddress.setText(viewModel.thoseAddress.getValue());
         textWalletName.setText(viewModel.getWallet().getWalletName());
+        String addresses = "";
+        for (WalletAddress singleAddress : viewModel.getWallet().getAddresses()) {
+            if (singleAddress.getAmount() > 0) {
+                if (!TextUtils.isEmpty(addresses)) {
+                    addresses = addresses.concat("\n");
+                }
+                addresses = addresses.concat(singleAddress.getAddress());
+            }
+        }
+        textSenderAddresses.setText(addresses);
         long balance = viewModel.getWallet().getBalanceNumeric().longValue();
-        textSenderBalanceOriginal.setText(balance != 0 ? CryptoFormatUtils.satoshiToBtc(balance) + " BTC" : String.valueOf(balance));
-        textSenderBalanceCurrency.setText(viewModel.getWallet().getFiatBalanceLabel());
-        textFeeSpeed.setText(viewModel.getFee().getName());
-        textFeeSpeedLabel.setText(viewModel.getFee().getTime());
+        String balanceLabel = (balance != 0 ? CryptoFormatUtils.satoshiToBtc(balance) + " BTC" : String.valueOf(balance))
+                .concat(" / ").concat(viewModel.getWallet().getFiatBalanceLabel());
+        textSenderBalance.setText(balanceLabel);
+        textFeeSpeedLabel.setText(viewModel.getFee().getName());
 
         MutableLiveData<Long> transactionPrice = AssetSendViewModel.transactionPrice;
         if (transactionPrice.getValue() != null) {

@@ -192,23 +192,16 @@
                 tools:text="From SuperHero with the Best wishes!"
                 tools:visibility="visible" />
 
-            <TextView
-                android:id="@+id/text_addresses_from"
-                android:layout_width="@dimen/dp0"
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_input_addresses"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="22dp"
-                android:fontFamily="@font/montserrat"
-                android:gravity="center"
-                android:paddingEnd="12dp"
-                android:paddingStart="12dp"
-                android:textColor="@color/text_main_dark"
-                android:textSize="12sp"
-                android:letterSpacing="-0.02"
+                android:layout_marginTop="10dp"
                 app:layout_constraintEnd_toEndOf="@+id/card_background"
                 app:layout_constraintStart_toStartOf="@+id/card_background"
                 app:layout_constraintTop_toBottomOf="@+id/text_comment"
-                app:layout_goneMarginTop="@dimen/margin_9dp"
-                tools:text="83T28WCp4Cu5LQiddJnDJJmKWvmmXJSP9L" />
+                tools:itemCount="2"
+                tools:listitem="@layout/item_transaction_address" />
 
             <ImageView
                 android:id="@+id/arrow"
@@ -222,7 +215,7 @@
                 android:scaleType="fitXY"
                 app:layout_constraintEnd_toEndOf="@+id/card_background"
                 app:layout_constraintStart_toStartOf="@+id/card_background"
-                app:layout_constraintTop_toBottomOf="@+id/text_addresses_from"
+                app:layout_constraintTop_toBottomOf="@+id/recycler_input_addresses"
                 app:srcCompat="@drawable/ic_arrow_coin" />
 
             <ImageView
@@ -254,24 +247,16 @@
                 app:layout_constraintTop_toBottomOf="@+id/arrow"
                 tools:text="To Vadim" />
 
-            <TextView
-                android:id="@+id/text_addresses_to"
-                android:layout_width="@dimen/dp0"
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_output_addresses"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:fontFamily="@font/montserrat"
-                android:gravity="center"
-                android:paddingBottom="4dp"
-                android:paddingEnd="12dp"
-                android:paddingStart="12dp"
-                android:paddingTop="4dp"
-                android:textColor="@color/text_main_dark"
-                android:textSize="12sp"
-                android:lineSpacingExtra="17sp"
+                android:layout_marginTop="10dp"
                 app:layout_constraintEnd_toEndOf="@+id/card_background"
                 app:layout_constraintStart_toStartOf="@+id/card_background"
                 app:layout_constraintTop_toBottomOf="@+id/text_wallet_name"
-                tools:text="83T28WCp4Cu5LQiddJnDJJmKWvmmXJSP9L" />
+                tools:itemCount="2"
+                tools:listitem="@layout/item_transaction_address" />
 
             <TextView
                 android:id="@+id/text_confirmations"
@@ -283,7 +268,7 @@
                 android:lineSpacingExtra="8sp"
                 app:layout_constraintEnd_toEndOf="@+id/card_background"
                 app:layout_constraintStart_toStartOf="@+id/card_background"
-                app:layout_constraintTop_toBottomOf="@+id/text_addresses_to"
+                app:layout_constraintTop_toBottomOf="@+id/recycler_output_addresses"
                 tools:text="6 Confirmation" />
 
             <View

@@ -10,6 +10,8 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,10 +31,11 @@ import io.multy.model.entities.DonateFeatureEntity;
 import io.multy.model.entities.TransactionHistory;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.entities.wallet.WalletAddress;
-import io.multy.storage.RealmManager;
 import io.multy.ui.activities.BaseActivity;
+import io.multy.ui.adapters.TransactionAddressAdapter;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.WebFragment;
+import io.multy.ui.fragments.dialogs.AddressActionsDialogFragment;
 import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
 import io.multy.util.DateHelper;
@@ -79,14 +82,14 @@ public class TransactionInfoFragment extends BaseFragment {
     TextView textMoney;
     @BindView(R.id.text_comment)
     TextView textComment;
-    @BindView(R.id.text_addresses_from)
-    TextView textAdressesFrom;
+    @BindView(R.id.recycler_input_addresses)
+    RecyclerView recyclerInputAdresses;
     @BindView(R.id.arrow)
     ImageView imageArrow;
     @BindView(R.id.logo)
     ImageView imageCoinLogo;
-    @BindView(R.id.text_addresses_to)
-    TextView textAddressesTo;
+    @BindView(R.id.recycler_output_addresses)
+    RecyclerView recyclerOutputAddresses;
     @BindView(R.id.text_confirmations)
     TextView textConfirmations;
     @BindView(R.id.button_view)
@@ -111,7 +114,6 @@ public class TransactionInfoFragment extends BaseFragment {
     private boolean isTransactionLogged;
     private List<String> walletAddresses = new ArrayList<>();
     private int networkId = 0;
-    private String donateAddress;
 
     public static TransactionInfoFragment newInstance(Bundle transactionInfoMode) {
         TransactionInfoFragment fragment = new TransactionInfoFragment();
@@ -164,7 +166,6 @@ public class TransactionInfoFragment extends BaseFragment {
                 loadTransactionHistory(wallet.getCurrencyId(), wallet.getNetworkId(), wallet.getIndex());
             }
         });
-
     }
 
     private void loadTransactionHistory(final int currencyId, final int networkId, final int walletIndex) {
@@ -176,7 +177,6 @@ public class TransactionInfoFragment extends BaseFragment {
                 setData();
                 return;
             }
-            donateAddress = RealmManager.getSettingsDao().getDonationAddress(Constants.DONATE_WITH_TRANSACTION);
             transaction = transactionHistories.get(selectedPosition);
             setData();
         });
@@ -219,18 +219,10 @@ public class TransactionInfoFragment extends BaseFragment {
             textValue.append(CryptoFormatUtils.satoshiToBtc(outValue));
             textAmount.append(CryptoFormatUtils.satoshiToUsd(outValue, exchangeRate));
         }
-        String addressesFrom = "";
-        for (WalletAddress singleAddress : transaction.getInputs()) {
-            addressesFrom = addressesFrom.concat(System.lineSeparator()).concat(singleAddress.getAddress());
-        }
-        addressesFrom = addressesFrom.substring(1);
-        textAdressesFrom.setText(addressesFrom);
-        String addressesTo = "";
-        for (WalletAddress singleAddress : transaction.getOutputs()) {
-            addressesTo = addressesTo.concat(System.lineSeparator()).concat(singleAddress.getAddress());
-        }
-        addressesTo = addressesTo.substring(1);
-        textAddressesTo.setText(addressesTo);
+        recyclerInputAdresses.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerInputAdresses.setAdapter(new TransactionAddressAdapter(transaction.getInputs(), this::onClickAddress));
+        recyclerOutputAddresses.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerOutputAddresses.setAdapter(new TransactionAddressAdapter(transaction.getOutputs(), this::onClickAddress));
         String blocks;
         switch (transaction.getTxStatus()) {
             case TX_MEMPOOL_INCOMING:
@@ -258,8 +250,6 @@ public class TransactionInfoFragment extends BaseFragment {
             isTransactionLogged = true;
         }
     }
-
-
 
     private double getPreferredExchangeRate(ArrayList<TransactionHistory.StockExchangeRate> stockExchangeRates) {
         if (stockExchangeRates != null && stockExchangeRates.size() > 0) {
@@ -310,6 +300,11 @@ public class TransactionInfoFragment extends BaseFragment {
                 break;
             default:
         }
+    }
+
+    private void onClickAddress(String clickedAddress) {
+        AddressActionsDialogFragment.getInstance(viewModel.getWalletLive().getValue(), clickedAddress)
+                .show(getChildFragmentManager(), AddressActionsDialogFragment.TAG);
     }
 
     @OnClick(R.id.button_view)

@@ -64,6 +64,8 @@ public class EthTransactionFeeFragment extends BaseFragment
     TextView textFeeCurrency;
     @BindView(R.id.text_fee_original)
     TextView textFeeOriginal;
+    @BindView(R.id.group_donation)
+    Group groupDonationBtc;
     @BindView(R.id.group_donation_views)
     Group groupDonation;
     private AssetSendViewModel viewModel;
@@ -85,11 +87,13 @@ public class EthTransactionFeeFragment extends BaseFragment
         viewModel.requestFeeRates(viewModel.getWallet().getCurrencyId(), viewModel.getWallet().getNetworkId());
         Analytics.getInstance(getActivity()).logTransactionFeeLaunch(viewModel.getChainId());
         groupDonation.setVisibility(View.GONE);
+        groupDonationBtc.setVisibility(View.GONE);
         return view;
     }
 
     private void setAdapter() {
-        recyclerView.setAdapter(new MyFeeAdapter(viewModel.speeds.getValue().asList(), this, MyFeeAdapter.FeeType.ETH));
+        recyclerView.setAdapter(new MyFeeAdapter(viewModel.speeds.getValue().asList(), viewModel.getFee(),
+                this, MyFeeAdapter.FeeType.ETH));
     }
 
     @Override
@@ -160,6 +164,11 @@ public class EthTransactionFeeFragment extends BaseFragment
             hideKeyboard(getActivity());
         });
         dialogBuilder.create().show();
+    }
+
+    @Override
+    public void onClickFee(Fee fee) {
+        viewModel.setFee(fee);
     }
 
     @Override

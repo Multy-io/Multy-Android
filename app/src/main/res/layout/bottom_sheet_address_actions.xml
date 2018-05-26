@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2018 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <View
+        android:id="@+id/background"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/white"
+        app:layout_constraintBottom_toTopOf="@+id/divider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/text_title" />
+
+    <TextView
+        android:id="@+id/text_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:gravity="center_horizontal"
+        android:letterSpacing="-0.02"
+        android:lineSpacingExtra="6sp"
+        android:paddingTop="20dp"
+        android:text="@string/address_formatted"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@id/image_qr"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/image_qr"
+        android:layout_width="138dp"
+        android:layout_height="138dp"
+        android:layout_marginBottom="18dp"
+        app:layout_constraintBottom_toTopOf="@id/text_address"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:src="@drawable/ic_qr" />
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/image_qr"
+        app:layout_constraintEnd_toEndOf="@+id/image_qr"
+        app:layout_constraintStart_toStartOf="@+id/image_qr"
+        app:layout_constraintTop_toTopOf="@+id/image_qr" />
+
+    <TextView
+        android:id="@+id/text_address"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:gravity="center_horizontal"
+        android:textColor="@color/gray_dark"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@id/background"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="83T28WCp4Cu5LQiddJnDJJmKWvmmXJSP9L" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginBottom="8dp"
+        android:background="@color/blue_light_divider"
+        android:elevation="1dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/button_copy" />
+
+    <View
+        android:id="@+id/control_background"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/grey_lightest"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/divider" />
+
+    <TextView
+        android:id="@+id/button_copy"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:drawablePadding="32dp"
+        android:drawableStart="@drawable/ic_copy_to_clipboard"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:paddingStart="16dp"
+        android:text="@string/copy_to_clipboard"
+        android:textColor="@color/black_light"
+        android:textSize="16sp"
+        android:lineSpacingExtra="8sp"
+        app:layout_constraintBottom_toTopOf="@+id/button_share"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="RtlSymmetry" />
+
+    <TextView
+        android:id="@+id/button_share"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:drawablePadding="32dp"
+        android:drawableStart="@drawable/ic_share"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:paddingStart="16dp"
+        android:text="@string/share_key"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:lineSpacingExtra="8sp"
+        app:layout_constraintBottom_toTopOf="@+id/button_cancel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="RtlSymmetry" />
+
+    <TextView
+        android:id="@+id/button_cancel"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginBottom="8dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:drawablePadding="32dp"
+        android:drawableStart="@drawable/ic_cancel_blue"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:paddingStart="16dp"
+        android:text="@string/cancel"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:lineSpacingExtra="8sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="RtlSymmetry" />
+
+</android.support.constraint.ConstraintLayout>

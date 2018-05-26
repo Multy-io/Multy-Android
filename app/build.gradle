@@ -57,10 +57,10 @@ android {
             resValue "string", "base_url", "https://api.multy.io/"
         }
         stage {
-            resValue "string", "base_url", "http://stage.multy.io/"
+            resValue "string", "base_url", "https://stage.multy.io/"
         }
         multyTest {
-            resValue "string", "base_url", "http://test.multy.io/"
+            resValue "string", "base_url", "https://test.multy.io/"
         }
     }
     variantFilter { variant ->

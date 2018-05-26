@@ -119,7 +119,7 @@ public class WalletChooserFragment extends BaseFragment implements MyWalletsAdap
         }
         if (viewModel.isAmountScanned()) {
             if (Double.parseDouble(CryptoFormatUtils
-                    .satoshiToBtc(wallet.getPendingBalance().longValue())) >= viewModel.getAmount()) {
+                    .satoshiToBtc(wallet.getAvailableBalanceNumeric().longValue())) >= viewModel.getAmount()) {
                 launchTransactionFee(wallet);
             } else {
                 Toast.makeText(getContext(), getString(R.string.no_balance), Toast.LENGTH_SHORT).show();

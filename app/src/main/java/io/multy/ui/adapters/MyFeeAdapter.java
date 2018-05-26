@@ -7,6 +7,7 @@
 package io.multy.ui.adapters;
 
 
+import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -21,8 +22,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.multy.R;
 import io.multy.model.entities.Fee;
+import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
-import io.reactivex.annotations.Nullable;
 
 public class MyFeeAdapter extends RecyclerView.Adapter<MyFeeAdapter.FeeHolder> {
 
@@ -34,10 +35,12 @@ public class MyFeeAdapter extends RecyclerView.Adapter<MyFeeAdapter.FeeHolder> {
     private OnCustomFeeClickListener listener;
     private FeeType feeType;
 
-    public MyFeeAdapter(ArrayList<Fee> rates, OnCustomFeeClickListener listener, FeeType feeType) {
+    public MyFeeAdapter(ArrayList<Fee> rates, @Nullable Fee selectedFee,
+                        OnCustomFeeClickListener listener, FeeType feeType) {
         this.rates = rates;
         this.listener = listener;
         this.feeType = feeType;
+        initRates(selectedFee);
     }
 
     @Override
@@ -53,22 +56,19 @@ public class MyFeeAdapter extends RecyclerView.Adapter<MyFeeAdapter.FeeHolder> {
         holder.imageMark.setVisibility(rate.isSelected() ? View.VISIBLE : View.INVISIBLE);
         switch (feeType) {
             case BTC:
-                price = rate.getAmount() == 0 ? 1000 : rate.getAmount();
+                price = (rate.getAmount() == 0 ? 1000 : rate.getAmount()) * Constants.BTC_TRANSACTION_SIZE;
                 if (position == rates.size() - 1) {
                     holder.textName.setText(rate.getName());
                     holder.divider.setVisibility(View.GONE);
                     holder.imageLogo.setImageResource(R.drawable.ic_custom);
-                    if (price == -1) {
-                        holder.textBalanceOriginal.setVisibility(View.GONE);
-                    } else {
-                        holder.textBalanceOriginal.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(price)));
-                    }
+                    holder.textBalanceOriginal.setText(String.format("~%s BTC / ~%s USD",
+                                CryptoFormatUtils.satoshiToBtc(price), CryptoFormatUtils.satoshiToUsd(price)));
                     holder.root.setOnClickListener(v -> listener.onClickCustomFee(rate.getAmount()));
                 } else {
                     holder.imageLogo.setImageResource(getIconResId(position));
-                    holder.textBlocks.setText(String.format("%d blocks", rate.getBlockCount()));
-                    holder.textName.setText(String.format("%s · %s", rate.getName(), rate.getTime()));
-                    holder.textBalanceOriginal.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(price)));
+                    holder.textName.setText(rate.getName());
+                    holder.textBalanceOriginal.setText(String.format("~%s BTC / ~%s USD",
+                            CryptoFormatUtils.satoshiToBtc(price), CryptoFormatUtils.satoshiToUsd(price)));
                     holder.root.setOnClickListener(v -> {
                         setItemSelected(position);
                         listener.logTransactionFee(position);
@@ -77,7 +77,6 @@ public class MyFeeAdapter extends RecyclerView.Adapter<MyFeeAdapter.FeeHolder> {
 
                 break;
             case ETH:
-                holder.textBlocks.setVisibility(View.GONE);
                 ethPrice = Math.abs(CryptoFormatUtils.weiToEth(String.valueOf(rate.getAmount())));
                 String stringEth = CryptoFormatUtils.FORMAT_ETH.format(ethPrice);
                 if (position == rates.size() - 1) {
@@ -103,26 +102,41 @@ public class MyFeeAdapter extends RecyclerView.Adapter<MyFeeAdapter.FeeHolder> {
         }
     }
 
+    @Override
+    public int getItemCount() {
+        return rates.size();
+    }
+
+    private void initRates(Fee selectedFee) {
+        if (rates == null) {
+            return;
+        }
+        if (rates.size() > 1) {
+            rates.get(rates.size() - 1).setAmount(rates.get(rates.size() - 2).getAmount());
+        }
+        if (selectedFee != null) {
+            for (int i = 0; i < rates.size(); i++) {
+                if (rates.get(i).getName().equals(selectedFee.getName())) {
+                    rates.get(i).setSelected(true);
+                    if (i == rates.size() - 1) {
+                        rates.get(i).setAmount(selectedFee.getAmount());
+                    }
+                    break;
+                }
+            }
+        } else {
+            int serverFeeCount = rates.size() - 2;
+            int centerServerFee = serverFeeCount / 2;
+            rates.get(centerServerFee).setSelected(true);
+        }
+    }
+
     private void setItemSelected(int position) {
         for (int i = 0; i < rates.size(); i++) {
             rates.get(i).setSelected(i == position);
         }
+        listener.onClickFee(rates.get(position));
         notifyDataSetChanged();
-    }
-
-    public void setItemSelected(String name) {
-
-    }
-
-    @Nullable
-    public Fee getSelectedFee() {
-        for (Fee rate : rates) {
-            if (rate.isSelected()) {
-                return rate;
-            }
-        }
-
-        return null;
     }
 
     private int getIconResId(int position) {
@@ -140,16 +154,20 @@ public class MyFeeAdapter extends RecyclerView.Adapter<MyFeeAdapter.FeeHolder> {
         }
     }
 
+    @Nullable
+    public Fee getSelectedFee() {
+        for (Fee rate : rates) {
+            if (rate.isSelected()) {
+                return rate;
+            }
+        }
+        return null;
+    }
+
     public void setCustomFee(long fee) {
         rates.get(rates.size() - 1).setAmount(fee);
         setItemSelected(rates.size() - 1);
     }
-
-    @Override
-    public int getItemCount() {
-        return rates.size();
-    }
-
 
     class FeeHolder extends RecyclerView.ViewHolder {
 
@@ -161,8 +179,6 @@ public class MyFeeAdapter extends RecyclerView.Adapter<MyFeeAdapter.FeeHolder> {
         TextView textName;
         @BindView(R.id.text_balance_original)
         TextView textBalanceOriginal;
-        @BindView(R.id.text_blocks)
-        TextView textBlocks;
         @BindView(R.id.divider)
         View divider;
         @BindView(R.id.image_mark)
@@ -176,6 +192,7 @@ public class MyFeeAdapter extends RecyclerView.Adapter<MyFeeAdapter.FeeHolder> {
     }
 
     public interface OnCustomFeeClickListener {
+        void onClickFee(Fee fee);
         void onClickCustomFee(long currentValue);
         void logTransactionFee(int position);
     }

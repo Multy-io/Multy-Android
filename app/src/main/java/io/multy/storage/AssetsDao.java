@@ -78,7 +78,7 @@ public class AssetsDao {
     }
 
     public RealmResults<Wallet> getWallets() {
-        return realm.where(Wallet.class).sort("lastActionTime", Sort.ASCENDING).findAll();
+        return realm.where(Wallet.class).sort("lastActionTime", Sort.DESCENDING).findAll();
     }
 
     public RealmResults<Wallet> getWallets(int blockChainId) {

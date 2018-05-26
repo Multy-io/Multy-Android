@@ -71,7 +71,7 @@
     <string name="btc">BTC</string>
     <string name="pay_for_commission">Pay for commission</string>
     <string name="spendable">Spendable:</string>
-    <string name="max">MAX</string>
+    <string name="max">SEND ALL</string>
     <string name="close">Close</string>
     <string name="choose_amount">Please, choose amount</string>
     <string name="choose_transaction_speed">Please choose Fee Rate.</string>

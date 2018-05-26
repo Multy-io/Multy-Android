@@ -21,10 +21,10 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
+import android.view.WindowManager;
 
 import java.util.List;
 
-import butterknife.BindInt;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -52,19 +52,14 @@ public class AssetSendActivity extends BaseActivity {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
-    @BindInt(R.integer.one)
-    int one;
-    @BindInt(R.integer.zero)
-    int zero;
-    @BindInt(R.integer.one_negative)
-    int oneNegative;
-
     private boolean isFirstFragmentCreation;
     private AssetSendViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN |
+                WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         setContentView(R.layout.activity_asset_send);
         ButterKnife.bind(this);
         isFirstFragmentCreation = true;
@@ -92,7 +87,7 @@ public class AssetSendActivity extends BaseActivity {
     @Override
     public void onBackPressed() {
         logCancel();
-        if (getSupportFragmentManager().getBackStackEntryCount() >= one) {
+        if (getSupportFragmentManager().getBackStackEntryCount() >= 1) {
             List<Fragment> backStackFragments = getSupportFragmentManager().getFragments();
             for (Fragment backStackFragment : backStackFragments) {
                 if (backStackFragment instanceof SendSummaryFragment || backStackFragment instanceof EthSendSummaryFragment) {

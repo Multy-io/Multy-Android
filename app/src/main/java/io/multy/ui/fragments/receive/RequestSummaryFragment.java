@@ -49,6 +49,7 @@ import io.multy.viewmodels.AssetRequestViewModel;
 public class RequestSummaryFragment extends BaseFragment {
 
     public static final int AMOUNT_CHOOSE_REQUEST = 729;
+    public static final int ADDRESS_CHOOSER_REQUEST = 560;
 
     public static RequestSummaryFragment newInstance() {
         return new RequestSummaryFragment();
@@ -92,6 +93,10 @@ public class RequestSummaryFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_request_summary, container, false);
         ButterKnife.bind(this, view);
+        viewModel.getAddress().observe(this, address -> {
+            textAddress.setText(address);
+            generateQR();
+        });
         return view;
     }
 
@@ -101,7 +106,6 @@ public class RequestSummaryFragment extends BaseFragment {
         if (getActivity() != null) {
             getActivity().registerReceiver(receiver, new IntentFilter());
         }
-        textAddress.setText(viewModel.getWalletAddress());
         textWalletName.setText(viewModel.getWallet().getWalletName());
         textBalanceCurrency.setText(viewModel.getWallet().getFiatBalanceLabel());
         textBalanceOriginal.setText(viewModel.getWallet().getBalanceLabel());
@@ -131,6 +135,10 @@ public class RequestSummaryFragment extends BaseFragment {
                 double amount = data.getDoubleExtra(Constants.EXTRA_AMOUNT, 0);
                 viewModel.setAmount(amount);
                 setBalance();
+            }
+        } else if (requestCode == ADDRESS_CHOOSER_REQUEST && resultCode == Activity.RESULT_OK) {
+            if (data.hasExtra(Constants.EXTRA_ADDRESS)) {
+                viewModel.setAddress(data.getStringExtra(Constants.EXTRA_ADDRESS));
             }
         }
     }
@@ -181,8 +189,9 @@ public class RequestSummaryFragment extends BaseFragment {
         Analytics.getInstance(getActivity()).logReceiveSummary(AnalyticsConstants.RECEIVE_SUMMARY_ADDRESS, viewModel.getChainId());
         switch (NativeDataHelper.Blockchain.valueOf(viewModel.getWallet().getCurrencyId())) {
             case BTC:
-                ((AssetRequestActivity) getActivity()).setFragment(R.string.all_addresses,
-                        AddressesFragment.newInstance(viewModel.getWallet().getId()));
+                AddressesFragment fragment = AddressesFragment.newInstance(viewModel.getWallet().getId());
+                fragment.setTargetFragment(this, ADDRESS_CHOOSER_REQUEST);
+                ((AssetRequestActivity) getActivity()).setFragment(R.string.all_addresses, fragment);
                 break;
             case ETH:
                 copyAddressToClipboard();
@@ -212,8 +221,7 @@ public class RequestSummaryFragment extends BaseFragment {
     void onClickGenerateAddress() {
         viewModel.getBtcAddresses();
         viewModel.getAddress().observe(this, address -> {
-            textAddress.setText(address);
-            generateQR();
+            viewModel.setAddress(address);
         });
     }
 

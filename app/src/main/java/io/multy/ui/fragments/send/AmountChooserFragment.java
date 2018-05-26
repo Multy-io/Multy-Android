@@ -237,7 +237,7 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
         if (spendableSatoshi - transactionPrice < 0) {
             return;
         }
-
+        inputOriginal.requestFocus();
         if (textMax.isSelected()) {
             textMax.setSelected(false);
         } else {
@@ -313,6 +313,10 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (!checkMaxLengthAfterPoint(inputOriginal, 8, i, i2)) {
+                    return;
+                }
+                checkMaxLengthBeforePoint(inputOriginal, 6, i, i1, i2);
                 if (!isAmountSwapped) { // if currency input is main
                     if (!TextUtils.isEmpty(charSequence)) {
                         if (isParsable(charSequence.toString())) {
@@ -325,8 +329,6 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
                         inputOriginal.getText().clear();
                     }
                 }
-                checkMaxLengthAfterPoint(inputOriginal, 9, i, i2);
-                checkMaxLengthBeforePoint(inputOriginal, 6, i, i1, i2);
             }
 
             @Override
@@ -380,6 +382,14 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (!checkMaxLengthAfterPoint(inputCurrency, 2, i, i2)) {
+                    return;
+                }
+                if (isAmountSwapped) {
+                    checkMaxLengthBeforePoint(inputCurrency, 9, i, i1, i2);
+                } else {
+                    checkMaxLengthBeforePoint(inputCurrency, 10, i, i1, i2);
+                }
                 if (isAmountSwapped && currenciesRate != null) {
                     if (!TextUtils.isEmpty(charSequence)) {
                         if (isParsable(charSequence.toString())) {
@@ -394,12 +404,6 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
 //                        textTotal.getEditableText().clear();
                     }
                     inputCurrency.setSelection(inputCurrency.length());
-                }
-                checkMaxLengthAfterPoint(inputCurrency, 3, i, i2);
-                if (isAmountSwapped) {
-                    checkMaxLengthBeforePoint(inputCurrency, 9, i, i1, i2);
-                } else {
-                    checkMaxLengthBeforePoint(inputCurrency, 10, i, i1, i2);
                 }
             }
 
@@ -580,27 +584,31 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
         }
     }
 
-    private void checkMaxLengthAfterPoint(EditText input, int max, int start, int count) {
+    private boolean checkMaxLengthAfterPoint(EditText input, int max, int start, int count) {
         String amount = input.getText().toString();
         if (!TextUtils.isEmpty(amount) && amount.contains(".")) {
-            if (amount.length() - amount.indexOf(".") > max) {
+            if (amount.length() - (amount.indexOf(".") + 1) > max) {
                 StringBuilder stringBuilder = new StringBuilder();
                 stringBuilder.append(amount.substring(0, start));
                 stringBuilder.append(amount.substring(start + count, amount.length()));
                 input.setText(stringBuilder.toString());
                 input.setSelection(start);
+                return false;
             }
         }
+        return true;
     }
 
     @OnClick(R.id.button_clear_original)
     void onClickClearOriginal() {
         inputOriginal.setText("");
+        switcher.setChecked(true);
     }
 
     @OnClick(R.id.button_clear_currency)
     void onClickClearCurrency() {
         inputCurrency.setText("");
+        switcher.setChecked(true);
     }
 
     @OnClick(R.id.container_input_original)
