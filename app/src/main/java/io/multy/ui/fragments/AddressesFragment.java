@@ -6,7 +6,9 @@
 
 package io.multy.ui.fragments;
 
+import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
@@ -29,6 +31,8 @@ import io.multy.storage.AssetsDao;
 import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetRequestActivity;
 import io.multy.ui.adapters.AddressesAdapter;
+import io.multy.ui.fragments.dialogs.AddressActionsDialogFragment;
+import io.multy.ui.fragments.receive.RequestSummaryFragment;
 import io.multy.util.Constants;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
@@ -87,7 +91,15 @@ public class AddressesFragment extends BaseFragment {
             Wallet wallet = RealmManager.getAssetsDao().getWalletById(getArguments().getLong(Constants.EXTRA_WALLET_ID, -1));
             textViewTitle.setText(wallet.getWalletName());
             recyclerView.setAdapter(new AddressesAdapter(wallet.getBtcWallet().getAddresses(), selectedAddress -> {
-                viewModel.copyToClipboard(getActivity(), selectedAddress.getAddress());
+                if (getTargetFragment() == null) {
+                    AddressActionsDialogFragment.getInstance(wallet, selectedAddress.getAddress())
+                            .show(getChildFragmentManager(), AddressActionsDialogFragment.TAG);
+                } else {
+                    Intent data = new Intent();
+                    data.putExtra(Constants.EXTRA_ADDRESS, selectedAddress.getAddress());
+                    getTargetFragment().onActivityResult(RequestSummaryFragment.ADDRESS_CHOOSER_REQUEST, Activity.RESULT_OK, data);
+                    getActivity().onBackPressed();
+                }
             }));
         } else {
             Toast.makeText(getActivity(), R.string.addresses_empty, Toast.LENGTH_SHORT).show();
@@ -120,7 +132,16 @@ public class AddressesFragment extends BaseFragment {
                     assetsDao.saveWallet(response.body().getWallets().get(0));
                     viewModel.wallet.postValue(assetsDao.getWalletById(walletId));
                     recyclerView.setAdapter(new AddressesAdapter(response.body().getWallets().get(0).getBtcWallet().getAddresses(), selectedAddress -> {
-                        viewModel.copyToClipboard(getActivity(), selectedAddress.getAddress());
+                        if (getTargetFragment() == null) {
+                            Wallet wallet = RealmManager.getAssetsDao().getWalletById(getArguments().getLong(Constants.EXTRA_WALLET_ID, -1));
+                            AddressActionsDialogFragment.getInstance(wallet, selectedAddress.getAddress())
+                                    .show(getChildFragmentManager(), AddressActionsDialogFragment.TAG);
+                        } else {
+                            Intent data = new Intent();
+                            data.putExtra(Constants.EXTRA_ADDRESS, selectedAddress.getAddress());
+                            getTargetFragment().onActivityResult(RequestSummaryFragment.ADDRESS_CHOOSER_REQUEST, Activity.RESULT_OK, data);
+                            getActivity().onBackPressed();
+                        }
                     }));
                 }
             }

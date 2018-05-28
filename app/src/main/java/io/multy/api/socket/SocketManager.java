@@ -31,11 +31,12 @@ public class SocketManager {
     public static final String TAG = SocketManager.class.getSimpleName();
     private static final String DEVICE_TYPE = "Android";
 
-    private static final String SOCKET_URL = "https://test.multy.io/";
+    private static final String SOCKET_URL = "https://api.multy.io/";
     private static final String HEADER_AUTH = "jwtToken";
     private static final String HEADER_DEVICE_TYPE = "deviceType";
     private static final String HEADER_USER_ID = "userId";
     private static final String EVENT_RECEIVE = "TransactionUpdate";
+    private static final String EVENT_RECEIVE_DEPRECATED = "btcTransactionUpdate";
     private static final String EVENT_EXCHANGE_RESPONSE = "exchangePoloniex";
 
     private Socket socket;
@@ -105,7 +106,14 @@ public class SocketManager {
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                    });
+                    }).on(EVENT_RECEIVE_DEPRECATED, args -> {
+                try {
+                    Timber.i("UPDATE " + String.valueOf(args[0]));
+                    transactionUpdateEntity.postValue(gson.fromJson(String.valueOf(args[0]), TransactionUpdateResponse.class).getEntity());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
             socket.connect();
         } catch (URISyntaxException e) {
             e.printStackTrace();

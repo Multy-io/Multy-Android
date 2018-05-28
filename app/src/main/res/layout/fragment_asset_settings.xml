@@ -198,13 +198,13 @@
 
             <ImageView
                 android:id="@+id/image_arrow"
-                android:layout_width="30dp"
-                android:layout_height="35dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
                 app:layout_constraintBottom_toTopOf="@+id/divider_currency"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/divider_name"
-                app:srcCompat="@drawable/ic_donation_icon" />
+                app:srcCompat="@drawable/ic_arrow_right_grey" />
 
             <View
                 android:id="@+id/divider_currency"
@@ -243,13 +243,13 @@
                 android:focusable="true"
                 android:fontFamily="@font/montserrat"
                 android:gravity="center_vertical"
+                android:lineSpacingExtra="6sp"
                 android:paddingEnd="16dp"
                 android:paddingStart="16dp"
                 android:text="@string/show_private_keys"
                 android:textColor="@color/text_main_dark"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:lineSpacingExtra="6sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/divider_security" />

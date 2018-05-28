@@ -83,7 +83,10 @@ public class AssetSendFragment extends BaseFragment {
         } else {
             recentAddresses = RealmManager.getAssetsDao().getRecentAddresses();
         }
-        recyclerView.setAdapter(new RecentAddressesAdapter(recentAddresses, address -> inputAddress.setText(address)));
+        recyclerView.setAdapter(new RecentAddressesAdapter(recentAddresses, address -> {
+            inputAddress.setText(address);
+            inputAddress.postDelayed(this::onClickNext, 300);
+        }));
     }
 
     @Override
@@ -151,7 +154,6 @@ public class AssetSendFragment extends BaseFragment {
     @OnClick(R.id.button_address)
     void onClickAddressBook(){
         Analytics.getInstance(getActivity()).logSendTo(AnalyticsConstants.SEND_TO_ADDRESS_BOOK);
-//        Toast.makeText(getActivity(), R.string.not_implemented, Toast.LENGTH_SHORT).show();
         if (getActivity() != null) {
             DonateDialog.getInstance(Constants.DONATE_ADDING_CONTACTS)
                     .show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
@@ -161,7 +163,6 @@ public class AssetSendFragment extends BaseFragment {
     @OnClick(R.id.button_scan_wireless)
     void onClickWirelessScan(){
         Analytics.getInstance(getActivity()).logSendTo(AnalyticsConstants.SEND_TO_WIRELESS);
-//        Toast.makeText(getActivity(), R.string.not_implemented, Toast.LENGTH_SHORT).show();
         if (getActivity() != null) {
             DonateDialog.getInstance(Constants.DONATE_ADDING_WIRELESS_SCAN)
                     .show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);

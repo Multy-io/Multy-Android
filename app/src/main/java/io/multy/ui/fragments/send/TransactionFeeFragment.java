@@ -99,7 +99,9 @@ public class TransactionFeeFragment extends BaseFragment implements MyFeeAdapter
     }
 
     private void setAdapter() {
-        recyclerView.setAdapter(new MyFeeAdapter(viewModel.speeds.getValue().asList(), this, MyFeeAdapter.FeeType.BTC));
+        MyFeeAdapter adapter = new MyFeeAdapter(viewModel.speeds.getValue().asList(), viewModel.getFee(),
+                this, MyFeeAdapter.FeeType.BTC);
+        recyclerView.setAdapter(adapter);
     }
 
     @Override
@@ -171,12 +173,21 @@ public class TransactionFeeFragment extends BaseFragment implements MyFeeAdapter
         dialogBuilder.setPositiveButton(R.string.done, (dialog, whichButton) -> {
             ((MyFeeAdapter) recyclerView.getAdapter()).setCustomFee(Long.valueOf(input.getText().toString()));
             Analytics.getInstance(getActivity()).logTransactionFee(AnalyticsConstants.TRANSACTION_FEE_CUSTOM_SET, viewModel.getChainId());
+            input.clearFocus();
+            hideKeyboard(getActivity());
+            dialog.dismiss();
         });
         dialogBuilder.setNegativeButton(R.string.cancel, (dialog, whichButton) -> {
             Analytics.getInstance(getActivity()).logTransactionFee(AnalyticsConstants.TRANSACTION_FEE_CUSTOM_CANCEL, viewModel.getChainId());
+            hideKeyboard(getActivity());
+            dialog.dismiss();
         });
-        dialogBuilder.setOnDismissListener(dialog -> hideKeyboard(getActivity()));
         dialogBuilder.create().show();
+    }
+
+    @Override
+    public void onClickFee(Fee fee) {
+        viewModel.setFee(fee);
     }
 
     @Override
@@ -216,6 +227,9 @@ public class TransactionFeeFragment extends BaseFragment implements MyFeeAdapter
 
     @OnClick(R.id.button_next)
     void onClickNext() {
+        if (recyclerView.getAdapter() == null) {
+            return;
+        }
         Fee selectedFee = ((MyFeeAdapter) recyclerView.getAdapter()).getSelectedFee();
 
         if (switcher.isChecked()) {

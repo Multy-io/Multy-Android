@@ -109,7 +109,14 @@ public class AssetRequestViewModel extends BaseViewModel {
     }
 
     public MutableLiveData<String> getAddress() {
+        if (address.getValue() == null && walletLive.getValue() != null) {
+            address.setValue(walletLive.getValue().getActiveAddress().getAddress());
+        }
         return address;
+    }
+
+    public void setAddress(String address) {
+        this.address.setValue(address);
     }
 
     public void getBtcAddresses() {
@@ -146,22 +153,18 @@ public class AssetRequestViewModel extends BaseViewModel {
     }
 
     public String getStringQr() {
-        return "bitcoin:" + getWalletAddress() + (amount == 0 ? "" : "?amount=" + amount);
+        return "bitcoin:" + address.getValue() + (amount == 0 ? "" : "?amount=" + amount);
     }
 
     public String getStringAddress() {
-        return "bitcoin:" + getWalletAddress();
+        return "bitcoin:" + address.getValue();
     }
 
     public String getStringAmount() {
         return String.valueOf(amount);
     }
 
-    public String getWalletAddress() {
-        return wallet.getActiveAddress().getAddress();
-    }
-
     public int getChainId() {
-        return 1;
+        return walletLive.getValue() != null ? walletLive.getValue().getCurrencyId() : 0;
     }
 }

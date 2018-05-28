@@ -15,6 +15,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.constraint.Group;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.NestedScrollView;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -30,8 +31,6 @@ import com.samwolfand.oneprefs.Prefs;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
-import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -89,6 +88,8 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
     ImageView imageDotPortfolio;
     @BindView(R.id.image_dot_chart)
     ImageView imageDotChart;
+    @BindView(R.id.swipe_refresh_layout)
+    SwipeRefreshLayout refreshLayout;
 
     private AssetsViewModel viewModel;
     private MyWalletsAdapter walletsAdapter;
@@ -206,7 +207,12 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
 
         if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
             WalletViewModel.saveDonateAddresses();
+            refreshLayout.setOnRefreshListener(() -> {
+                updateWallets();
+            });
         }
+        refreshLayout.setOnChildScrollUpCallback((parent, child) -> recyclerView.getVisibility() != View.VISIBLE);
+
     }
 
     private void checkViewsVisibility() {
@@ -242,20 +248,18 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
                     if (response.body().getWallets() != null && response.body().getWallets().size() != 0) {
                         assetsDao.deleteAll();
                         assetsDao.saveWallets(response.body().getWallets());
-                        walletsAdapter.setData(response.body().getWallets());
+                    }
+                    RealmResults<Wallet> realmResults = assetsDao.getWallets();
+                    walletsAdapter.setData(realmResults);
+                    if (realmResults.size() > 0) {
+                        groupCreateDescription.setVisibility(View.GONE);
+                        recyclerView.setVisibility(View.VISIBLE);
                     } else {
-                        RealmResults realmResults = assetsDao.getWallets();
-                        if (realmResults != null && realmResults.size() > 0) {
-                            walletsAdapter.setData(realmResults);
-                            groupCreateDescription.setVisibility(View.GONE);
-                            recyclerView.setVisibility(View.VISIBLE);
-                        } else {
-                            walletsAdapter.setData(new ArrayList<>());
-                            groupCreateDescription.setVisibility(View.VISIBLE);
-                            recyclerView.setVisibility(View.GONE);
-                        }
+                        groupCreateDescription.setVisibility(View.VISIBLE);
+                        recyclerView.setVisibility(View.GONE);
                     }
                 }
+                refreshLayout.setRefreshing(false);
             }
 
             @Override
@@ -269,10 +273,10 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setAutoMeasureEnabled(true);
 
-        walletsAdapter = new MyWalletsAdapter(this, null);
+        walletsAdapter = new MyWalletsAdapter(this, viewModel.getWalletsFromDB());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(walletsAdapter);
-        walletsAdapter.setData(viewModel.getWalletsFromDB());
+//        walletsAdapter.setData(viewModel.getWalletsFromDB());
     }
 
     private void showAddWalletActions() {

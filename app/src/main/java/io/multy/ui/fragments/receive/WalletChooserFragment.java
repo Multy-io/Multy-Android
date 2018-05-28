@@ -14,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-
 import butterknife.BindInt;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -75,6 +74,7 @@ public class WalletChooserFragment extends BaseFragment implements MyWalletsAdap
     @Override
     public void onWalletClick(Wallet wallet) {
         viewModel.setWallet(wallet);
+        viewModel.setAddress(wallet.getActiveAddress().getAddress());
         Analytics.getInstance(getActivity()).logReceive(AnalyticsConstants.RECEIVE_WALLET_CLICK, viewModel.getChainId());
         if (getActivity().getSupportFragmentManager().getBackStackEntryCount() == zero) {
             ((AssetRequestActivity) getActivity()).setFragment(R.string.receive_summary, RequestSummaryFragment.newInstance());

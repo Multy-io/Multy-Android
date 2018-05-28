@@ -224,7 +224,7 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
     }
 
     public double getBtcDoubleValue() {
-        return balance.equals("0") ? 0 : (getBalanceNumeric().divide(BtcWallet.DIVISOR, 3, BigDecimal.ROUND_FLOOR)).doubleValue();
+        return balance.equals("0") ? 0 : (getBalanceNumeric().divide(BtcWallet.DIVISOR, 8, BigDecimal.ROUND_FLOOR)).doubleValue();
     }
 
     public BigDecimal getEthValue() {

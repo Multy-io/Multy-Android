@@ -114,7 +114,7 @@ public final class Constants {
     public static final int DONATE_ADDING_WIRELESS_SCAN = 10302;
 
     public static final int MIN_SATOSHI = 546;
-
+    public static final int BTC_TRANSACTION_SIZE = 225;
 
     public static final String[] rootFiles = {
             "init.magisk.rc",

@@ -107,9 +107,10 @@
                 android:id="@+id/recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:clipToPadding="false"
                 android:paddingTop="16dp"
-                tools:itemCount="4"
                 app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+                tools:itemCount="4"
                 tools:listitem="@layout/view_transaction_item" />
 
             <TextView

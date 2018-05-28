@@ -17,8 +17,9 @@
             android:id="@+id/input_custom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:digits="0123456789"
             android:hint="@string/satoshi_per_byte"
-            android:inputType="numberDecimal"
+            android:inputType="number"
             android:maxLength="6" />
 
     </android.support.design.widget.TextInputLayout>

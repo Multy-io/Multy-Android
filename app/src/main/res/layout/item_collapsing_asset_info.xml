@@ -10,8 +10,8 @@
     android:id="@+id/container_info"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="56dp"
     android:layout_marginBottom="24dp"
+    android:layout_marginTop="56dp"
     android:background="@drawable/background_gradient_blue"
     tools:showIn="@layout/fragment_asset_info">
 
@@ -19,13 +19,13 @@
         android:id="@+id/text_value"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:layout_marginEnd="4dp"
+        android:layout_marginStart="8dp"
         android:fontFamily="@font/montserrat"
+        android:lineSpacingExtra="-3sp"
         android:text="@string/zero_zero"
         android:textColor="@android:color/white"
         android:textSize="32sp"
-        android:lineSpacingExtra="-3sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/text_coin"
         app:layout_constraintHorizontal_chainStyle="packed"
@@ -36,14 +36,14 @@
         android:id="@+id/text_coin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginStart="4dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
+        android:lineSpacingExtra="-3sp"
         android:text="@string/btc"
         android:textColor="@color/blue_light_bright"
         android:textSize="32sp"
-        android:lineSpacingExtra="-3sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/text_value"
         app:layout_constraintEnd_toEndOf="parent"
@@ -55,13 +55,13 @@
         android:id="@+id/text_amount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="13dp"
         android:layout_marginEnd="4dp"
+        android:layout_marginTop="13dp"
         android:fontFamily="@font/montserrat"
+        android:lineSpacingExtra="13sp"
         android:text="@string/zero_zero"
         android:textColor="@android:color/white"
         android:textSize="16sp"
-        android:lineSpacingExtra="13sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/text_money"
         app:layout_constraintHorizontal_chainStyle="packed"
@@ -72,8 +72,8 @@
         android:id="@+id/text_money"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginStart="4dp"
         android:fontFamily="@font/montserrat"
         android:text="@string/usd"
         android:textColor="@color/blue_light_bright"
@@ -108,13 +108,13 @@
             android:id="@+id/text_available_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
             android:fontFamily="@font/montserrat"
+            android:letterSpacing="-0.02"
             android:text="@string/zero_zero"
             android:textColor="@android:color/white"
             android:textSize="12sp"
-            android:letterSpacing="-0.02"
             android:textStyle="bold" />
 
         <TextView
@@ -122,10 +122,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="6dp"
+            android:letterSpacing="-0.02"
             android:text="@string/btc"
             android:textColor="@color/blue_light_bright"
             android:textSize="12sp"
-            android:letterSpacing="-0.02"
             android:textStyle="bold" />
 
         <TextView
@@ -134,10 +134,10 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:fontFamily="@font/montserrat"
+            android:letterSpacing="-0.02"
             android:text="@string/zero_zero"
             android:textColor="@android:color/white"
             android:textSize="12sp"
-            android:letterSpacing="-0.02"
             android:textStyle="bold" />
 
         <TextView
@@ -145,38 +145,64 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="4dp"
+            android:letterSpacing="-0.02"
             android:text="@string/usd"
             android:textColor="@color/blue_light_bright"
             android:textSize="12sp"
-            android:letterSpacing="-0.02"
             android:textStyle="bold" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/text_address"
-        android:layout_width="@dimen/dp0"
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/button_copy"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:background="?attr/selectableItemBackground"
-        android:fontFamily="@font/montserrat_bold"
-        android:gravity="center"
-        android:padding="@dimen/margin_10dp"
-        android:paddingStart="34dp"
-        android:paddingEnd="34dp"
-        android:textColor="@android:color/white"
-        android:textSize="12sp"
-        android:letterSpacing="-0.02"
+        android:clickable="true"
+        android:focusable="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/container_available"
-        tools:text="83T28WCp4Cu5LQiddJnDJJmKWvmmXJSP9L" />
+        app:layout_constraintTop_toBottomOf="@+id/container_available">
+
+        <TextView
+            android:id="@+id/text_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat_bold"
+            android:gravity="center"
+            android:letterSpacing="-0.02"
+            android:paddingBottom="10dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="10dp"
+            android:paddingTop="10dp"
+            android:textColor="@android:color/white"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/image_copy"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="83T28WCp4Cu5LQiddJnDJJmKWvmmXJSP9L" />
+
+        <ImageView
+            android:id="@+id/image_copy"
+            android:layout_width="wrap_content"
+            android:layout_height="14dp"
+            android:paddingRight="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/text_address"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_share_mini" />
+    </android.support.constraint.ConstraintLayout>
 
     <RelativeLayout
         android:id="@+id/card_addresses"
         android:layout_width="240dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:layout_marginBottom="4dp"
+        android:layout_marginTop="10dp"
         android:background="@drawable/button_show_all_addresses"
         android:clickable="true"
         android:focusable="true"
@@ -184,29 +210,29 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_address">
+        app:layout_constraintTop_toBottomOf="@+id/button_copy">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginLeft="36dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginRight="36dp"
             android:layout_marginBottom="10dp"
+            android:layout_marginLeft="36dp"
+            android:layout_marginRight="36dp"
+            android:layout_marginTop="10dp"
             android:drawablePadding="20dp"
-            android:letterSpacing="-0.02"
             android:fontFamily="@font/montserrat"
+            android:letterSpacing="-0.02"
             android:maxLines="1"
             android:text="@string/show_all_addresses"
             android:textColor="@android:color/white"
             android:textSize="14sp" />
 
         <ImageView
-            android:layout_centerVertical="true"
-            android:layout_alignParentRight="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
             android:layout_gravity="center_vertical|right"
             android:layout_marginRight="24dp"
             android:src="@drawable/ic_chevron_transparent" />

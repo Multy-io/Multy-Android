@@ -50,6 +50,7 @@ import io.multy.ui.adapters.AssetTransactionsAdapter;
 import io.multy.ui.adapters.EmptyTransactionsAdapter;
 import io.multy.ui.fragments.AddressesFragment;
 import io.multy.ui.fragments.BaseFragment;
+import io.multy.ui.fragments.dialogs.AddressActionsDialogFragment;
 import io.multy.util.Constants;
 import io.multy.util.NativeDataHelper;
 import io.multy.util.analytics.Analytics;
@@ -362,10 +363,14 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         viewModel.share(getActivity(), getAddressToShare());
     }
 
-    @OnClick(R.id.text_address)
-    void onClickCopy() {
+    @OnClick(R.id.button_copy)
+    void onClickCopy(View view) {
         Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_ADDRESS, viewModel.getChainId());
-        viewModel.copyToClipboard(getActivity(), getAddressToShare());
+        view.setEnabled(false);
+        view.postDelayed(() -> view.setEnabled(true), 500);
+        AddressActionsDialogFragment.getInstance(viewModel.getWalletLive().getValue(),
+                viewModel.getWalletLive().getValue().getActiveAddress().getAddress())
+                .show(getChildFragmentManager(), AddressActionsDialogFragment.TAG);
     }
 
     @OnClick(R.id.close)

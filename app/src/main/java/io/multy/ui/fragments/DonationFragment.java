@@ -141,7 +141,11 @@ public class DonationFragment extends BaseFragment {
 
     private void setAdapter(ArrayList<Fee> rates) {
         recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter(new MyFeeAdapter(rates, new MyFeeAdapter.OnCustomFeeClickListener() {
+        recyclerView.setAdapter(new MyFeeAdapter(rates, null, new MyFeeAdapter.OnCustomFeeClickListener() {
+            @Override
+            public void onClickFee(Fee fee) {
+            }
+
             @Override
             public void onClickCustomFee(long currentValue) {
                 showCustomFeeDialog(currentValue);
