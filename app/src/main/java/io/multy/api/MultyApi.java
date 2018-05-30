@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
 
+import io.multy.Multy;
 import io.multy.model.entities.AuthEntity;
 import io.multy.model.entities.TransactionRequestEntity;
 import io.multy.model.entities.UserId;
@@ -33,12 +34,14 @@ import io.multy.model.responses.TestWalletResponse;
 import io.multy.model.responses.TransactionHistoryResponse;
 import io.multy.model.responses.UserAssetsResponse;
 import io.multy.model.responses.WalletsResponse;
-import io.multy.storage.RealmManager;
+import io.multy.storage.SettingsDao;
 import io.multy.util.Constants;
 import io.reactivex.Observable;
+import io.realm.Realm;
 import okhttp3.Authenticator;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okhttp3.Route;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -71,9 +74,11 @@ public enum MultyApi implements MultyApiInterface {
 
                             @Nullable
                             @Override
-                            public Request authenticate(Route route, okhttp3.Response response) throws IOException {
-                                RealmManager.open();
-                                final UserId userIdEntity = RealmManager.getSettingsDao().getUserId();
+                            public Request authenticate(Route route, Response response) throws IOException {
+                                Realm realm = Realm.getInstance(Multy.getRealmConfiguration());
+                                SettingsDao dao = new SettingsDao(realm);
+
+                                final UserId userIdEntity = dao.getUserId();
                                 final String userId = userIdEntity == null ? "" : userIdEntity.getUserId();
                                 final String pushToken = FirebaseInstanceId.getInstance().getToken() == null ? "noPushToken" : FirebaseInstanceId.getInstance().getToken();
 
@@ -83,8 +88,7 @@ public enum MultyApi implements MultyApiInterface {
                                 if (body != null) {
                                     Prefs.putString(Constants.PREF_AUTH, body.getToken());
                                 }
-                                RealmManager.close();
-
+                                realm.close();
                                 return response.request().newBuilder()
                                         .header("Authorization", "Bearer " + Prefs.getString(Constants.PREF_AUTH, ""))
                                         .build();

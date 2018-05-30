@@ -9,6 +9,8 @@ package io.multy.storage;
 import java.util.List;
 import java.util.Objects;
 
+import io.multy.model.entities.wallet.BtcWallet;
+import io.multy.model.entities.wallet.EthWallet;
 import io.multy.model.entities.wallet.RecentAddress;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.entities.wallet.WalletAddress;
@@ -38,6 +40,7 @@ public class AssetsDao {
 
                 Wallet toDelete = getWalletById(wallet.getId());
                 if (toDelete != null) {
+                    //todo there must being removing of all addresse, btcwallets and ethwallets
                     toDelete.deleteFromRealm(); //TODO review this
                 }
 
@@ -59,7 +62,7 @@ public class AssetsDao {
         savedWallet.setBalance(balance);
         savedWallet.setNetworkId(wallet.getNetworkId());
         savedWallet.setCurrencyId(wallet.getCurrencyId());
-
+        savedWallet.setPending(wallet.isPending());
         if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()) {
             savedWallet.setBtcWallet(wallet.getBtcWallet().asRealmObject(realm));
             savedWallet.setBalance(String.valueOf(savedWallet.getBtcWallet().calculateBalance()));
@@ -103,7 +106,12 @@ public class AssetsDao {
     }
 
     public void deleteAll() {
-        realm.executeTransaction(realm -> realm.where(Wallet.class).findAll().deleteAllFromRealm());
+        realm.executeTransaction(realm -> {
+            realm.where(Wallet.class).findAll().deleteAllFromRealm();
+            realm.where(BtcWallet.class).findAll().deleteAllFromRealm();
+            realm.where(EthWallet.class).findAll().deleteAllFromRealm();
+            realm.where(WalletAddress.class).findAll().deleteAllFromRealm();
+        });
     }
 
     public Wallet getWalletById(long id) {
