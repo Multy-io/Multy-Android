@@ -277,4 +277,10 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="receive_wireless">Your request is now broadcasting</string>
+    <string name="share_pure">Share</string>
+    <string name="cancel_broadcasting">Cancel broadcasting</string>
+    <string name="wireless_receive">Wireless receive</string>
+    <string name="receiving">Receiving</string>
+    <string name="magic_receive">Magic Receive</string>
 </resources>

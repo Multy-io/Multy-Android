@@ -22,20 +22,28 @@ import android.support.constraint.ConstraintLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
+import io.multy.api.socket.BlueSocketManager;
+import io.multy.api.socket.TransactionUpdateResponse;
 import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.ui.activities.AssetRequestActivity;
+import io.multy.ui.activities.FastReceiveActivity;
 import io.multy.ui.fragments.AddressesFragment;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.asset.AssetInfoFragment;
+import io.multy.ui.fragments.dialogs.CompleteDialogFragment;
 import io.multy.ui.fragments.dialogs.DonateDialog;
 import io.multy.util.Constants;
 import io.multy.util.DeepLinkShareHelper;
@@ -44,12 +52,18 @@ import io.multy.util.NumberFormatter;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.AssetRequestViewModel;
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
+import timber.log.Timber;
+
+import static io.multy.api.socket.BlueSocketManager.EVENT_TRANSACTION_UPDATE_BTC;
 
 
 public class RequestSummaryFragment extends BaseFragment {
 
     public static final int AMOUNT_CHOOSE_REQUEST = 729;
     public static final int ADDRESS_CHOOSER_REQUEST = 560;
+    public static final int REQUEST_CODE_WIRELESS = 112;
 
     public static RequestSummaryFragment newInstance() {
         return new RequestSummaryFragment();
@@ -75,9 +89,12 @@ public class RequestSummaryFragment extends BaseFragment {
     TextView textWalletName;
     @BindView(R.id.container_wallet)
     ConstraintLayout containerWallet;
+    @BindView(R.id.button_start_broadcast)
+    View buttonBroadcast;
 
     private AssetRequestViewModel viewModel;
     private SharingBroadcastReceiver receiver;
+    private BlueSocketManager socketManager = new BlueSocketManager(); //TODO refactor. shame on me
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -100,9 +117,12 @@ public class RequestSummaryFragment extends BaseFragment {
         return view;
     }
 
+
     @Override
     public void onStart() {
         super.onStart();
+        connectSockets();
+
         if (getActivity() != null) {
             getActivity().registerReceiver(receiver, new IntentFilter());
         }
@@ -113,17 +133,58 @@ public class RequestSummaryFragment extends BaseFragment {
             setBalance();
         }
         generateQR();
+
+        if (viewModel.getWallet().getCurrencyId() != NativeDataHelper.Blockchain.BTC.getValue()) {
+            buttonBroadcast.setVisibility(View.GONE);
+        } else {
+            buttonBroadcast.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
     public void onStop() {
         super.onStop();
+        disconnectSockets();
+
         if (getActivity() != null) {
             try {
                 getActivity().unregisterReceiver(receiver);
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void connectSockets() {
+        socketManager.connect();
+        socketManager.getSocket().on(Socket.EVENT_CONNECT, new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                Timber.i("Connected");
+            }
+        });
+        socketManager.getSocket().on(EVENT_TRANSACTION_UPDATE_BTC, new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                getActivity().runOnUiThread(() -> verifyTransaction(args[0].toString()));
+            }
+        });
+    }
+
+    private void verifyTransaction(String json) {
+        Timber.i("got transaction " + json);
+        TransactionUpdateResponse response = new Gson().fromJson(json, TransactionUpdateResponse.class);
+        if (response != null) {
+            final String address = viewModel.getWallet().getActiveAddress().getAddress();
+            if (response.getEntity().getAddress().equals(address) && response.getEntity().getType() == Constants.TX_MEMPOOL_INCOMING) {
+                CompleteDialogFragment.newInstance(viewModel.getWallet().getCurrencyId()).show(getActivity().getSupportFragmentManager(), "");
+            }
+        }
+    }
+
+    private void disconnectSockets() {
+        if (socketManager.getSocket() != null && socketManager.getSocket().connected()) {
+            socketManager.disconnect();
         }
     }
 
@@ -140,6 +201,8 @@ public class RequestSummaryFragment extends BaseFragment {
             if (data.hasExtra(Constants.EXTRA_ADDRESS)) {
                 viewModel.setAddress(data.getStringExtra(Constants.EXTRA_ADDRESS));
             }
+        } else if (requestCode == REQUEST_CODE_WIRELESS && resultCode == Activity.RESULT_OK) {
+            getActivity().finish();
         }
     }
 
@@ -149,9 +212,9 @@ public class RequestSummaryFragment extends BaseFragment {
         progressBar.setVisibility(View.VISIBLE);
         viewModel.generateQr(strQr, getResources().getColor(android.R.color.black),
                 getResources().getColor(android.R.color.white), bitmap -> {
-            imageQr.setImageBitmap(bitmap);
-            progressBar.setVisibility(View.GONE);
-            }, throwable -> viewModel.errorMessage.setValue(throwable.getLocalizedMessage()));
+                    imageQr.setImageBitmap(bitmap);
+                    progressBar.setVisibility(View.GONE);
+                }, throwable -> viewModel.errorMessage.setValue(throwable.getLocalizedMessage()));
     }
 
     private void setBalance() {
@@ -203,7 +266,7 @@ public class RequestSummaryFragment extends BaseFragment {
     void onClickRequestAmount() {
         Analytics.getInstance(getActivity()).logReceiveSummary(AnalyticsConstants.RECEIVE_SUMMARY_REQUEST_SUM, viewModel.getChainId());
         if (getActivity() instanceof AssetRequestActivity) {
-            AmountChooserFragment fragment =  AmountChooserFragment.newInstance();
+            AmountChooserFragment fragment = AmountChooserFragment.newInstance();
             fragment.setTargetFragment(this, AMOUNT_CHOOSE_REQUEST);
             ((AssetRequestActivity) getActivity()).setFragment(R.string.receive_amount, fragment);
         }
@@ -274,6 +337,20 @@ public class RequestSummaryFragment extends BaseFragment {
                 String packageName = component.substring(component.indexOf("{") + 1, component.indexOf("/"));
                 Analytics.getInstance(context).logWalletSharing(intent.getIntExtra(context.getString(R.string.chain_id), 1), packageName);
             }
+        }
+    }
+
+    @OnClick(R.id.button_start_broadcast)
+    public void onStartBroadcast() {
+        if (viewModel.getAmount() == 0) {
+            Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.shake);
+            animation.setFillAfter(false);
+            textRequestAmount.startAnimation(animation);
+        } else {
+            Intent intent = new Intent(getActivity(), FastReceiveActivity.class);
+            intent.putExtra(Constants.EXTRA_WALLET_ID, viewModel.getWallet().getId());
+            intent.putExtra(Constants.EXTRA_AMOUNT, viewModel.getAmount());
+            startActivityForResult(intent, REQUEST_CODE_WIRELESS);
         }
     }
 }

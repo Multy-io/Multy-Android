@@ -7,6 +7,7 @@
 <resources>
     <color name="colorPrimary">#FF00B2FF</color>
     <color name="colorPrimaryDark">#FF007AFF</color>
+    <color name="colorPrimaryDarkest">#005fc6</color>
     <color name="colorAccent">#FF516874</color>
     <color name="gray">#FF516874</color>
     <color name="gray_dark">#363636</color>

@@ -8,20 +8,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="io.multy">
 
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.USE_FINGERPRINT" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:name=".Multy"
-        tools:replace="android:allowBackup"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher_app"
         android:label="@string/app_name"
         android:resizeableActivity="false"
         android:roundIcon="@mipmap/ic_launcher_app_round"
         android:theme="@style/AppTheme"
-        tools:ignore="UnusedAttribute">
+        tools:ignore="UnusedAttribute"
+        tools:replace="android:allowBackup">
 
         <activity
             android:name=".ui.activities.SplashActivity"
@@ -99,6 +103,14 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activities.DonationActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.activities.TestOperationsActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.activities.FastReceiveActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
 

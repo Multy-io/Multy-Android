@@ -83,6 +83,7 @@
     <TextView
         android:id="@+id/button_scan_wireless"
         style="@style/SendShareButton"
+        android:visibility="gone"
         android:drawablePadding="8dp"
         android:drawableTop="@drawable/ic_donation_icon_smallest"
         android:paddingTop="18dp"
