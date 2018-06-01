@@ -26,7 +26,9 @@ import io.multy.model.entities.wallet.WalletRealmObject;
 import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetRequestActivity;
 import io.multy.ui.activities.AssetSendActivity;
+import io.multy.ui.activities.FastReceiveActivity;
 import io.multy.ui.activities.MainActivity;
+import io.multy.ui.activities.TestOperationsActivity;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.AnimationUtils;
 import io.multy.util.Constants;
@@ -106,7 +108,8 @@ public class FastOperationsFragment extends BaseFragment {
     void onSendClick() {
         Analytics.getInstance(getActivity()).logFastOperations(AnalyticsConstants.FAST_OPERATIONS_SEND);
         if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED) && isWalletsAvailable()) {
-            startActivity(new Intent(getContext(), AssetSendActivity.class));
+//            startActivity(new Intent(getContext(), AssetSendActivity.class));
+            startActivity(new Intent(getActivity(), TestOperationsActivity.class));
         } else {
             Toast.makeText(getActivity(), "Please, create wallet", Toast.LENGTH_SHORT).show();
         }

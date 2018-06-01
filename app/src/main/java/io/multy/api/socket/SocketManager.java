@@ -31,13 +31,15 @@ public class SocketManager {
     public static final String TAG = SocketManager.class.getSimpleName();
     private static final String DEVICE_TYPE = "Android";
 
-    private static final String SOCKET_URL = "https://api.multy.io/";
+    private static final String SOCKET_URL = Constants.BASE_URL;
     private static final String HEADER_AUTH = "jwtToken";
     private static final String HEADER_DEVICE_TYPE = "deviceType";
     private static final String HEADER_USER_ID = "userId";
     private static final String EVENT_RECEIVE = "TransactionUpdate";
+    @Deprecated
     private static final String EVENT_RECEIVE_DEPRECATED = "btcTransactionUpdate";
-    private static final String EVENT_EXCHANGE_RESPONSE = "exchangePoloniex";
+//    private static final String EVENT_EXCHANGE_RESPONSE = "exchangePoloniex";
+    private static final String EVENT_EXCHANGE_RESPONSE = "exchangeGdax";
 
     private Socket socket;
     private Gson gson;

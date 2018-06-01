@@ -7,6 +7,7 @@
 package io.multy.util;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 
@@ -95,6 +96,17 @@ public class CryptoFormatUtils {
         return FORMAT_USD.format(btc * price);
     }
 
+    public static String usdToBtc(double usd) {
+        String result = "0.0";
+
+        final CurrenciesRate currenciesRate = RealmManager.getSettingsDao().getCurrenciesRate();
+        if (currenciesRate != null && usd != 0) {
+            result = FORMAT_BTC.format(usd / currenciesRate.getBtcToUsd());
+        }
+
+        return result;
+    }
+
     public static long btcToSatoshi(String btc) {
         try {
             return (long) (Double.parseDouble(btc) * Math.pow(10, 8));
@@ -111,7 +123,7 @@ public class CryptoFormatUtils {
         return wei.equals("0") ? 0 : (Long.valueOf(wei) / (EthWallet.DIVISOR_GWEI).doubleValue());
     }
 
-    public static String wetToEthLabel(String wei) {
+    public static String weiToEthLabel(String wei) {
         return wei.equals("0") ? "0" : new BigDecimal(wei).divide(EthWallet.DIVISOR).doubleValue() + " ETH";
     }
 
@@ -147,6 +159,10 @@ public class CryptoFormatUtils {
         }
 
         return result;
+    }
+
+    public static String weiToUsd(BigInteger wei) {
+        return ethToUsd(weiToEth(wei.toString()));
     }
 
     private static DecimalFormatSymbols getSymbols() {

@@ -16,11 +16,20 @@ public class HdTransactionRequestEntity {
     private int networkId;
     @SerializedName("payload")
     private Payload payload;
+    @SerializedName("JWT")
+    private String jwtToken;
 
     public HdTransactionRequestEntity(int currencyId, int networkId, Payload payload) {
         this.currencyId = currencyId;
         this.networkId = networkId;
         this.payload = payload;
+    }
+
+    public HdTransactionRequestEntity(int currencyId, int networkId, Payload payload, String jwtToken) {
+        this.currencyId = currencyId;
+        this.networkId = networkId;
+        this.payload = payload;
+        this.jwtToken = jwtToken;
     }
 
     public static class Payload {

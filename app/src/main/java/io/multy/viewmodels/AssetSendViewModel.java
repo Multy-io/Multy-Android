@@ -223,6 +223,7 @@ public class AssetSendViewModel extends BaseViewModel {
     }
 
     /**
+     * Do not touch this
      * this method will be called from JNI automatically while makeTransaction is processing
      *
      * @param amount transactionPrice.

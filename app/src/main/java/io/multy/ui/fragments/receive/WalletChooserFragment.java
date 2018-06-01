@@ -88,7 +88,6 @@ public class WalletChooserFragment extends BaseFragment implements MyWalletsAdap
             adapter = new MyWalletsAdapter(this, viewModel.getWalletsDB());
         }
         recyclerView.setAdapter(adapter);
-
     }
 
 }

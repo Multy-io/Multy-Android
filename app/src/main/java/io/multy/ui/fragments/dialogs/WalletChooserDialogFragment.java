@@ -92,8 +92,9 @@ public class WalletChooserDialogFragment extends DialogFragment {
         for (Wallet walletRealmObject : RealmManager.getAssetsDao().getWallets()) {
             if (walletRealmObject.isPayable() &&
                     Long.valueOf(walletRealmObject.getAvailableBalance()) > 150 &&
-                    walletRealmObject.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue() &&
-                    walletRealmObject.getNetworkId() == NativeDataHelper.NetworkId.MAIN_NET.getValue()) {
+                    walletRealmObject.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()
+//                    && walletRealmObject.getNetworkId() == NativeDataHelper.NetworkId.MAIN_NET.getValue()
+                    ) {
                 wallets.add(walletRealmObject);
             }
         }

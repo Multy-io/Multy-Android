@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.util.Base64;
+import android.util.Log;
 
 import com.samwolfand.oneprefs.Prefs;
 import com.tozny.crypto.android.AesCbcWithIntegrity;

@@ -220,20 +220,21 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
     @OnClick(R.id.fast_operations)
     void onFastOperationsClick(final View v) {
         Analytics.getInstance(this).logMain(AnalyticsConstants.MAIN_FAST_OPERATIONS);
-        v.setEnabled(false);
-        v.postDelayed(() -> v.setEnabled(true), AnimationUtils.DURATION_MEDIUM * 2);
-        Fragment fastOperationsFragment = getSupportFragmentManager().findFragmentByTag(FastOperationsFragment.TAG);
-
-        if (fastOperationsFragment == null) {
-            fastOperationsFragment = FastOperationsFragment.newInstance(
-                    (int) buttonOperations.getX() + buttonOperations.getWidth() / 2,
-                    (int) buttonOperations.getY() + buttonOperations.getHeight() / 2);
-        }
-
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.full_container, fastOperationsFragment, FastOperationsFragment.TAG)
-                .addToBackStack(FastOperationsFragment.TAG)
-                .commit();
+        startActivity(new Intent(this, TestOperationsActivity.class));
+//        v.setEnabled(false);
+//        v.postDelayed(() -> v.setEnabled(true), AnimationUtils.DURATION_MEDIUM * 2);
+//        Fragment fastOperationsFragment = getSupportFragmentManager().findFragmentByTag(FastOperationsFragment.TAG);
+//
+//        if (fastOperationsFragment == null) {
+//            fastOperationsFragment = FastOperationsFragment.newInstance(
+//                    (int) buttonOperations.getX() + buttonOperations.getWidth() / 2,
+//                    (int) buttonOperations.getY() + buttonOperations.getHeight() / 2);
+//        }
+//
+//        getSupportFragmentManager().beginTransaction()
+//                .replace(R.id.full_container, fastOperationsFragment, FastOperationsFragment.TAG)
+//                .addToBackStack(FastOperationsFragment.TAG)
+//                .commit();
     }
 
     public void showScanScreen() {

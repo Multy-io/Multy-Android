@@ -1,0 +1,20 @@
+<!--
+  ~ Copyright 2018 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<vector android:height="24dp" android:viewportHeight="150"
+    android:viewportWidth="150" android:width="24dp" xmlns:android="http://schemas.android.com/apk/res/android">
+    <group>
+        <clip-path android:pathData="M75,75m-75,0a75,75 0,1 1,150 0a75,75 0,1 1,-150 0 M 0,0"/>
+        <path android:fillColor="#0ba4a4" android:pathData="M116.0,34.0l1.0,83.0l33.0,33.0l0.0,-150.0l-34.0,34.0z"/>
+        <path android:fillColor="#3f3735" android:pathData="M0.0,0.0l0.0,150.0l33.0,-33.0l1.0,-83.0l-34.0,-34.0z"/>
+        <path android:fillColor="#edcb3b" android:pathData="M116.0,34.0l34.0,-34.0l-150.0,0.0l34.0,34.0l82.0,0.0z"/>
+        <path android:fillColor="#dab252" android:pathData="M117.0,117.0l-84.0,0.0l-33.0,33.0l150.0,0.0l-33.0,-33.0z"/>
+        <path android:fillColor="#0ba4a4" android:pathData="M34.0,34.0l41.0,41.0l-42.0,42.0l1.0,-83.0z"/>
+        <path android:fillColor="#dab252" android:pathData="M116.0,34.0l-41.0,41.0l-41.0,-41.0l82.0,0.0z"/>
+        <path android:fillColor="#3f3735" android:pathData="M117.0,117.0l-42.0,-42.0l41.0,-41.0l1.0,83.0z"/>
+        <path android:fillColor="#edcb3b" android:pathData="M33.0,117.0l42.0,-42.0l42.0,42.0l-84.0,0.0z"/>
+    </group>
+</vector>

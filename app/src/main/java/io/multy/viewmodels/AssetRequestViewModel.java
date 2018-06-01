@@ -36,7 +36,7 @@ import retrofit2.Response;
 public class AssetRequestViewModel extends BaseViewModel {
 
     private Wallet wallet;
-    private double amount;
+    private double amount = 0;
     private MutableLiveData<String> address = new MutableLiveData<>();
     private MutableLiveData<Wallet> walletLive = new MutableLiveData<>();
 

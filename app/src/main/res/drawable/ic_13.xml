@@ -1,0 +1,19 @@
+<!--
+  ~ Copyright 2018 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<vector android:height="24dp" android:viewportHeight="150"
+    android:viewportWidth="150" android:width="24dp" xmlns:android="http://schemas.android.com/apk/res/android">
+    <group>
+        <clip-path android:pathData="M75,75m-75,0a75,75 0,1 1,150 0a75,75 0,1 1,-150 0 M 0,0"/>
+        <path android:fillColor="#33a892" android:pathData="M75.0,75.0l75.0,0.0l0.0,-75.0l-75.0,75.0z"/>
+        <path android:fillColor="#f3edd3" android:pathData="M75.0,75.0h75.0v75.0h-75.0z"/>
+        <path android:fillColor="#5dd0ac" android:pathData="M150.0,0.0l-75.0,0.0l0.0,75.0l75.0,-75.0z"/>
+        <path android:fillColor="#ffbd6f" android:pathData="M0.0,0.0l75.0,75.0l0.0,75.0l-75.0,-75.0l0.0,-75.0z"/>
+        <path android:fillColor="#f3edd3" android:pathData="M0.0,0.0l75.0,0.0l0.0,75.0l-75.0,-75.0z"/>
+        <path android:fillColor="#f3edd3" android:pathData="M0.0,75.0l75.0,75.0l-75.0,0.0l0.0,-75.0z"/>
+        <path android:fillColor="#0d4567" android:pathData="M75,75v75a37.5,37.5,0,0,0,0,-75Z"/>
+    </group>
+</vector>

@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2018 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_vertical_blue">
+
+    <TextView
+        android:id="@+id/text_receivers"
+        android:textColor="@color/white"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:textColor="@color/white"
+        app:layout_constraintRight_toRightOf="parent"
+        android:id="@+id/text_bt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/animation_view"
+        android:layout_width="match_parent"
+        android:layout_height="320dp"
+        app:layout_constraintVertical_bias="0.25"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:lottie_autoPlay="true"
+        app:lottie_fileName="sonar.json"
+        app:lottie_loop="true" />
+
+    <TextView
+        android:id="@+id/text_scanning"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:alpha="0.9"
+        android:gravity="center"
+        android:text="Scanning"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="@id/animation_view"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/animation_view" />
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pager_requests"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_marginBottom="80dp"
+        android:clipToPadding="false"
+        android:paddingLeft="80dp"
+        android:paddingRight="80dp"
+        app:layout_constraintBottom_toBottomOf="@id/animation_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/animation_view" />
+
+    <ImageView
+        android:id="@+id/image_coin"
+        android:layout_width="wrap_content"
+        android:layout_height="18dp"
+        android:layout_marginBottom="-25dp"
+        android:src="@drawable/ic_btc_half"
+        app:layout_constraintBottom_toTopOf="@id/pager_wallets"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pager_wallets"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/list_item_height"
+        android:layout_marginBottom="16dp"
+        android:clipToPadding="false"
+        android:paddingLeft="56dp"
+        android:paddingRight="56dp"
+        app:layout_constraintBottom_toTopOf="@id/button_cancel" />
+
+
+    <ImageButton
+        android:id="@+id/button_cancel"
+        android:layout_width="54dp"
+        android:layout_height="54dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/shape_circle_white"
+        android:clickable="true"
+        android:elevation="4dp"
+        android:focusable="true"
+        android:src="@drawable/ic_cancel_blue"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/button_qr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:padding="10dp"
+        android:src="@drawable/ic_qr"
+        android:tint="@color/white"
+        app:layout_constraintBottom_toBottomOf="@id/button_cancel"
+        app:layout_constraintHorizontal_bias="0.4"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="@id/button_cancel"
+        app:layout_constraintTop_toTopOf="@id/button_cancel" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/container_send"
+        android:layout_width="100dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="2dp"
+        android:background="@drawable/shape_white_rounded"
+        android:foreground="?android:attr/selectableItemBackground"
+        app:layout_constraintBottom_toTopOf="@id/image_coin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/text_send_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0.1 BTC"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toTopOf="@+id/text_send_amount_fiat"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <TextView
+            android:id="@+id/text_send_amount_fiat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="500 USD"
+            android:textColor="@color/gray"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_send_amount" />
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.Group
+        android:id="@+id/group_send"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        app:constraint_referenced_ids="image_coin, container_send" />
+
+</android.support.constraint.ConstraintLayout>

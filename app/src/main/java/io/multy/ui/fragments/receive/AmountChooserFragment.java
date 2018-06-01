@@ -32,6 +32,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.ui.activities.BaseActivity;
+import io.multy.ui.activities.FastReceiveActivity;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
 import io.multy.util.NumberFormatter;
@@ -286,11 +287,11 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
                         stringBuilder.append(amount.substring(0, start));
                         stringBuilder.append(amount.substring(start + count, amount.length()));
                         input.setText(stringBuilder.toString());
-                    if (start <= input.getText().length()) {
-                        input.setSelection(start);
-                    } else {
-                        input.setSelection(input.getText().length());
-                    }
+                        if (start <= input.getText().length()) {
+                            input.setSelection(start);
+                        } else {
+                            input.setSelection(input.getText().length());
+                        }
                     } else {
                         input.setText(amount.substring(0, amount.length() - 1));
                         input.setSelection(input.getText().length());
@@ -326,7 +327,7 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
 
     private void requestFocusForInput() {
         inputOriginal.requestFocus();
-        inputOriginal.postDelayed(() -> showKeyboard(getActivity(), inputOriginal),300);
+        inputOriginal.postDelayed(() -> showKeyboard(getActivity(), inputOriginal), 300);
     }
 
     @OnClick(R.id.image_swap)
@@ -344,10 +345,15 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
         if (!TextUtils.isEmpty(inputOriginal.getText())) {
             amount = Double.valueOf(inputOriginal.getText().toString());
         }
-        if (getActivity() != null && getTargetFragment() != null) {
-            Intent data = new Intent().putExtra(Constants.EXTRA_AMOUNT, amount);
-            getTargetFragment().onActivityResult(RequestSummaryFragment.AMOUNT_CHOOSE_REQUEST, RESULT_OK, data);
+        if (getActivity() != null && getActivity() instanceof FastReceiveActivity) {
+            viewModel.setAmount(amount);
             getActivity().onBackPressed();
+        } else {
+            if (getActivity() != null && getTargetFragment() != null) {
+                Intent data = new Intent().putExtra(Constants.EXTRA_AMOUNT, amount);
+                getTargetFragment().onActivityResult(RequestSummaryFragment.AMOUNT_CHOOSE_REQUEST, RESULT_OK, data);
+                getActivity().onBackPressed();
+            }
         }
     }
 

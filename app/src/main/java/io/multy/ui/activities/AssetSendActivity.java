@@ -86,6 +86,7 @@ public class AssetSendActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
+        //TODO WTF is that. fragment backstack, nah?
         logCancel();
         if (getSupportFragmentManager().getBackStackEntryCount() >= 1) {
             List<Fragment> backStackFragments = getSupportFragmentManager().getFragments();
@@ -171,8 +172,7 @@ public class AssetSendActivity extends BaseActivity {
 //    }
 
     public void showScanScreen() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, Constants.CAMERA_REQUEST_CODE);
         } else {
             startActivityForResult(new Intent(this, ScanActivity.class), Constants.CAMERA_REQUEST_CODE);

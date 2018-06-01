@@ -9,6 +9,7 @@ package io.multy.storage;
 import java.util.List;
 import java.util.Objects;
 
+import io.multy.model.entities.Output;
 import io.multy.model.entities.wallet.BtcWallet;
 import io.multy.model.entities.wallet.EthWallet;
 import io.multy.model.entities.wallet.RecentAddress;
@@ -42,6 +43,25 @@ public class AssetsDao {
                 if (toDelete != null) {
                     //todo there must being removing of all addresse, btcwallets and ethwallets
                     toDelete.deleteFromRealm(); //TODO review this
+                    //realm is not deleting inner object. do it manually
+                    if (toDelete.getAddresses() != null) {
+                        for (WalletAddress walletAddress : toDelete.getAddresses()) {
+                            if (walletAddress.getOutputs() != null) {
+                                for (Output output : walletAddress.getOutputs()) {
+                                    output.deleteFromRealm();
+                                }
+                            }
+                            walletAddress.deleteFromRealm();
+                        }
+
+                        if (toDelete.getBtcWallet() != null) {
+                            toDelete.getBtcWallet().deleteFromRealm();
+                        }
+                        if (toDelete.getEthWallet() != null) {
+                            toDelete.getEthWallet().deleteFromRealm();
+                        }
+                    }
+                    toDelete.deleteFromRealm();
                 }
 
                 saveSingleWallet(wallet);
@@ -82,6 +102,23 @@ public class AssetsDao {
 
     public RealmResults<Wallet> getWallets() {
         return realm.where(Wallet.class).sort("lastActionTime", Sort.DESCENDING).findAll();
+    }
+
+    public RealmResults<Wallet> getAvailableWallets() {
+        return realm.where(Wallet.class).notEqualTo("availableBalance", "0").sort("lastActionTime", Sort.ASCENDING).findAll();
+    }
+
+    public RealmResults<Wallet> getAvailableWallets(int currencyId, int networkId) {
+        return realm.where(Wallet.class)
+                .equalTo("networkId", networkId)
+                .equalTo("currencyId", currencyId)
+                .notEqualTo("availableBalance", "0")
+                .sort("lastActionTime", Sort.ASCENDING)
+                .findAll();
+    }
+
+    public RealmResults<Wallet> getAvailableBtcWallets() {
+        return realm.where(Wallet.class).equalTo("currencyId", NativeDataHelper.Blockchain.BTC.getValue()).notEqualTo("availableBalance", "0").sort("lastActionTime", Sort.ASCENDING).findAll();
     }
 
     public RealmResults<Wallet> getWallets(int blockChainId) {

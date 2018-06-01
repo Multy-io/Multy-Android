@@ -147,6 +147,81 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
         }
     }
 
+    /**
+     * Convert currency (BTC, ETH...) to fiat amount
+     *
+     * @param amount currency amount
+     * @return
+     */
+    public String toFiatAmountLabel(BigDecimal amount) {
+        RealmManager.open();
+        CurrenciesRate currenciesRate = RealmManager.getSettingsDao().getCurrenciesRate();
+        //TODO support different fiat currencies here
+        switch (NativeDataHelper.Blockchain.valueOf(currencyId)) {
+            case BTC:
+                return String.valueOf(NumberFormatter.getFiatInstance().format(amount.doubleValue() * currenciesRate.getBtcToUsd()) + getFiatString()); //convert from satoshi
+            case ETH:
+                return String.valueOf(NumberFormatter.getFiatInstance().format(amount.multiply(new BigDecimal(currenciesRate.getEthToUsd()))) + getFiatString()); //convert from wei
+            default:
+                return "unsupported";
+        }
+    }
+
+    public String toCurrencyAmountLabel(String amount) {
+        //TODO support different fiat currencies here
+        double fiat;
+        try {
+            fiat = Double.parseDouble(amount);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            return "";
+        }
+
+        switch (NativeDataHelper.Blockchain.valueOf(currencyId)) {
+            case BTC:
+                return CryptoFormatUtils.usdToBtc(fiat);
+            case ETH:
+                return CryptoFormatUtils.usdToEth(fiat);
+            default:
+                return "unsupported";
+        }
+    }
+
+    /**
+     * Convert currency coin (wei, satoshi...) to fiat amount
+     *
+     * @param amount currency amount
+     * @return
+     */
+    public String coinToFiatAmountLabel(BigInteger amount) {
+        //TODO support different fiat currencies here
+        switch (NativeDataHelper.Blockchain.valueOf(currencyId)) {
+            case BTC:
+                return CryptoFormatUtils.satoshiToUsd(amount.longValue());
+            case ETH:
+                return CryptoFormatUtils.weiToUsd(amount);
+            default:
+                return "unsupported";
+        }
+    }
+
+    /**
+     * Convert currency coin (wei, satoshi) to currency (ETH, BTC)
+     *
+     * @param amount
+     * @return
+     */
+    public String coinToCurrencyAmountLabel(BigInteger amount) {
+        switch (NativeDataHelper.Blockchain.valueOf(currencyId)) {
+            case BTC:
+                return CryptoFormatUtils.satoshiToBtcLabel(amount.longValue());
+            case ETH:
+                return CryptoFormatUtils.weiToEthLabel(amount.toString());
+            default:
+                return "unsupported";
+        }
+    }
+
     @Override
     public int getIconResourceId() {
         switch (NativeDataHelper.Blockchain.valueOf(currencyId)) {
@@ -356,7 +431,7 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
                 result = CryptoFormatUtils.satoshiToBtcLabel(address.getAmount());
                 break;
             case ETH:
-                result = CryptoFormatUtils.wetToEthLabel(address.getAmountString());
+                result = CryptoFormatUtils.weiToEthLabel(address.getAmountString());
                 break;
         }
         return result;
