@@ -90,8 +90,7 @@ public class SocketManager {
                 });
             });
 
-            socket
-                    .on(Socket.EVENT_CONNECT_ERROR, args -> ((Exception) args[0]).printStackTrace())
+            socket.on(Socket.EVENT_CONNECT_ERROR, args -> ((Exception) args[0]).printStackTrace())
                     .on(Socket.EVENT_CONNECT_TIMEOUT, args -> log("connection timeout"))
                     .on(Socket.EVENT_CONNECT, args -> log("Connected"))
                     .on(EVENT_EXCHANGE_RESPONSE, args -> {
@@ -107,13 +106,13 @@ public class SocketManager {
                             e.printStackTrace();
                         }
                     }).on(EVENT_RECEIVE_DEPRECATED, args -> {
-                try {
-                    Timber.i("UPDATE " + String.valueOf(args[0]));
-                    transactionUpdateEntity.postValue(gson.fromJson(String.valueOf(args[0]), TransactionUpdateResponse.class).getEntity());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
+                        try {
+                            Timber.i("UPDATE " + String.valueOf(args[0]));
+                            transactionUpdateEntity.postValue(gson.fromJson(String.valueOf(args[0]), TransactionUpdateResponse.class).getEntity());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
             socket.connect();
         } catch (URISyntaxException e) {
             e.printStackTrace();

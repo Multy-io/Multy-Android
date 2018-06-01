@@ -91,8 +91,8 @@ public class SettingsDao {
         return realm.where(ByteSeed.class).findFirst();
     }
 
-    public void saveCurrenciesRate(CurrenciesRate currenciesRate) {
-        realm.executeTransaction(realm -> realm.insertOrUpdate(currenciesRate));
+    public void saveCurrenciesRate(CurrenciesRate currenciesRate, Realm.Transaction.OnSuccess onSuccess) {
+        realm.executeTransactionAsync(realm -> realm.insertOrUpdate(currenciesRate), onSuccess);
     }
 
     @Nullable
