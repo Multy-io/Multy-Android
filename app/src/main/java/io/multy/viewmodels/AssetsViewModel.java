@@ -46,10 +46,10 @@ public class AssetsViewModel extends BaseViewModel implements LifecycleObserver 
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     void onCreate() {
-        if (socketManager != null) {
+        if (socketManager == null) {
             socketManager = new SocketManager();
-            socketManager.connect(rates, transactionUpdate);
         }
+        socketManager.connect(rates, transactionUpdate);
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)

@@ -8,7 +8,6 @@ package io.multy.ui.activities;
 
 import android.Manifest;
 import android.annotation.TargetApi;
-import android.arch.lifecycle.ViewModelProviders;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
@@ -36,7 +35,6 @@ import android.view.animation.AnticipateOvershootInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.samwolfand.oneprefs.Prefs;
@@ -50,7 +48,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import butterknife.BindInt;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -66,10 +63,8 @@ import io.multy.ui.fragments.dialogs.CompleteDialogFragment;
 import io.multy.util.Constants;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
-import io.multy.viewmodels.AssetSendViewModel;
 import io.socket.client.Ack;
 import io.socket.client.Socket;
-import io.socket.emitter.Emitter;
 import timber.log.Timber;
 
 import static io.multy.api.socket.BlueSocketManager.EVENT_SENDER_CHECK;
@@ -330,7 +325,7 @@ public class TestOperationsActivity extends BaseActivity {
 
     private void showError() {
         AlertDialog dialog = new AlertDialog.Builder(TestOperationsActivity.this)
-                .setTitle("Error sending transaction.")
+                .setTitle(getString(R.string.error_sending_tx))
                 .setPositiveButton(R.string.ok, (dialog1, which) -> dialog1.dismiss())
                 .setCancelable(false)
                 .create();
@@ -505,7 +500,7 @@ public class TestOperationsActivity extends BaseActivity {
 
         if (permissionsList.size() > 0) {
             if (permissionsNeeded.size() > 0) {
-                String message = "We need permissions to access finding nearby devices. We don't use your location." + permissionsNeeded.get(0);
+                String message = getString(R.string.permissions_for_access_nearby_devices);
                 showDialog(message,
                         (dialog, which) -> requestPermissions(permissionsList.toArray(new String[permissionsList.size()]), REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS));
                 return;
@@ -521,8 +516,8 @@ public class TestOperationsActivity extends BaseActivity {
     private void showDialog(String message, DialogInterface.OnClickListener okListener) {
         new AlertDialog.Builder(this)
                 .setMessage(message)
-                .setPositiveButton("OK", okListener)
-                .setNegativeButton("Cancel", null)
+                .setPositiveButton(getString(R.string.yes), okListener)
+                .setNegativeButton(getString(R.string.cancel), null)
                 .create()
                 .show();
     }

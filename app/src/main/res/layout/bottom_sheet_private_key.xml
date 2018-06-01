@@ -34,7 +34,7 @@
         android:gravity="center_horizontal"
         android:paddingBottom="8dp"
         android:paddingTop="41dp"
-        android:text="@string/btc_address"
+        android:text="@string/pay_attention"
         android:textColor="@color/white"
         android:textSize="16sp"
         android:letterSpacing="-0.02"

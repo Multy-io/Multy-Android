@@ -13,15 +13,12 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.text.TextUtils;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.webkit.WebView;
 import android.widget.Button;
-import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -77,7 +74,7 @@ public class TermsDialogFragment extends DialogFragment {
 
     private void setupWebView() {
         webView.setEnabled(false);
-        webView.loadUrl("https://raw.githubusercontent.com/wiki/Appscrunch/Multy/Legal:-Terms-of-service.md");
+        webView.loadUrl(getString(R.string.terms_url));
     }
 
     private void showPrivacy() {

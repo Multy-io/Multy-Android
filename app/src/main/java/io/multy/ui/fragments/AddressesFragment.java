@@ -165,7 +165,7 @@ public class AddressesFragment extends BaseFragment {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     if (response.isSuccessful()) {
-                        Toast.makeText(getActivity(), "Address has been added", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), R.string.address_added, Toast.LENGTH_SHORT).show();
                         refreshWallet();
                     }
                 }

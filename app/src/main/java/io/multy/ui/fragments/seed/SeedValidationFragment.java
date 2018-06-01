@@ -108,10 +108,9 @@ public class SeedValidationFragment extends BaseSeedFragment {
             phrase.setLength(0);
             textViewTitle.setText(R.string.restore_multy);
             refreshCounter();
-
-            inputWord.requestFocus();
-            inputWord.postDelayed(this::showKeyboard, 300);
         }
+        inputWord.requestFocus();
+        inputWord.postDelayed(this::showKeyboard, 300);
 
         init();
         return convertView;
@@ -192,7 +191,7 @@ public class SeedValidationFragment extends BaseSeedFragment {
     }
 
     private void refreshCounter() {
-        textViewCounter.setText(String.format("%d of %d", count, maxCount));
+        textViewCounter.setText(String.format(getString(R.string.count_of), count, maxCount));
     }
 
     @OnEditorAction(R.id.input_word)

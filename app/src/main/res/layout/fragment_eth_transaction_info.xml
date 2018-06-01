@@ -295,7 +295,7 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center"
-                android:text="@string/view_in_etherscan"
+                android:text="@string/view_in_blockchain"
                 android:textAlignment="center"
                 android:textColor="@color/blue_light"
                 android:textSize="15sp"

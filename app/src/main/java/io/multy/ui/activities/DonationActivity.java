@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.samwolfand.oneprefs.Prefs;
@@ -37,7 +36,7 @@ public class DonationActivity extends BaseActivity {
 
     public static void showDonation(Context context, int donationCode) {
         if (!Prefs.getBoolean(Constants.PREF_APP_INITIALIZED, false)) {
-            Toast.makeText(context, "You are have no wallets, let's make the first wallet!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, R.string.you_are_have_no_wallets, Toast.LENGTH_SHORT).show();
             return;
         }
 

@@ -10,6 +10,8 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 
+import io.multy.Multy;
+import io.multy.R;
 import io.multy.model.entities.Fee;
 
 public class FeeRateResponse {
@@ -56,22 +58,22 @@ public class FeeRateResponse {
 
         public ArrayList<Fee> asList() {
             ArrayList<Fee> result = new ArrayList<>();
-            result.add(new Fee("Very Fast", veryFast, 6, "10 min"));
-            result.add(new Fee("Fast", fast, 10, "6 hours"));
-            result.add(new Fee("Medium", medium, 20, "5 days"));
-            result.add(new Fee("Slow", slow, 50, "1 week"));
-            result.add(new Fee("Very Slow", verySlow, 70, "2 weeks"));
-            result.add(new Fee("Custom", -1, -1, ""));
+            result.add(new Fee(Multy.getContext().getString(R.string.fee_very_fast), veryFast, 6, Multy.getContext().getString(R.string.ten_minutes)));
+            result.add(new Fee(Multy.getContext().getString(R.string.fee_fast), fast, 10, Multy.getContext().getString(R.string.six_hours)));
+            result.add(new Fee(Multy.getContext().getString(R.string.fee_medium), medium, 20, Multy.getContext().getString(R.string.five_days)));
+            result.add(new Fee(Multy.getContext().getString(R.string.fee_slow), slow, 50, Multy.getContext().getString(R.string.one_week)));
+            result.add(new Fee(Multy.getContext().getString(R.string.fee_very_slow), verySlow, 70, Multy.getContext().getString(R.string.two_weeks)));
+            result.add(new Fee(Multy.getContext().getString(R.string.fee_custom), -1, -1, ""));
             return result;
         }
 
         public ArrayList<Fee> asListDonation() {
             ArrayList<Fee> result = new ArrayList<>();
-            final Fee selectedFee = new Fee("Medium", medium, 20, "5 days");
+            final Fee selectedFee = new Fee(Multy.getContext().getString(R.string.fee_medium), medium, 20, "5 days");
             selectedFee.setSelected(true);
             result.add(selectedFee);
-            result.add(new Fee("Very Slow", verySlow, 70, "2 weeks"));
-            result.add(new Fee("Custom", -1, -1, ""));
+            result.add(new Fee(Multy.getContext().getString(R.string.fee_very_slow), verySlow, 70, "2 weeks"));
+            result.add(new Fee(Multy.getContext().getString(R.string.fee_custom), -1, -1, ""));
             return result;
         }
     }

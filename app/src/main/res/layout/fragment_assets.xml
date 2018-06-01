@@ -269,12 +269,14 @@
                     android:id="@+id/group_multy_logo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    tools:visibility="visible"
                     app:constraint_referenced_ids="logo_title,logo" />
 
                 <android.support.constraint.Group
                     android:id="@+id/group_portfolio"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    tools:visibility="visible"
                     app:constraint_referenced_ids="view_pager,image_dot_chart,image_dot_portfolio" />
 
             </android.support.constraint.ConstraintLayout>

@@ -76,7 +76,7 @@
 
             <TextView
                 android:id="@+id/text_available"
-                android:text="@string/avaliable"
+                android:text="@string/available"
                 android:letterSpacing="-0.02"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -111,6 +111,7 @@
                 android:id="@+id/text_soon"
                 style="@style/ChooseChainText"
                 android:text="@string/soon"
+                android:textColor="@color/red_warn"
                 android:letterSpacing="-0.02"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

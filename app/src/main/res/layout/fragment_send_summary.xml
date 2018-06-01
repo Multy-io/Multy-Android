@@ -76,7 +76,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:letterSpacing="-0.02"
-                android:text="To:"
+                android:text="@string/to_"
                 android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                 android:textColor="@color/text_main"
                 android:textSize="12sp"

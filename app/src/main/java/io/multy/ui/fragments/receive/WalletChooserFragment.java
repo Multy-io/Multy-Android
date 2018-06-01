@@ -77,7 +77,7 @@ public class WalletChooserFragment extends BaseFragment implements MyWalletsAdap
         viewModel.setAddress(wallet.getActiveAddress().getAddress());
         Analytics.getInstance(getActivity()).logReceive(AnalyticsConstants.RECEIVE_WALLET_CLICK, viewModel.getChainId());
         if (getActivity().getSupportFragmentManager().getBackStackEntryCount() == zero) {
-            ((AssetRequestActivity) getActivity()).setFragment(R.string.receive_summary, RequestSummaryFragment.newInstance());
+            ((AssetRequestActivity) getActivity()).setFragment(R.string.receive, RequestSummaryFragment.newInstance());
         } else {
             getActivity().onBackPressed();
         }

@@ -38,7 +38,6 @@ import io.multy.ui.fragments.main.ContactsFragment;
 import io.multy.ui.fragments.main.FastOperationsFragment;
 import io.multy.ui.fragments.main.FeedFragment;
 import io.multy.ui.fragments.main.SettingsFragment;
-import io.multy.util.AnimationUtils;
 import io.multy.util.Constants;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
@@ -116,13 +115,6 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         super.onStop();
     }
 
-    private void setFragment(@IdRes int container, Fragment fragment) {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(container, fragment)
-                .commit();
-    }
-
     @Override
     public void onTabSelected(TabLayout.Tab tab) {
         changeStateLastTab(lastTabPosition, false);
@@ -158,92 +150,6 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
     @Override
     public void onTabReselected(TabLayout.Tab tab) {
 
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    private void disableEmptyLabItem() {
-        ViewGroup container = (ViewGroup) tabLayout.getChildAt(0);
-        if (container == null) {
-            return;
-        }
-        View emptyView = container.getChildCount() >= 2 ? container.getChildAt(2) : null;
-        if (emptyView != null) {
-            emptyView.setOnTouchListener((view, motionEvent) -> true);
-        }
-    }
-
-    private void setupFooter() {
-        tabLayout.addOnTabSelectedListener(this);
-        disableEmptyLabItem();
-    }
-
-    /**
-     * This method change color of selected or unselected item.
-     * Set parameter @mustEnable true to set icon and text to "enable" color.
-     * Set parameter @mustEnable false to set icon and text to "disable" color.
-     *
-     * @param position   element position that must change color
-     * @param mustEnable true to set icon and text to "enable" color
-     */
-    private void changeStateLastTab(int position, boolean mustEnable) {
-        try {
-            TabLayout.Tab tab = tabLayout.getTabAt(position);
-            if (tab == null) {
-                return;
-            }
-            View view = tab.getCustomView();
-            if (view == null) {
-                return;
-            }
-            TextView title = view.findViewById(R.id.title);
-            ImageView image = view.findViewById(R.id.image_logo);
-            int filterColor;
-            if (mustEnable) {
-                filterColor = ContextCompat.getColor(this, R.color.blue);
-            } else {
-                filterColor = ContextCompat.getColor(this, R.color.blue_light);
-            }
-            title.setTextColor(filterColor);
-            image.setColorFilter(filterColor, PorterDuff.Mode.SRC_IN);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void unCheckAllTabs() {
-        tabLayout.getTabAt(0).getCustomView().setSelected(false);
-        tabLayout.getTabAt(1).getCustomView().setSelected(false);
-        tabLayout.getTabAt(3).getCustomView().setSelected(false);
-        tabLayout.getTabAt(4).getCustomView().setSelected(false);
-    }
-
-    @OnClick(R.id.fast_operations)
-    void onFastOperationsClick(final View v) {
-        Analytics.getInstance(this).logMain(AnalyticsConstants.MAIN_FAST_OPERATIONS);
-        startActivity(new Intent(this, TestOperationsActivity.class));
-//        v.setEnabled(false);
-//        v.postDelayed(() -> v.setEnabled(true), AnimationUtils.DURATION_MEDIUM * 2);
-//        Fragment fastOperationsFragment = getSupportFragmentManager().findFragmentByTag(FastOperationsFragment.TAG);
-//
-//        if (fastOperationsFragment == null) {
-//            fastOperationsFragment = FastOperationsFragment.newInstance(
-//                    (int) buttonOperations.getX() + buttonOperations.getWidth() / 2,
-//                    (int) buttonOperations.getY() + buttonOperations.getHeight() / 2);
-//        }
-//
-//        getSupportFragmentManager().beginTransaction()
-//                .replace(R.id.full_container, fastOperationsFragment, FastOperationsFragment.TAG)
-//                .addToBackStack(FastOperationsFragment.TAG)
-//                .commit();
-    }
-
-    public void showScanScreen() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, Constants.CAMERA_REQUEST_CODE);
-        } else {
-            startActivityForResult(new Intent(this, ScanActivity.class), Constants.CAMERA_REQUEST_CODE);
-        }
     }
 
     @Override
@@ -290,6 +196,68 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         }
     }
 
+    @Override
+    public void onLockClosed() {
+        checkDeepLink(getIntent());
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void disableEmptyLabItem() {
+        ViewGroup container = (ViewGroup) tabLayout.getChildAt(0);
+        if (container == null) {
+            return;
+        }
+        View emptyView = container.getChildCount() >= 2 ? container.getChildAt(2) : null;
+        if (emptyView != null) {
+            emptyView.setOnTouchListener((view, motionEvent) -> true);
+        }
+    }
+
+    private void setFragment(@IdRes int container, Fragment fragment) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(container, fragment)
+                .commit();
+    }
+
+    private void setupFooter() {
+        tabLayout.addOnTabSelectedListener(this);
+        disableEmptyLabItem();
+    }
+
+    /**
+     * This method change color of selected or unselected item.
+     * Set parameter @mustEnable true to set icon and text to "enable" color.
+     * Set parameter @mustEnable false to set icon and text to "disable" color.
+     *
+     * @param position   element position that must change color
+     * @param mustEnable true to set icon and text to "enable" color
+     */
+    private void changeStateLastTab(int position, boolean mustEnable) {
+        try {
+            TabLayout.Tab tab = tabLayout.getTabAt(position);
+            if (tab == null) {
+                return;
+            }
+            View view = tab.getCustomView();
+            if (view == null) {
+                return;
+            }
+            TextView title = view.findViewById(R.id.title);
+            ImageView image = view.findViewById(R.id.image_logo);
+            int filterColor;
+            if (mustEnable) {
+                filterColor = ContextCompat.getColor(this, R.color.blue);
+            } else {
+                filterColor = ContextCompat.getColor(this, R.color.blue_light);
+            }
+            title.setTextColor(filterColor);
+            image.setColorFilter(filterColor, PorterDuff.Mode.SRC_IN);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void checkDeepLink(Intent intent) {
         if (!super.isLockVisible()
                 && Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)
@@ -306,11 +274,6 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
                 startActivity(sendLauncher);
             }
         }
-    }
-
-    @Override
-    public void onLockClosed() {
-        checkDeepLink(getIntent());
     }
 
     private void logFirstLaunch() {
@@ -330,5 +293,34 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         } else if (fragment instanceof SettingsFragment && fragment.isVisible()) {
             Analytics.getInstance(this).logSettings(AnalyticsConstants.BUTTON_CLOSE);
         }
+    }
+
+    public void showScanScreen() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, Constants.CAMERA_REQUEST_CODE);
+        } else {
+            startActivityForResult(new Intent(this, ScanActivity.class), Constants.CAMERA_REQUEST_CODE);
+        }
+    }
+
+    @OnClick(R.id.fast_operations)
+    void onFastOperationsClick(final View v) {
+        Analytics.getInstance(this).logMain(AnalyticsConstants.MAIN_FAST_OPERATIONS);
+        startActivity(new Intent(this, TestOperationsActivity.class));
+//        v.setEnabled(false);
+//        v.postDelayed(() -> v.setEnabled(true), AnimationUtils.DURATION_MEDIUM * 2);
+//        Fragment fastOperationsFragment = getSupportFragmentManager().findFragmentByTag(FastOperationsFragment.TAG);
+//
+//        if (fastOperationsFragment == null) {
+//            fastOperationsFragment = FastOperationsFragment.newInstance(
+//                    (int) buttonOperations.getX() + buttonOperations.getWidth() / 2,
+//                    (int) buttonOperations.getY() + buttonOperations.getHeight() / 2);
+//        }
+//
+//        getSupportFragmentManager().beginTransaction()
+//                .replace(R.id.full_container, fastOperationsFragment, FastOperationsFragment.TAG)
+//                .addToBackStack(FastOperationsFragment.TAG)
+//                .commit();
     }
 }

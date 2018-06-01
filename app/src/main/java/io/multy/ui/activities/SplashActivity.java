@@ -199,7 +199,7 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void showUpdateDialog() {
-        SimpleDialogFragment.newInstanceNegative("New version is coming.", "Please, uninstall Multy before using new version.", view -> {
+        SimpleDialogFragment.newInstanceNegative(getString(R.string.new_version_title), getString(R.string.new_version_message), view -> {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + getPackageName())));
             finish();
         }).show(getSupportFragmentManager(), "");

@@ -67,9 +67,9 @@ public class PrivateKeyDialogFragment extends BottomSheetDialogFragment implemen
         String key = getPrivateKey();
         if (key != null && !key.isEmpty()) {
             textKey.setText(getPrivateKey());
-            final String currency = String.format(getString(R.string.address_formatted),
-                            viewModel.getWalletLive().getValue().getCurrencyName());
-            textCurrency.setText(currency);
+//            final String currency = String.format(getString(R.string.address_formatted),
+//                            viewModel.getWalletLive().getValue().getCurrencyName());
+//            textCurrency.setText(currency);
         } else {
             dismiss();
         }
