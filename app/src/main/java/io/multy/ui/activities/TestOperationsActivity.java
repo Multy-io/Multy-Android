@@ -8,7 +8,6 @@ package io.multy.ui.activities;
 
 import android.Manifest;
 import android.annotation.TargetApi;
-import android.arch.lifecycle.ViewModelProviders;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
@@ -36,12 +35,12 @@ import android.view.animation.AnticipateOvershootInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.samwolfand.oneprefs.Prefs;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -50,7 +49,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import butterknife.BindInt;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -66,10 +64,8 @@ import io.multy.ui.fragments.dialogs.CompleteDialogFragment;
 import io.multy.util.Constants;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
-import io.multy.viewmodels.AssetSendViewModel;
 import io.socket.client.Ack;
 import io.socket.client.Socket;
-import io.socket.emitter.Emitter;
 import timber.log.Timber;
 
 import static io.multy.api.socket.BlueSocketManager.EVENT_SENDER_CHECK;
@@ -100,10 +96,6 @@ public class TestOperationsActivity extends BaseActivity {
     ImageView imageCoin;
     @BindView(R.id.text_scanning)
     TextView textScanning;
-    @BindView(R.id.text_receivers)
-    TextView textReceivers;
-    @BindView(R.id.text_bt)
-    TextView textBt;
 
     private ReceiversPagerAdapter receiversPagerAdapter;
     private MyWalletPagerAdapter walletPagerAdapter;
@@ -281,43 +273,36 @@ public class TestOperationsActivity extends BaseActivity {
         }).start();
     }
 
-    private boolean send() {
-        try {
-            Wallet wallet = RealmManager.getAssetsDao().getWalletById(selectedWalletId);
-            byte[] seed = RealmManager.getSettingsDao().getSeed().getSeed();
-            FastReceiver receiver = receiversPagerAdapter.getReceiver(pagerRequests.getCurrentItem());
-            String changeAddress = NativeDataHelper.makeAccountAddress(seed, wallet.getIndex(), wallet.getBtcWallet().getAddresses().size(),
-                    wallet.getCurrencyId(), wallet.getNetworkId());
+    private boolean send() throws JniException, JSONException {
+        Wallet wallet = RealmManager.getAssetsDao().getWalletById(selectedWalletId);
+        byte[] seed = RealmManager.getSettingsDao().getSeed().getSeed();
+        FastReceiver receiver = receiversPagerAdapter.getReceiver(pagerRequests.getCurrentItem());
+        String changeAddress = NativeDataHelper.makeAccountAddress(seed, wallet.getIndex(), wallet.getBtcWallet().getAddresses().size(),
+                wallet.getCurrencyId(), wallet.getNetworkId());
 
-            byte[] transactionHex = NativeDataHelper.makeTransaction(wallet.getId(), wallet.getNetworkId(),
-                    RealmManager.getSettingsDao().getSeed().getSeed(), wallet.getIndex(), receiver.getAmount(),
-                    "10", "0",
-                    receiver.getAddress(), changeAddress, "", true);
+        byte[] transactionHex = NativeDataHelper.makeTransaction(wallet.getId(), wallet.getNetworkId(),
+                RealmManager.getSettingsDao().getSeed().getSeed(), wallet.getIndex(), receiver.getAmount(),
+                "10", "0",
+                receiver.getAddress(), changeAddress, "", true);
 
-            final String hex = byteArrayToHex(transactionHex);
-            final String jwt = Prefs.getString(Constants.PREF_AUTH, "");
-            final HdTransactionRequestEntity entity = new HdTransactionRequestEntity(wallet.getCurrencyId(), wallet.getNetworkId(),
-                    new HdTransactionRequestEntity.Payload(changeAddress, wallet.getBtcWallet().getAddresses().size(), wallet.getIndex(), hex), jwt);
+        final String hex = byteArrayToHex(transactionHex);
+        final String jwt = Prefs.getString(Constants.PREF_AUTH, "");
+        final HdTransactionRequestEntity entity = new HdTransactionRequestEntity(wallet.getCurrencyId(), wallet.getNetworkId(),
+                new HdTransactionRequestEntity.Payload(changeAddress, wallet.getBtcWallet().getAddresses().size(), wallet.getIndex(), hex), jwt);
 
-            socketManager.getSocket().emit(EVENT_SEND_RAW, new JSONObject(new Gson().toJson(entity)), new Ack() {
-                @Override
-                public void call(Object... args) {
-                    TestOperationsActivity.this.runOnUiThread(() -> {
-                        final String result = args[0].toString();
-                        if (result.contains("success")) {
-                            showSuccess();
-                        } else {
-                            showError();
-                        }
-                    });
-                }
-            });
-        } catch (JniException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        socketManager.getSocket().emit(EVENT_SEND_RAW, new JSONObject(new Gson().toJson(entity)), new Ack() {
+            @Override
+            public void call(Object... args) {
+                TestOperationsActivity.this.runOnUiThread(() -> {
+                    final String result = args[0].toString();
+                    if (result.contains("success")) {
+                        showSuccess();
+                    } else {
+                        showError();
+                    }
+                });
+            }
+        });
         return false;
     }
 
@@ -349,12 +334,19 @@ public class TestOperationsActivity extends BaseActivity {
         containerSend.animate().translationY(-yTo)
                 .withEndAction(() -> {
                     bringViewsBack();
-                    send();
-
-                    receiversPagerAdapter.showSuccess(pagerRequests.getCurrentItem());
                     receiversPagerAdapter.showElements(pagerRequests.getCurrentItem());
                     walletPagerAdapter.showElements(pagerWallets.getCurrentItem());
                     enableScroll();
+
+                    try {
+                        send();
+                    } catch (JSONException | JniException e) {
+                        e.printStackTrace();
+                        showError();
+                        return;
+                    }
+
+                    receiversPagerAdapter.showSuccess(pagerRequests.getCurrentItem());
                 }).setDuration(500).alpha(0).setInterpolator(new AnticipateOvershootInterpolator()).start();
     }
 
@@ -421,7 +413,6 @@ public class TestOperationsActivity extends BaseActivity {
 
                         if (sendUUID.length() > 0 && !leIds.contains(sendUUID)) {
                             leIds.add(sendUUID);
-                            textBt.append("\n" + sendUUID);
                         }
                     }
                 }
@@ -539,30 +530,38 @@ public class TestOperationsActivity extends BaseActivity {
         return true;
     }
 
+
     private void emitUpdateReceivers() {
         try {
-            socketManager.getSocket().emit(EVENT_SENDER_CHECK, getIdsJson(), new Ack() {
-                @Override
-                public void call(Object... args) {
-                    TestOperationsActivity.this.runOnUiThread(() -> {
-                        String json = args[0].toString();
-                        FastReceiver[] receivers = new Gson().fromJson(json, FastReceiver[].class);
-                        ArrayList<FastReceiver> list = new ArrayList(Arrays.asList(receivers));
+            socketManager.getSocket().emit(EVENT_SENDER_CHECK, getIdsJson(), (Ack) args -> TestOperationsActivity.this.runOnUiThread(() -> {
+                int prevNetworkId = -1;
+                int prevCurrencyId = -1;
 
-                        if (receivers != null && receiversPagerAdapter != null) {
-                            receiversPagerAdapter.setData(list);
-                        }
-
-                        textReceivers.setText("");
-                        for (FastReceiver fastReceiver : list) {
-                            textReceivers.append(fastReceiver.getCode());
-                            textReceivers.append("\n");
-                        }
-
-                        initPagerWallets();
-                    });
+                if (receiversPagerAdapter.getCount() != 0) {
+                    FastReceiver fastReceiver = receiversPagerAdapter.getReceiver(pagerRequests.getCurrentItem());
+                    if (fastReceiver != null) {
+                        prevCurrencyId = fastReceiver.getCurrencyId();
+                        prevNetworkId = fastReceiver.getNetworkId();
+                    }
                 }
-            });
+
+                String json = args[0].toString();
+                FastReceiver[] receivers = new Gson().fromJson(json, FastReceiver[].class);
+                ArrayList<FastReceiver> list = new ArrayList(Arrays.asList(receivers));
+
+                if (receivers != null && receiversPagerAdapter != null) {
+                    receiversPagerAdapter.setData(list);
+                }
+
+                if (receiversPagerAdapter.getCount() != 0) {
+                    FastReceiver fastReceiver = receiversPagerAdapter.getReceiver(pagerRequests.getCurrentItem());
+                    if (fastReceiver != null) {
+                        if (prevCurrencyId != fastReceiver.getCurrencyId() || prevNetworkId != fastReceiver.getNetworkId()) {
+                            initPagerWallets();
+                        }
+                    }
+                }
+            }));
         } catch (Exception e) {
             e.printStackTrace();
         }
