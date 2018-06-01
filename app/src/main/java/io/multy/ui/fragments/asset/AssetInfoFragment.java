@@ -186,6 +186,7 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         if (getActivity() != null) {
             getActivity().registerReceiver(receiver, new IntentFilter());
         }
+        updateBalanceViews();
         viewModel.subscribeSocketsUpdate();
         appBarLayout.addOnOffsetChangedListener(this);
         checkWarnVisibility();

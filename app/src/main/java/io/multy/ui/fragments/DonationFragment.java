@@ -6,6 +6,9 @@
 
 package io.multy.ui.fragments;
 
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleObserver;
+import android.arch.lifecycle.OnLifecycleEvent;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -167,6 +170,16 @@ public class DonationFragment extends BaseFragment {
 
         final TextInputEditText input = dialogView.findViewById(R.id.input_custom);
         input.setText(currentValue == -1 ? String.valueOf(20) : String.valueOf(currentValue));
+        input.setSelection(input.length());
+
+        final LifecycleObserver lifecycleObserver = new LifecycleObserver() {
+            @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+            public void onResume() {
+                input.postDelayed(() -> showKeyboard(getActivity(), input), 150);
+            }
+        };
+        getLifecycle().addObserver(lifecycleObserver);
+        dialogBuilder.setOnDismissListener(dialog -> getLifecycle().removeObserver(lifecycleObserver));
 
         dialogBuilder.setTitle(R.string.custom_fee);
         dialogBuilder.setPositiveButton(R.string.done, (dialog, whichButton) -> {

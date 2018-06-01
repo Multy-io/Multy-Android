@@ -167,11 +167,11 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
         if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
             if (RealmManager.getSettingsDao().getUserId() != null) {
                 viewModel.rates.observe(this, currenciesRate -> {
-                    RealmManager.getSettingsDao().saveCurrenciesRate(currenciesRate);
-                    if (walletsAdapter != null && !isViewsScroll) {
-                        walletsAdapter.notifyDataSetChanged(); //todo this method make lag on screen
-                        //todo too much on main thread
-                    }
+                    RealmManager.getSettingsDao().saveCurrenciesRate(currenciesRate, () -> {
+                        if (walletsAdapter != null && !isViewsScroll) {
+                            walletsAdapter.updateRates(currenciesRate);
+                        }
+                    });
                 });
                 viewModel.transactionUpdate.observe(this, transactionUpdateEntity -> {
                     updateWallets();

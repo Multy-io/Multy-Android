@@ -134,8 +134,16 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
 
     @Override
     public String getFiatBalanceLabel() {
-        RealmManager.open();
-        CurrenciesRate currenciesRate = RealmManager.getSettingsDao().getCurrenciesRate();
+        try {
+            return getFiatBalanceLabel(RealmManager.getSettingsDao().getCurrenciesRate());
+        } catch (Throwable t) {
+            t.printStackTrace();
+            RealmManager.open(); //this slows main screen when get updates of currency rate by sockets if call everytime
+            return getFiatBalanceLabel(RealmManager.getSettingsDao().getCurrenciesRate());
+        }
+    }
+
+    public String getFiatBalanceLabel(CurrenciesRate currenciesRate) {
         //TODO support different fiat currencies here
         switch (NativeDataHelper.Blockchain.valueOf(currencyId)) {
             case BTC:

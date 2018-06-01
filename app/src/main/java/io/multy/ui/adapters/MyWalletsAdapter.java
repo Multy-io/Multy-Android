@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.text.DecimalFormat;
 import java.util.List;
 
 import butterknife.BindView;
@@ -21,10 +20,11 @@ import butterknife.ButterKnife;
 import io.multy.R;
 import io.multy.api.socket.CurrenciesRate;
 import io.multy.model.entities.wallet.Wallet;
+import io.multy.storage.RealmManager;
 
 public class MyWalletsAdapter extends RecyclerView.Adapter<MyWalletsAdapter.Holder> {
 
-    private final static DecimalFormat format = new DecimalFormat("#.##");
+//    private final static DecimalFormat format = new DecimalFormat("#.##");
     private List<Wallet> data;
     private CurrenciesRate rates;
     private OnWalletClickListener listener;
@@ -32,10 +32,7 @@ public class MyWalletsAdapter extends RecyclerView.Adapter<MyWalletsAdapter.Hold
     public MyWalletsAdapter(OnWalletClickListener listener, List<Wallet> data) {
         this.listener = listener;
         this.data = data;
-    }
-
-    public MyWalletsAdapter(List<Wallet> data) {
-        this.data = data;
+        this.rates = RealmManager.getSettingsDao().getCurrenciesRate();
     }
 
     @Override
@@ -43,16 +40,11 @@ public class MyWalletsAdapter extends RecyclerView.Adapter<MyWalletsAdapter.Hold
         return new Holder(LayoutInflater.from(parent.getContext()).inflate(R.layout.view_asset_item, parent, false));
     }
 
-    public void updateRates(CurrenciesRate rates) {
-        this.rates = rates;
-        notifyDataSetChanged();
-    }
-
     @Override
     public void onBindViewHolder(Holder holder, int position) {
         Wallet wallet = data.get(position);
 
-        holder.name.setText(data.get(position).getWalletName());
+        holder.name.setText(wallet.getWalletName());
         holder.imagePending.setVisibility(wallet.isPending() ? View.VISIBLE : View.GONE);
 
         try {
@@ -62,12 +54,12 @@ public class MyWalletsAdapter extends RecyclerView.Adapter<MyWalletsAdapter.Hold
         }
 
         try {
-            holder.amountFiat.setText(wallet.getFiatBalanceLabel());
+            holder.amountFiat.setText(wallet.getFiatBalanceLabel(rates));
         } catch (Exception e) {
             e.printStackTrace();
         }
         holder.imageChain.setImageResource(wallet.getIconResourceId());
-        holder.itemView.setOnClickListener(view -> listener.onWalletClick(data.get(position)));
+        holder.itemView.setOnClickListener(view -> listener.onWalletClick(wallet));
     }
 
     @Override
@@ -75,15 +67,20 @@ public class MyWalletsAdapter extends RecyclerView.Adapter<MyWalletsAdapter.Hold
         return data.size();
     }
 
+    public void updateRates(CurrenciesRate rates) {
+        this.rates = rates;
+        notifyDataSetChanged();
+    }
+
     public void setData(List<Wallet> data) {
         this.data = data;
         notifyDataSetChanged();
     }
 
-    public void setAmount(int position, double amount) {
-//        data.get(position).setBalance(amount);
-        notifyItemChanged(position);
-    }
+//    public void setAmount(int position, double amount) {
+////        data.get(position).setBalance(amount);
+//        notifyItemChanged(position);
+//    }
 
     public void setListener(OnWalletClickListener listener) {
         this.listener = listener;

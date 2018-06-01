@@ -62,10 +62,10 @@ public class AssetSendFragment extends BaseFragment {
         ButterKnife.bind(this, view);
         viewModel = ViewModelProviders.of(getActivity()).get(AssetSendViewModel.class);
         setBaseViewModel(viewModel);
-        if (!TextUtils.isEmpty(viewModel.getReceiverAddress().getValue())) {
-            inputAddress.setText(viewModel.getReceiverAddress().getValue());// to set address from scanning qr or wallet
-        }
-        viewModel.getReceiverAddress().observe(getActivity(), s -> inputAddress.setText(s));
+        viewModel.getReceiverAddress().observe(getActivity(), s -> {
+            inputAddress.setText(s);
+            inputAddress.setSelection(inputAddress.length());
+        });
         setupInputAddress();
         initRecentAddresses();
         logLaunch();
@@ -85,6 +85,7 @@ public class AssetSendFragment extends BaseFragment {
         }
         recyclerView.setAdapter(new RecentAddressesAdapter(recentAddresses, address -> {
             inputAddress.setText(address);
+            inputAddress.setSelection(inputAddress.length());
             inputAddress.postDelayed(this::onClickNext, 300);
         }));
     }
