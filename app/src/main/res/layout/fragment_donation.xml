@@ -53,7 +53,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/activity_horizontal_margin"
             android:paddingStart="16dp"
-            android:text="@string/select_speed"
+            android:text="@string/fee_rate"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             android:textColor="@color/text_grey"
             app:layout_constraintLeft_toLeftOf="parent"

@@ -98,7 +98,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:padding="2dp"
-            android:text="@string/request_summ"
+            android:text="@string/request_sum"
             android:textColor="@color/blue_light"
             app:layout_constraintLeft_toRightOf="@id/image_request_sum"
             app:layout_constraintTop_toBottomOf="@id/divider_address" />
@@ -166,7 +166,7 @@
             android:layout_marginRight="8dp"
             android:gravity="center_vertical"
             android:letterSpacing="-0.02"
-            android:text="@string/cancel_broadcasting"
+            android:text="@string/cancel"
             android:textColor="@android:color/black"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent" />

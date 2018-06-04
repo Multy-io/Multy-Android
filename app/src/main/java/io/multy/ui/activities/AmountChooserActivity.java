@@ -41,7 +41,7 @@ public class AmountChooserActivity extends BaseActivity {
         AssetRequestViewModel viewModel = ViewModelProviders.of(this).get(AssetRequestViewModel.class);
         viewModel.getWallet(getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, -1));
         viewModel.setAmount(getIntent().getDoubleExtra(Constants.EXTRA_AMOUNT, 0));
-        setFragment(R.string.receive_amount, AmountChooserFragment.newInstance());
+        setFragment(R.string.receive, AmountChooserFragment.newInstance());
     }
 
     @Override

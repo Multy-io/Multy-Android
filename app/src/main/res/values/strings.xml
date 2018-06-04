@@ -6,18 +6,16 @@
 
 <resources>
     <string name="app_name">Multy</string>
-    <string name="wallets">wallets</string>
-    <string name="feed">activity</string>
-    <string name="contacts">contacts</string>
+    <!--<string name="wallets">wallets</string>-->
+    <!--<string name="feed">activity</string>-->
+    <!--<string name="contacts">contacts</string>-->
     <string name="settings">Settings</string>
-
     <string name="receive_btc">Receive BTC</string>
     <string name="send">Send</string>
     <string name="receive">Receive</string>
     <string name="exchange">Exchange</string>
-
-    <string name="sha">SHA</string>
-    <string name="sha_256">SHA-256</string>
+    <!--<string name="sha">SHA</string>-->
+    <!--<string name="sha_256">SHA-256</string>-->
     <string name="seed_continue">Continue</string>
     <string name="seed_phrase">Seed phrase</string>
     <string name="phrase_description">For security purpose we will show seed phrase in portions. Write down this words on paper and securely store it somewhere safe!</string>
@@ -44,7 +42,6 @@
     <string name="no">No</string>
     <string name="repeat">Repeat</string>
     <string name="repeat_message">Restart the seed validation process?</string>
-
     <string name="to">TO</string>
     <string name="fee_description">Fee Rate affects how fast your transaction is going to be accepted in the blockchain.</string>
     <string name="donation_description">
@@ -57,7 +54,7 @@
     <string name="donation_for_multy">Support Multy</string>
     <string name="fee_rate">Fee Rate</string>
     <string name="generate_new_address">Generate New Address</string>
-    <string name="request_summ">Request Summ</string>
+    <string name="request_sum">Request Sum</string>
     <string name="share">Share:</string>
     <string name="contacts_bottombar">Contacts</string>
     <string name="wireless_scan">Wireless Scan</string>
@@ -67,7 +64,7 @@
     <string name="hint_add_note">+ Add Note</string>
     <string name="recent_addresses">Recent Addresses</string>
     <string name="scan_qr">Scan \nQR</string>
-    <string name="hint_search_or_enter_address">Search or Enter Address Here</string>
+    <string name="hint_search_or_enter_address">Enter Address Here</string>
     <string name="btc">BTC</string>
     <string name="pay_for_commission">Pay for commission</string>
     <string name="spendable">Spendable:</string>
@@ -76,25 +73,23 @@
     <string name="choose_amount">Please, choose amount</string>
     <string name="choose_transaction_speed">Please choose Fee Rate.</string>
     <string name="usd">USD</string>
-
     <string name="send_to">Send to</string>
     <string name="send_from">Send from</string>
-    <string name="send_formatted" formatted="false">Send %s</string>
+    <!--<string name="send_formatted" formatted="false">Send %s</string>-->
     <string name="transaction_fee">Transaction fee</string>
-    <string name="ready_to_send">Ready to send</string>
+    <!--<string name="ready_to_send">Ready to send</string>-->
     <string name="donation_default">0.0001</string>
     <string name="donation_format_pattern">##.##</string>
     <string name="donation_format_pattern_bitcoin">##.####</string>
-    <string name="error_balance">Invalid amount to spend.</string>
-
+    <!--<string name="error_balance">Invalid amount to spend.</string>-->
     <string name="root_message">Sorry, rooted devices is not supported yet according to our safety policy. Please use our app on authorized device.</string>
     <string name="root_title">Root detected</string>
-    <string name="ok">Okay</string>
+    <string name="ok">OK</string>
     <string name="main">Main</string>
     <string name="my_wallets">My Wallets</string>
     <string name="all_addresses">All addresses</string>
     <string name="btc_address">BTC Address</string>
-    <string name="btc_addresses">BTC Addresses</string>
+    <!--<string name="btc_addresses">BTC Addresses</string>-->
     <string name="address_formatted">%s Address</string>
     <string name="addresses">Addresses</string>
     <string name="eth">ETH</string>
@@ -108,25 +103,23 @@
     <string name="wallet_name">Wallet Name</string>
     <string name="no_contacts">No contacts yet</string>
     <string name="no_contacts_message">This screen is not developed yet.</string>
-    <string name="no_activity">No activity yet</string>
-    <string name="no_activity_message">This screen is not developed yet.</string>
+    <!--<string name="no_activity">No activity yet</string>-->
+    <!--<string name="no_activity_message">This screen is not developed yet.</string>-->
     <string name="multy_name_long">Multi cryptocurrency and\nassets open-source wallet</string>
-
     <string name="address_copied">Address was copied to clipboard</string>
     <string name="copied_to_clipboard">Copied to clipboard</string>
     <string name="wallet_settings">Wallet Settings</string>
     <string name="general">General</string>
     <string name="security">Security</string>
-    <string name="my_private_key">My Private Key</string>
+    <!--<string name="my_private_key">My Private Key</string>-->
     <string name="my_private_key_title">My private key:</string>
     <string name="show_private_keys">Show Private Keys</string>
     <string name="delete_wallet">Delete Wallet</string>
-    <string name="delete_confirm">Are you sure want to delete this wallet?</string>
+    <string name="delete_confirm">Do you really want to delete this wallet?</string>
     <string name="save">Save</string>
     <string name="private_key_notification">Your extended private keys are all that is needed to\naccess your bitcoin funds. Be sure to protect your private\nkeys and store them only on secure devices.</string>
     <string name="copy_to_clipboard">Copy to clipboard</string>
     <string name="share_key">Share</string>
-
     <string name="about_private_key">
         Private key allows you or anyone of you behave to
         spend your crypto assets. You should keep it secret!
@@ -139,27 +132,25 @@
     <string name="fast_operations">Fast Operations</string>
     <string name="nfc">NFC</string>
     <string name="scan">Scan</string>
-    <string name="error">An error occurred</string>
+    <string name="error">Error</string>
     <string name="not_implemented">Sorry, this feature is not implemented</string>
     <string name="addresses_empty">There are no addresses</string>
-    <string name="receive_summ">Receive Summ</string>
+    <!--<string name="receive_summ">Receive Summ</string>-->
     <string name="receive_amount">Receive Amount</string>
     <string name="send_amount">Send Amount</string>
     <string name="input_symbols">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890</string>
     <string name="point">.</string>
     <string name="receive_summary">Receive summary</string>
-    <string name="send_summary">Send summary</string>
+    <string name="send_summary">Confirm Sending</string>
     <string name="done">Done</string>
-
     <string name="create_first_wallet">Create First Wallet</string>
     <string name="restore_multy">Restore Multy</string>
     <string name="restore_wallet_description">Tap the button to create new or import existing wallet.</string>
-
-    <string name="pending">Pending</string>
-    <string name="outputs">Outputs</string>
-    <string name="enter_pin">Enter PIN</string>
+    <!--<string name="pending">Pending</string>-->
+    <!--<string name="outputs">Outputs</string>-->
+    <!--<string name="enter_pin">Enter PIN</string>-->
     <string name="channel_id">Multy wallet</string>
-    <string name="graph_title">24h BTC to USD graph</string>
+    <!--<string name="graph_title">24h BTC to USD graph</string>-->
     <string name="logo_title">Blockchain\nopen source wallet</string>
     <string name="backup_is_not_executed">Backup is needed!</string>
     <string name="wallet_removed">Wallet removed</string>
@@ -168,50 +159,48 @@
     <string name="show_all_addresses">Show All Addresses</string>
     <string name="operations_empty">You don\'t have\nany transactions</string>
     <string name="operations_create">Tap the button\nto create funds\nrequest</string>
-    <string name="please_update">Please, delete your current version and install new one.</string>
-    <string name="error_config_error">Unable to get config</string>
+    <!--<string name="please_update">Please, delete your current version and install new one.</string>-->
+    <!--<string name="error_config_error">Unable to get config</string>-->
     <string name="no_internet_connection">No internet connection</string>
     <string name="no_internet_connection_message">Unfortunately you are not conencted\nto the network now. Multy needs\nconstant connection to provide it’s\nwork correctly</string>
-
     <string name="tree_dots">…</string>
     <string name="_or_">" or "</string>
     <string name="personal">Personal</string>
     <string name="locked_funds">Locked funds</string>
-    <string name="pending_continue">Pending...</string>
+    <string name="pending_continue">Pending…</string>
     <string name="rejected_send">Unable to send transaction</string>
     <string name="rejected_receive">Unable to receive transaction</string>
     <string name="push_notifications">Push Notifications</string>
     <string name="security_settings">Security Settings</string>
-    <string name="settings_restore_seed_description">Seed Phrase is a major point of your Multy account. It’s absolutely unique and grant access your crypto assets. You should keep it secret!</string>
+    <string name="settings_restore_seed_description">Seed Phrase is a key security element of your Multy account. It’s absolutely unique and grant access your crypto assets. You should keep it secret!</string>
     <string name="restore_seed">Restore Seed</string>
     <string name="screen_lock">Screen Lock</string>
     <string name="none">None</string>
-    <string name="about_multy">About multy</string>
-    <string name="leave_feedback">Leave feedback</string>
+    <string name="about_multy">About Multy</string>
+    <string name="leave_feedback">Leave Feedback</string>
     <string name="try_again">Try again</string>
     <string name="make_wallet_backup">Set up additional step for accessing your Multy application</string>
-    <string name="use_screen_lock">Use screen lock</string>
+    <string name="use_screen_lock">Use password</string>
     <string name="pin_code">PIN-code</string>
     <string name="fingerprint">Fingerprint</string>
     <string name="entrance_settings">Entrance Settings</string>
-    <string name="repeat_pin">Repeat pin</string>
+    <string name="repeat_pin">Repeat your PIN-code</string>
     <string name="enter_new_pin">Enter new pin</string>
     <string name="reset_data">By resetting all your data you will lose all your wallets and accounts on this device</string>
     <string name="are_you_sure">Are you sure?</string>
     <string name="reset_all_data">reset all data</string>
     <string name="entranse_settings_description">Set up additional step for accessing your Multy application.</string>
     <string name="reset_data_description">This function return the application to the initial state. All information will be permanently removed. Make sure that Seed Phrase backup was successfully done!</string>
-    <string name="view_seed">View Seed</string>
+    <string name="view_seed">View Seed Phrase</string>
     <string name="backup_seed">Backup Seed</string>
     <string name="enter_password">Enter Password</string>
-    <string name="complete">Complete</string>
+    <!--<string name="complete">Complete</string>-->
     <string name="success">Success!</string>
-    <string name="error_sending_tx">Error while sending transaction</string>
+    <string name="error_sending_tx">Error while sending transaction. Please, try again!</string>
     <string name="confirmation">Confirmation</string>
     <string name="confirmations">Confirmations</string>
     <string name="failed_html_page">Failed to loading page!</string>
     <string name="view_in_blockchain">View in Blockchain</string>
-    <string name="view_in_etherscan">View in Etherscan</string>
     <string name="multy_item_thanks">We really appreciate your support of Multy. By donating you help us to bring blockchain technology one step closer to ordinary life</string>
     <string name="thank_you">Thank you for donation!</string>
     <string name="zero">0</string>
@@ -228,9 +217,9 @@
     <string name="bitcoin">bitcoin</string>
     <string name="push_id">push_id</string>
     <string name="chain_id">chain_id</string>
-    <string name="no_balance">Wallet doesn\'t have enough balance to send from</string>
+    <string name="no_balance">Not enough amount on chosen wallet!</string>
     <string name="available_amount">Available: %s</string>
-    <string name="available_amount_eth">Available: %s ETH</string>
+    <!--<string name="available_amount_eth">Available: %s ETH</string>-->
     <string name="select_an_addresses">SELECT AN ADDRESS TO VIEW PRIVATE KEY</string>
     <string name="select_wallet_donation">Select wallet and donation summ</string>
     <string name="wallet">Wallet</string>
@@ -240,47 +229,72 @@
     <string name="send_donation">Send</string>
     <string name="error_donation">Error sending donation</string>
     <string name="error_donation_message">Can\'t send a donation. Please check that donation sum is not too small(&lt; 5000 Satoshi) and wallet`s balance is sufficient.</string>
-    <string name="by_donationg">By donationg for this option you\nhelp the development team\nwork more diligently and\ndevelop new application\nfunctionality</string>
+    <string name="by_donationg">By donation for this option you\nhelp the development team\nwork more diligently and\ndevelop new application\nfunctionality</string>
     <string name="DONATE">DONATE</string>
     <string name="CANCEL">CANCEL</string>
     <string name="donate_for_this_option">Donate for this option</string>
-    <string name="chain">Chain</string>
-    <string name="excepteur_sint">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
+    <string name="chain">Blockchain</string>
+    <!--<string name="excepteur_sint">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>-->
     <string name="address_book_title">Contacts</string>
-    <string name="sync_my_address_book">Sync my contacts</string>
+    <string name="sync_my_address_book">Vote for contacts</string>
     <string name="work_in_progress">(work in progress)</string>
     <string name="currency_to_convert">Currency to convert</string>
-    <string name="feature_challenge">Feature Challenge</string>
-    <string name="feature_challenge_message">In computer vision and image processing, a feature is a piece of information which is relevant for solving the computational task related to a certain application.</string>
+    <string name="feature_challenge">Vote for features</string>
+    <string name="feature_challenge_message">We want you to speak up. By voting for certain feature, you give a feedback on want you want most and support project at the same time. Your vote will help us to choose the right path.</string>
     <string name="vote_for_activity">Vote for activity</string>
     <string name="git_new_line">Git:\n</string>
     <string name="core_new_line">Core:\n</string>
-    <string name="version_title">Multy Ctypto Wallet v</string>
+    <string name="version_title">Multy Crypto Wallet v</string>
     <string name="environment_new_line">Environment:\n </string>
     <string name="gas_price">GAS Price</string>
     <string name="gas_limit">GAS Limit</string>
     <string name="percent_0">0%</string>
     <string name="crypto_portfolio">Crypto portfolio</string>
+    <string name="currency_charts">Сurrency charts</string>
     <string name="terms_of_service">Terms of service</string>
     <string name="agreement_read">I agree with Terms of Service and processing of my personal data according to the Multy Privacy Policy.</string>
     <string name="discard">Discard</string>
     <string name="accept">Accept</string>
-    <string name="terms_please">In order to use Multy you have to accept Terms of Service.   By pressing \"Accept\" you confirm that you have read, understood and agree to the following Terms of Service and that you have the right, power and authority to do so.</string>
+    <string name="terms_please">Sorry\nIn order to use Multy you have to accept Terms of Service.   By pressing \"Accept\" you confirm that you have read, understood and agree to the following Terms of Service and that you have the right, power and authority to do so.</string>
     <string name="create_or_import_new_wallet">Create or Import New Wallet</string>
     <string name="create_new">Create New</string>
     <string name="import_wallet">Import Wallet</string>
     <string name="wei">WEI</string>
     <string name="error_initializing_wallet">Error initializing wallet.</string>
     <string name="gwei">GWEI</string>
-    <string name="avaliable">AVALIABLE</string>
-    <string name="soon">SOON</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="available">AVAILABLE</string>
+    <string name="soon">WORK IN PROGRESS</string>
+    <string name="you_are_have_no_wallets">You don`t have any wallets yet. Please create one</string>
+    <string name="count_of" formatted="false">%d of %d</string>
+    <string name="address_added">Address has been added</string>
+    <string name="default_fiat">Default Fiat</string>
+    <string name="set_your_pin_code">Set your PIN-code</string>
+    <string name="pins_does_not_match">Entered pins does not match</string>
+    <string name="fee_very_fast">Very Fast</string>
+    <string name="fee_fast">Fast</string>
+    <string name="fee_medium">Medium</string>
+    <string name="fee_slow">Slow</string>
+    <string name="fee_very_slow">Very Slow</string>
+    <string name="fee_custom">Custom</string>
+    <string name="ten_minutes">10 min</string>
+    <string name="six_hours">6 hours</string>
+    <string name="five_days">5 days</string>
+    <string name="one_week">1 week</string>
+    <string name="two_weeks">2 weeks</string>
+    <string name="n_blocks">%d blocks</string>
+    <string name="new_version_title">We have an update!</string>
+    <string name="new_version_message">Please update Multy from Google Play Market.</string>
+    <string name="exchanging">Exchange</string>
+    <string name="pay_attention">Pay attention!</string>
+    <string name="reach_amount">You reached spendable amount</string>
+    <string name="to_">To:</string>
     <string name="receive_wireless">Your request is now broadcasting</string>
     <string name="share_pure">Share</string>
     <string name="cancel_broadcasting">Cancel broadcasting</string>
     <string name="wireless_receive">Wireless receive</string>
     <string name="receiving">Receiving</string>
-    <string name="magic_receive">Magic Receive</string>
+    <string name="magic_receive">Magical Receive</string>
+    <string name="terms_url">https://raw.githubusercontent.com/wiki/Appscrunch/Multy/Legal:-Terms-of-service.md</string>
+    <string name="permissions_for_access_nearby_devices">We need permissions to access finding nearby devices. We don\'t use your location.</string>
+    <string name="searching">Searching\nactive\nrequests</string>
 </resources>

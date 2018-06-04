@@ -72,16 +72,16 @@ public class AssetRequestActivity extends BaseActivity {
             List<Fragment> backStackFragments = getSupportFragmentManager().getFragments();
             for (Fragment backStackFragment : backStackFragments) {
                 if (backStackFragment instanceof AddressesFragment) {
-                    toolbar.setTitle(R.string.receive_summary);
+                    toolbar.setTitle(R.string.receive);
                 }
                 if (backStackFragment instanceof AmountChooserFragment) {
-                    toolbar.setTitle(R.string.receive_summary);
+                    toolbar.setTitle(R.string.receive);
                 }
                 if (backStackFragment instanceof RequestSummaryFragment) {
                     toolbar.setTitle(R.string.receive);
                 }
                 if (backStackFragment instanceof WalletChooserFragment) {
-                    toolbar.setTitle(R.string.receive_summary);
+                    toolbar.setTitle(R.string.receive);
                 }
             }
         }
@@ -100,7 +100,7 @@ public class AssetRequestActivity extends BaseActivity {
             if (getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, -1) != -1) {
                 AssetRequestViewModel viewModel = ViewModelProviders.of(this).get(AssetRequestViewModel.class);
                 viewModel.getWallet(getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, -1));
-                viewModel.getWalletLive().observe(this, walletRealmObject -> setFragment(R.string.receive_summary, RequestSummaryFragment.newInstance()));
+                viewModel.getWalletLive().observe(this, walletRealmObject -> setFragment(R.string.receive, RequestSummaryFragment.newInstance()));
             } else {
                 Toast.makeText(this, "Invalid wallet index", Toast.LENGTH_SHORT).show();
             }

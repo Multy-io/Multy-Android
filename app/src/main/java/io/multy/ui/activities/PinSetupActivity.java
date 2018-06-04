@@ -131,10 +131,10 @@ public class PinSetupActivity extends BaseActivity {
                             Analytics.getInstance(PinSetupActivity.this).logSettings(AnalyticsConstants.ENTRANCE_SETTINGS_PIN_SET);
                             SecurePreferencesHelper.putString(getApplicationContext(), Constants.PREF_PIN, pin);
                             Prefs.putBoolean(Constants.PREF_LOCK, true);
-                            Toast.makeText(PinSetupActivity.this, "Success", Toast.LENGTH_LONG).show();
+                            Toast.makeText(PinSetupActivity.this, R.string.success, Toast.LENGTH_LONG).show();
                             finish();
                         } else {
-                            Toast.makeText(PinSetupActivity.this, "Entered pins does not match", Toast.LENGTH_LONG).show();
+                            Toast.makeText(PinSetupActivity.this, R.string.pins_does_not_match, Toast.LENGTH_LONG).show();
                             clear();
                         }
                     }
@@ -153,7 +153,7 @@ public class PinSetupActivity extends BaseActivity {
         recyclerViewIndicator.setAdapter(getDotsGreyAdapter());
         step = STEP_ENTER;
         pin = "";
-        textViewTitle.setText(R.string.enter_new_pin);
+        textViewTitle.setText(R.string.set_your_pin_code);
         inputPin.setText("");
     }
 

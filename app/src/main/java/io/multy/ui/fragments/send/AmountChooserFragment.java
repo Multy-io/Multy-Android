@@ -427,7 +427,7 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
             if (isChecked) {
                 checkCommas();
                 if (!inputOriginal.getText().toString().equals("") && Double.parseDouble(inputOriginal.getText().toString()) * Math.pow(10, 8) + transactionPrice >= spendableSatoshi) {
-                    viewModel.errorMessage.setValue("You reached spendable amount");
+                    viewModel.errorMessage.setValue(getString(R.string.reach_amount));
                     switcher.setChecked(false);
                 }
                 Analytics.getInstance(getActivity()).logSendChooseAmount(AnalyticsConstants.SEND_AMOUNT_COMMISSION_ENABLED, viewModel.getChainId());

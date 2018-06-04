@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.multy.Multy;
 import io.multy.R;
 import io.multy.ui.fragments.dialogs.DonateDialog;
 import io.multy.util.Constants;
@@ -33,7 +34,10 @@ public class PortfoliosAdapter extends PagerAdapter {
     TextView textDonate;
 
     private FragmentManager fragmentManager;
-    private String[] itemsName = new String[] {"Crypto portfolio", "Сurrency charts"};
+    private String[] itemsName = new String[] {
+            Multy.getContext().getString(R.string.crypto_portfolio),
+            Multy.getContext().getString(R.string.currency_charts)
+    };
 
     public PortfoliosAdapter(FragmentManager fragmentManager) {
         this.fragmentManager = fragmentManager;

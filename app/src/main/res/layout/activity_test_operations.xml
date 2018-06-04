@@ -6,7 +6,6 @@
 
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/gradient_vertical_blue">
@@ -31,7 +30,7 @@
         android:layout_centerInParent="true"
         android:alpha="0.9"
         android:gravity="center"
-        android:text="Scanning"
+        android:text="@string/searching"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="@id/animation_view"
         app:layout_constraintLeft_toLeftOf="parent"

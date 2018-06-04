@@ -21,7 +21,6 @@ import android.os.ParcelUuid;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +38,7 @@ import java.util.UUID;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.multy.BuildConfig;
 import io.multy.R;
 import io.multy.api.socket.BlueSocketManager;
 import io.multy.api.socket.TransactionUpdateResponse;
@@ -119,7 +119,9 @@ public class MyReceiveFragment extends BaseFragment {
 
             @Override
             public void onStartFailure(int errorCode) {
-                Toast.makeText(getActivity(), "Failed to start broadcasting request. Error code - " + errorCode, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), BuildConfig.DEBUG ?
+                        "Failed to start broadcasting request. Error code - " + errorCode :
+                        getString(R.string.error), Toast.LENGTH_SHORT).show();
                 super.onStartFailure(errorCode);
             }
         });

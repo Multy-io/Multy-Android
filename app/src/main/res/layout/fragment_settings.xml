@@ -198,7 +198,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:paddingTop="10dp"
-                    android:text="Default Fiat"
+                    android:text="@string/default_fiat"
                     android:textColor="@color/black"
                     android:textSize="16sp"
                     app:layout_constraintLeft_toRightOf="@id/image_fiat"

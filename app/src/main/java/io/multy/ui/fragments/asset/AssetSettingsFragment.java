@@ -99,7 +99,7 @@ public class AssetSettingsFragment extends BaseFragment {
         viewModel.updateWalletSetting(inputName.getText().toString()).observe(this, isUpdated -> {
             Analytics.getInstance(getActivity()).logWalletSettings(AnalyticsConstants.WALLET_SETTINGS_RENAME, viewModel.getChainId());
             if (isUpdated == null || !isUpdated) {
-                Toast.makeText(getActivity(), "Error, changes not applied!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getString(R.string.error), Toast.LENGTH_SHORT).show();
                 inputName.setEnabled(true);
                 return;
             }
@@ -127,7 +127,7 @@ public class AssetSettingsFragment extends BaseFragment {
                 getActivity().finish();
             }
             else if (isRemoved != null) {
-                Toast.makeText(getActivity(), "Error, changes not applied!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), R.string.error, Toast.LENGTH_SHORT).show();
             }
         });
     }

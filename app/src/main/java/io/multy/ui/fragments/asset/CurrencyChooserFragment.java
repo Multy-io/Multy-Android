@@ -86,7 +86,7 @@ public class CurrencyChooserFragment extends BaseChooserFragment implements Curr
     }
 
     private void initialize(FragmentActivity activity) {
-        super.setTitle(R.string.currency_to_convert);
+        super.setTitle(R.string.reference_currency);
         CurrencyConvertAdapter chainAvailableAdapter = new CurrencyConvertAdapter(CurrencyConvertAdapter.CurrencyType.AVAILABLE, this);
         CurrencyConvertAdapter chainSoonAdapter = new CurrencyConvertAdapter(CurrencyConvertAdapter.CurrencyType.SOON, this);
         getBlockAvailableRecyclerView().setLayoutManager(new LinearLayoutManager(activity));
