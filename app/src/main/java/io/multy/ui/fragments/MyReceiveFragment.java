@@ -71,8 +71,6 @@ public class MyReceiveFragment extends BaseFragment {
     LottieAnimationView lottieAnimationView;
     @BindView(R.id.root)
     View parent;
-    @BindView(R.id.my_id)
-    TextView textMyId;
 
     private long requestSumSatoshi = 50000;
     private AssetRequestViewModel viewModel;
@@ -92,14 +90,13 @@ public class MyReceiveFragment extends BaseFragment {
         final String address = viewModel.getWallet().getActiveAddress().getAddress();
         textAddress.setText(address);
         imageFastId.setImageResource(FastReceiver.getImageResId(address));
-        textAmount.setText(CryptoFormatUtils.satoshiToBtc(requestSumSatoshi) + " BTC / " + CryptoFormatUtils.satoshiToUsd(requestSumSatoshi) + viewModel.getWallet().getFiatString());
+        textAmount.setText(String.format("%s BTC / %s%s", CryptoFormatUtils.satoshiToBtc(requestSumSatoshi), CryptoFormatUtils.satoshiToUsd(requestSumSatoshi), viewModel.getWallet().getFiatString()));
     }
 
     public void becomeReceiver() {
         BluetoothLeAdvertiser advertiser = BluetoothAdapter.getDefaultAdapter().getBluetoothLeAdvertiser();
         AdvertiseSettings advertiseSettings = buildAdvertiseSettings();
         final String userCode = stringToHex(textAddress.getText().toString().substring(0, 4).getBytes());
-        getActivity().runOnUiThread(() -> textMyId.setText(userCode));
         AdvertiseData advertiseData = buildAdvertiseData(userCode);
         advertiser.startAdvertising(advertiseSettings, advertiseData, new AdvertiseCallback() {
             @Override
@@ -112,6 +109,7 @@ public class MyReceiveFragment extends BaseFragment {
                     jsonObject.put("networkid", viewModel.getWallet().getNetworkId());
                     jsonObject.put("address", textAddress.getText().toString());
                     jsonObject.put("amount", String.valueOf(requestSumSatoshi));
+
                     socketManager.becomeReceiver(jsonObject);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -228,7 +226,7 @@ public class MyReceiveFragment extends BaseFragment {
 
     private AdvertiseData buildAdvertiseData(String code) {
         AdvertiseData.Builder dataBuilder = new AdvertiseData.Builder();
-        ParcelUuid pUuid = new ParcelUuid(UUID.fromString("00000000-0000-0000-0000-000000" + code));
+        ParcelUuid pUuid = new ParcelUuid(UUID.fromString("8c0d3334-7711-44e3-b5c4-28b2" + code));
         dataBuilder.setIncludeTxPowerLevel(true);
         dataBuilder.addServiceUuid(pUuid);
         return dataBuilder.build();
