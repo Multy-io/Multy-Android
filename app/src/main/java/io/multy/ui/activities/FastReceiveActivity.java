@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 
 import io.multy.R;
-import io.multy.api.socket.BlueSocketManager;
 import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.MyReceiveFragment;
 import io.multy.ui.fragments.receive.AmountChooserFragment;
@@ -110,7 +109,7 @@ public class FastReceiveActivity extends BaseActivity {
 
         if (permissionsList.size() > 0) {
             if (permissionsNeeded.size() > 0) {
-                String message = "We need permissions to access finding nearby devices. We don't use your location." + permissionsNeeded.get(0);
+                String message = getString(R.string.permissions_for_access_nearby_devices);
                 showDialog(message,
                         (dialog, which) -> requestPermissions(permissionsList.toArray(new String[permissionsList.size()]), REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS));
                 return;
@@ -125,8 +124,8 @@ public class FastReceiveActivity extends BaseActivity {
     private void showDialog(String message, DialogInterface.OnClickListener okListener) {
         new AlertDialog.Builder(this)
                 .setMessage(message)
-                .setPositiveButton("OK", okListener)
-                .setNegativeButton("Cancel", null)
+                .setPositiveButton(getString(R.string.yes), okListener)
+                .setNegativeButton(getString(R.string.cancel), (dialog, whitch) -> onBackPressed())
                 .create()
                 .show();
     }

@@ -44,7 +44,7 @@ import io.multy.storage.AssetsDao;
 import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetActivity;
 import io.multy.ui.activities.BaseActivity;
-import io.multy.ui.activities.CreateAssetActivity;
+import io.multy.ui.activities.MainActivity;
 import io.multy.ui.activities.SeedActivity;
 import io.multy.ui.adapters.MyWalletsAdapter;
 import io.multy.ui.adapters.PortfoliosAdapter;
@@ -299,8 +299,12 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
     }
 
     private void onWalletAddClick() {
-        startActivityForResult(new Intent(getActivity(), CreateAssetActivity.class)
-                .addCategory(Constants.EXTRA_RESTORE), Constants.REQUEST_CODE_CREATE);
+//        startActivityForResult(new Intent(getActivity(), CreateAssetActivity.class)
+//                /*.addCategory(Constants.EXTRA_RESTORE)*/, Constants.REQUEST_CODE_CREATE);
+        if (getActivity() != null && getActivity() instanceof MainActivity) {
+            refreshLayout.setRefreshing(true);
+            ((MainActivity) getActivity()).createFirstWallets();
+        }
     }
 
     @OnClick(R.id.button_add)

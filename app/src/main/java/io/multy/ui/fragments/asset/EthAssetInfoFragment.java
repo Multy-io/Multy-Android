@@ -47,6 +47,7 @@ import io.multy.ui.adapters.AssetTransactionsAdapter;
 import io.multy.ui.adapters.EmptyTransactionsAdapter;
 import io.multy.ui.adapters.EthTransactionsAdapter;
 import io.multy.ui.fragments.BaseFragment;
+import io.multy.ui.fragments.dialogs.AddressActionsDialogFragment;
 import io.multy.util.Constants;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
@@ -321,10 +322,12 @@ public class EthAssetInfoFragment extends BaseFragment implements AppBarLayout.O
         viewModel.shareAddress(getActivity());
     }
 
-    @OnClick(R.id.text_address)
+    @OnClick(R.id.button_copy)
     void onClickCopy() {
         Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_ADDRESS, viewModel.getChainId());
-        viewModel.copyToClipboardAddress(getActivity());
+        AddressActionsDialogFragment.getInstance(viewModel.getWalletLive().getValue(),
+                viewModel.getWalletLive().getValue().getActiveAddress().getAddress())
+                .show(getChildFragmentManager(), AddressActionsDialogFragment.TAG);
     }
 
     @OnClick(R.id.close)

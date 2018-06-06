@@ -26,11 +26,16 @@
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/tab_layout_height"
-        android:background="@drawable/background_tab_bottom"
         android:layout_gravity="bottom"
+        android:background="@drawable/background_tab_bottom"
+        android:padding="0dp"
         app:tabGravity="fill"
         app:tabIndicatorHeight="0dp"
-        app:tabMode="fixed">
+        app:tabMode="fixed"
+        app:tabPaddingBottom="-1dp"
+        app:tabPaddingEnd="-1dp"
+        app:tabPaddingStart="-1dp"
+        app:tabPaddingTop="-1dp">
 
         <android.support.design.widget.TabItem
             android:id="@+id/tab_main"

@@ -10,6 +10,7 @@ package io.multy.ui.activities;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
@@ -41,6 +42,7 @@ import io.multy.ui.fragments.main.SettingsFragment;
 import io.multy.util.Constants;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
+import io.multy.viewmodels.WalletViewModel;
 
 
 public class MainActivity extends BaseActivity implements TabLayout.OnTabSelectedListener, BaseActivity.OnLockCloseListener {
@@ -293,6 +295,19 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         } else if (fragment instanceof SettingsFragment && fragment.isVisible()) {
             Analytics.getInstance(this).logSettings(AnalyticsConstants.BUTTON_CLOSE);
         }
+    }
+
+    private void updateAssets() {
+        if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
+            tabLayout.getLayoutParams().height = getResources().getDimensionPixelSize(R.dimen.tab_layout_height);
+            buttonOperations.setVisibility(View.VISIBLE);
+        }
+        setFragment(R.id.container_frame, AssetsFragment.newInstance());
+    }
+
+    public void createFirstWallets() {
+        WalletViewModel viewModel = ViewModelProviders.of(this).get(WalletViewModel.class);
+        viewModel.createFirstWallets(this::updateAssets);
     }
 
     public void showScanScreen() {

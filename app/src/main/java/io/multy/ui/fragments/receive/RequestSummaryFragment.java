@@ -43,6 +43,7 @@ import io.multy.ui.activities.FastReceiveActivity;
 import io.multy.ui.fragments.AddressesFragment;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.asset.AssetInfoFragment;
+import io.multy.ui.fragments.dialogs.AddressActionsDialogFragment;
 import io.multy.ui.fragments.dialogs.CompleteDialogFragment;
 import io.multy.ui.fragments.dialogs.DonateDialog;
 import io.multy.util.Constants;
@@ -257,7 +258,8 @@ public class RequestSummaryFragment extends BaseFragment {
                 ((AssetRequestActivity) getActivity()).setFragment(R.string.all_addresses, fragment);
                 break;
             case ETH:
-                copyAddressToClipboard();
+                AddressActionsDialogFragment.getInstance(viewModel.getWallet(), viewModel.getWallet().getActiveAddress().getAddress())
+                        .show(getChildFragmentManager(), AddressActionsDialogFragment.TAG);
                 break;
         }
     }
@@ -323,6 +325,20 @@ public class RequestSummaryFragment extends BaseFragment {
         }
     }
 
+    @OnClick(R.id.button_start_broadcast)
+    public void onStartBroadcast() {
+        if (viewModel.getAmount() == 0) {
+            Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.shake);
+            animation.setFillAfter(false);
+            textRequestAmount.startAnimation(animation);
+        } else {
+            Intent intent = new Intent(getActivity(), FastReceiveActivity.class);
+            intent.putExtra(Constants.EXTRA_WALLET_ID, viewModel.getWallet().getId());
+            intent.putExtra(Constants.EXTRA_AMOUNT, viewModel.getAmount());
+            startActivityForResult(intent, REQUEST_CODE_WIRELESS);
+        }
+    }
+
     public static class SharingBroadcastReceiver extends BroadcastReceiver {
 
         public SharingBroadcastReceiver() {
@@ -337,20 +353,6 @@ public class RequestSummaryFragment extends BaseFragment {
                 String packageName = component.substring(component.indexOf("{") + 1, component.indexOf("/"));
                 Analytics.getInstance(context).logWalletSharing(intent.getIntExtra(context.getString(R.string.chain_id), 1), packageName);
             }
-        }
-    }
-
-    @OnClick(R.id.button_start_broadcast)
-    public void onStartBroadcast() {
-        if (viewModel.getAmount() == 0) {
-            Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.shake);
-            animation.setFillAfter(false);
-            textRequestAmount.startAnimation(animation);
-        } else {
-            Intent intent = new Intent(getActivity(), FastReceiveActivity.class);
-            intent.putExtra(Constants.EXTRA_WALLET_ID, viewModel.getWallet().getId());
-            intent.putExtra(Constants.EXTRA_AMOUNT, viewModel.getAmount());
-            startActivityForResult(intent, REQUEST_CODE_WIRELESS);
         }
     }
 }

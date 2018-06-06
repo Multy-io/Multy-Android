@@ -29,6 +29,7 @@ import io.multy.model.entities.TransactionHistory;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.WebFragment;
+import io.multy.ui.fragments.dialogs.AddressActionsDialogFragment;
 import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
 import io.multy.util.DateHelper;
@@ -225,6 +226,14 @@ public class EthTransactionInfoFragment extends BaseFragment {
                 Analytics.getInstance(getActivity()).logWalletTransactionLaunch(analyticConstant, viewModel.getChainId(), -1);
                 break;
             default:
+        }
+    }
+
+    @OnClick({R.id.text_addresses_from, R.id.text_addresses_to})
+    void onClickAddress(View view) {
+        if (view instanceof TextView) {
+            AddressActionsDialogFragment.getInstance(viewModel.getWalletLive().getValue(), ((TextView) view).getText().toString())
+                    .show(getChildFragmentManager(), AddressActionsDialogFragment.TAG);
         }
     }
 

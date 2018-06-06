@@ -214,24 +214,49 @@
             tools:text="+6.0%" />
     </android.support.v7.widget.CardView>
 
-    <TextView
-        android:id="@+id/text_address"
-        android:layout_width="@dimen/dp0"
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/button_copy"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:background="?attr/selectableItemBackground"
-        android:fontFamily="@font/montserrat_bold"
-        android:gravity="center"
-        android:padding="@dimen/margin_10dp"
-        android:paddingBottom="1111dp"
-        android:paddingEnd="34dp"
-        android:paddingStart="34dp"
-        android:textColor="@android:color/white"
-        android:textSize="12sp"
-        android:letterSpacing="-0.02"
+        android:clickable="true"
+        android:focusable="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/container_available"
-        tools:text="83T28WCp4Cu5LQiddJnDJJmKWvmmXJSP9L" />
+        app:layout_constraintTop_toBottomOf="@+id/container_available">
+
+        <TextView
+            android:id="@+id/text_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat_bold"
+            android:gravity="center"
+            android:letterSpacing="-0.02"
+            android:paddingBottom="10dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="10dp"
+            android:paddingTop="10dp"
+            android:textColor="@android:color/white"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/image_copy"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="83T28WCp4Cu5LQiddJnDJJmKWvmmXJSP9L" />
+
+        <ImageView
+            android:id="@+id/image_copy"
+            android:layout_width="wrap_content"
+            android:layout_height="14dp"
+            android:paddingRight="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/text_address"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_share_mini" />
+    </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>
