@@ -224,7 +224,8 @@
     <!--<string name="cancel_broadcasting">Cancel broadcasting</string>-->
     <string name="receiving">Получение</string>
     <string name="magic_receive">Магическое получение</string>
-    <string name="terms_url">https://raw.githubusercontent.com/wiki/Appscrunch/Multy/Legal:-Privacy-Policy-(RU).md</string>
+    <string name="terms_url">https://raw.githubusercontent.com/wiki/Appscrunch/Multy/Legal:-Terms-of-service-(RU).md</string>
     <string name="permissions_for_access_nearby_devices">Нам необходимо разрешение для поиска ближайших устройств. Мы не используем вашу геолокацию.</string>
     <string name="searching">Поиск\nзапросов</string>
+    <!--<string name="my_first_wallet_name">My first %s wallet</string>-->
 </resources>

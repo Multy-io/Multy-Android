@@ -60,11 +60,12 @@
                     android:layout_gravity="center"
                     android:layout_marginStart="12dp"
                     android:layout_weight="1"
+                    android:ellipsize="end"
                     android:fontFamily="@font/montserrat"
+                    android:maxLines="1"
                     android:text="@string/wallet_settings"
                     android:textColor="@color/black"
                     android:textSize="18sp"
-                    android:lineSpacingExtra="10sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -78,9 +79,9 @@
                     android:fontFamily="@font/montserrat"
                     android:gravity="center"
                     android:paddingEnd="16dp"
-                    android:paddingLeft="16dp"
+                    android:paddingLeft="8dp"
                     android:paddingRight="16dp"
-                    android:paddingStart="16dp"
+                    android:paddingStart="8dp"
                     android:text="@string/save"
                     android:textColor="@color/text_main_dark"
                     android:textSize="16sp" />

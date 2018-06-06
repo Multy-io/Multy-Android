@@ -10,14 +10,14 @@
     <string name="agreement_read">Я погоджуюся з Умовами надання послуг та обробкою своїх персональних даних відповідно до Політики конфідеційності Multy.</string>
     <string name="discard">Відхилити</string>
     <string name="accept">Прийняти</string>
-    <string name="terms_please">Вибачте,\nДля того щоб користуватися Multy, вам необхідно спочатку висловити свою згоду з Умовами надання послуг. Натискаючи \"Accept"\, ви підтверджуєте, що прочитали, зрозуміли і згодні з наступними умовами надання послуг, а також що ви маєте право укладати юридично обов'язковий договір.</string>
+    <string name="terms_please">Вибачте,\nДля того щоб користуватися Multy, вам необхідно спочатку висловити свою згоду з Умовами надання послуг. Натискаючи \"Прийняти"\, ви підтверджуєте, що прочитали, зрозуміли і згодні з наступними умовами надання послуг, а також що ви маєте право укладати юридично обов'язковий договір.</string>
     <string name="create_first_wallet">Створити Перший гаманець</string>
     <string name="restore_multy">Відновити Multy</string>
     <string name="create_wallet">Створити Гаманець</string>
     <string name="CANCEL">Скасувати</string>
     <string name="cancel">Скасувати</string>
     <string name="wallet_name">Назва Гаманця</string>
-    <string name="create">Назва Гаманця</string>
+    <string name="create">Створити</string>
     <!--<string name="chain">Блокчейн</string>-->
     <string name="available">ДОСТУПНО</string>
     <string name="work_in_progress">(в розробці)</string>
@@ -225,7 +225,8 @@
     <!--<string name="wireless_receive">Wireless receive</string>-->
     <string name="receiving">Отримання</string>
     <string name="magic_receive">Магічне отримання</string>
-    <string name="terms_url">https://raw.githubusercontent.com/wiki/Appscrunch/Multy/Legal:-Terms-of-service.md</string>
+    <string name="terms_url">https://raw.githubusercontent.com/wiki/Appscrunch/Multy/Legal:-Terms-of-service-(UK).md</string>
     <string name="permissions_for_access_nearby_devices">Нам необхідний дозвіл для пошуку найближчих пристроїв. Ми не використовуємо вашу геолокацію</string>
     <string name="searching">Пошук\nзапитів</string>
+    <!--<string name="my_first_wallet_name">My first %s wallet</string>-->
 </resources>

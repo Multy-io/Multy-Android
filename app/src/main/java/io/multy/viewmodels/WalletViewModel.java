@@ -47,6 +47,13 @@ import io.multy.util.NativeDataHelper;
 import io.multy.util.SingleLiveEvent;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.FlowableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+import io.realm.Realm;
 import io.realm.RealmList;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -110,14 +117,14 @@ public class WalletViewModel extends BaseViewModel {
     }
 
     public Wallet createWallet(String walletName, int blockChainId, int networkId) {
-        isLoading.setValue(true);
+        isLoading.postValue(true);
         Wallet walletRealmObject = null;
         try {
             if (!Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
 
                 final boolean initialized = Multy.makeInitialized();
                 if (!initialized) {
-                    errorMessage.setValue(Multy.getContext().getString(R.string.error_initializing_wallet));
+                    errorMessage.postValue(Multy.getContext().getString(R.string.error_initializing_wallet));
                     return null;
                 }
 
@@ -159,8 +166,8 @@ public class WalletViewModel extends BaseViewModel {
             walletRealmObject.setIndex(topIndex);
         } catch (JniException e) {
             e.printStackTrace();
-            isLoading.setValue(false);
-            errorMessage.setValue(e.getLocalizedMessage());
+            isLoading.postValue(false);
+            errorMessage.postValue(e.getLocalizedMessage());
             errorMessage.call();
         }
         return walletRealmObject;
@@ -275,5 +282,47 @@ public class WalletViewModel extends BaseViewModel {
         assert clipboard != null;
         clipboard.setPrimaryClip(clip);
         Toast.makeText(activity, R.string.address_copied, Toast.LENGTH_SHORT).show();
+    }
+
+    //todo review this
+    public void createFirstWallets(Runnable onComplete) {
+        Disposable disposable = Flowable.create((FlowableOnSubscribe<Boolean>) emitter -> {
+            boolean result = false;
+            if (!Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
+                if (!Multy.makeInitialized()) {
+                    errorMessage.postValue(Multy.getContext().getString(R.string.error_initializing_wallet));
+                    emitter.onNext(false);
+                    return;
+                }
+            }
+            Realm realm = RealmManager.open();
+            FirstLaunchHelper.setCredentials(null);
+            for (NativeDataHelper.Blockchain blockchain : NativeDataHelper.Blockchain.values()) {
+                if (blockchain.getValue() == NativeDataHelper.Blockchain.ETH.getValue()) {
+                    continue; //todo remove when eth mainnet will work
+                }
+                Wallet createdWallet = createWallet(String.format(Multy.getContext().getString(R.string.my_first_wallet_name), blockchain.name()),
+                        blockchain.getValue(), NativeDataHelper.NetworkId.MAIN_NET.getValue());
+                Response<ResponseBody> response = MultyApi.INSTANCE.addWallet(Multy.getContext(), createdWallet).execute();
+                if (!result && response.isSuccessful()) {
+                    result = true;
+                }
+            }
+            realm.close();
+            emitter.onNext(result);
+        }, BackpressureStrategy.LATEST).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(isSuccess -> {
+                    if (isSuccess != null && isSuccess) {
+                        RealmManager.open();
+                        saveDonateAddresses();
+                    }
+                    onComplete.run();
+                }, throwable -> {
+                    throwable.printStackTrace();
+                    errorMessage.postValue(Multy.getContext().getString(R.string.something_went_wrong));
+                    onComplete.run();
+                });
+        addDisposable(disposable);
     }
 }

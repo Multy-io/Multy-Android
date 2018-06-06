@@ -22,7 +22,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.multy.R;
 import io.multy.model.entities.Fee;
-import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
 
 public class MyFeeAdapter extends RecyclerView.Adapter<MyFeeAdapter.FeeHolder> {
@@ -56,19 +55,17 @@ public class MyFeeAdapter extends RecyclerView.Adapter<MyFeeAdapter.FeeHolder> {
         holder.imageMark.setVisibility(rate.isSelected() ? View.VISIBLE : View.INVISIBLE);
         switch (feeType) {
             case BTC:
-                price = (rate.getAmount() == 0 ? 1000 : rate.getAmount()) * Constants.BTC_TRANSACTION_SIZE;
+                price = (rate.getAmount() == 0 ? 1000 : rate.getAmount());
                 if (position == rates.size() - 1) {
                     holder.textName.setText(rate.getName());
                     holder.divider.setVisibility(View.GONE);
                     holder.imageLogo.setImageResource(R.drawable.ic_custom);
-                    holder.textBalanceOriginal.setText(String.format("~%s BTC / ~%s USD",
-                                CryptoFormatUtils.satoshiToBtc(price), CryptoFormatUtils.satoshiToUsd(price)));
+                    holder.textBalanceOriginal.setText(String.format("%s Sat/B", CryptoFormatUtils.satoshiToBtc(price)));
                     holder.root.setOnClickListener(v -> listener.onClickCustomFee(rate.getAmount()));
                 } else {
                     holder.imageLogo.setImageResource(getIconResId(position));
                     holder.textName.setText(rate.getName());
-                    holder.textBalanceOriginal.setText(String.format("~%s BTC / ~%s USD",
-                            CryptoFormatUtils.satoshiToBtc(price), CryptoFormatUtils.satoshiToUsd(price)));
+                    holder.textBalanceOriginal.setText(String.format("%s Sat/B", CryptoFormatUtils.satoshiToBtc(price)));
                     holder.root.setOnClickListener(v -> {
                         setItemSelected(position);
                         listener.logTransactionFee(position);
@@ -77,22 +74,14 @@ public class MyFeeAdapter extends RecyclerView.Adapter<MyFeeAdapter.FeeHolder> {
 
                 break;
             case ETH:
-                ethPrice = Math.abs(CryptoFormatUtils.weiToEth(String.valueOf(rate.getAmount())));
-                String stringEth = CryptoFormatUtils.FORMAT_ETH.format(ethPrice);
+                holder.textName.setText(rate.getName());
+                holder.textBalanceOriginal.setText(String.format("%s GWei", rate.getAmount()));
                 if (position == rates.size() - 1) {
-                    holder.textName.setText(rate.getName());
                     holder.divider.setVisibility(View.GONE);
                     holder.imageLogo.setImageResource(R.drawable.ic_custom);
-                    if (ethPrice <= 0) {
-                        holder.textBalanceOriginal.setVisibility(View.GONE);
-                    } else {
-                        holder.textBalanceOriginal.setText(String.format("%s ETH", stringEth));
-                    }
                     holder.root.setOnClickListener(v -> listener.onClickCustomFee(rate.getAmount()));
                 } else {
                     holder.imageLogo.setImageResource(getIconResId(position));
-                    holder.textName.setText(String.format("%s · %s", rate.getName(), rate.getTime()));
-                    holder.textBalanceOriginal.setText(String.format("%s ETH", stringEth));
                     holder.root.setOnClickListener(v -> {
                         setItemSelected(position);
                         listener.logTransactionFee(position);

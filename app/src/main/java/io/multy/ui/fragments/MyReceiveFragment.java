@@ -75,6 +75,13 @@ public class MyReceiveFragment extends BaseFragment {
     private long requestSumSatoshi = 50000;
     private AssetRequestViewModel viewModel;
     private BlueSocketManager socketManager = new BlueSocketManager();
+    private Callback callback;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        callback = new Callback();
+    }
 
     @Nullable
     @Override
@@ -84,56 +91,6 @@ public class MyReceiveFragment extends BaseFragment {
         viewModel = ViewModelProviders.of(getActivity()).get(AssetRequestViewModel.class);
         setBaseViewModel(viewModel);
         return convertView;
-    }
-
-    public void setupRequestSum() {
-        final String address = viewModel.getWallet().getActiveAddress().getAddress();
-        textAddress.setText(address);
-        imageFastId.setImageResource(FastReceiver.getImageResId(address));
-        textAmount.setText(String.format("%s BTC / %s%s", CryptoFormatUtils.satoshiToBtc(requestSumSatoshi), CryptoFormatUtils.satoshiToUsd(requestSumSatoshi), viewModel.getWallet().getFiatString()));
-    }
-
-    public void becomeReceiver() {
-        BluetoothLeAdvertiser advertiser = BluetoothAdapter.getDefaultAdapter().getBluetoothLeAdvertiser();
-        AdvertiseSettings advertiseSettings = buildAdvertiseSettings();
-        final String userCode = stringToHex(textAddress.getText().toString().substring(0, 4).getBytes());
-        AdvertiseData advertiseData = buildAdvertiseData(userCode);
-        advertiser.startAdvertising(advertiseSettings, advertiseData, new AdvertiseCallback() {
-            @Override
-            public void onStartSuccess(AdvertiseSettings settingsInEffect) {
-                try {
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("userid", RealmManager.getSettingsDao().getUserId().getUserId());
-                    jsonObject.put("usercode", userCode);
-                    jsonObject.put("currencyid", viewModel.getWallet().getCurrencyId());
-                    jsonObject.put("networkid", viewModel.getWallet().getNetworkId());
-                    jsonObject.put("address", textAddress.getText().toString());
-                    jsonObject.put("amount", String.valueOf(requestSumSatoshi));
-
-                    socketManager.becomeReceiver(jsonObject);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                super.onStartSuccess(settingsInEffect);
-            }
-
-            @Override
-            public void onStartFailure(int errorCode) {
-                Toast.makeText(getActivity(), BuildConfig.DEBUG ?
-                        "Failed to start broadcasting request. Error code - " + errorCode :
-                        getString(R.string.error), Toast.LENGTH_SHORT).show();
-                super.onStartFailure(errorCode);
-            }
-        });
-    }
-
-    private String stringToHex(byte[] buf) {
-        char[] chars = new char[2 * buf.length];
-        for (int i = 0; i < buf.length; ++i) {
-            chars[2 * i] = HEX_CHARS[(buf[i] & 0xF0) >>> 4];
-            chars[2 * i + 1] = HEX_CHARS[buf[i] & 0x0F];
-        }
-        return new String(chars);
     }
 
     @Override
@@ -149,9 +106,7 @@ public class MyReceiveFragment extends BaseFragment {
             startActivityForResult(enableLocationIntent, REQUEST_CODE_LOCATION);
         }
 
-
-        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (!bluetoothAdapter.isEnabled()) {
+        if (!BluetoothAdapter.getDefaultAdapter().isEnabled()) {
             Intent enableBT = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBT, REQUEST_CODE_BLUETOOTH);
         } else {
@@ -160,9 +115,21 @@ public class MyReceiveFragment extends BaseFragment {
     }
 
     @Override
+    public void onPause() {
+        BluetoothAdapter.getDefaultAdapter().getBluetoothLeAdvertiser().stopAdvertising(callback);
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        callback = null;
+        disconnect();
+        super.onDestroy();
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (requestCode == REQUEST_CODE_BLUETOOTH && resultCode == Activity.RESULT_OK) {
             start();
         }
@@ -191,6 +158,15 @@ public class MyReceiveFragment extends BaseFragment {
         }
     }
 
+    private String stringToHex(byte[] buf) {
+        char[] chars = new char[2 * buf.length];
+        for (int i = 0; i < buf.length; ++i) {
+            chars[2 * i] = HEX_CHARS[(buf[i] & 0xF0) >>> 4];
+            chars[2 * i + 1] = HEX_CHARS[buf[i] & 0x0F];
+        }
+        return new String(chars);
+    }
+
     private void verifyTransactionUpdate(String json) {
         TransactionUpdateResponse response = new Gson().fromJson(json, TransactionUpdateResponse.class);
         if (response != null) {
@@ -202,23 +178,6 @@ public class MyReceiveFragment extends BaseFragment {
                 CompleteDialogFragment.newInstance(viewModel.getWallet().getCurrencyId()).show(getActivity().getSupportFragmentManager(), "");
             }
         }
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
-
-
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    public void onDestroy() {
-        disconnect();
-        super.onDestroy();
     }
 
     private void updateRequestAmount(double btcAmount) {
@@ -249,10 +208,64 @@ public class MyReceiveFragment extends BaseFragment {
         }
     }
 
+    public void setupRequestSum() {
+        final String address = viewModel.getWallet().getActiveAddress().getAddress();
+        textAddress.setText(address);
+        imageFastId.setImageResource(FastReceiver.getImageResId(address));
+        textAmount.setText(String.format("%s %s / %s %s", CryptoFormatUtils.satoshiToBtc(requestSumSatoshi), viewModel.getWallet().getCurrencyName(),
+                CryptoFormatUtils.satoshiToUsd(requestSumSatoshi), viewModel.getWallet().getFiatString()));
+    }
+
+    public void becomeReceiver() {
+        BluetoothLeAdvertiser advertiser = BluetoothAdapter.getDefaultAdapter().getBluetoothLeAdvertiser();
+        AdvertiseSettings advertiseSettings = buildAdvertiseSettings();
+        final String userCode = stringToHex(textAddress.getText().toString().substring(0, 4).getBytes());
+        AdvertiseData advertiseData = buildAdvertiseData(userCode);
+        callback.setUserCode(userCode);
+        advertiser.startAdvertising(advertiseSettings, advertiseData, callback);
+    }
+
     @OnClick(R.id.button_cancel)
     public void onClickCancel() {
         disconnect();
         getActivity().setResult(Activity.RESULT_CANCELED);
         getActivity().finish();
+    }
+
+    private class Callback extends AdvertiseCallback {
+
+        private String userCode = "";
+
+        @Override
+        public void onStartSuccess(AdvertiseSettings settingsInEffect) {
+            try {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("userid", RealmManager.getSettingsDao().getUserId().getUserId());
+                jsonObject.put("usercode", userCode);
+                jsonObject.put("currencyid", viewModel.getWallet().getCurrencyId());
+                jsonObject.put("networkid", viewModel.getWallet().getNetworkId());
+                jsonObject.put("address", textAddress.getText().toString());
+                jsonObject.put("amount", String.valueOf(requestSumSatoshi));
+
+                socketManager.becomeReceiver(jsonObject);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onStartFailure(int errorCode) {
+            Toast.makeText(getActivity(), BuildConfig.DEBUG ?
+                    "Failed to start broadcasting request. Error code - " + errorCode :
+                    getString(R.string.something_went_wrong), Toast.LENGTH_SHORT).show();
+        }
+
+        public String getUserCode() {
+            return userCode;
+        }
+
+        public void setUserCode(String userCode) {
+            this.userCode = userCode;
+        }
     }
 }
