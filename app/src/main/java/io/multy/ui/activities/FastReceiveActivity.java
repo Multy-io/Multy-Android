@@ -14,6 +14,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
@@ -47,11 +49,16 @@ public class FastReceiveActivity extends BaseActivity {
 
         viewModel.setWallet(RealmManager.getAssetsDao().getWalletById(id));
         viewModel.setAmount(amount);
+    }
 
-        if (Build.VERSION.SDK_INT >= 23) {
-            checkPermissions();
-        } else {
-            start();
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (Build.VERSION.SDK_INT >= 23 && checkPermissions()) {
+            Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container_main);
+            if (fragment == null) {
+                start();
+            }
         }
     }
 
@@ -64,35 +71,17 @@ public class FastReceiveActivity extends BaseActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_BLUETOOTH && resultCode == RESULT_OK) {
-            start();
-        } else {
-            finish();
-        }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
-            case REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS: {
-                Map<String, Integer> perms = new HashMap<>();
-                perms.put(Manifest.permission.ACCESS_FINE_LOCATION, PackageManager.PERMISSION_GRANTED);
-
-                for (int i = 0; i < permissions.length; i++) {
-                    perms.put(permissions[i], grantResults[i]);
+            case REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS:
+                for (int i = 0; i < grantResults.length; i++) {
+                    if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+                        Log.i("wise", "permission not granted: " + permissions[i]);
+                        finish();
+                    }
                 }
-
-                if (perms.get(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    Log.i("wise", "all permissions granted");
-                    start();
-                } else {
-                    finish();
-                }
-            }
-            break;
+                Log.i("wise", "all permissions granted");
+                break;
             default:
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
@@ -100,7 +89,7 @@ public class FastReceiveActivity extends BaseActivity {
 
 
     @TargetApi(Build.VERSION_CODES.M)
-    private void checkPermissions() {
+    private boolean checkPermissions() {
         List<String> permissionsNeeded = new ArrayList<>();
 
         final List<String> permissionsList = new ArrayList<>();
@@ -112,13 +101,13 @@ public class FastReceiveActivity extends BaseActivity {
                 String message = getString(R.string.permissions_for_access_nearby_devices);
                 showDialog(message,
                         (dialog, which) -> requestPermissions(permissionsList.toArray(new String[permissionsList.size()]), REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS));
-                return;
+                return false;
             }
             requestPermissions(permissionsList.toArray(new String[permissionsList.size()]), REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS);
-            return;
+            return false;
         }
 
-        start();
+        return true;
     }
 
     private void showDialog(String message, DialogInterface.OnClickListener okListener) {

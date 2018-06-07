@@ -39,15 +39,20 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.BuildConfig;
+import io.multy.Multy;
 import io.multy.R;
 import io.multy.api.socket.BlueSocketManager;
 import io.multy.api.socket.TransactionUpdateResponse;
 import io.multy.model.entities.FastReceiver;
+import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.storage.RealmManager;
+import io.multy.storage.SettingsDao;
 import io.multy.ui.fragments.dialogs.CompleteDialogFragment;
 import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
+import io.multy.util.NativeDataHelper;
 import io.multy.viewmodels.AssetRequestViewModel;
+import io.realm.Realm;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
@@ -72,7 +77,6 @@ public class MyReceiveFragment extends BaseFragment {
     @BindView(R.id.root)
     View parent;
 
-    private long requestSumSatoshi = 50000;
     private AssetRequestViewModel viewModel;
     private BlueSocketManager socketManager = new BlueSocketManager();
     private Callback callback;
@@ -97,7 +101,7 @@ public class MyReceiveFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
         if (viewModel.getAmount() != 0) {
-            updateRequestAmount(viewModel.getAmount());
+            setupRequestSum();
         }
 
         final LocationManager manager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
@@ -116,7 +120,9 @@ public class MyReceiveFragment extends BaseFragment {
 
     @Override
     public void onPause() {
-        BluetoothAdapter.getDefaultAdapter().getBluetoothLeAdvertiser().stopAdvertising(callback);
+        if (callback != null && BluetoothAdapter.getDefaultAdapter().isEnabled()) {
+            BluetoothAdapter.getDefaultAdapter().getBluetoothLeAdvertiser().stopAdvertising(callback);
+        }
         super.onPause();
     }
 
@@ -130,8 +136,8 @@ public class MyReceiveFragment extends BaseFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE_BLUETOOTH && resultCode == Activity.RESULT_OK) {
-            start();
+        if (requestCode == REQUEST_CODE_BLUETOOTH && resultCode != Activity.RESULT_OK && getActivity() != null) {
+            getActivity().finish();
         }
     }
 
@@ -142,7 +148,9 @@ public class MyReceiveFragment extends BaseFragment {
                 getActivity().setResult(Activity.RESULT_OK);
                 getActivity().finish();
             });
-            socketManager.getSocket().on(Socket.EVENT_CONNECT, args -> becomeReceiver());
+            final double amount = viewModel.getAmount();
+            final int currencyId = viewModel.getWallet().getCurrencyId();
+            socketManager.getSocket().on(Socket.EVENT_CONNECT, args -> becomeReceiver(amount, currencyId));
             socketManager.getSocket().on(EVENT_TRANSACTION_UPDATE_BTC, new Emitter.Listener() {
                 @Override
                 public void call(Object... args) {
@@ -152,7 +160,7 @@ public class MyReceiveFragment extends BaseFragment {
             socketManager.getSocket().on(EVENT_TRANSACTION_UPDATE, new Emitter.Listener() {
                 @Override
                 public void call(Object... args) {
-                    verifyTransactionUpdate(args[0].toString());
+                    getActivity().runOnUiThread(() -> verifyTransactionUpdate(args[0].toString()));
                 }
             });
         }
@@ -178,11 +186,6 @@ public class MyReceiveFragment extends BaseFragment {
                 CompleteDialogFragment.newInstance(viewModel.getWallet().getCurrencyId()).show(getActivity().getSupportFragmentManager(), "");
             }
         }
-    }
-
-    private void updateRequestAmount(double btcAmount) {
-        requestSumSatoshi = CryptoFormatUtils.btcToSatoshi(String.valueOf(btcAmount));
-        setupRequestSum();
     }
 
     private AdvertiseData buildAdvertiseData(String code) {
@@ -212,16 +215,35 @@ public class MyReceiveFragment extends BaseFragment {
         final String address = viewModel.getWallet().getActiveAddress().getAddress();
         textAddress.setText(address);
         imageFastId.setImageResource(FastReceiver.getImageResId(address));
-        textAmount.setText(String.format("%s %s / %s %s", CryptoFormatUtils.satoshiToBtc(requestSumSatoshi), viewModel.getWallet().getCurrencyName(),
-                CryptoFormatUtils.satoshiToUsd(requestSumSatoshi), viewModel.getWallet().getFiatString()));
+        String fiatAmount = "";
+        switch (NativeDataHelper.Blockchain.valueOf(viewModel.getWallet().getCurrencyId())) {
+            case BTC:
+                fiatAmount = CryptoFormatUtils.btcToUsd(viewModel.getAmount());
+                break;
+            case ETH:
+                fiatAmount = CryptoFormatUtils.ethToUsd(viewModel.getAmount());
+                break;
+        }
+        textAmount.setText(String.format("%s %s / %s %s", viewModel.getAmount(), viewModel.getWallet().getCurrencyName(),
+                fiatAmount, CurrencyCode.USD.name()));
     }
 
-    public void becomeReceiver() {
+    public void becomeReceiver(double amount, int currencyId) {
         BluetoothLeAdvertiser advertiser = BluetoothAdapter.getDefaultAdapter().getBluetoothLeAdvertiser();
         AdvertiseSettings advertiseSettings = buildAdvertiseSettings();
         final String userCode = stringToHex(textAddress.getText().toString().substring(0, 4).getBytes());
         AdvertiseData advertiseData = buildAdvertiseData(userCode);
         callback.setUserCode(userCode);
+        String requestSum = "0";
+        switch (NativeDataHelper.Blockchain.valueOf(currencyId)) {
+            case BTC:
+                requestSum = CryptoFormatUtils.btcToSatoshiString(amount);
+                break;
+            case ETH:
+                requestSum = CryptoFormatUtils.ethToWei(String.valueOf(amount));
+                break;
+        }
+        callback.setRequestSum(requestSum);
         advertiser.startAdvertising(advertiseSettings, advertiseData, callback);
     }
 
@@ -235,22 +257,25 @@ public class MyReceiveFragment extends BaseFragment {
     private class Callback extends AdvertiseCallback {
 
         private String userCode = "";
+        private String requestSum = "0";
 
         @Override
         public void onStartSuccess(AdvertiseSettings settingsInEffect) {
+            Realm realm = Realm.getInstance(Multy.getRealmConfiguration());
             try {
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("userid", RealmManager.getSettingsDao().getUserId().getUserId());
+                jsonObject.put("userid", new SettingsDao(realm).getUserId().getUserId());
                 jsonObject.put("usercode", userCode);
                 jsonObject.put("currencyid", viewModel.getWallet().getCurrencyId());
                 jsonObject.put("networkid", viewModel.getWallet().getNetworkId());
                 jsonObject.put("address", textAddress.getText().toString());
-                jsonObject.put("amount", String.valueOf(requestSumSatoshi));
+                jsonObject.put("amount", String.valueOf(requestSum));
 
                 socketManager.becomeReceiver(jsonObject);
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            realm.close();
         }
 
         @Override
@@ -266,6 +291,14 @@ public class MyReceiveFragment extends BaseFragment {
 
         public void setUserCode(String userCode) {
             this.userCode = userCode;
+        }
+
+        public String getRequestSum() {
+            return requestSum;
+        }
+
+        public void setRequestSum(String requestSum) {
+            this.requestSum = requestSum;
         }
     }
 }
