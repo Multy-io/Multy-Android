@@ -45,7 +45,6 @@ import io.multy.api.socket.BlueSocketManager;
 import io.multy.api.socket.TransactionUpdateResponse;
 import io.multy.model.entities.FastReceiver;
 import io.multy.model.entities.wallet.CurrencyCode;
-import io.multy.storage.RealmManager;
 import io.multy.storage.SettingsDao;
 import io.multy.ui.fragments.dialogs.CompleteDialogFragment;
 import io.multy.util.Constants;
@@ -122,6 +121,7 @@ public class MyReceiveFragment extends BaseFragment {
     public void onPause() {
         if (callback != null && BluetoothAdapter.getDefaultAdapter().isEnabled()) {
             BluetoothAdapter.getDefaultAdapter().getBluetoothLeAdvertiser().stopAdvertising(callback);
+            disconnect();
         }
         super.onPause();
     }
@@ -129,7 +129,6 @@ public class MyReceiveFragment extends BaseFragment {
     @Override
     public void onDestroy() {
         callback = null;
-        disconnect();
         super.onDestroy();
     }
 

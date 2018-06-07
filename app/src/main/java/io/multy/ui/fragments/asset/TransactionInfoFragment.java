@@ -219,8 +219,10 @@ public class TransactionInfoFragment extends BaseFragment {
             textValue.append(CryptoFormatUtils.satoshiToBtc(outValue));
             textAmount.append(CryptoFormatUtils.satoshiToUsd(outValue, exchangeRate));
         }
+        recyclerInputAdresses.setNestedScrollingEnabled(false);
         recyclerInputAdresses.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerInputAdresses.setAdapter(new TransactionAddressAdapter(transaction.getInputs(), this::onClickAddress));
+        recyclerOutputAddresses.setNestedScrollingEnabled(false);
         recyclerOutputAddresses.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerOutputAddresses.setAdapter(new TransactionAddressAdapter(transaction.getOutputs(), this::onClickAddress));
         String blocks;
