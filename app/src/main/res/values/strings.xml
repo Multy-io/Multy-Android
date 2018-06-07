@@ -299,4 +299,5 @@
     <string name="searching">Searching\nactive\nrequests</string>
     <string name="my_first_wallet_name">My first %s wallet</string>
     <string name="bitcoin_btc">Bitcoin・BTC</string>
+    <string name="magic_send">Magical send</string>
 </resources>
