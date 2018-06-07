@@ -298,4 +298,5 @@
     <string name="permissions_for_access_nearby_devices">We need permissions to access finding nearby devices. We don\'t use your location.</string>
     <string name="searching">Searching\nactive\nrequests</string>
     <string name="my_first_wallet_name">My first %s wallet</string>
+    <string name="bitcoin_btc">Bitcoin・BTC</string>
 </resources>

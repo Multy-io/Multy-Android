@@ -7,7 +7,6 @@
 package io.multy.util;
 
 
-import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
@@ -27,7 +26,7 @@ public class NumberFormatter {
     }
 
     public static DecimalFormat getEthInstance() {
-        DecimalFormat decimalFormat = new DecimalFormat();
+        DecimalFormat decimalFormat = new DecimalFormat("##.##########", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
         decimalFormat.setMaximumFractionDigits(10);
         decimalFormat.setMinimumFractionDigits(0);
         decimalFormat.setGroupingUsed(false);

@@ -101,8 +101,10 @@ public class ChainAdapter extends RecyclerView.Adapter<ChainAdapter.Holder> {
         holder.checkBox.setChecked(chainCurrency != null
                 && availableChainsAbbrev[position].equals(chainCurrency) && chainNet == availableChainNets[position]);
         holder.divider.setVisibility(position == availableChainsAbbrev.length - 1 ? View.INVISIBLE : View.VISIBLE);
-        holder.itemView.setOnClickListener(v -> listener.onClickAvailableChain(availableChainsAbbrev[position],
-                availableChainNets[position], availableChainIds[position]));
+        holder.itemView.setOnClickListener(v -> {
+            String selectedName = availableChainsName[position] + "・" + availableChainsAbbrev[position];
+            listener.onClickAvailableChain(selectedName, availableChainNets[position], availableChainIds[position]);
+        });
     }
 
     private void bindDisable(DisabledChainHolder holder, int position) {

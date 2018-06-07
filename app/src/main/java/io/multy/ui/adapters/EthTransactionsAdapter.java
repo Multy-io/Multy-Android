@@ -48,6 +48,10 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     private long walletId;
     private List<TransactionHistory> transactionHistoryList;
 
+    public EthTransactionsAdapter() {
+        this.transactionHistoryList = new ArrayList<>();
+    }
+
     public EthTransactionsAdapter(List<TransactionHistory> transactionHistoryList, long walletId) {
         Collections.sort(transactionHistoryList, (transactionHistory, t1) -> Long.compare(t1.getMempoolTime(), transactionHistory.getMempoolTime()));
         this.transactionHistoryList = transactionHistoryList;

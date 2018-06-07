@@ -201,7 +201,11 @@ public class AssetSendActivity extends BaseActivity {
                 viewModel.thoseAddress.setValue(data.getStringExtra(Constants.EXTRA_QR_CONTENTS));
                 if (data.hasExtra(Constants.EXTRA_AMOUNT) && data.getExtras() != null) {
                     viewModel.setAmountScanned(true);
-                    viewModel.setAmount(Double.valueOf(data.getExtras().getString(Constants.EXTRA_AMOUNT, "0")));
+                    String amount = data.getExtras().getString(Constants.EXTRA_AMOUNT, "0");
+                    if (!TextUtils.isEmpty(amount) && amount.contains(",")) {
+                        amount = amount.replace(",", ".");
+                    }
+                    viewModel.setAmount(Double.valueOf(amount));
                 }
             }
         }

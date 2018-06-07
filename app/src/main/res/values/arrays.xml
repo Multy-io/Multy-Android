@@ -25,9 +25,9 @@
 
     <string-array name="available_chain_abbrev">
         <item>BTC</item>
-        <item>BTC</item>
+        <item>BTC Testnet</item>
         <!--<item>ETH</item>-->
-        <item>ETH</item>
+        <item>ETH Testnet</item>
     </string-array>
     <string-array name="available_chain_name">
         <item>Bitcoin</item>
