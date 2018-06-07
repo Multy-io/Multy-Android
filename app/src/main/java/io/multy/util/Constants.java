@@ -98,7 +98,7 @@ public final class Constants {
     public static final String BLOCKCHAIN_MAIN_INFO_PATH = "https://blockchain.info/tx/";
     public static final String ETHERSCAN_RINKEBY_INFO_PATH = "https://rinkeby.etherscan.io/tx/";
     public static final String ETHERSCAN_MAIN_INFO_PATH = "https://etherscan.io/tx/";
-    public static final String PUSH_TOPIC = "btcTransactionUpdate-";
+    public static final String PUSH_TOPIC = "TransactionUpdate-";
     public static final String MULTY_IO_URL = "http://multy.io";
     public static final String CHAIN_ID = "CHAIN_ID";
     public static final String FEATURE_ID = "FEATURE_ID";
