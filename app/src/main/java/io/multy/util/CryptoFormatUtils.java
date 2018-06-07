@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 import io.multy.api.socket.CurrenciesRate;
 import io.multy.model.entities.wallet.EthWallet;
@@ -83,16 +84,21 @@ public class CryptoFormatUtils {
         return FORMAT_USD.format(btc * price);
     }
 
-    public static String btcToUsd(double btc, double price) {
+    public static String btcToUsd(double btc) {
         if (btc == 0) {
             return "0.0";
         }
-
         final CurrenciesRate currenciesRate = RealmManager.getSettingsDao().getCurrenciesRate();
         if (currenciesRate == null) {
             return "";
         }
+        return FORMAT_USD.format(btc * currenciesRate.getBtcToUsd());
+    }
 
+    public static String btcToUsd(double btc, double price) {
+        if (btc == 0) {
+            return "0.0";
+        }
         return FORMAT_USD.format(btc * price);
     }
 
@@ -112,6 +118,14 @@ public class CryptoFormatUtils {
             return (long) (Double.parseDouble(btc) * Math.pow(10, 8));
         } catch (Exception e) {
             return -1;
+        }
+    }
+
+    public static String btcToSatoshiString(double btc) {
+        try {
+            return String.format(Locale.ENGLISH, "%.0f", btc * Math.pow(10, 8));
+        } catch (Exception e) {
+            return "-1";
         }
     }
 

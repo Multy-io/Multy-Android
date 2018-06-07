@@ -135,11 +135,11 @@ public class RequestSummaryFragment extends BaseFragment {
         }
         generateQR();
 
-        if (viewModel.getWallet().getCurrencyId() != NativeDataHelper.Blockchain.BTC.getValue()) {
-            buttonBroadcast.setVisibility(View.GONE);
-        } else {
-            buttonBroadcast.setVisibility(View.VISIBLE);
-        }
+//        if (viewModel.getWallet().getCurrencyId() != NativeDataHelper.Blockchain.BTC.getValue()) {
+//            buttonBroadcast.setVisibility(View.GONE);
+//        } else {
+//            buttonBroadcast.setVisibility(View.VISIBLE);
+//        }
     }
 
     @Override

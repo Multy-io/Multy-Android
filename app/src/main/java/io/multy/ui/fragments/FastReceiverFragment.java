@@ -23,6 +23,7 @@ import butterknife.ButterKnife;
 import io.multy.R;
 import io.multy.model.entities.FastReceiver;
 import io.multy.util.CryptoFormatUtils;
+import io.multy.util.NativeDataHelper;
 
 public class FastReceiverFragment extends Fragment {
 
@@ -52,9 +53,15 @@ public class FastReceiverFragment extends Fragment {
         ButterKnife.bind(this, convertView);
 
         if (receiver != null) {
+            switch (NativeDataHelper.Blockchain.valueOf(receiver.getCurrencyId())) {
+                case BTC:
+                    textAmount.setText(CryptoFormatUtils.satoshiToBtcLabel((long)Double.parseDouble(receiver.getAmount())));
+                    break;
+                case ETH:
+                    textAmount.setText(CryptoFormatUtils.weiToEthLabel(receiver.getAmount()));
+                    break;
+            }
             textAddress.setText(receiver.getAddress());
-            final long amountSatoshi = Long.parseLong(receiver.getAmount());
-            textAmount.setText(CryptoFormatUtils.satoshiToBtcLabel(amountSatoshi));
             circleView.setImageResource(FastReceiver.getImageResId(receiver.getAddress()));
         }
         return convertView;

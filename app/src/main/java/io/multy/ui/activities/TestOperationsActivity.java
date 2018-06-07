@@ -10,7 +10,9 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
+import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -21,6 +23,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.ParcelUuid;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GestureDetectorCompat;
@@ -43,6 +46,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -53,8 +57,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
+import io.multy.api.MultyApi;
 import io.multy.api.socket.BlueSocketManager;
 import io.multy.model.entities.FastReceiver;
+import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.requests.HdTransactionRequestEntity;
 import io.multy.storage.RealmManager;
@@ -62,10 +68,17 @@ import io.multy.ui.adapters.MyWalletPagerAdapter;
 import io.multy.ui.adapters.ReceiversPagerAdapter;
 import io.multy.ui.fragments.dialogs.CompleteDialogFragment;
 import io.multy.util.Constants;
+import io.multy.util.CryptoFormatUtils;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
+import io.multy.util.analytics.Analytics;
+import io.multy.util.analytics.AnalyticsConstants;
 import io.socket.client.Ack;
 import io.socket.client.Socket;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import timber.log.Timber;
 
 import static io.multy.api.socket.BlueSocketManager.EVENT_SENDER_CHECK;
@@ -105,6 +118,7 @@ public class TestOperationsActivity extends BaseActivity {
     private long selectedWalletId = -1;
     private Handler handler = new Handler();
     private Runnable updateReceiversAction;
+    private ScanCallback bleScanCallback;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -118,6 +132,84 @@ public class TestOperationsActivity extends BaseActivity {
         startSockets();
 
         containerSend.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (bleScanCallback != null) {
+            startBLeScanner();
+        }
+     }
+
+    @Override
+    protected void onPause() {
+        if (bleScanCallback != null) {
+            BluetoothAdapter.getDefaultAdapter().getBluetoothLeScanner().stopScan(bleScanCallback);
+        }
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (socketManager.getSocket() != null && socketManager.getSocket().connected()) {
+            socketManager.getSocket().disconnect();
+            handler.removeCallbacks(null);
+        }
+        bleScanCallback = null;
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == Constants.CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
+            final String address = data.getStringExtra(Constants.EXTRA_QR_CONTENTS);
+            Intent intent = new Intent(this, AssetSendActivity.class);
+            intent.putExtra(Constants.EXTRA_ADDRESS, address);
+            startActivity(intent);
+            finish();
+        } else if (requestCode == REQUEST_BLUETOOTH && resultCode == RESULT_OK) {
+            start();
+        } else if (requestCode != REQUEST_CODE_LOCATION) {
+            finish();
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS: {
+                Map<String, Integer> perms = new HashMap<>();
+                perms.put(Manifest.permission.ACCESS_FINE_LOCATION, PackageManager.PERMISSION_GRANTED);
+
+                for (int i = 0; i < permissions.length; i++) {
+                    perms.put(permissions[i], grantResults[i]);
+                }
+
+                if (perms.get(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    Log.i("wise", "all permissions granted");
+                    start();
+                } else {
+                    finish();
+                }
+            }
+            break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (containerSend.getVisibility() == View.VISIBLE) {
+            hideSendGroup();
+            enableScroll();
+            receiversPagerAdapter.showElements(pagerRequests.getCurrentItem());
+            walletPagerAdapter.showElements(pagerWallets.getCurrentItem());
+        } else {
+            super.onBackPressed();
+        }
     }
 
     private void initPermissions() {
@@ -142,9 +234,7 @@ public class TestOperationsActivity extends BaseActivity {
         pagerRequests.setAdapter(receiversPagerAdapter);
         pagerRequests.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) { }
 
             @Override
             public void onPageSelected(int position) {
@@ -152,9 +242,7 @@ public class TestOperationsActivity extends BaseActivity {
             }
 
             @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
+            public void onPageScrollStateChanged(int state) { }
         });
     }
 
@@ -172,7 +260,6 @@ public class TestOperationsActivity extends BaseActivity {
         } else {
             wallets = RealmManager.getAssetsDao().getAvailableWallets(receiver.getCurrencyId(), receiver.getNetworkId());
         }
-
 
         walletPagerAdapter = new MyWalletPagerAdapter(getSupportFragmentManager(), v -> {
             if (containerSend.getVisibility() == View.VISIBLE) {
@@ -192,11 +279,6 @@ public class TestOperationsActivity extends BaseActivity {
         pagerWallets.setAdapter(walletPagerAdapter);
     }
 
-    public int dpToPx(int dps) {
-        int px = (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dps, getResources().getDisplayMetrics()));
-        return px;
-    }
-
     private void enableScroll() {
         pagerWallets.setOnTouchListener(null);
         pagerRequests.setOnTouchListener(null);
@@ -205,23 +287,6 @@ public class TestOperationsActivity extends BaseActivity {
     private void disableScroll() {
         pagerWallets.setOnTouchListener((v, event) -> true);
         pagerRequests.setOnTouchListener((v, event) -> true);
-    }
-
-    @OnClick(R.id.button_cancel)
-    public void onClickCancel() {
-        onBackPressed();
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (containerSend.getVisibility() == View.VISIBLE) {
-            hideSendGroup();
-            enableScroll();
-            receiversPagerAdapter.showElements(pagerRequests.getCurrentItem());
-            walletPagerAdapter.showElements(pagerWallets.getCurrentItem());
-        } else {
-            super.onBackPressed();
-        }
     }
 
     private void showSendGroup() {
@@ -254,6 +319,21 @@ public class TestOperationsActivity extends BaseActivity {
                 }).start();
             });
         }).start();
+        String amount = "";
+        String amountFiat = "";
+        FastReceiver receiver = receiversPagerAdapter.getReceiver(pagerRequests.getCurrentItem());
+        switch (NativeDataHelper.Blockchain.valueOf(receiver.getCurrencyId())) {
+            case BTC:
+                final long amountBtc = (long) Double.parseDouble(receiver.getAmount());
+                amount = CryptoFormatUtils.satoshiToBtcLabel(amountBtc);
+                amountFiat = CryptoFormatUtils.satoshiToUsd(amountBtc) + CurrencyCode.USD.name();
+                break;
+            case ETH:
+                amount = CryptoFormatUtils.weiToEthLabel(receiver.getAmount());
+                amountFiat = CryptoFormatUtils.weiToUsd(new BigInteger(receiver.getAmount())) + CurrencyCode.USD.name();
+                break;
+        }
+        setupSendGroup(amount, amountFiat);
     }
 
     private void hideSendState() {
@@ -274,35 +354,74 @@ public class TestOperationsActivity extends BaseActivity {
     }
 
     private boolean send() throws JniException, JSONException {
-        Wallet wallet = RealmManager.getAssetsDao().getWalletById(selectedWalletId);
-        byte[] seed = RealmManager.getSettingsDao().getSeed().getSeed();
+        final Wallet wallet = RealmManager.getAssetsDao().getWalletById(selectedWalletId);
+        final byte[] seed = RealmManager.getSettingsDao().getSeed().getSeed();
         FastReceiver receiver = receiversPagerAdapter.getReceiver(pagerRequests.getCurrentItem());
-        String changeAddress = NativeDataHelper.makeAccountAddress(seed, wallet.getIndex(), wallet.getBtcWallet().getAddresses().size(),
-                wallet.getCurrencyId(), wallet.getNetworkId());
+        String changeAddress = "";
+        if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()) {
+            changeAddress = NativeDataHelper.makeAccountAddress(seed, wallet.getIndex(), wallet.getBtcWallet().getAddresses().size(),
+                    wallet.getCurrencyId(), wallet.getNetworkId());
+        }
 
-        byte[] transactionHex = NativeDataHelper.makeTransaction(wallet.getId(), wallet.getNetworkId(),
-                RealmManager.getSettingsDao().getSeed().getSeed(), wallet.getIndex(), receiver.getAmount(),
-                "10", "0",
-                receiver.getAddress(), changeAddress, "", true);
+        final byte[] transaction;
+        final boolean isHd;
+        switch (NativeDataHelper.Blockchain.valueOf(receiver.getCurrencyId())) {
+            case BTC:
+                transaction = NativeDataHelper.makeTransaction(wallet.getId(), wallet.getNetworkId(), seed, wallet.getIndex(),
+                        receiver.getAmount(),"10", "0", receiver.getAddress(), changeAddress, "", true);
+                isHd = true;
+                break;
+            case ETH:
+                transaction = NativeDataHelper.makeTransactionETH(seed, wallet.getIndex(), 0, wallet.getCurrencyId(),
+                        wallet.getNetworkId(), String.valueOf(wallet.getActiveAddress().getAmount()), receiver.getAmount(),
+                        receiver.getAddress().substring(2), "21000", "1000000000", wallet.getEthWallet().getNonce());
+                isHd = false;
+                break;
+                default:
+                    throw new IllegalStateException("No one currency id is not Blockchain value!");
+        }
 
-        final String hex = byteArrayToHex(transactionHex);
+        String hex = byteArrayToHex(transaction);
+        switch (NativeDataHelper.Blockchain.valueOf(wallet.getCurrencyId())) {
+            case ETH:
+                hex = "0x" + hex;
+        }
         final String jwt = Prefs.getString(Constants.PREF_AUTH, "");
         final HdTransactionRequestEntity entity = new HdTransactionRequestEntity(wallet.getCurrencyId(), wallet.getNetworkId(),
-                new HdTransactionRequestEntity.Payload(changeAddress, wallet.getBtcWallet().getAddresses().size(), wallet.getIndex(), hex), jwt);
+                new HdTransactionRequestEntity.Payload(changeAddress, wallet.getAddresses().size() - 1,
+                        wallet.getIndex(), hex, isHd), jwt);
 
-        socketManager.getSocket().emit(EVENT_SEND_RAW, new JSONObject(new Gson().toJson(entity)), new Ack() {
+//        socketManager.getSocket().emit(EVENT_SEND_RAW, new JSONObject(new Gson().toJson(entity)), new Ack() {
+//            @Override
+//            public void call(Object... args) {
+//                TestOperationsActivity.this.runOnUiThread(() -> {
+//                    final String result = args[0].toString();
+//                    if (result.contains("success")) {
+//                        showSuccess();
+//                    } else {
+//                        showError();
+//                    }
+//                });
+//            }
+//        });
+
+        MultyApi.INSTANCE.sendHdTransaction(entity).enqueue(new Callback<ResponseBody>() {
             @Override
-            public void call(Object... args) {
-                TestOperationsActivity.this.runOnUiThread(() -> {
-                    final String result = args[0].toString();
-                    if (result.contains("success")) {
-                        showSuccess();
-                    } else {
-                        showError();
-                    }
-                });
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    showSuccess();
+                } else {
+                    showError();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                t.printStackTrace();
+                showError();
             }
         });
+
         return false;
     }
 
@@ -314,6 +433,7 @@ public class TestOperationsActivity extends BaseActivity {
     }
 
     private void showError() {
+        Analytics.getInstance(TestOperationsActivity.this).logError(AnalyticsConstants.ERROR_TRANSACTION_API);
         AlertDialog dialog = new AlertDialog.Builder(TestOperationsActivity.this)
                 .setTitle(getString(R.string.error_sending_tx))
                 .setPositiveButton(R.string.ok, (dialog1, which) -> dialog1.dismiss())
@@ -373,16 +493,6 @@ public class TestOperationsActivity extends BaseActivity {
         gestureDetector.setIsLongpressEnabled(false);
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        if (socketManager.getSocket() != null && socketManager.getSocket().connected()) {
-            socketManager.getSocket().disconnect();
-            handler.removeCallbacks(null);
-        }
-    }
-
     private void start() {
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (!bluetoothAdapter.isEnabled()) {
@@ -397,7 +507,18 @@ public class TestOperationsActivity extends BaseActivity {
             startActivityForResult(enableLocationIntent, REQUEST_CODE_LOCATION);
         }
 
-        bluetoothAdapter.getBluetoothLeScanner().startScan(new ScanCallback() {
+        if (bleScanCallback == null) {
+            bleScanCallback = createScanCallback();
+        }
+        startBLeScanner();
+    }
+
+    private void startBLeScanner() {
+        BluetoothAdapter.getDefaultAdapter().getBluetoothLeScanner().startScan(bleScanCallback);
+    }
+
+    private ScanCallback createScanCallback() {
+        return new ScanCallback() {
             @Override
             public void onScanResult(int callbackType, ScanResult result) {
                 super.onScanResult(callbackType, result);
@@ -417,7 +538,7 @@ public class TestOperationsActivity extends BaseActivity {
                     }
                 }
             }
-        });
+        };
     }
 
     private JSONObject getIdsJson() {
@@ -434,57 +555,6 @@ public class TestOperationsActivity extends BaseActivity {
         }
         return null;
     }
-
-    @OnClick(R.id.button_qr)
-    public void onClickQr() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, Constants.CAMERA_REQUEST_CODE);
-        } else {
-            startActivityForResult(new Intent(this, ScanActivity.class), Constants.CAMERA_REQUEST_CODE);
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == Constants.CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
-            final String address = data.getStringExtra(Constants.EXTRA_QR_CONTENTS);
-            Intent intent = new Intent(this, AssetSendActivity.class);
-            intent.putExtra(Constants.EXTRA_ADDRESS, address);
-            startActivity(intent);
-            finish();
-        } else if (requestCode == REQUEST_BLUETOOTH && resultCode == RESULT_OK) {
-            start();
-        } else if (requestCode != REQUEST_CODE_LOCATION) {
-            finish();
-        }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch (requestCode) {
-            case REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS: {
-                Map<String, Integer> perms = new HashMap<>();
-                perms.put(Manifest.permission.ACCESS_FINE_LOCATION, PackageManager.PERMISSION_GRANTED);
-
-                for (int i = 0; i < permissions.length; i++) {
-                    perms.put(permissions[i], grantResults[i]);
-                }
-
-                if (perms.get(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    Log.i("wise", "all permissions granted");
-                    start();
-                } else {
-                    finish();
-                }
-            }
-            break;
-            default:
-                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
-    }
-
 
     @TargetApi(Build.VERSION_CODES.M)
     private void checkPermissions() {
@@ -513,7 +583,7 @@ public class TestOperationsActivity extends BaseActivity {
         new AlertDialog.Builder(this)
                 .setMessage(message)
                 .setPositiveButton(getString(R.string.yes), okListener)
-                .setNegativeButton(getString(R.string.cancel), null)
+                .setNegativeButton(getString(R.string.cancel), (dialog, whitch) -> onBackPressed())
                 .create()
                 .show();
     }
@@ -572,5 +642,24 @@ public class TestOperationsActivity extends BaseActivity {
             emitUpdateReceivers();
             handler.postDelayed(updateReceiversAction, UPDATE_PERIOD);
         };
+    }
+
+    public int dpToPx(int dps) {
+        int px = (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dps, getResources().getDisplayMetrics()));
+        return px;
+    }
+
+    @OnClick(R.id.button_qr)
+    public void onClickQr() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, Constants.CAMERA_REQUEST_CODE);
+        } else {
+            startActivityForResult(new Intent(this, ScanActivity.class), Constants.CAMERA_REQUEST_CODE);
+        }
+    }
+
+    @OnClick(R.id.button_cancel)
+    public void onClickCancel() {
+        onBackPressed();
     }
 }
