@@ -136,7 +136,7 @@ public class TestOperationsActivity extends BaseActivity {
         if (bleScanCallback != null) {
             startBLeScanner();
         }
-     }
+    }
 
     @Override
     protected void onPause() {
@@ -150,7 +150,7 @@ public class TestOperationsActivity extends BaseActivity {
     protected void onDestroy() {
         if (socketManager.getSocket() != null && socketManager.getSocket().connected()) {
             socketManager.getSocket().disconnect();
-            handler.removeCallbacks(null);
+            handler.removeCallbacksAndMessages(null);
         }
         bleScanCallback = null;
         super.onDestroy();
@@ -230,7 +230,8 @@ public class TestOperationsActivity extends BaseActivity {
         pagerRequests.setAdapter(receiversPagerAdapter);
         pagerRequests.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) { }
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
 
             @Override
             public void onPageSelected(int position) {
@@ -238,7 +239,8 @@ public class TestOperationsActivity extends BaseActivity {
             }
 
             @Override
-            public void onPageScrollStateChanged(int state) { }
+            public void onPageScrollStateChanged(int state) {
+            }
         });
     }
 
@@ -258,21 +260,31 @@ public class TestOperationsActivity extends BaseActivity {
         }
 
         walletPagerAdapter = new MyWalletPagerAdapter(getSupportFragmentManager(), v -> {
+            handler.removeCallbacksAndMessages(null);
             if (containerSend.getVisibility() == View.VISIBLE) {
                 hideSendGroup();
                 enableScroll();
-                receiversPagerAdapter.showElements(pagerRequests.getCurrentItem());
-                walletPagerAdapter.showElements(pagerWallets.getCurrentItem());
-                selectedWalletId = -1;
+                showPagerElements();
+                handler.postDelayed(updateReceiversAction, UPDATE_PERIOD / 5);
             } else if (receiversPagerAdapter.getCount() > 0) {
                 showSendState();
-                receiversPagerAdapter.hideElements(pagerRequests.getCurrentItem());
-                walletPagerAdapter.hideElements(pagerWallets.getCurrentItem());
                 disableScroll();
                 selectedWalletId = (long) v.getTag();
+                hidePagerElements();
             }
         }, wallets);
         pagerWallets.setAdapter(walletPagerAdapter);
+    }
+
+    private void showPagerElements() {
+        receiversPagerAdapter.showElements(pagerRequests.getCurrentItem());
+        walletPagerAdapter.showElements(pagerWallets.getCurrentItem());
+        selectedWalletId = -1;
+    }
+
+    private void hidePagerElements() {
+        receiversPagerAdapter.hideElements(pagerRequests.getCurrentItem());
+        walletPagerAdapter.hideElements(pagerWallets.getCurrentItem());
     }
 
     private void enableScroll() {
@@ -364,7 +376,7 @@ public class TestOperationsActivity extends BaseActivity {
         switch (NativeDataHelper.Blockchain.valueOf(receiver.getCurrencyId())) {
             case BTC:
                 transaction = NativeDataHelper.makeTransaction(wallet.getId(), wallet.getNetworkId(), seed, wallet.getIndex(),
-                        receiver.getAmount(),"10", "0", receiver.getAddress(), changeAddress, "", true);
+                        receiver.getAmount(), "10", "0", receiver.getAddress(), changeAddress, "", true);
                 isHd = true;
                 break;
             case ETH:
@@ -373,8 +385,8 @@ public class TestOperationsActivity extends BaseActivity {
                         receiver.getAddress().substring(2), "21000", "1000000000", wallet.getEthWallet().getNonce());
                 isHd = false;
                 break;
-                default:
-                    throw new IllegalStateException("No one currency id is not Blockchain value!");
+            default:
+                throw new IllegalStateException("No one currency id is not Blockchain value!");
         }
 
         String hex = byteArrayToHex(transaction);
@@ -628,6 +640,12 @@ public class TestOperationsActivity extends BaseActivity {
                         }
                     }
                 }
+
+                if (selectedWalletId != -1) {
+                    enableScroll();
+                    showPagerElements();
+                }
+
             }));
         } catch (Exception e) {
             e.printStackTrace();
