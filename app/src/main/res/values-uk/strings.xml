@@ -229,4 +229,5 @@
     <string name="permissions_for_access_nearby_devices">Нам необхідний дозвіл для пошуку найближчих пристроїв. Ми не використовуємо вашу геолокацію</string>
     <string name="searching">Пошук\nзапитів</string>
     <!--<string name="my_first_wallet_name">My first %s wallet</string>-->
+    <string name="magic_send">Магічна відправка</string>
 </resources>
