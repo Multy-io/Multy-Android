@@ -13,7 +13,6 @@ import java.io.File;
 
 import io.multy.Multy;
 import io.realm.Realm;
-import timber.log.Timber;
 
 public class RealmManager {
 
@@ -31,7 +30,7 @@ public class RealmManager {
     }
 
     public static void close() {
-        if (realm != null && realm.isClosed()) {
+        if (realm != null && !realm.isClosed()) {
             try {
                 realm.close();
             } catch (IllegalStateException e) {
@@ -68,6 +67,7 @@ public class RealmManager {
         try {
             if (realm == null || realm.isClosed()) {
                 Log.e(TAG, "ERROR DB IS CLOSED OR NULL");
+                open();
             }
         } catch (IllegalStateException e) {
             e.printStackTrace();

@@ -8,16 +8,12 @@ package io.multy.viewmodels;
 
 import android.arch.lifecycle.MutableLiveData;
 import android.os.Handler;
-import android.util.Log;
-
-import java.lang.annotation.Native;
 
 import io.multy.Multy;
 import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.api.socket.CurrenciesRate;
 import io.multy.model.entities.Fee;
-import io.multy.model.entities.FeeEth;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.responses.FeeRateResponse;
 import io.multy.storage.RealmManager;
@@ -214,7 +210,7 @@ public class AssetSendViewModel extends BaseViewModel {
         try {
 //            Log.i("wise", getWallet().getId() + " " + getWallet().getNetworkId() + " " + amount + " " + getFee().getAmount() + " " + getDonationSatoshi() + " " + isPayForCommission);
             byte[] tx = NativeDataHelper.makeTransactionETH(RealmManager.getSettingsDao().getSeed().getSeed(), getWallet().getIndex(), 0, wallet.getValue().getCurrencyId(), wallet.getValue().getNetworkId(),
-                    String.valueOf(getWallet().getActiveAddress().getAmount()), CryptoFormatUtils.ethToWei(String.valueOf(amount)), getReceiverAddress().getValue().substring(2), "21000", String.valueOf(fee.getValue().getAmount()), getWallet().getEthWallet().getNonce());
+                    getWallet().getActiveAddress().getAmountString(), CryptoFormatUtils.ethToWei(String.valueOf(amount)), getReceiverAddress().getValue().substring(2), "21000", String.valueOf(fee.getValue().getAmount()), getWallet().getEthWallet().getNonce());
             transaction.setValue(byteArrayToHex(tx));
         } catch (JniException e) {
             errorMessage.setValue("Entered sum is invalid.");

@@ -228,4 +228,5 @@
     <string name="permissions_for_access_nearby_devices">Нам необходимо разрешение для поиска ближайших устройств. Мы не используем вашу геолокацию.</string>
     <string name="searching">Поиск\nзапросов</string>
     <!--<string name="my_first_wallet_name">My first %s wallet</string>-->
+    <string name="magic_send">Магическая отправка</string>
 </resources>
