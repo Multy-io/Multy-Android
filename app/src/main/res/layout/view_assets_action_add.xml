@@ -122,7 +122,7 @@
             android:id="@+id/text_chain_currency"
             style="@style/TextChooserCreateWallet"
             android:layout_below="@id/text_chain"
-            android:text="@string/btc"
+            android:text="@string/bitcoin_btc"
             android:lineSpacingExtra="6sp"
             android:textAllCaps="false" />
 

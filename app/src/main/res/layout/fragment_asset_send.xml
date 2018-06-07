@@ -83,8 +83,8 @@
     <TextView
         android:id="@+id/button_scan_wireless"
         style="@style/SendShareButton"
-        android:drawableTop="@drawable/ic_donation_icon_smallest"
         android:drawablePadding="8dp"
+        android:drawableTop="@drawable/ic_nfc"
         android:lineSpacingExtra="4sp"
         android:paddingTop="18dp"
         android:text="@string/wireless_scan"

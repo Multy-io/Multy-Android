@@ -23,6 +23,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.samwolfand.oneprefs.Prefs;
@@ -30,6 +31,8 @@ import com.samwolfand.oneprefs.Prefs;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -43,7 +46,6 @@ import io.multy.storage.AssetsDao;
 import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetActivity;
 import io.multy.ui.activities.SeedActivity;
-import io.multy.ui.adapters.AssetTransactionsAdapter;
 import io.multy.ui.adapters.EmptyTransactionsAdapter;
 import io.multy.ui.adapters.EthTransactionsAdapter;
 import io.multy.ui.fragments.BaseFragment;
@@ -74,8 +76,6 @@ public class EthAssetInfoFragment extends BaseFragment implements AppBarLayout.O
     TextView textAddress;
     @BindView(R.id.swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
-    @BindView(R.id.group_empty_state)
-    View groupEmptyState;
     @BindView(R.id.button_warn)
     FloatingActionButton buttonWarn;
     @BindView(R.id.container_available)
@@ -86,9 +86,15 @@ public class EthAssetInfoFragment extends BaseFragment implements AppBarLayout.O
     TextView textAvailableFiat;
     @BindView(R.id.appbar_layout)
     AppBarLayout appBarLayout;
+    @BindView(R.id.image_arrow)
+    ImageView imageArrow;
+    @BindView(R.id.text_operations_empty)
+    TextView textEmpty;
+    @BindView(R.id.text_operation_create)
+    TextView textCreate;
 
     private WalletViewModel viewModel;
-    private AssetTransactionsAdapter transactionsAdapter;
+    private EthTransactionsAdapter transactionsAdapter;
     private AssetInfoFragment.SharingBroadcastReceiver receiver;
 
     public static EthAssetInfoFragment newInstance() {
@@ -98,7 +104,7 @@ public class EthAssetInfoFragment extends BaseFragment implements AppBarLayout.O
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        transactionsAdapter = new AssetTransactionsAdapter();
+        transactionsAdapter = new EthTransactionsAdapter(new ArrayList<>(), 0);
     }
 
     @Nullable
@@ -109,6 +115,7 @@ public class EthAssetInfoFragment extends BaseFragment implements AppBarLayout.O
 
         viewModel = ViewModelProviders.of(getActivity()).get(WalletViewModel.class);
         setBaseViewModel(viewModel);
+        setTransactionsState();
         receiver = new AssetInfoFragment.SharingBroadcastReceiver();
         viewModel.rates.observe(this, currenciesRate -> updateBalanceViews());
         viewModel.transactionUpdate.observe(this, transactionUpdateEntity -> {
@@ -184,12 +191,10 @@ public class EthAssetInfoFragment extends BaseFragment implements AppBarLayout.O
         if (transactionsAdapter.getItemCount() == 0) {
             swipeRefreshLayout.setEnabled(false);
             recyclerView.setAdapter(new EmptyTransactionsAdapter());
-            groupEmptyState.setVisibility(View.VISIBLE);
             setToolbarScrollFlag(0);
         } else {
             recyclerView.setAdapter(transactionsAdapter);
             swipeRefreshLayout.setEnabled(true);
-            groupEmptyState.setVisibility(View.GONE);
             setToolbarScrollFlag(3);
         }
         checkWarnVisibility();
@@ -242,11 +247,11 @@ public class EthAssetInfoFragment extends BaseFragment implements AppBarLayout.O
         if (transactionsAdapter.getItemCount() == 0) {
             swipeRefreshLayout.setEnabled(false);
             recyclerView.setAdapter(new EmptyTransactionsAdapter());
-            groupEmptyState.setVisibility(View.VISIBLE);
+            setNotificationsVisibility(View.VISIBLE);
             setToolbarScrollFlag(0);
         } else {
             swipeRefreshLayout.setEnabled(true);
-            groupEmptyState.setVisibility(View.GONE);
+            setNotificationsVisibility(View.GONE);
             setToolbarScrollFlag(3);
         }
     }
@@ -294,9 +299,12 @@ public class EthAssetInfoFragment extends BaseFragment implements AppBarLayout.O
         viewModel.getTransactionsHistory(currencyId, networkId, walletIndex).observe(this, transactions -> {
             if (transactions != null && !transactions.isEmpty()) {
                 try {
-                    transactionsAdapter.setTransactions(transactions);
-                    recyclerView.setAdapter(new EthTransactionsAdapter(transactions, viewModel.wallet.getValue().getId()));
-                    groupEmptyState.setVisibility(View.GONE);
+                    final long walletId = viewModel.wallet.getValue().isValid() ?
+                            viewModel.wallet.getValue().getId() :
+                            viewModel.getWallet(getActivity().getIntent()
+                                    .getLongExtra(Constants.EXTRA_WALLET_ID, 0)).getId();
+                    transactionsAdapter = new EthTransactionsAdapter(transactions, walletId);
+                    recyclerView.setAdapter(transactionsAdapter);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -308,6 +316,12 @@ public class EthAssetInfoFragment extends BaseFragment implements AppBarLayout.O
     private void setToolbarScrollFlag(int flag) {
         AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) collapsingToolbarLayout.getLayoutParams();
         params.setScrollFlags(flag);
+    }
+
+    private void setNotificationsVisibility(int visibility) {
+        imageArrow.setVisibility(visibility);
+        textEmpty.setVisibility(visibility);
+        textCreate.setVisibility(visibility);
     }
 
     @OnClick(R.id.options)
