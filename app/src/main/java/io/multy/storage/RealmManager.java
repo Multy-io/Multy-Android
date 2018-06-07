@@ -25,7 +25,7 @@ public class RealmManager {
         try {
             realm = Realm.getInstance(Multy.getRealmConfiguration());
         } catch (Throwable t) {
-            t.printStackTrace();
+            t.printStackTrace(); //CONSIDER CATCHING REALM MIGRATION EXCEPTIONS HERE
         }
         return realm;
     }

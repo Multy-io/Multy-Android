@@ -6,15 +6,12 @@
 
 package io.multy;
 
-import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.util.Base64;
-import android.util.Log;
 
 import com.samwolfand.oneprefs.Prefs;
 import com.tozny.crypto.android.AesCbcWithIntegrity;
@@ -28,12 +25,9 @@ import java.security.SecureRandom;
 import javax.annotation.Nullable;
 
 import io.branch.referral.Branch;
-import io.multy.storage.RealmManager;
 import io.multy.storage.SecurePreferencesHelper;
-import io.multy.ui.activities.SplashActivity;
 import io.multy.util.Constants;
 import io.multy.util.EntropyProvider;
-import io.multy.util.FileLoggingTree;
 import io.multy.util.MultyRealmMigration;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -89,7 +83,7 @@ public class Multy extends Application {
             Base64.decode(key, Base64.NO_WRAP);
             return new RealmConfiguration.Builder()
                     .encryptionKey(Base64.decode(key, Base64.NO_WRAP))
-                    .schemaVersion(2)
+                    .schemaVersion(3)
                     .migration(new MultyRealmMigration())
                     .build();
         } catch (Exception e) {
