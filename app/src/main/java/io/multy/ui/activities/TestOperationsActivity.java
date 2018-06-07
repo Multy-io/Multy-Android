@@ -10,9 +10,7 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.le.ScanCallback;
-import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
-import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -40,7 +38,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
-import com.samwolfand.oneprefs.Prefs;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -82,7 +79,6 @@ import retrofit2.Response;
 import timber.log.Timber;
 
 import static io.multy.api.socket.BlueSocketManager.EVENT_SENDER_CHECK;
-import static io.multy.api.socket.BlueSocketManager.EVENT_SEND_RAW;
 import static io.multy.ui.fragments.send.SendSummaryFragment.byteArrayToHex;
 
 public class TestOperationsActivity extends BaseActivity {
@@ -386,10 +382,10 @@ public class TestOperationsActivity extends BaseActivity {
             case ETH:
                 hex = "0x" + hex;
         }
-        final String jwt = Prefs.getString(Constants.PREF_AUTH, "");
+//        final String jwt = Prefs.getString(Constants.PREF_AUTH, "");
         final HdTransactionRequestEntity entity = new HdTransactionRequestEntity(wallet.getCurrencyId(), wallet.getNetworkId(),
-                new HdTransactionRequestEntity.Payload(changeAddress, wallet.getAddresses().size() - 1,
-                        wallet.getIndex(), hex, isHd), jwt);
+                new HdTransactionRequestEntity.Payload(changeAddress, wallet.getAddresses().size(),
+                        wallet.getIndex(), hex, isHd));
 
 //        socketManager.getSocket().emit(EVENT_SEND_RAW, new JSONObject(new Gson().toJson(entity)), new Ack() {
 //            @Override
@@ -404,7 +400,8 @@ public class TestOperationsActivity extends BaseActivity {
 //                });
 //            }
 //        });
-
+        Timber.i("hex=%s", hex);
+        Timber.i("change address=%s", changeAddress);
         MultyApi.INSTANCE.sendHdTransaction(entity).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
