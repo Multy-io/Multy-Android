@@ -11,12 +11,15 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.constraint.Group;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.TextView;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
@@ -27,12 +30,41 @@ import io.multy.util.Constants;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 
+import static android.view.View.GONE;
+
 public class CompleteDialogFragment extends DialogFragment {
+
+    private final static String EXTRA_AMOUNT_COMPLETE_DIALOG = "amount_complete_dialog";
+
+    @BindView(R.id.text_amount)
+    TextView textAmount;
+    @BindView(R.id.text_address)
+    TextView textAddress;
+    @BindView(R.id.group_amount)
+    Group groupAmount;
 
     public static CompleteDialogFragment newInstance(int chainId) {
         CompleteDialogFragment completeDialogFragment = new CompleteDialogFragment();
         Bundle args = new Bundle();
         args.putInt(Constants.CHAIN_ID, chainId);
+        args.putBoolean(EXTRA_AMOUNT_COMPLETE_DIALOG, false);
+        completeDialogFragment.setArguments(args);
+        return completeDialogFragment;
+    }
+
+    /**
+     * @param chainId - Blockchain
+     * @param amount - String amount with blockchain label ("like 0.1 BTC")
+     * @param address - Strung address "to"
+     * @return - {@link CompleteDialogFragment} instance
+     */
+    public static CompleteDialogFragment newInstance(int chainId, String amount, String address) {
+        CompleteDialogFragment completeDialogFragment = new CompleteDialogFragment();
+        Bundle args = new Bundle();
+        args.putInt(Constants.CHAIN_ID, chainId);
+        args.putBoolean(EXTRA_AMOUNT_COMPLETE_DIALOG, true);
+        args.putString(Constants.EXTRA_ADDRESS, address);
+        args.putString(Constants.EXTRA_AMOUNT, amount);
         completeDialogFragment.setArguments(args);
         return completeDialogFragment;
     }
@@ -67,6 +99,12 @@ public class CompleteDialogFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_complete, container, false);
         ButterKnife.bind(this, view);
+        if (getArguments() != null && getArguments().getBoolean(EXTRA_AMOUNT_COMPLETE_DIALOG)) {
+            textAddress.setText(getArguments().getString(Constants.EXTRA_ADDRESS));
+            textAmount.setText(getArguments().getString(Constants.EXTRA_AMOUNT));
+        } else {
+            groupAmount.setVisibility(GONE);
+        }
         return view;
     }
 

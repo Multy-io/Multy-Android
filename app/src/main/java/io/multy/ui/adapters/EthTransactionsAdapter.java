@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -136,8 +137,8 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         TransactionHistory transactionHistory = transactionHistoryList.get(position);
         final boolean isIncoming = transactionHistory.getTxStatus() == TX_MEMPOOL_INCOMING;
 
-        final String amount = String.valueOf(CryptoFormatUtils.weiToEth(String.valueOf(transactionHistory.getTxOutAmount()))); //TODO improve
-        final String amountFiat = getFiatAmount(transactionHistory, CryptoFormatUtils.weiToEth(String.valueOf(transactionHistory.getTxOutAmount())));
+        final String amount = CryptoFormatUtils.FORMAT_ETH.format(CryptoFormatUtils.weiToEth(transactionHistory.getTxOutAmount())); //TODO improve
+        final String amountFiat = getFiatAmount(transactionHistory, CryptoFormatUtils.weiToEth(transactionHistory.getTxOutAmount()));
         final String address;
 
         holder.containerAddresses.removeAllViews();
@@ -187,8 +188,8 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
         holder.imageDirection.setImageResource(isIncoming ? R.drawable.ic_receive_gray : R.drawable.ic_send_gray);
         holder.textRejectedDirection.setText(isIncoming ? R.string.rejected_receive : R.string.rejected_send);
-        holder.amount.setText(CryptoFormatUtils.satoshiToBtc(transactionHistory.getTxOutAmount()));
-        holder.fiat.setText(getFiatAmount(transactionHistory, transactionHistory.getTxOutAmount()));
+        holder.amount.setText(CryptoFormatUtils.FORMAT_ETH.format(CryptoFormatUtils.weiToEth(transactionHistory.getTxOutAmount())));
+        holder.fiat.setText(getFiatAmount(transactionHistory, new BigInteger(transactionHistory.getTxOutAmount()).doubleValue()));
 
         setItemClickListener(holder.itemView, isIncoming, position);
     }
@@ -203,8 +204,8 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         holder.containerAddresses.removeAllViews();
 
 
-        final String amount = String.valueOf(CryptoFormatUtils.weiToEth(String.valueOf(transactionHistory.getTxOutAmount()))); //TODO improve
-        final String amountFiat = getFiatAmount(transactionHistory, CryptoFormatUtils.weiToEth(String.valueOf(transactionHistory.getTxOutAmount())));
+        final String amount = CryptoFormatUtils.FORMAT_ETH.format(CryptoFormatUtils.weiToEth(transactionHistory.getTxOutAmount())); //TODO improve
+        final String amountFiat = getFiatAmount(transactionHistory, CryptoFormatUtils.weiToEth(transactionHistory.getTxOutAmount()));
         final String address;
 
         holder.containerAddresses.removeAllViews();

@@ -48,8 +48,8 @@
     <string name="vote_for_activity">Проголосовать за события</string>
     <string name="no_contacts">Пока здесь пусто</string>
     <string name="sync_my_address_book">Проголосовать за контакты</string>
-    <string name="push_notifications">Всплывающие Уведомления</string>
-    <string name="security_settings">Настройки Безопасности</string>
+    <string name="push_notifications">Уведомления</string>
+    <string name="security_settings">Безопасность</string>
     <string name="exchange">Биржа</string>
     <string name="about_multy">О Multy</string>
     <string name="leave_feedback">Оставить отзыв</string>

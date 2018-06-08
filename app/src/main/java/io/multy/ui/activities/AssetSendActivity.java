@@ -39,12 +39,11 @@ import io.multy.ui.fragments.send.ethereum.EthAmountChooserFragment;
 import io.multy.ui.fragments.send.ethereum.EthSendSummaryFragment;
 import io.multy.ui.fragments.send.ethereum.EthTransactionFeeFragment;
 import io.multy.util.Constants;
+import io.multy.util.NativeDataHelper;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.AssetSendViewModel;
 import timber.log.Timber;
-
-import static io.multy.ui.fragments.send.WalletChooserFragment.NO_VALUE;
 
 
 public class AssetSendActivity extends BaseActivity {
@@ -116,8 +115,9 @@ public class AssetSendActivity extends BaseActivity {
         }
 
         if (getIntent().hasExtra(Constants.EXTRA_ADDRESS)) {
-            setFragment(R.string.send_to, R.id.container, AssetSendFragment.newInstance());
-            setFragment(R.string.send_from, R.id.container, WalletChooserFragment.newInstance(NO_VALUE, NO_VALUE));
+            int[] addressIds = new int[] { -1, -1};
+            getAddressIds(getIntent().getStringExtra(Constants.EXTRA_ADDRESS), addressIds);
+            setFragment(R.string.send_from, R.id.container, WalletChooserFragment.newInstance(addressIds[0], addressIds[1]));
             setTitle(R.string.send_from);
             viewModel.setReceiverAddress(getIntent().getStringExtra(Constants.EXTRA_ADDRESS));
             viewModel.thoseAddress.setValue(getIntent().getStringExtra(Constants.EXTRA_ADDRESS));
@@ -135,6 +135,45 @@ public class AssetSendActivity extends BaseActivity {
             }
         } else {
             setFragment(R.string.send_to, R.id.container, AssetSendFragment.newInstance());
+        }
+    }
+
+    private void getAddressIds(final String address, int[] addressIdsHolder) {
+        for (NativeDataHelper.Blockchain blockchain : NativeDataHelper.Blockchain.values()) {
+            for (NativeDataHelper.NetworkId networkId : NativeDataHelper.NetworkId.values()) {
+                if (isValidAddress(address, blockchain.getValue(), networkId.getValue())) {
+                    addressIdsHolder[0] = blockchain.getValue();
+                    addressIdsHolder[1] = networkId.getValue();
+                    return;
+                }
+            }
+        }
+    }
+
+    private boolean isValidAddress(String address, int blockchain, int network) {
+        try {
+            NativeDataHelper.isValidAddress(address, blockchain, network);
+            return true;
+        } catch (Throwable t) {
+            t.printStackTrace();
+            return false;
+        }
+    }
+
+    private void logCancel() {
+        List<Fragment> backStackFragments = getSupportFragmentManager().getFragments();
+        for (Fragment backStackFragment : backStackFragments) {
+            if (backStackFragment instanceof SendSummaryFragment && backStackFragment.isVisible()) {
+                Analytics.getInstance(this).logSendSummary(AnalyticsConstants.BUTTON_CLOSE, viewModel.getChainId());
+            } else if (backStackFragment instanceof AmountChooserFragment && backStackFragment.isVisible()) {
+                Analytics.getInstance(this).logSendChooseAmount(AnalyticsConstants.BUTTON_CLOSE, viewModel.getChainId());
+            } else if (backStackFragment instanceof TransactionFeeFragment && backStackFragment.isVisible()) {
+                Analytics.getInstance(this).logTransactionFee(AnalyticsConstants.BUTTON_CLOSE, viewModel.getChainId());
+            } else if (backStackFragment instanceof WalletChooserFragment && backStackFragment.isVisible()) {
+                Analytics.getInstance(this).logSendFrom(AnalyticsConstants.BUTTON_CLOSE, viewModel.getChainId());
+            } else if (backStackFragment instanceof AssetSendFragment && backStackFragment.isVisible()) {
+                Analytics.getInstance(this).logSendTo(AnalyticsConstants.BUTTON_CLOSE);
+            }
         }
     }
 
@@ -210,23 +249,6 @@ public class AssetSendActivity extends BaseActivity {
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    private void logCancel() {
-        List<Fragment> backStackFragments = getSupportFragmentManager().getFragments();
-        for (Fragment backStackFragment : backStackFragments) {
-            if (backStackFragment instanceof SendSummaryFragment && backStackFragment.isVisible()) {
-                Analytics.getInstance(this).logSendSummary(AnalyticsConstants.BUTTON_CLOSE, viewModel.getChainId());
-            } else if (backStackFragment instanceof AmountChooserFragment && backStackFragment.isVisible()) {
-                Analytics.getInstance(this).logSendChooseAmount(AnalyticsConstants.BUTTON_CLOSE, viewModel.getChainId());
-            } else if (backStackFragment instanceof TransactionFeeFragment && backStackFragment.isVisible()) {
-                Analytics.getInstance(this).logTransactionFee(AnalyticsConstants.BUTTON_CLOSE, viewModel.getChainId());
-            } else if (backStackFragment instanceof WalletChooserFragment && backStackFragment.isVisible()) {
-                Analytics.getInstance(this).logSendFrom(AnalyticsConstants.BUTTON_CLOSE, viewModel.getChainId());
-            } else if (backStackFragment instanceof AssetSendFragment && backStackFragment.isVisible()) {
-                Analytics.getInstance(this).logSendTo(AnalyticsConstants.BUTTON_CLOSE);
-            }
-        }
     }
 }
 

@@ -57,8 +57,6 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
         return new EthAmountChooserFragment();
     }
 
-    @BindView(R.id.root)
-    ConstraintLayout root;
     @BindView(R.id.group_send)
     Group groupSend;
     @BindView(R.id.input_balance_original)
@@ -77,6 +75,10 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
     ConstraintLayout containerInputCurrency;
     @BindView(R.id.switcher)
     SwitchCompat switcher;
+    @BindView(R.id.button_clear_original)
+    View buttonClearOriginal;
+    @BindView(R.id.button_clear_currency)
+    View buttonClearCurrency;
 
     private AssetSendViewModel viewModel;
     private CurrenciesRate currenciesRate;
@@ -226,6 +228,7 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
 //        } else {
 //            textMax.setSelected(true);
 //        }
+        switcher.setChecked(false);
 
         String maxSpendableEth = CryptoFormatUtils.FORMAT_ETH.format(initSpendable());
         if (maxSpendableEth.contains(",")) {
@@ -259,7 +262,7 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
     }
 
     private void showTotalSum(String sum) {
-        if (sum.equals("")) {
+        if (sum.equals("") || sum.equals(".")) {
             sum = "0";
         } else {
             if (!isAmountSwapped) {
@@ -272,7 +275,7 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
             } else {
                 //CASE FOR FIAT SELECTED
                 if (switcher.isChecked()) {
-                    double totalSum = Double.parseDouble(inputOriginal.getText().toString());
+                    double totalSum = Double.parseDouble(sum);
                     totalSum += transactionPriceEth;
                     sum = CryptoFormatUtils.ethToUsd(totalSum);
                 }
@@ -307,14 +310,14 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
                 EthAmountChooserFragment.this.animateOriginalBalance();
                 inputOriginal.setSelection(inputOriginal.getText().length());
                 showTotalSum(inputOriginal.getText().toString());
+                buttonClearOriginal.setVisibility(View.VISIBLE);
+                buttonClearCurrency.setVisibility(View.GONE);
             }
         });
 
         inputOriginal.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -331,14 +334,16 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
                         inputCurrency.getText().clear();
                         inputOriginal.getText().clear();
                     }
+                    checkMaxLengthAfterPoint(inputOriginal, 9, i, i2);
+                    checkMaxLengthBeforePoint(inputOriginal, 6, i, i1, i2);
                 }
-//                checkMaxLengthAfterPoint(inputOriginal, 9, i, i2);
-//                checkMaxLengthBeforePoint(inputOriginal, 6, i, i1, i2);
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
-                checkForPointAndZeros(editable.toString(), inputOriginal);
+                if (!isAmountSwapped) {
+                    checkForPointAndZeros(editable.toString(), inputOriginal);
+                }
             }
         });
     }
@@ -364,6 +369,8 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
                 animateCurrencyBalance();
                 inputCurrency.setSelection(inputCurrency.getText().length());
                 showTotalSum(inputCurrency.getText().toString());
+                buttonClearOriginal.setVisibility(View.GONE);
+                buttonClearCurrency.setVisibility(View.VISIBLE);
             }
         });
 
@@ -400,13 +407,9 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if (!TextUtils.isEmpty(editable) && editable.toString().length() == 0 && editable.toString().contains(".")) {
-                    String result = editable.toString().replaceAll(".", "");
-                    inputOriginal.setText(result);
-                }
-
                 if (isAmountSwapped) {
                     showTotalSum(editable.toString());
+                    checkForPointAndZeros(editable.toString(), inputCurrency);
                 }
             }
         });
@@ -514,5 +517,33 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
                 Analytics.getInstance(getActivity()).logSendChooseAmount(AnalyticsConstants.SEND_AMOUNT_COMMISSION_DISABLED, viewModel.getChainId());
             }
         });
+    }
+
+    @OnClick(R.id.button_clear_original)
+    void onClickClearOriginal() {
+        inputOriginal.setText("");
+        switcher.setChecked(true);
+    }
+
+    @OnClick(R.id.button_clear_currency)
+    void onClickClearCurrency() {
+        inputCurrency.setText("");
+        switcher.setChecked(true);
+    }
+
+    @OnClick(R.id.container_input_original)
+    void onClickInputOriginal() {
+        if (!inputOriginal.hasFocus()) {
+            inputOriginal.requestFocus();
+        }
+        showKeyboard(getActivity(), inputOriginal);
+    }
+
+    @OnClick(R.id.container_input_currency)
+    void onClickInputCurrency() {
+        if (!inputCurrency.hasFocus()) {
+            inputCurrency.requestFocus();
+        }
+        showKeyboard(getActivity(), inputCurrency);
     }
 }

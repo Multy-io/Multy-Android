@@ -7,7 +7,6 @@
 package io.multy.ui.fragments.send.ethereum;
 
 import android.animation.ValueAnimator;
-import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.graphics.drawable.Animatable;
@@ -15,7 +14,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.ColorUtils;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -41,10 +39,8 @@ import io.multy.model.requests.HdTransactionRequestEntity;
 import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.dialogs.CompleteDialogFragment;
-import io.multy.ui.fragments.send.SendSummaryFragment;
 import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
-import io.multy.util.NativeDataHelper;
 import io.multy.util.NumberFormatter;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
@@ -53,7 +49,6 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import timber.log.Timber;
 
 public class EthSendSummaryFragment extends BaseFragment {
 
@@ -69,11 +64,9 @@ public class EthSendSummaryFragment extends BaseFragment {
     @BindView(R.id.text_wallet_name)
     TextView textWalletName;
     @BindView(R.id.text_sender_balance_original)
-    TextView textSenderBalanceOriginal;
+    TextView textSenderAddress;
     @BindView(R.id.text_sender_balance_currency)
-    TextView textSenderBalanceCurrency;
-    @BindView(R.id.text_fee_speed)
-    TextView textFeeSpeed;
+    TextView textSenderBalance;
     @BindView(R.id.text_fee_amount)
     TextView textFeeAmount;
     @BindView(R.id.text_fee_speed_label)
@@ -88,6 +81,8 @@ public class EthSendSummaryFragment extends BaseFragment {
     ImageView sliderFinish;
     @BindView(R.id.scrollview)
     ScrollView scrollView;
+    @BindView(R.id.image_logo)
+    ImageView imageLogo;
 
     @BindString(R.string.donation_format_pattern)
     String formatPattern;
@@ -224,13 +219,16 @@ public class EthSendSummaryFragment extends BaseFragment {
 //        textReceiverAddress.setText(viewModel.getReceiverAddress().getValue());
         textReceiverAddress.setText(viewModel.thoseAddress.getValue());
         textWalletName.setText(viewModel.getWallet().getWalletName());
-        textSenderBalanceOriginal.setText(viewModel.getWallet().getBalanceLabel());
-        textSenderBalanceCurrency.setText(viewModel.getWallet().getFiatBalanceLabel());
-        textFeeSpeed.setText(viewModel.getFee().getName());
-        textFeeSpeedLabel.setText(viewModel.getFee().getTime());
+        textSenderAddress.setText(viewModel.getWallet().getActiveAddress().getAddress());
+        long balance = viewModel.getWallet().getBalanceNumeric().longValue();
+        String balanceLabel = (balance != 0 ? CryptoFormatUtils.weiToEthLabel(viewModel.getWallet().getBalance()) :
+                String.valueOf(balance)).concat(" / ").concat(viewModel.getWallet().getFiatBalanceLabel());
+        textSenderBalance.setText(balanceLabel);
+        textFeeSpeedLabel.setText(viewModel.getFee().getName());
 
         final double feeETh = EthWallet.getTransactionPrice(viewModel.getFee().getAmount());
         textFeeAmount.setText(String.format("%s ETH / %s USD", CryptoFormatUtils.FORMAT_ETH.format(feeETh), CryptoFormatUtils.ethToUsd(feeETh)));
+        imageLogo.setImageResource(viewModel.getWallet().getIconResourceId());
     }
 
     private void showError() {

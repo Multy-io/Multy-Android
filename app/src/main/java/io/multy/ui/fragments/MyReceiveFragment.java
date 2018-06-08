@@ -182,7 +182,17 @@ public class MyReceiveFragment extends BaseFragment {
                 if (socketManager.getSocket() != null && socketManager.getSocket().connected()) {
                     socketManager.disconnect();
                 }
-                CompleteDialogFragment.newInstance(viewModel.getWallet().getCurrencyId()).show(getActivity().getSupportFragmentManager(), "");
+                String amount = "";
+                switch (NativeDataHelper.Blockchain.valueOf(viewModel.getWallet().getCurrencyId())) {
+                    case BTC:
+                        amount = CryptoFormatUtils.satoshiToBtcLabel((long) response.getEntity().getAmount());
+                        break;
+                    case ETH:
+                        amount = CryptoFormatUtils.weiToEthLabel(CryptoFormatUtils.FORMAT_ETH.format(response.getEntity().getAmount()));
+                        break;
+                }
+                CompleteDialogFragment.newInstance(viewModel.getWallet().getCurrencyId(), amount,
+                        response.getEntity().getAddress()).show(getActivity().getSupportFragmentManager(), "");
             }
         }
     }

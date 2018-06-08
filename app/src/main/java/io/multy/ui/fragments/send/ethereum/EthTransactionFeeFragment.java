@@ -6,6 +6,9 @@
 
 package io.multy.ui.fragments.send.ethereum;
 
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleObserver;
+import android.arch.lifecycle.OnLifecycleEvent;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
@@ -149,6 +152,15 @@ public class EthTransactionFeeFragment extends BaseFragment
         }
         input.setText(fee);
         input.setSelection(input.getText().length());
+
+        final LifecycleObserver lifecycleObserver = new LifecycleObserver() {
+            @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+            public void onResume() {
+                input.postDelayed(() -> showKeyboard(getActivity(), input), 150);
+            }
+        };
+        getLifecycle().addObserver(lifecycleObserver);
+        dialogBuilder.setOnDismissListener(dialog -> getLifecycle().removeObserver(lifecycleObserver));
 
         dialogBuilder.setTitle(R.string.custom_fee);
         dialogBuilder.setPositiveButton(R.string.done, (dialog, whichButton) -> {

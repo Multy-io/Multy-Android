@@ -60,12 +60,12 @@ public class MyFeeAdapter extends RecyclerView.Adapter<MyFeeAdapter.FeeHolder> {
                     holder.textName.setText(rate.getName());
                     holder.divider.setVisibility(View.GONE);
                     holder.imageLogo.setImageResource(R.drawable.ic_custom);
-                    holder.textBalanceOriginal.setText(String.format("%s Sat/B", CryptoFormatUtils.satoshiToBtc(price)));
+                    holder.textBalanceOriginal.setText(String.format("%s Sat/B", price));
                     holder.root.setOnClickListener(v -> listener.onClickCustomFee(rate.getAmount()));
                 } else {
                     holder.imageLogo.setImageResource(getIconResId(position));
                     holder.textName.setText(rate.getName());
-                    holder.textBalanceOriginal.setText(String.format("%s Sat/B", CryptoFormatUtils.satoshiToBtc(price)));
+                    holder.textBalanceOriginal.setText(String.format("%s Sat/B", price));
                     holder.root.setOnClickListener(v -> {
                         setItemSelected(position);
                         listener.logTransactionFee(position);
@@ -75,7 +75,8 @@ public class MyFeeAdapter extends RecyclerView.Adapter<MyFeeAdapter.FeeHolder> {
                 break;
             case ETH:
                 holder.textName.setText(rate.getName());
-                holder.textBalanceOriginal.setText(String.format("%s GWei", rate.getAmount()));
+                holder.textBalanceOriginal.setText(String.format("%s GWei/Gas",
+                        CryptoFormatUtils.weiToGwei(String.valueOf(rate.getAmount()))));
                 if (position == rates.size() - 1) {
                     holder.divider.setVisibility(View.GONE);
                     holder.imageLogo.setImageResource(R.drawable.ic_custom);

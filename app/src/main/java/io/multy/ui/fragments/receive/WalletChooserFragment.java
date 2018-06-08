@@ -14,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import butterknife.BindInt;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.multy.R;
@@ -36,9 +35,6 @@ public class WalletChooserFragment extends BaseFragment implements MyWalletsAdap
 
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
-
-    @BindInt(R.integer.zero)
-    int zero;
 
     private AssetRequestViewModel viewModel;
     private MyWalletsAdapter adapter;
@@ -76,7 +72,7 @@ public class WalletChooserFragment extends BaseFragment implements MyWalletsAdap
         viewModel.setWallet(wallet);
         viewModel.setAddress(wallet.getActiveAddress().getAddress());
         Analytics.getInstance(getActivity()).logReceive(AnalyticsConstants.RECEIVE_WALLET_CLICK, viewModel.getChainId());
-        if (getActivity().getSupportFragmentManager().getBackStackEntryCount() == zero) {
+        if (getActivity().getSupportFragmentManager().getBackStackEntryCount() == 0) {
             ((AssetRequestActivity) getActivity()).setFragment(R.string.receive, RequestSummaryFragment.newInstance());
         } else {
             getActivity().onBackPressed();

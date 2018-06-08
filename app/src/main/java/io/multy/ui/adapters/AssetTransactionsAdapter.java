@@ -157,10 +157,10 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
         holder.containerAddresses.removeAllViews();
 
         if (isIncoming) {
-            lockedAmount = CryptoFormatUtils.satoshiToBtc(transactionHistory.getTxOutAmount());
-            lockedFiat = CryptoFormatUtils.satoshiToUsd(transactionHistory.getTxOutAmount());
+            lockedAmount = CryptoFormatUtils.satoshiToBtc(transactionHistory.getTxOutAmountLong());
+            lockedFiat = CryptoFormatUtils.satoshiToUsd(transactionHistory.getTxOutAmountLong());
             amount = lockedAmount;
-            amountFiat = getFiatAmount(transactionHistory, CryptoFormatUtils.satoshiToBtcDouble(transactionHistory.getTxOutAmount()));
+            amountFiat = getFiatAmount(transactionHistory, CryptoFormatUtils.satoshiToBtcDouble(transactionHistory.getTxOutAmountLong()));
             setAddresses(transactionHistory.getInputs(), holder.containerAddresses);
 
             holder.amountLocked.setText(String.format("%s BTC", lockedAmount));
@@ -267,8 +267,8 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
 
         holder.imageDirection.setImageResource(isIncoming ? R.drawable.ic_receive_gray : R.drawable.ic_send_gray);
         holder.textRejectedDirection.setText(isIncoming ? R.string.rejected_receive : R.string.rejected_send);
-        holder.amount.setText(CryptoFormatUtils.satoshiToBtc(transactionHistory.getTxOutAmount()));
-        holder.fiat.setText(getFiatAmount(transactionHistory, CryptoFormatUtils.satoshiToBtcDouble(transactionHistory.getTxOutAmount())));
+        holder.amount.setText(CryptoFormatUtils.satoshiToBtc(transactionHistory.getTxOutAmountLong()));
+        holder.fiat.setText(getFiatAmount(transactionHistory, CryptoFormatUtils.satoshiToBtcDouble(transactionHistory.getTxOutAmountLong())));
 
         setItemClickListener(holder.itemView, isIncoming, position);
     }
@@ -284,8 +284,8 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
 
         if (isIncoming) {
             setAddresses(transactionHistory.getInputs(), holder.containerAddresses);
-            holder.amount.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(transactionHistory.getTxOutAmount())));
-            String stockFiat = getFiatAmount(transactionHistory, CryptoFormatUtils.satoshiToBtcDouble(transactionHistory.getTxOutAmount()));
+            holder.amount.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(transactionHistory.getTxOutAmountLong())));
+            String stockFiat = getFiatAmount(transactionHistory, CryptoFormatUtils.satoshiToBtcDouble(transactionHistory.getTxOutAmountLong()));
             holder.fiat.setText(stockFiat.equals("") ? "" : String.format("%s USD", stockFiat));
         } else {
             List<WalletAddress> outputs = transactionHistory.getOutputs();

@@ -210,8 +210,8 @@ public class TransactionInfoFragment extends BaseFragment {
         if (isIncoming) {
             textValue.setText("+");
             textAmount.setText("+");
-            textValue.append(CryptoFormatUtils.satoshiToBtc(transaction.getTxOutAmount()));
-            textAmount.append(CryptoFormatUtils.satoshiToUsd(transaction.getTxOutAmount(), exchangeRate));
+            textValue.append(CryptoFormatUtils.satoshiToBtc(transaction.getTxOutAmountLong()));
+            textAmount.append(CryptoFormatUtils.satoshiToUsd(transaction.getTxOutAmountLong(), exchangeRate));
         } else {
             textValue.setText("-");
             textAmount.setText("-");

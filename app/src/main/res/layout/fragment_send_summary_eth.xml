@@ -40,6 +40,7 @@
                 android:layout_marginTop="@dimen/activity_vertical_margin"
                 android:textColor="@color/text_main"
                 android:textSize="28sp"
+                android:lineSpacingExtra="-13sp"
                 android:gravity="center"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
@@ -51,6 +52,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_4dp"
+                android:lineSpacingExtra="13sp"
                 android:textAppearance="@style/TextAppearance.AppCompat.Menu"
                 android:textColor="@color/text_grey"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -69,13 +71,33 @@
                 app:layout_constraintTop_toBottomOf="@+id/text_receiver_balance_currency" />
 
             <TextView
-                android:id="@+id/text_receiver_address"
+                android:id="@+id/text_to"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:layout_marginLeft="16dp"
+                android:letterSpacing="-0.02"
+                android:text="@string/to_"
                 android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                 android:textColor="@color/text_main"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="@id/text_receiver_address"
+                app:layout_constraintHorizontal_chainStyle="spread_inside"
                 app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/text_receiver_address"
+                app:layout_constraintTop_toTopOf="@id/text_receiver_address" />
+
+            <TextView
+                android:id="@+id/text_receiver_address"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
+                android:letterSpacing="-0.02"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                android:textColor="@color/text_main"
+                android:textSize="12sp"
+                app:layout_constraintLeft_toRightOf="@id/text_to"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/divider"
                 tools:text="To: v03049vn1034nv-1nnv'13v[134vv" />
@@ -131,6 +153,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/sending_from"
+                android:textSize="16sp"
+                android:lineSpacingExtra="13sp"
                 android:textAppearance="@style/TextAppearance.AppCompat.Menu"
                 android:textColor="@color/text_main"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -143,6 +167,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_5dp"
                 android:textColor="@color/orange"
+                android:lineSpacingExtra="5sp"
                 android:textSize="17sp"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
@@ -151,21 +176,28 @@
 
             <TextView
                 android:id="@+id/text_sender_balance_original"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:lineSpacingExtra="8sp"
+                android:textAlignment="center"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 android:textColor="@color/text_grey"
+                android:textSize="12sp"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_wallet_name"
-                tools:text="B 23" />
+                tools:text="WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW" />
 
             <TextView
                 android:id="@+id/text_sender_balance_currency"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:lineSpacingExtra="6sp"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 android:textColor="@color/text_grey"
+                android:textStyle="bold"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_sender_balance_original"
@@ -186,6 +218,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
                 android:text="@string/fee_rate"
+                android:lineSpacingExtra="13sp"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 android:textColor="@color/text_main"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -197,26 +230,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_7dp"
+                android:lineSpacingExtra="5sp"
                 android:paddingEnd="8dp"
-                android:textColor="@color/black"
+                android:textColor="@color/text_main_dark"
                 android:textSize="17sp"
-                app:layout_constraintEnd_toStartOf="@+id/text_fee_speed"
-                app:layout_constraintHorizontal_chainStyle="packed"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_transaction_fee"
                 tools:text="Fast" />
-
-            <TextView
-                android:id="@+id/text_fee_speed"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_7dp"
-                android:textColor="@color/text_grey"
-                android:textSize="17sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/text_fee_speed_label"
-                app:layout_constraintTop_toBottomOf="@+id/text_transaction_fee"
-                tools:text="6 hours" />
 
             <TextView
                 android:id="@+id/text_fee_amount"
@@ -225,9 +247,10 @@
                 android:layout_marginTop="@dimen/margin_5dp"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 android:textColor="@color/text_grey"
+                android:lineSpacingExtra="8sp"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/text_fee_speed"
+                app:layout_constraintTop_toBottomOf="@+id/text_fee_speed_label"
                 tools:text="0.002 BTC/1.54 USD" />
 
         </android.support.constraint.ConstraintLayout>
@@ -246,6 +269,8 @@
             android:text="@string/slide_to_send"
             android:textColor="@color/white_transparent"
             android:textSize="16sp"
+            android:letterSpacing="0.01"
+            android:lineSpacingExtra="13sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
