@@ -6,9 +6,59 @@
 
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/gradient_vertical_blue">
+
+    <ImageView
+        android:id="@+id/image_background"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginStart="32dp"
+        android:adjustViewBounds="true"
+        app:layout_constraintBottom_toTopOf="@id/image"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/ic_success_info" />
+
+    <TextView
+        android:id="@+id/text_amount"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:ellipsize="middle"
+        android:gravity="center_horizontal"
+        android:singleLine="true"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toTopOf="@id/text_address"
+        app:layout_constraintEnd_toEndOf="@id/image_background"
+        app:layout_constraintStart_toStartOf="@id/image_background"
+        tools:text="0.1 BTC" />
+
+    <TextView
+        android:id="@+id/text_address"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:ellipsize="middle"
+        android:gravity="center_horizontal"
+        android:paddingEnd="8dp"
+        android:paddingStart="8dp"
+        android:singleLine="true"
+        android:textColor="@color/white_transparent"
+        app:layout_constraintBottom_toBottomOf="@id/image_background"
+        app:layout_constraintEnd_toEndOf="@id/image_background"
+        app:layout_constraintStart_toStartOf="@id/image_background"
+        tools:text="asdadasdasdasdwwdasdw" />
+
+    <android.support.constraint.Group
+        android:id="@+id/group_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="image_background, text_amount, text_address" />
 
     <ImageView
         android:id="@+id/image"
@@ -28,11 +78,11 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/montserrat"
+        android:lineSpacingExtra="13sp"
         android:text="@string/success"
         android:textColor="@color/white"
-        android:lineSpacingExtra="13sp"
-        android:textStyle="bold"
         android:textSize="16sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -45,10 +95,10 @@
         android:layout_height="wrap_content"
         android:background="@drawable/selector_blue_gradient"
         android:gravity="center"
-        android:padding="16dp"
-        android:text="@string/done"
         android:letterSpacing="0.01"
         android:lineSpacingExtra="13sp"
+        android:padding="16dp"
+        android:text="@string/done"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent" />
 

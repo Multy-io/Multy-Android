@@ -48,8 +48,8 @@
     <string name="vote_for_activity">Проголосувати за події</string>
     <string name="no_contacts">Поки тут порожньо</string>
     <string name="sync_my_address_book">Проголосувати за контакти</string>
-    <string name="push_notifications">Спливаючі Повідомлення</string>
-    <string name="security_settings">Налаштування Безпеки</string>
+    <string name="push_notifications">Повідомлення</string>
+    <string name="security_settings">Безпека</string>
     <string name="exchange">Біржа</string>
     <string name="about_multy">О Multy</string>
     <string name="leave_feedback">Залишити відгук</string>

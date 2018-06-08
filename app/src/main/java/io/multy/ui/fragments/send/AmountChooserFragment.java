@@ -55,8 +55,6 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
         return new AmountChooserFragment();
     }
 
-    @BindView(R.id.root)
-    ConstraintLayout root;
     @BindView(R.id.group_send)
     Group groupSend;
     @BindView(R.id.input_balance_original)
