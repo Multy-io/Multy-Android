@@ -224,16 +224,19 @@ public class MyReceiveFragment extends BaseFragment {
         final String address = viewModel.getWallet().getActiveAddress().getAddress();
         textAddress.setText(address);
         imageFastId.setImageResource(FastReceiver.getImageResId(address));
+        String amount = "";
         String fiatAmount = "";
         switch (NativeDataHelper.Blockchain.valueOf(viewModel.getWallet().getCurrencyId())) {
             case BTC:
+                amount = CryptoFormatUtils.FORMAT_BTC.format(viewModel.getAmount());
                 fiatAmount = CryptoFormatUtils.btcToUsd(viewModel.getAmount());
                 break;
             case ETH:
+                amount = CryptoFormatUtils.FORMAT_ETH.format(viewModel.getAmount());
                 fiatAmount = CryptoFormatUtils.ethToUsd(viewModel.getAmount());
                 break;
         }
-        textAmount.setText(String.format("%s %s / %s %s", viewModel.getAmount(), viewModel.getWallet().getCurrencyName(),
+        textAmount.setText(String.format("%s %s / %s %s", amount, viewModel.getWallet().getCurrencyName(),
                 fiatAmount, CurrencyCode.USD.name()));
     }
 

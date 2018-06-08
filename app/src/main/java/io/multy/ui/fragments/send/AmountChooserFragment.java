@@ -112,7 +112,7 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
         if (!viewModel.isAmountScanned()) {
             Analytics.getInstance(getActivity()).logSendChooseAmountLaunch(viewModel.getChainId());
         } else {
-            inputOriginal.setText(String.valueOf(viewModel.getAmount()));
+            inputOriginal.setText(viewModel.getAmount() > 0 ? String.valueOf(viewModel.getAmount()) : "");
         }
         return view;
     }

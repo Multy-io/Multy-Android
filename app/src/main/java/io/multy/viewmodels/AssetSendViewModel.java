@@ -14,6 +14,7 @@ import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.api.socket.CurrenciesRate;
 import io.multy.model.entities.Fee;
+import io.multy.model.entities.wallet.EthWallet;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.responses.FeeRateResponse;
 import io.multy.storage.RealmManager;
@@ -36,7 +37,7 @@ public class AssetSendViewModel extends BaseViewModel {
     public static MutableLiveData<Long> transactionPrice = new MutableLiveData<>();
     public SingleLiveEvent<String> transaction = new SingleLiveEvent<>();
     private double amount;
-    private boolean isPayForCommission;
+    private boolean isPayForCommission = true;
     private String donationAmount = "0";
     private boolean isAmountScanned = false;
     private CurrenciesRate currenciesRate;
@@ -208,9 +209,11 @@ public class AssetSendViewModel extends BaseViewModel {
 
     public void signTransactionEth() {
         try {
+            String signAmount = CryptoFormatUtils.ethToWei(String.valueOf(isPayForCommission ?
+                    amount : (amount - EthWallet.getTransactionPrice(getFee().getAmount()))));
 //            Log.i("wise", getWallet().getId() + " " + getWallet().getNetworkId() + " " + amount + " " + getFee().getAmount() + " " + getDonationSatoshi() + " " + isPayForCommission);
             byte[] tx = NativeDataHelper.makeTransactionETH(RealmManager.getSettingsDao().getSeed().getSeed(), getWallet().getIndex(), 0, wallet.getValue().getCurrencyId(), wallet.getValue().getNetworkId(),
-                    getWallet().getActiveAddress().getAmountString(), CryptoFormatUtils.ethToWei(String.valueOf(amount)), getReceiverAddress().getValue().substring(2), "21000", String.valueOf(fee.getValue().getAmount()), getWallet().getEthWallet().getNonce());
+                    getWallet().getActiveAddress().getAmountString(), signAmount/*CryptoFormatUtils.ethToWei(String.valueOf(amount))*/, getReceiverAddress().getValue().substring(2), "21000", String.valueOf(fee.getValue().getAmount()), getWallet().getEthWallet().getNonce());
             transaction.setValue(byteArrayToHex(tx));
         } catch (JniException e) {
             errorMessage.setValue("Entered sum is invalid.");

@@ -104,6 +104,11 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
         setBaseViewModel(viewModel);
         currenciesRate = RealmManager.getSettingsDao().getCurrenciesRate();
 
+        if (viewModel.getWallet() == null || !viewModel.getWallet().isValid()) {
+            viewModel.setWallet(RealmManager.getAssetsDao()
+                    .getWalletById(getActivity().getIntent().getExtras().getLong(Constants.EXTRA_WALLET_ID, -1)));
+        }
+
         subscribeToUpdates();
         setupSwitcher();
         initSpendable();
@@ -114,7 +119,7 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
         if (!viewModel.isAmountScanned()) {
             Analytics.getInstance(getActivity()).logSendChooseAmountLaunch(viewModel.getChainId());
         } else {
-            inputOriginal.setText(String.valueOf(viewModel.getAmount()));
+            inputOriginal.setText(viewModel.getAmount() > 0 ? String.valueOf(viewModel.getAmount()) : "");
         }
         return view;
     }
@@ -162,7 +167,7 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
         String spendableWeiString = viewModel.getWallet().getActiveAddress().getAmountString();
         spendableWei = new BigDecimal(spendableWeiString);
         final double balanceEth = CryptoFormatUtils.weiToEth(spendableWeiString);
-        double spendableEth = switcher.isChecked() ? (balanceEth - transactionPriceEth) : balanceEth;
+        double spendableEth = /*switcher.isChecked() ? (balanceEth - transactionPriceEth) : */balanceEth;
 
         textSpendable.setText(String.format(getString(R.string.available_amount), CryptoFormatUtils.FORMAT_ETH.format(spendableEth) + " ETH"));
         return spendableEth;
@@ -517,6 +522,7 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
                 Analytics.getInstance(getActivity()).logSendChooseAmount(AnalyticsConstants.SEND_AMOUNT_COMMISSION_DISABLED, viewModel.getChainId());
             }
         });
+        switcher.setChecked(viewModel.isPayForCommission());
     }
 
     @OnClick(R.id.button_clear_original)
