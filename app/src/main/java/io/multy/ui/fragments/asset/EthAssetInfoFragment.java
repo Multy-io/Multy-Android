@@ -32,6 +32,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -51,6 +52,7 @@ import io.multy.ui.adapters.EthTransactionsAdapter;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.dialogs.AddressActionsDialogFragment;
 import io.multy.util.Constants;
+import io.multy.util.CryptoFormatUtils;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.WalletViewModel;
@@ -272,18 +274,22 @@ public class EthAssetInfoFragment extends BaseFragment implements AppBarLayout.O
             return;
         }
 
-        final long balance = wallet.getBalanceNumeric().longValue();
-        final long availableBalance = wallet.getAvailableBalanceNumeric().longValue();
-        if (balance == availableBalance) {
-            hideAvailableAmount();
-        } else {
+        if (wallet.getEthWallet() != null && !wallet.getEthWallet().getPendingBalance().equals("0") && !wallet.getEthWallet().getPendingBalance().equals("")) {
             showAvailableAmount();
+            final String pendingWei = wallet.getEthWallet().getPendingBalance();
+            final String availableWei = wallet.getBalance();
+            final BigInteger allWei = new BigInteger(availableWei).add(new BigInteger(pendingWei));
+            final String allWeiString = allWei.toString();
+
+            textBalanceFiat.setText(CryptoFormatUtils.weiToUsd(allWei));
+            textBalanceOriginal.setText(String.format("%s", CryptoFormatUtils.weiToEth(allWeiString)));
+        } else {
+            hideAvailableAmount();
+            textBalanceFiat.setText(wallet.getFiatBalanceLabel());
+            textBalanceOriginal.setText(wallet.getBalanceLabelTrimmed());
         }
 
         textAvailableFiat.setText(wallet.getAvailableFiatBalanceLabel());
-        textBalanceFiat.setText(wallet.getFiatBalanceLabel());
-
-        textBalanceOriginal.setText(wallet.getBalanceLabelTrimmed());
         textAvailableValue.setText(wallet.getAvailableBalanceLabel());
     }
 
