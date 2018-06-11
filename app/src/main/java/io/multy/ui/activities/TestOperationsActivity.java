@@ -70,6 +70,7 @@ import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
+import io.realm.RealmResults;
 import io.socket.client.Ack;
 import io.socket.client.Socket;
 import okhttp3.ResponseBody;
@@ -256,7 +257,16 @@ public class TestOperationsActivity extends BaseActivity {
         if (receiver == null) {
             wallets = RealmManager.getAssetsDao().getAvailableWallets();
         } else {
-            wallets = RealmManager.getAssetsDao().getAvailableWallets(receiver.getCurrencyId(), receiver.getNetworkId());
+            wallets = new ArrayList<>();
+            RealmResults<Wallet> resultWallets = RealmManager.getAssetsDao()
+                    .getAvailableWallets(receiver.getCurrencyId(), receiver.getNetworkId());
+            final BigInteger receiverAmount = new BigInteger(receiver.getAmount());
+            for (Wallet wallet : resultWallets) {
+                BigInteger availableBalance = new BigInteger(wallet.getAvailableBalance());
+                if (availableBalance.compareTo(receiverAmount) >= 0) {
+                    wallets.add(wallet);
+                }
+            }
         }
 
         walletPagerAdapter = new MyWalletPagerAdapter(getSupportFragmentManager(), v -> {
@@ -338,7 +348,7 @@ public class TestOperationsActivity extends BaseActivity {
                 break;
             case ETH:
                 amount = CryptoFormatUtils.weiToEthLabel(receiver.getAmount());
-                amountFiat = CryptoFormatUtils.weiToUsd(new BigInteger(receiver.getAmount())) + CurrencyCode.USD.name();
+                amountFiat = CryptoFormatUtils.weiToUsd(new BigInteger(receiver.getAmount())) + " " + CurrencyCode.USD.name();
                 break;
         }
         setupSendGroup(amount, amountFiat);
@@ -469,8 +479,8 @@ public class TestOperationsActivity extends BaseActivity {
 
                     try {
                         send();
-                    } catch (JSONException | JniException e) {
-                        e.printStackTrace();
+                    } catch (Throwable t) {
+                        t.printStackTrace();
                         showError();
                         return;
                     }

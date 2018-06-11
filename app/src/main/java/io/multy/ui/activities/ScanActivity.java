@@ -77,8 +77,16 @@ public class ScanActivity extends AppCompatActivity implements ZBarScannerView.R
                     addressIntent.putExtra(Constants.EXTRA_QR_CONTENTS,
                             schemeSpecificPart.substring(zero, schemeSpecificPart.indexOf(Constants.QUESTION_MARK)));
                     if (schemeSpecificPart.indexOf(Constants.EQUAL) + one <= schemeSpecificPart.length()) {
-                        Timber.e("amount54 %s", schemeSpecificPart.substring(schemeSpecificPart.indexOf(Constants.EQUAL) + one, schemeSpecificPart.length()));
-                        addressIntent.putExtra(Constants.EXTRA_AMOUNT, schemeSpecificPart.substring(schemeSpecificPart.indexOf(Constants.EQUAL) + one, schemeSpecificPart.length()));
+                        try {
+                            Timber.e("amount54 %s", schemeSpecificPart.substring(schemeSpecificPart.indexOf(Constants.EQUAL) + one, schemeSpecificPart.length()));
+                            String amount = schemeSpecificPart.substring(schemeSpecificPart.indexOf(":") + one, schemeSpecificPart.length());
+                            if (amount.startsWith("=")) {
+                                amount = amount.substring(1);
+                            }
+                            addressIntent.putExtra(Constants.EXTRA_AMOUNT, amount);
+                        } catch (Throwable t) {
+                            t.printStackTrace();
+                        }
                     }
                 } else {
                     addressIntent.putExtra(Constants.EXTRA_QR_CONTENTS, uri.getSchemeSpecificPart());

@@ -142,7 +142,7 @@ public class CryptoFormatUtils {
     }
 
     public static String weiToEthLabel(String wei) {
-        return wei.equals("0") ? "0" : new BigDecimal(wei).divide(EthWallet.DIVISOR).doubleValue() + " ETH";
+        return wei.equals("0") ? "0" : FORMAT_ETH.format(new BigDecimal(wei).divide(EthWallet.DIVISOR).doubleValue()) + " ETH";
     }
 
     public static String ethToWei(String eth) {
