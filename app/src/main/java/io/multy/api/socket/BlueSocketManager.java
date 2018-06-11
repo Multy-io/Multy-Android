@@ -50,7 +50,7 @@ public class BlueSocketManager {
     public static final String EVENT_PAY_SEND = "event:payment:send";
     public static final String EVENT_PAY_RECEIVE = "event:payment:received";
     public static final String EVENT_TRANSACTION_UPDATE = "TransactionUpdate";
-    public static final String EVENT_TRANSACTION_UPDATE_BTC = "btcTransactionUpdate";
+    public static final String EVENT_TRANSACTION_UPDATE_BTC = "TransactionUpdate";
 
     private Socket socket;
     private Gson gson;
