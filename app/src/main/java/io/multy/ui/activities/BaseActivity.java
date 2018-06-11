@@ -300,7 +300,8 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
         if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
             UserId userId = RealmManager.getSettingsDao().getUserId();
             if (userId != null) {
-                FirebaseMessaging.getInstance().subscribeToTopic(Constants.PUSH_TOPIC + userId.getUserId());
+                //TODO ENABLE PUSHES
+//                FirebaseMessaging.getInstance().subscribeToTopic(Constants.PUSH_TOPIC + userId.getUserId());
             }
         }
     }
