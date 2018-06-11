@@ -71,7 +71,7 @@ public class ScanActivity extends AppCompatActivity implements ZBarScannerView.R
     private void parseUri(Intent addressIntent, Result rawResult){
         Uri uri = Uri.parse(rawResult.getContents());
         if (uri.getScheme() != null) { // was scanned scheme according to pattern
-            String schemeSpecificPart = uri.getSchemeSpecificPart();
+            String schemeSpecificPart = uri.getSchemeSpecificPart().replaceAll(",", ".");
             if (schemeSpecificPart != null) {
                 if (schemeSpecificPart.contains(Constants.QUESTION_MARK)) {
                     addressIntent.putExtra(Constants.EXTRA_QR_CONTENTS,

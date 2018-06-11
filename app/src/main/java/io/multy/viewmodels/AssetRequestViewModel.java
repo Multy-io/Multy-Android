@@ -20,6 +20,7 @@ import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.requests.AddWalletAddressRequest;
 import io.multy.storage.RealmManager;
+import io.multy.util.CryptoFormatUtils;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
 import io.reactivex.Observable;
@@ -153,7 +154,14 @@ public class AssetRequestViewModel extends BaseViewModel {
     }
 
     public String getStringQr() {
-        return "bitcoin:" + address.getValue() + (amount == 0 ? "" : "?amount=" + amount);
+        switch (NativeDataHelper.Blockchain.valueOf(wallet.getCurrencyId())) {
+            case BTC:
+                return "bitcoin:" + address.getValue() + (amount == 0 ? "" : "?amount=" + CryptoFormatUtils.FORMAT_BTC.format(amount));
+            case ETH:
+                return "ethereum:" + address.getValue() + (amount == 0 ? "" : "?amount=" + CryptoFormatUtils.FORMAT_ETH.format(amount));
+            default:
+                return "bitcoin:" + address.getValue() + (amount == 0 ? "" : "?amount=" + CryptoFormatUtils.FORMAT_BTC.format(amount));
+        }
     }
 
     public String getStringAddress() {

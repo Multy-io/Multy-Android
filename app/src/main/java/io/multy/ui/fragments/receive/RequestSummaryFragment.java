@@ -57,6 +57,7 @@ import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 import timber.log.Timber;
 
+import static io.multy.api.socket.BlueSocketManager.EVENT_TRANSACTION_UPDATE;
 import static io.multy.api.socket.BlueSocketManager.EVENT_TRANSACTION_UPDATE_BTC;
 
 
