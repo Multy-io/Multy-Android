@@ -14,23 +14,15 @@ import android.support.v7.app.AppCompatActivity;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindInt;
 import butterknife.ButterKnife;
-import io.multy.R;
 import io.multy.util.Constants;
 import io.multy.util.analytics.Analytics;
 import me.dm7.barcodescanner.zbar.BarcodeFormat;
 import me.dm7.barcodescanner.zbar.Result;
 import me.dm7.barcodescanner.zbar.ZBarScannerView;
-import timber.log.Timber;
 
 
 public class ScanActivity extends AppCompatActivity implements ZBarScannerView.ResultHandler {
-
-    @BindInt(R.integer.one)
-    int one;
-    @BindInt(R.integer.zero)
-    int zero;
 
     private ZBarScannerView scannerView;
 
@@ -69,33 +61,28 @@ public class ScanActivity extends AppCompatActivity implements ZBarScannerView.R
     }
 
     private void parseUri(Intent addressIntent, Result rawResult){
-        Uri uri = Uri.parse(rawResult.getContents());
-        if (uri.getScheme() != null) { // was scanned scheme according to pattern
-            String schemeSpecificPart = uri.getSchemeSpecificPart().replaceAll(",", ".");
-            if (schemeSpecificPart != null) {
-                if (schemeSpecificPart.contains(Constants.QUESTION_MARK)) {
-                    addressIntent.putExtra(Constants.EXTRA_QR_CONTENTS,
-                            schemeSpecificPart.substring(zero, schemeSpecificPart.indexOf(Constants.QUESTION_MARK)));
-                    if (schemeSpecificPart.indexOf(Constants.EQUAL) + one <= schemeSpecificPart.length()) {
-                        try {
-                            Timber.e("amount54 %s", schemeSpecificPart.substring(schemeSpecificPart.indexOf(Constants.EQUAL) + one, schemeSpecificPart.length()));
-                            String amount = schemeSpecificPart.substring(schemeSpecificPart.indexOf(":") + one, schemeSpecificPart.length());
-                            if (amount.startsWith("=")) {
-                                amount = amount.substring(1);
-                            }
-                            addressIntent.putExtra(Constants.EXTRA_AMOUNT, amount);
-                        } catch (Throwable t) {
-                            t.printStackTrace();
-                        }
-                    }
-                } else {
-                    addressIntent.putExtra(Constants.EXTRA_QR_CONTENTS, uri.getSchemeSpecificPart());
-                }
-            } else {
-                addressIntent.putExtra(Constants.EXTRA_QR_CONTENTS, rawResult.getContents());
+        try {
+            Uri uri = Uri.parse(rawResult.getContents().replace(",", "."));
+            if (uri.getScheme() == null || uri.getQuery() == null) {
+                addressIntent.putExtra(Constants.EXTRA_QR_CONTENTS, uri.getSchemeSpecificPart());
+                return;
             }
-        } else { // was scanned just address
-            addressIntent.putExtra(Constants.EXTRA_QR_CONTENTS, rawResult.getContents());
+            try {
+                String[] queries = uri.getQuery().split("\\?:=|:=|=:|=|:");
+                for (int i = 0; i < queries.length; i++) {
+                    if (queries[i].toLowerCase().contains("amount")) {
+                        Double.parseDouble(queries[i + 1]); //to check if amount is double
+                        addressIntent.putExtra(Constants.EXTRA_AMOUNT, queries[i + 1]);
+                        break;
+                    }
+                }
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+            addressIntent.putExtra(Constants.EXTRA_QR_CONTENTS, uri.getSchemeSpecificPart()
+                    .substring(0, uri.getSchemeSpecificPart().indexOf(Constants.QUESTION_MARK)));
+        } catch (Throwable t) {
+            t.printStackTrace();
         }
     }
 
