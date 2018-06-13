@@ -17,7 +17,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +26,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.messaging.FirebaseMessaging;
 import com.samwolfand.oneprefs.Prefs;
 
 import net.khirr.library.foreground.Foreground;
@@ -105,7 +103,7 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
 
             @Override
             public void foreground() {
-                if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED) && !Prefs.getBoolean(Constants.PREF_LOCK)) {
+                if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
                     if (RealmManager.open() == null) {
                         finish();
                         Intent splashIntent = new Intent(BaseActivity.this, SplashActivity.class);
@@ -198,7 +196,6 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
 //            viewGroup.setClickable(true);
 
             isLockVisible = true;
-            RealmManager.close();
             Prefs.putBoolean(Constants.PREF_UNLOCKED, false);
         }
     }
