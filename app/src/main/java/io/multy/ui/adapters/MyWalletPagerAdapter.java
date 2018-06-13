@@ -17,7 +17,6 @@ import java.util.List;
 
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.ui.fragments.FastWalletFragment;
-import io.multy.ui.fragments.FastWalletFragment;
 
 public class MyWalletPagerAdapter extends FragmentStatePagerAdapter {
 
