@@ -117,7 +117,7 @@
     <string name="delete_wallet">Delete Wallet</string>
     <string name="delete_confirm">Do you really want to delete this wallet?</string>
     <string name="save">Save</string>
-    <string name="private_key_notification">Your extended private keys are all that is needed to\naccess your bitcoin funds. Be sure to protect your private\nkeys and store them only on secure devices.</string>
+    <string name="private_key_notification">Your extended private keys are all that is needed to\naccess your crypto funds. Be sure to protect your private\nkeys and store them only on secure devices.</string>
     <string name="copy_to_clipboard">Copy to clipboard</string>
     <string name="share_key">Share</string>
     <string name="about_private_key">

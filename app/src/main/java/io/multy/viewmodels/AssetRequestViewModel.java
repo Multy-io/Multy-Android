@@ -110,8 +110,8 @@ public class AssetRequestViewModel extends BaseViewModel {
     }
 
     public MutableLiveData<String> getAddress() {
-        if (address.getValue() == null && walletLive.getValue() != null) {
-            address.setValue(walletLive.getValue().getActiveAddress().getAddress());
+        if (address.getValue() == null && wallet != null) {
+            address.setValue(wallet.getActiveAddress().getAddress());
         }
         return address;
     }
@@ -173,6 +173,6 @@ public class AssetRequestViewModel extends BaseViewModel {
     }
 
     public int getChainId() {
-        return walletLive.getValue() != null ? walletLive.getValue().getCurrencyId() : 0;
+        return wallet != null ? wallet.getCurrencyId() : 0;
     }
 }

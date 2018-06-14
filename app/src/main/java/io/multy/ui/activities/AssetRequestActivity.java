@@ -100,7 +100,7 @@ public class AssetRequestActivity extends BaseActivity {
             if (getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, -1) != -1) {
                 AssetRequestViewModel viewModel = ViewModelProviders.of(this).get(AssetRequestViewModel.class);
                 viewModel.getWallet(getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, -1));
-                viewModel.getWalletLive().observe(this, walletRealmObject -> setFragment(R.string.receive, RequestSummaryFragment.newInstance()));
+                setFragment(R.string.receive, RequestSummaryFragment.newInstance());
             } else {
                 Toast.makeText(this, "Invalid wallet index", Toast.LENGTH_SHORT).show();
             }
