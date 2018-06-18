@@ -141,6 +141,14 @@ public class Analytics {
         analytics.logEvent(AnalyticsConstants.ACTIVITY_SCREEN, null);
     }
 
+    public void logActivityLaunch(String name) {
+        logEvent(AnalyticsConstants.ACTIVITY_SCREEN, AnalyticsConstants.ACTIVITY_SCREEN_NAME, name + " Launched");
+    }
+
+    public void logActivityClose(String name) {
+        logEvent(AnalyticsConstants.ACTIVITY_SCREEN, AnalyticsConstants.ACTIVITY_SCREEN_NAME, name + " Closed");
+    }
+
     public void logActivityClose() {
         logEvent(AnalyticsConstants.ACTIVITY_SCREEN_NAME, AnalyticsConstants.ACTIVITY_SCREEN_NAME, AnalyticsConstants.BUTTON_CLOSE);
     }

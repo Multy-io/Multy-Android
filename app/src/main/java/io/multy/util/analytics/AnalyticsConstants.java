@@ -224,6 +224,7 @@ public class AnalyticsConstants {
 
     public static final String ERROR_TRANSACTION_SIGN = "Error_Transaction_Sign";
     public static final String ERROR_TRANSACTION_API = "Error_Sending_Transaction_From_Api";
+    public static final String ERROR_KF_TRANSACTION = "Error_Sending_Transaction_KF";
     public static final String ERROR_DATABASE_DECRYPT = "Error_decrypt_database";
 
     public static final String SHARED_WITH = "Shared_with";
@@ -248,4 +249,10 @@ public class AnalyticsConstants {
 
     //donation success screen
     public static final String DONATION_SUCCESS_SCREEN = "Screen_Donation_Success";
+
+    public static final String KF_TRANSACTION_ERROR = "KF_Transaction_Error";
+    public static final String KF_TRANSACTION_SUCCESS = "KF_Transaction_Success";
+    public static final String KF_FOUND_DEVICES = "KF_Found_Devices";
+    public static final String KF_PERMISSIONS_GRANTED = "KF_Permissions_Granted";
+    public static final String KF_WALLET_COUNT = "KF_Wallet_Count";
 }

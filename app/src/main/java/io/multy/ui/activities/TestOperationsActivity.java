@@ -122,6 +122,7 @@ public class TestOperationsActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test_operations);
         ButterKnife.bind(this);
+        Analytics.getInstance(this).logActivityLaunch(TestOperationsActivity.class.getSimpleName());
         initGestureDetector();
         initUpdateAction();
         initPagers();
@@ -129,6 +130,9 @@ public class TestOperationsActivity extends BaseActivity {
         startSockets();
 
         containerSend.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
+        if (walletPagerAdapter != null) {
+            Analytics.getInstance(this).logEvent(AnalyticsConstants.KF_WALLET_COUNT, AnalyticsConstants.KF_WALLET_COUNT, String.valueOf(walletPagerAdapter.getCount()));
+        }
     }
 
     @Override
@@ -154,6 +158,11 @@ public class TestOperationsActivity extends BaseActivity {
             handler.removeCallbacksAndMessages(null);
         }
         bleScanCallback = null;
+
+        if (receiversPagerAdapter != null) {
+            Analytics.getInstance(this).logEvent(AnalyticsConstants.KF_FOUND_DEVICES, AnalyticsConstants.KF_FOUND_DEVICES, String.valueOf(receiversPagerAdapter.getCount()));
+        }
+        Analytics.getInstance(this).logActivityClose(TestOperationsActivity.class.getSimpleName());
         super.onDestroy();
     }
 
@@ -166,8 +175,10 @@ public class TestOperationsActivity extends BaseActivity {
             startActivity(intent);
             finish();
         } else if (requestCode == REQUEST_BLUETOOTH && resultCode == RESULT_OK) {
+            Analytics.getInstance(this).logEvent(AnalyticsConstants.KF_PERMISSIONS_GRANTED, AnalyticsConstants.KF_PERMISSIONS_GRANTED, "BT_on");
             start();
         } else if (requestCode != REQUEST_CODE_LOCATION) {
+            Analytics.getInstance(this).logEvent(AnalyticsConstants.KF_PERMISSIONS_GRANTED, AnalyticsConstants.KF_PERMISSIONS_GRANTED, "BT_off");
             finish();
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -185,9 +196,10 @@ public class TestOperationsActivity extends BaseActivity {
                 }
 
                 if (perms.get(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    Log.i("wise", "all permissions granted");
+                    Analytics.getInstance(this).logEvent(AnalyticsConstants.KF_PERMISSIONS_GRANTED, Manifest.permission.ACCESS_FINE_LOCATION, String.valueOf(true));
                     start();
                 } else {
+                    Analytics.getInstance(this).logEvent(AnalyticsConstants.KF_PERMISSIONS_GRANTED, Manifest.permission.ACCESS_FINE_LOCATION, String.valueOf(false));
                     finish();
                 }
             }
@@ -430,14 +442,14 @@ public class TestOperationsActivity extends BaseActivity {
                 if (response.isSuccessful()) {
                     showSuccess();
                 } else {
-                    showError();
+                    showError(null);
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
                 t.printStackTrace();
-                showError();
+                showError((Exception) t);
             }
         });
 
@@ -448,11 +460,12 @@ public class TestOperationsActivity extends BaseActivity {
         if (socketManager.getSocket() != null && socketManager.getSocket().connected()) {
             socketManager.disconnect();
         }
+        Analytics.getInstance(this).logEvent(AnalyticsConstants.KF_TRANSACTION_SUCCESS, AnalyticsConstants.KF_TRANSACTION_SUCCESS, String.valueOf(true));
         new CompleteDialogFragment().show(getSupportFragmentManager(), "");
     }
 
-    private void showError() {
-        Analytics.getInstance(TestOperationsActivity.this).logError(AnalyticsConstants.ERROR_TRANSACTION_API);
+    private void showError(Exception e) {
+        Analytics.getInstance(this).logEvent(AnalyticsConstants.KF_TRANSACTION_ERROR, AnalyticsConstants.KF_TRANSACTION_ERROR, e == null ? "Unknown error" : e.getMessage());
         AlertDialog dialog = new AlertDialog.Builder(TestOperationsActivity.this)
                 .setTitle(getString(R.string.error_sending_tx))
                 .setPositiveButton(R.string.ok, (dialog1, which) -> dialog1.dismiss())
@@ -479,9 +492,9 @@ public class TestOperationsActivity extends BaseActivity {
 
                     try {
                         send();
-                    } catch (Throwable t) {
-                        t.printStackTrace();
-                        showError();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        showError(e);
                         return;
                     }
 
