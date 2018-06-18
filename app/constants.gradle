@@ -8,15 +8,3 @@ ext {
     DMULTY_ANDROID_PATH_TO_JNI_WRAPPER = '-DMULTY_ANDROID_PATH_TO_JNI_WRAPPER=YOUR_PATH_TO_PROJECT/app/src/main/cpp/scratch.cpp'
     CMAKE_PATH = 'YOUR_PATH_TO_FILE/CMakeLists.txt'
 }
-
-android {
-    defaultConfig {
-        ndk {
-            abiFilters 'x86', 'armeabi', 'armeabi-v7a', 'arm64-v8a'
-        }
-    }
-    buildTypes {
-        release {
-        }
-    }
-}
