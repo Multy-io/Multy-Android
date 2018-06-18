@@ -220,7 +220,6 @@ Java_io_multy_util_NativeDataHelper_makeAccountAddress(JNIEnv *env, jobject obj,
     size_t len = (size_t) env->GetArrayLength(array);
     unsigned char *buf = new unsigned char[len];
     env->GetByteArrayRegion(array, 0, len, reinterpret_cast<jbyte *>(buf));
-
     ExtendedKeyPtr rootKey;
 
     BinaryData seed{buf, len};
@@ -229,6 +228,7 @@ Java_io_multy_util_NativeDataHelper_makeAccountAddress(JNIEnv *env, jobject obj,
     HDAccountPtr hdAccount;
     HANDLE_ERROR(make_hd_account(rootKey.get(),
                                  BlockchainType{(Blockchain) blockchain, (size_t) type},
+                                 BITCOIN_ADDRESS_P2PKH,
                                  walletIndex,
                                  reset_sp(hdAccount)));
 
@@ -262,6 +262,7 @@ Java_io_multy_util_NativeDataHelper_getMyPrivateKey(JNIEnv *env, jclass type_, j
 
     HDAccountPtr hdAccount;
     HANDLE_ERROR(make_hd_account(rootKey.get(), BlockchainType{(Blockchain) blockchain, (size_t) netType},
+                                 BITCOIN_ADDRESS_P2PKH,
                                  walletIndex,
                                  reset_sp(hdAccount)));
 
@@ -323,6 +324,7 @@ Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *jniEnv, jobject obj,
     HANDLE_ERROR(
             make_hd_account(rootKey.get(),
                             BlockchainType{BLOCKCHAIN_BITCOIN, (size_t) jNetworkId},
+                            BITCOIN_ADDRESS_P2PKH,
                             jWalletIndex, reset_sp(hdAccount)));
 
     AccountPtr baseAccount;
@@ -615,7 +617,6 @@ Java_io_multy_util_NativeDataHelper_makeTransactionETH(JNIEnv *env, jclass type,
     const char *nonceStr = env->GetStringUTFChars(jNonce, nullptr);
 
     try {
-
         ExtendedKeyPtr rootKey;
 
         BinaryData seed{seedBuf, len};
@@ -623,8 +624,8 @@ Java_io_multy_util_NativeDataHelper_makeTransactionETH(JNIEnv *env, jclass type,
 
         HDAccountPtr hdAccount;
         HANDLE_ERROR(make_hd_account(rootKey.get(),
-                                     BlockchainType{(Blockchain) jChainId,
-                                                    (size_t) jNetType},
+                                     BlockchainType{(Blockchain) jChainId, (size_t) jNetType},
+                                     BITCOIN_ADDRESS_P2PKH,
                                      jWalletIndex,
                                      reset_sp(hdAccount)));
 
@@ -641,17 +642,14 @@ Java_io_multy_util_NativeDataHelper_makeTransactionETH(JNIEnv *env, jclass type,
             Properties *properties = nullptr;
             BigIntPtr nonce;
             HANDLE_ERROR(make_big_int(nonceStr, reset_sp(nonce)));
-
             HANDLE_ERROR(transaction_get_properties(transaction.get(), &properties));
             HANDLE_ERROR(properties_set_big_int_value(properties, "nonce", nonce.get()));
-            HANDLE_ERROR(
-                    properties_set_int32_value(properties, "chain_id", ETHEREUM_CHAIN_ID_RINKEBY));
+//            HANDLE_ERROR(properties_set_int32_value(properties, "chain_id", ETHEREUM_CHAIN_ID_RINKEBY));
         }
 
         {
             Properties *source = nullptr;
             HANDLE_ERROR(transaction_add_source(transaction.get(), &source));
-
             // Address balance
             BigIntPtr balance;
             HANDLE_ERROR(make_big_int(balanceStr, reset_sp(balance)));
@@ -666,9 +664,9 @@ Java_io_multy_util_NativeDataHelper_makeTransactionETH(JNIEnv *env, jclass type,
             HANDLE_ERROR(make_big_int(amountStr, reset_sp(amount)));
             HANDLE_ERROR(properties_set_big_int_value(destination, "amount", amount.get()));
 
-            BinaryDataPtr address;
-            HANDLE_ERROR(make_binary_data_from_hex(destinationAddressStr, reset_sp(address)));
-            HANDLE_ERROR(properties_set_binary_data_value(destination, "address", address.get()));
+//            BinaryDataPtr address;
+//            HANDLE_ERROR(make_binary_data_from_hex(destinationAddressStr, reset_sp(address)));
+            HANDLE_ERROR(properties_set_string_value(destination, "address", destinationAddressStr));
         }
 
         {

@@ -1,6 +1,6 @@
 # Multy-android
 
-Multi cryptocurrency and assets open-source wallet
+Multy - cryptocurrency and assets open-source wallet
 
 To conrtibute please check **Build instruction
 
@@ -32,18 +32,14 @@ add_library(core_jni
        SHARED
        "/../Multy-android/app/src/main/cpp/scratch.cpp"
     )
-```
 
-6. Update build.gradle extarnalNativeBuild path
 ```
-externalNativeBuild {
-            cmake {
-                path "/.../Multy-Core/CMakeLists.txt"
-            }
-        }
+6. Update constants.gradle files and paste your pases to cmake and scatch.cpp files
+
 ```
 7. In Android Studio make Gradle sync
 
+```
 8. In Android Studio
 ```
 Build -> Clean Project
