@@ -229,4 +229,6 @@
     <string name="searching">Поиск\nзапросов</string>
     <!--<string name="my_first_wallet_name">My first %s wallet</string>-->
     <string name="magic_send">Магическая отправка</string>
+    <string name="push_new_transaction_notification">Вы получили траназкцию на сумму %s</string>
+    <string name="you_have_transaction">У вас есть новая входящая транзакция</string>
 </resources>

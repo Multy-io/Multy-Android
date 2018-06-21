@@ -26,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.samwolfand.oneprefs.Prefs;
 
 import net.khirr.library.foreground.Foreground;
@@ -297,8 +298,7 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
         if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
             UserId userId = RealmManager.getSettingsDao().getUserId();
             if (userId != null) {
-                //TODO ENABLE PUSHES
-//                FirebaseMessaging.getInstance().subscribeToTopic(Constants.PUSH_TOPIC + userId.getUserId());
+                FirebaseMessaging.getInstance().subscribeToTopic(Constants.PUSH_TOPIC + userId.getUserId());
             }
         }
     }

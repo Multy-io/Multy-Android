@@ -74,9 +74,9 @@ public class SettingsFragment extends BaseFragment implements BaseActivity.OnLoc
             notificationsView.setChecked(false);
         }
 
-        notificationsView.setEnabled(false);
-        notificationsView.setChecked(false);
-//        setOnCheckedChangeListener();
+//        notificationsView.setEnabled(false);
+//        notificationsView.setChecked(false);
+        setOnCheckedChangeListener();
         printApplicationVersion();
         return view;
     }

@@ -307,7 +307,10 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
 
     public void createFirstWallets() {
         WalletViewModel viewModel = ViewModelProviders.of(this).get(WalletViewModel.class);
-        viewModel.createFirstWallets(this::updateAssets);
+        viewModel.createFirstWallets(() -> {
+            updateAssets();
+            subscribeToPushNotifications();
+        });
     }
 
     public void showScanScreen() {

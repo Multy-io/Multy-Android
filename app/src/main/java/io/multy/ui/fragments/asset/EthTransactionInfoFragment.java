@@ -10,6 +10,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.Group;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -88,6 +89,10 @@ public class EthTransactionInfoFragment extends BaseFragment {
     TextView textConfirmations;
     @BindView(R.id.button_view)
     TextView buttonView;
+    @BindView(R.id.progress)
+    View progress;
+    @BindView(R.id.group_data_views)
+    Group groupDataViews;
     @BindColor(R.color.green_light)
     int colorGreen;
     @BindColor(R.color.blue_sky)
@@ -133,6 +138,14 @@ public class EthTransactionInfoFragment extends BaseFragment {
             return;
         }
         selectedPosition = getArguments().getInt(SELECTED_POSITION, 0);
+        if (selectedPosition == TransactionInfoFragment.NO_POSITION && transaction == null) {
+            txHash = getArguments().getString(Constants.EXTRA_TX_HASH);
+            progress.setVisibility(View.VISIBLE);
+            groupDataViews.setVisibility(View.INVISIBLE);
+        } else {
+            progress.setVisibility(View.GONE);
+            groupDataViews.setVisibility(View.VISIBLE);
+        }
         parent.setBackgroundColor(mode == MODE_RECEIVE ? colorGreen : colorBlue);
         imageOperation.setImageResource(mode == MODE_RECEIVE ? R.drawable.ic_receive_big_new : R.drawable.ic_send_big);
         viewModel.getWalletLive().observe(getActivity(), this::onWallet);
@@ -156,8 +169,23 @@ public class EthTransactionInfoFragment extends BaseFragment {
             setData();
             return;
         }
-        transaction = transactionHistories.get(selectedPosition);
+        if (selectedPosition == TransactionInfoFragment.NO_POSITION) {
+            initTransactionFromHash(transactionHistories);
+        } else {
+            transaction = transactionHistories.get(selectedPosition);
+        }
         setData();
+    }
+
+    private void initTransactionFromHash(List<TransactionHistory> transactionHistories) {
+        for (TransactionHistory transaction : transactionHistories) {
+            if (transaction.getTxHash().equals(txHash)) {
+                this.transaction = transaction;
+                progress.setVisibility(View.GONE);
+                groupDataViews.setVisibility(View.VISIBLE);
+                break;
+            }
+        }
     }
 
     private void setData() {

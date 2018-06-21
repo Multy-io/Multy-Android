@@ -23,12 +23,15 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.samwolfand.oneprefs.Prefs;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.model.entities.wallet.Wallet;
+import io.multy.model.responses.SingleWalletResponse;
 import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetActivity;
 import io.multy.ui.fragments.BaseFragment;
@@ -191,6 +194,30 @@ public class CreateAssetFragment extends BaseFragment {
         }
     }
 
+    private void loadCreatedWallet(int currencyId, int networkId) {
+        final int walletIndex = currencyId == NativeDataHelper.Blockchain.BTC.getValue() ?
+                Prefs.getInt(Constants.PREF_WALLET_TOP_INDEX_BTC + networkId, 0) :
+                Prefs.getInt(Constants.PREF_WALLET_TOP_INDEX_ETH + networkId, 0);
+        MultyApi.INSTANCE.getWalletVerbose(walletIndex, currencyId, networkId).enqueue(new Callback<SingleWalletResponse>() {
+            @Override
+            public void onResponse(Call<SingleWalletResponse> call, Response<SingleWalletResponse> response) {
+                walletViewModel.isLoading.setValue(false);
+                if (response.isSuccessful() && response.body().getWallets() != null && response.body().getWallets().size() > 0) {
+                    RealmManager.getAssetsDao().saveWallet(response.body().getWallets().get(0));
+                    Wallet wallet = RealmManager.getAssetsDao().getWallet(currencyId, networkId, walletIndex);
+                    showWalletInfoActivity(wallet);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<SingleWalletResponse> call, Throwable t) {
+                t.printStackTrace();
+                walletViewModel.errorMessage.setValue(t.getLocalizedMessage());
+                walletViewModel.isLoading.setValue(false);
+            }
+        });
+    }
+
     @OnClick(R.id.text_create)
     public void onClickCreate() {
         walletViewModel.isLoading.setValue(true);
@@ -199,13 +226,12 @@ public class CreateAssetFragment extends BaseFragment {
         MultyApi.INSTANCE.addWallet(getActivity(), walletRealmObject).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                walletViewModel.isLoading.setValue(false);
                 if (response.isSuccessful()) {
-                    RealmManager.open();
-                    RealmManager.getAssetsDao().saveWallet(walletRealmObject);
-                    showWalletInfoActivity(walletRealmObject);
+                    //todo improve when Jack will change api with 'dateofcreation' param in response
+                    loadCreatedWallet(chainId, chainNet);
                 } else {
                     walletViewModel.errorMessage.setValue(getString(R.string.something_went_wrong));
+                    walletViewModel.isLoading.setValue(false);
                 }
             }
 

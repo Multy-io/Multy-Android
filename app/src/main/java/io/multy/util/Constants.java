@@ -76,6 +76,7 @@ public final class Constants {
     public static final String EXTRA_AMOUNT = "EXTRA_AMOUNT";
     public static final String EXTRA_RESTORE = "EXTRA_RESTORE";
     public static final String EXTRA_DONATION_CODE = "EXTRA_DONATION_CODE";
+    public static final String EXTRA_TX_HASH = "EXTRA_TX_HASH";
 
     public static final String DEEP_LINK_QR_CODE = "QR_CODE";
 

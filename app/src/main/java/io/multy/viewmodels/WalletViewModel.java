@@ -103,9 +103,7 @@ public class WalletViewModel extends BaseViewModel {
     }
 
     public MutableLiveData<Wallet> getWalletLive() {
-        if (!wallet.getValue().isValid() && walletId != -1) {
-            wallet.setValue(getWallet(walletId));
-        }
+        actualizeWallet();
         return wallet;
     }
 
@@ -246,10 +244,17 @@ public class WalletViewModel extends BaseViewModel {
     }
 
     public int getChainId() {
-        if (getWalletLive().getValue() != null && getWalletLive().getValue().isValid()) {
-            return getWalletLive().getValue().getCurrencyId();
+        actualizeWallet();
+        if (wallet.getValue() != null) {
+            return wallet.getValue().getCurrencyId();
         }
         return 0;
+    }
+
+    private void actualizeWallet() {
+        if ((wallet.getValue() == null || !wallet.getValue().isValid()) && walletId != -1) {
+            wallet.setValue(getWallet(walletId));
+        }
     }
 
     public void shareAddress(Activity activity) {
