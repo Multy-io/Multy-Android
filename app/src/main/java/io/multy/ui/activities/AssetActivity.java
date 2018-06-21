@@ -25,6 +25,7 @@ import io.multy.model.entities.wallet.Wallet;
 import io.multy.ui.fragments.AddressesFragment;
 import io.multy.ui.fragments.asset.AssetInfoFragment;
 import io.multy.ui.fragments.asset.EthAssetInfoFragment;
+import io.multy.ui.fragments.asset.EthTransactionInfoFragment;
 import io.multy.ui.fragments.asset.TransactionInfoFragment;
 import io.multy.ui.fragments.dialogs.DonateDialog;
 import io.multy.util.Constants;
@@ -32,6 +33,8 @@ import io.multy.util.NativeDataHelper;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.WalletViewModel;
+
+import static io.multy.ui.fragments.asset.TransactionInfoFragment.MODE_RECEIVE;
 
 public class AssetActivity extends BaseActivity {
 
@@ -51,11 +54,33 @@ public class AssetActivity extends BaseActivity {
             getSupportActionBar().hide();
         }
         Wallet wallet = viewModel.getWallet(getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0));
-        if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()) {
-            setFragment(R.id.frame_container, AssetInfoFragment.newInstance());
-        } else if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.ETH.getValue()) {
-            setFragment(R.id.frame_container, EthAssetInfoFragment.newInstance());
+        switch (NativeDataHelper.Blockchain.valueOf(wallet.getCurrencyId())) {
+            case BTC:
+                if (getIntent().hasExtra(Constants.EXTRA_TX_HASH)) {
+                    setFragment(R.id.container_full, TransactionInfoFragment.newInstance(createBundle(wallet)));
+                } else {
+                    setFragment(R.id.frame_container, AssetInfoFragment.newInstance());
+                }
+                break;
+            case ETH:
+                if (getIntent().hasExtra(Constants.EXTRA_TX_HASH)) {
+                    setFragment(R.id.container_full, EthTransactionInfoFragment.newInstance(createBundle(wallet)));
+                } else {
+                    setFragment(R.id.frame_container, EthAssetInfoFragment.newInstance());
+                }
+                break;
+                default:
+                    finish();
         }
+    }
+
+    private Bundle createBundle(Wallet wallet) {
+        Bundle transactionInfo = new Bundle();
+        transactionInfo.putString(Constants.EXTRA_TX_HASH, getIntent().getStringExtra(Constants.EXTRA_TX_HASH));
+        transactionInfo.putInt(TransactionInfoFragment.SELECTED_POSITION, TransactionInfoFragment.NO_POSITION);
+        transactionInfo.putInt(TransactionInfoFragment.TRANSACTION_INFO_MODE, MODE_RECEIVE);
+        transactionInfo.putLong(TransactionInfoFragment.WALLET_INDEX, wallet.getId());
+        return transactionInfo;
     }
 
     @OnClick(R.id.send)

@@ -10,6 +10,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.Group;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -61,6 +62,7 @@ public class TransactionInfoFragment extends BaseFragment {
     public static final String SELECTED_POSITION = "selectedposition";
     public static final String TRANSACTION_INFO_MODE = "mode";
     public static final String WALLET_INDEX = "walletindex";
+    public static final int NO_POSITION = -1;
     public static final int MODE_RECEIVE = 1;
     public static final int MODE_SEND = 2;
 
@@ -102,6 +104,10 @@ public class TransactionInfoFragment extends BaseFragment {
     TextView textDonateAmount;
     @BindView(R.id.donat_money)
     TextView textDonateMoney;
+    @BindView(R.id.progress)
+    View progress;
+    @BindView(R.id.group_data_views)
+    Group groupDataViews;
     @BindColor(R.color.green_light)
     int colorGreen;
     @BindColor(R.color.blue_sky)
@@ -146,6 +152,14 @@ public class TransactionInfoFragment extends BaseFragment {
             return;
         }
         selectedPosition = getArguments().getInt(SELECTED_POSITION, 0);
+        if (selectedPosition == NO_POSITION && transaction == null) {
+            txid = getArguments().getString(Constants.EXTRA_TX_HASH);
+            progress.setVisibility(View.VISIBLE);
+            groupDataViews.setVisibility(View.INVISIBLE);
+        } else {
+            progress.setVisibility(View.GONE);
+            groupDataViews.setVisibility(View.VISIBLE);
+        }
         int mode = getArguments().getInt(TRANSACTION_INFO_MODE, 0);
         parent.setBackgroundColor(mode == MODE_RECEIVE ? colorGreen : colorBlue);
         imageOperation.setImageResource(mode == MODE_RECEIVE ? R.drawable.ic_receive_big_new : R.drawable.ic_send_big);
@@ -177,9 +191,24 @@ public class TransactionInfoFragment extends BaseFragment {
                 setData();
                 return;
             }
-            transaction = transactionHistories.get(selectedPosition);
+            if (selectedPosition == NO_POSITION) {
+                initTransactionFromHash(transactionHistories);
+            } else {
+                transaction = transactionHistories.get(selectedPosition);
+            }
             setData();
         });
+    }
+
+    private void initTransactionFromHash(List<TransactionHistory> transactionHistories) {
+        for (TransactionHistory transaction : transactionHistories) {
+            if (transaction.getTxId().equals(txid)) {
+                this.transaction = transaction;
+                progress.setVisibility(View.GONE);
+                groupDataViews.setVisibility(View.VISIBLE);
+                break;
+            }
+        }
     }
 
     private long getOutComingAmount(TransactionHistory transactionHistory, List<String> walletAddresses, double exchangeRate) {

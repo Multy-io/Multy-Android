@@ -311,6 +311,26 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/button_view" />
 
+            <ProgressBar
+                android:id="@+id/progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:visibility="visible" />
+
+            <android.support.constraint.Group
+                android:id="@+id/group_data_views"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="invisible"
+                app:constraint_referenced_ids="button_view, divider, text_confirmations,
+                    text_addresses_to, text_wallet_name, logo, arrow, text_addresses_from, text_money,
+                    text_amount, text_coin, text_value, image_operation, text_date" />
         </android.support.constraint.ConstraintLayout>
 
     </android.support.v4.widget.NestedScrollView>

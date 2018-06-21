@@ -130,6 +130,11 @@ public class AssetsDao {
                 .equalTo("networkId", networkId).findAll();
     }
 
+    public Wallet getWallet(int blockChainId, int networkId, int walletIndex) {
+        return realm.where(Wallet.class).equalTo("currencyId", blockChainId)
+                .equalTo("networkId", networkId).equalTo("index", walletIndex).findFirst();
+    }
+
     public void saveBtcAddress(long id, WalletAddress address) {
         realm.executeTransaction(realm -> {
             Wallet wallet = getWalletById(id);
