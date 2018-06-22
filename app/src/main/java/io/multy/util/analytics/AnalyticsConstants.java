@@ -254,5 +254,6 @@ public class AnalyticsConstants {
     public static final String KF_TRANSACTION_SUCCESS = "KF_Transaction_Success";
     public static final String KF_FOUND_DEVICES = "KF_Found_Devices";
     public static final String KF_PERMISSIONS_GRANTED = "KF_Permissions_Granted";
-    public static final String KF_WALLET_COUNT = "KF_Wallet_Count";
+    public static final String KF_WALLET_COUNT = "KF_Wallets_Count";
+    public static final String KF_RECEIVED_TRANSACTION = "KF_Transaction_Received";
 }

@@ -51,7 +51,6 @@ public class MyFeeAdapter extends RecyclerView.Adapter<MyFeeAdapter.FeeHolder> {
     public void onBindViewHolder(FeeHolder holder, int position) {
         Fee rate = rates.get(position);
         long price;
-        double ethPrice;
         holder.imageMark.setVisibility(rate.isSelected() ? View.VISIBLE : View.INVISIBLE);
         switch (feeType) {
             case BTC:

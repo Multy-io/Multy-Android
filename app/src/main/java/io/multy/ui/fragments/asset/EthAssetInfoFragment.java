@@ -130,10 +130,10 @@ public class EthAssetInfoFragment extends BaseFragment implements AppBarLayout.O
         });
 
         Wallet wallet = viewModel.getWallet(getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0));
-        setupWalletInfo(wallet);
-        Analytics.getInstance(getActivity()).logWalletLaunch(AnalyticsConstants.WALLET_SCREEN, viewModel.getChainId());
-
         hideAvailableAmount();
+        setupWalletInfo(wallet);
+
+        Analytics.getInstance(getActivity()).logWalletLaunch(AnalyticsConstants.WALLET_SCREEN, viewModel.getChainId());
         return view;
     }
 
@@ -275,23 +275,26 @@ public class EthAssetInfoFragment extends BaseFragment implements AppBarLayout.O
             return;
         }
 
-        if (wallet.getEthWallet() != null && !wallet.getEthWallet().getPendingBalance().equals("0") && !wallet.getEthWallet().getPendingBalance().equals("")) {
+        if (wallet.getEthWallet() != null && !wallet.getEthWallet().getPendingBalance().equals("0")) {
             showAvailableAmount();
             final String pendingWei = wallet.getEthWallet().getPendingBalance();
             final String availableWei = wallet.getBalance();
-            final BigInteger allWei = new BigInteger(availableWei).add(new BigInteger(pendingWei));
+            final BigInteger allWei = new BigInteger(pendingWei);
             final String allWeiString = allWei.toString();
 
             textBalanceFiat.setText(CryptoFormatUtils.weiToUsd(allWei));
             textBalanceOriginal.setText(NumberFormatter.getInstance().format(CryptoFormatUtils.weiToEth(allWeiString)));
+
+            textAvailableFiat.setText(CryptoFormatUtils.weiToUsd(new BigInteger(availableWei)));
+            textAvailableValue.setText(NumberFormatter.getInstance().format(CryptoFormatUtils.weiToEth(availableWei)));
         } else {
             hideAvailableAmount();
             textBalanceFiat.setText(wallet.getFiatBalanceLabel());
             textBalanceOriginal.setText(wallet.getBalanceLabelTrimmed());
-        }
 
-        textAvailableFiat.setText(wallet.getAvailableFiatBalanceLabel());
-        textAvailableValue.setText(wallet.getAvailableBalanceLabel());
+            textAvailableFiat.setText(wallet.getAvailableFiatBalanceLabel());
+            textAvailableValue.setText(wallet.getAvailableBalanceLabel());
+        }
     }
 
     private void showAvailableAmount() {

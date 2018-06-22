@@ -26,7 +26,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.multy.R;
 import io.multy.model.entities.TransactionHistory;
+import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.entities.wallet.WalletAddress;
+import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.asset.EthTransactionInfoFragment;
 import io.multy.util.CryptoFormatUtils;
 import io.multy.util.DateHelper;
@@ -157,6 +159,13 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         setAddress(address, holder.containerAddresses);
         holder.amount.setText(String.format("%s ETH", amount));
         holder.fiat.setText(String.format("%s USD", amountFiat));
+
+        Wallet wallet = RealmManager.getAssetsDao().getWalletById(walletId);
+
+        if (wallet != null && wallet.isValid()) {
+            holder.amountLocked.setText(CryptoFormatUtils.weiToEthLabel(wallet.getBalance()));
+            holder.fiatLocked.setText(String.format("%s%s", CryptoFormatUtils.weiToUsd(new BigInteger(wallet.getBalance())), wallet.getFiatString()));
+        }
         setItemClickListener(holder.itemView, isIncoming, position);
     }
 

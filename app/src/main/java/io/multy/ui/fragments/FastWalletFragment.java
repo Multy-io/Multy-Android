@@ -36,7 +36,7 @@ public class FastWalletFragment extends Fragment {
     View rootView;
 
     private Wallet wallet;
-    private View.OnClickListener listener;
+    private View.OnTouchListener listener;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ViewGroup convertView = (ViewGroup) inflater.inflate(R.layout.fragment_fast_wallet, container, false);
@@ -48,10 +48,8 @@ public class FastWalletFragment extends Fragment {
             textBalanceFiat.setText(wallet.getFiatBalanceLabel());
             imageLogo.setImageResource(wallet.getIconResourceId());
 
-            rootView.setOnClickListener(v -> {
-                v.setTag(wallet.getId());
-                listener.onClick(v);
-            });
+            rootView.setTag(wallet.getId());
+            rootView.setOnTouchListener(listener);
         }
 
         return convertView;
@@ -61,7 +59,11 @@ public class FastWalletFragment extends Fragment {
         this.wallet = wallet;
     }
 
-    public void setListener(View.OnClickListener listener) {
+    public long getWalletId() {
+        return wallet.getId();
+    }
+
+    public void setListener(View.OnTouchListener listener) {
         this.listener = listener;
     }
 

@@ -32,6 +32,7 @@ import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.animation.AnticipateOvershootInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
@@ -80,10 +81,12 @@ import retrofit2.Response;
 import timber.log.Timber;
 
 import static io.multy.api.socket.BlueSocketManager.EVENT_SENDER_CHECK;
+import static io.multy.api.socket.BlueSocketManager.EVENT_SEND_RAW;
 import static io.multy.ui.fragments.send.SendSummaryFragment.byteArrayToHex;
 
 public class TestOperationsActivity extends BaseActivity {
 
+    private static final String TAG_SEND = "Send";
     public static final int UPDATE_PERIOD = 5000;
     public static final int REQUEST_BLUETOOTH = 1;
     public static final int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 2;
@@ -96,8 +99,6 @@ public class TestOperationsActivity extends BaseActivity {
     @BindView(R.id.container_send)
     View containerSend;
 
-    @BindView(R.id.group_send)
-    View groupSend;
     @BindView(R.id.text_send_amount)
     TextView textSendAmount;
     @BindView(R.id.text_send_amount_fiat)
@@ -106,16 +107,18 @@ public class TestOperationsActivity extends BaseActivity {
     ImageView imageCoin;
     @BindView(R.id.text_scanning)
     TextView textScanning;
+    @BindView(R.id.text_hint)
+    TextView textHint;
 
     private ReceiversPagerAdapter receiversPagerAdapter;
     private MyWalletPagerAdapter walletPagerAdapter;
-    private GestureDetectorCompat gestureDetector;
     private BlueSocketManager socketManager;
     private ArrayList<String> leIds = new ArrayList<>();
     private long selectedWalletId = -1;
     private Handler handler = new Handler();
     private Runnable updateReceiversAction;
     private ScanCallback bleScanCallback;
+    private Handler animationHandler = new Handler();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -123,13 +126,12 @@ public class TestOperationsActivity extends BaseActivity {
         setContentView(R.layout.activity_test_operations);
         ButterKnife.bind(this);
         Analytics.getInstance(this).logActivityLaunch(TestOperationsActivity.class.getSimpleName());
-        initGestureDetector();
         initUpdateAction();
         initPagers();
         initPermissions();
+        initContainerSend();
         startSockets();
 
-        containerSend.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
         if (walletPagerAdapter != null) {
             Analytics.getInstance(this).logEvent(AnalyticsConstants.KF_WALLET_COUNT, AnalyticsConstants.KF_WALLET_COUNT, String.valueOf(walletPagerAdapter.getCount()));
         }
@@ -235,10 +237,12 @@ public class TestOperationsActivity extends BaseActivity {
         socketManager.getSocket().on(Socket.EVENT_CONNECT, args -> handler.postDelayed(updateReceiversAction, UPDATE_PERIOD));
     }
 
+    private void initContainerSend() {
+        containerSend.setTag(TAG_SEND);
+    }
+
     private void initPagers() {
         initPagerWallets();
-
-//        pagerRequests.setPageMargin(dpToPx(20));
         receiversPagerAdapter = new ReceiversPagerAdapter(getSupportFragmentManager());
         pagerRequests.setAdapter(receiversPagerAdapter);
         pagerRequests.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -264,6 +268,7 @@ public class TestOperationsActivity extends BaseActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         List<Wallet> wallets;
 
         if (receiver == null) {
@@ -281,22 +286,97 @@ public class TestOperationsActivity extends BaseActivity {
             }
         }
 
-        walletPagerAdapter = new MyWalletPagerAdapter(getSupportFragmentManager(), v -> {
-            handler.removeCallbacksAndMessages(null);
-            if (containerSend.getVisibility() == View.VISIBLE) {
-                hideSendGroup();
-                enableScroll();
-                showPagerElements();
-                handler.postDelayed(updateReceiversAction, UPDATE_PERIOD / 5);
-            } else if (receiversPagerAdapter.getCount() > 0) {
-                showSendState();
-                disableScroll();
-                selectedWalletId = (long) v.getTag();
-                hidePagerElements();
+        walletPagerAdapter = new MyWalletPagerAdapter(getSupportFragmentManager(), new View.OnTouchListener() {
+            private float rawY = 0.0f;
+            private float sendStartY = 0.0f;
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        if (containerSend.getVisibility() != View.VISIBLE) {
+                            animationHandler.postDelayed(() -> showSendState(), ViewConfiguration.getLongPressTimeout());
+                        }
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        if (containerSend.getVisibility() == View.VISIBLE) {
+                            if (rawY == 0.0f) {
+                                rawY = event.getY();
+                            }
+
+                            if (sendStartY == 0.0f) {
+                                sendStartY = containerSend.getY();
+                            }
+
+                            final float endY = sendStartY + (event.getY() - rawY);
+
+                            if (endY < sendStartY) {
+                                containerSend.setY(endY);
+                            }
+
+
+                            if (event.getRawY() < pagerRequests.getBottom() && event.getRawY() > pagerRequests.getTop()) {
+                                receiversPagerAdapter.setGreenState(pagerRequests.getCurrentItem());
+                            } else {
+                                receiversPagerAdapter.resetColorState(pagerRequests.getCurrentItem());
+                            }
+                        }
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        receiversPagerAdapter.resetColorState(pagerRequests.getCurrentItem());
+
+                        if (event.getRawY() < pagerRequests.getBottom() && event.getRawY() > pagerRequests.getTop()) {
+                            animateSend();
+                        } else {
+                            hideSendState();
+                        }
+                        break;
+                    case MotionEvent.ACTION_CANCEL:
+                        hideSendState();
+                        break;
+                }
+                return true;
             }
         }, wallets);
         pagerWallets.setAdapter(walletPagerAdapter);
+        pagerWallets.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                animationHandler.removeCallbacksAndMessages(null);
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                animationHandler.removeCallbacksAndMessages(null);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+        if (walletPagerAdapter != null && receiversPagerAdapter != null && walletPagerAdapter.getCount() > 0 && receiversPagerAdapter.getCount() > 0) {
+            textHint.setVisibility(View.VISIBLE);
+        } else {
+            textHint.setVisibility(View.GONE);
+        }
     }
+
+//    v -> {
+//        handler.removeCallbacksAndMessages(null);
+//        if (containerSend.getVisibility() == View.VISIBLE) {
+//            hideSendGroup();
+//            enableScroll();
+//            showPagerElements();
+//            handler.postDelayed(updateReceiversAction, UPDATE_PERIOD / 5);
+//        } else if (receiversPagerAdapter.getCount() > 0) {
+//            showSendState();
+//            disableScroll();
+//            selectedWalletId = (long) v.getTag();
+//            hidePagerElements();
+//        }
+//    }
 
     private void showPagerElements() {
         receiversPagerAdapter.showElements(pagerRequests.getCurrentItem());
@@ -320,50 +400,56 @@ public class TestOperationsActivity extends BaseActivity {
     }
 
     private void showSendGroup() {
-        groupSend.setVisibility(View.GONE);
-        groupSend.setVisibility(View.VISIBLE);
+        containerSend.setVisibility(View.VISIBLE);
     }
 
     private void hideSendGroup() {
-        groupSend.setVisibility(View.GONE);
-        groupSend.setVisibility(View.INVISIBLE);
+        containerSend.setVisibility(View.GONE);
+        showPagerElements();
+        handler.postDelayed(updateReceiversAction, UPDATE_PERIOD / 5);
     }
 
-    private void setupSendGroup(String sendAmount, String sendAmountFiat) {
-        textSendAmount.setText(sendAmount);
-        textSendAmountFiat.setText(sendAmountFiat);
-    }
-
-    /**
-     * Chain of animations. Image coin showing first. containerSend showing after
-     */
-    private void showSendState() {
-        final float y = imageCoin.getHeight();
-        imageCoin.animate().translationYBy(y).setDuration(0).alpha(0).withEndAction(() -> {
-            imageCoin.setVisibility(View.VISIBLE);
-            imageCoin.animate().translationYBy(-y).setDuration(100).alpha(1).setInterpolator(new DecelerateInterpolator()).withEndAction(() -> {
-                final float sendY = containerSend.getHeight() / 2;
-                containerSend.animate().translationYBy(sendY).setDuration(0).alpha(0).withEndAction(() -> {
-                    containerSend.setVisibility(View.VISIBLE);
-                    containerSend.animate().translationYBy(-sendY).setDuration(100).alpha(1).setInterpolator(new DecelerateInterpolator()).start();
-                }).start();
-            });
-        }).start();
+    private void setupSendGroup() {
         String amount = "";
         String amountFiat = "";
+        int coinResId = R.drawable.ic_coin_btc;
+
         FastReceiver receiver = receiversPagerAdapter.getReceiver(pagerRequests.getCurrentItem());
         switch (NativeDataHelper.Blockchain.valueOf(receiver.getCurrencyId())) {
             case BTC:
                 final long amountBtc = (long) Double.parseDouble(receiver.getAmount());
                 amount = CryptoFormatUtils.satoshiToBtcLabel(amountBtc);
                 amountFiat = CryptoFormatUtils.satoshiToUsd(amountBtc) + CurrencyCode.USD.name();
+                coinResId = receiver.getNetworkId() == NativeDataHelper.NetworkId.TEST_NET.getValue() ? R.drawable.ic_coint_btc_test : R.drawable.ic_coin_btc;
                 break;
             case ETH:
                 amount = CryptoFormatUtils.weiToEthLabel(receiver.getAmount());
                 amountFiat = CryptoFormatUtils.weiToUsd(new BigInteger(receiver.getAmount())) + " " + CurrencyCode.USD.name();
+                coinResId = receiver.getNetworkId() == NativeDataHelper.NetworkId.RINKEBY.getValue() ? R.drawable.ic_coin_eth_test : R.drawable.ic_coin_eth_test;
                 break;
         }
-        setupSendGroup(amount, amountFiat);
+
+        imageCoin.setImageResource(coinResId);
+        textSendAmount.setText(amount);
+        textSendAmountFiat.setText(amountFiat);
+    }
+
+    /**
+     * Chain of animations. Image coin showing first. containerSend showing after
+     */
+    private void showSendState() {
+        handler.removeCallbacksAndMessages(null);
+        textHint.setVisibility(View.GONE);
+
+        final float sendY = containerSend.getHeight() / 2;
+        containerSend.animate().translationYBy(sendY).setDuration(0).alpha(0).withEndAction(() -> {
+            containerSend.setVisibility(View.VISIBLE);
+            containerSend.animate().translationYBy(-sendY).setDuration(100).alpha(1).setInterpolator(new DecelerateInterpolator()).start();
+        }).start();
+
+        selectedWalletId = walletPagerAdapter.getSelectedWalletId(pagerWallets.getCurrentItem());
+        hidePagerElements();
+        setupSendGroup();
     }
 
     private void hideSendState() {
@@ -372,19 +458,12 @@ public class TestOperationsActivity extends BaseActivity {
             containerSend.setVisibility(View.INVISIBLE);
             containerSend.animate().translationYBy(-sendY).setDuration(0).alpha(0).start();
         }).start();
-        hideCoin();
-    }
 
-    private void hideCoin() {
-        final float y = imageCoin.getHeight();
-        imageCoin.animate().translationYBy(y).setDuration(100).alpha(0).withEndAction(() -> {
-            imageCoin.setVisibility(View.INVISIBLE);
-            imageCoin.animate().translationYBy(-y).setDuration(0).alpha(1).start();
-        }).start();
+        textHint.setVisibility(View.VISIBLE);
     }
 
     private boolean send() throws JniException, JSONException {
-        final Wallet wallet = RealmManager.getAssetsDao().getWalletById(selectedWalletId);
+        final Wallet wallet = RealmManager.getAssetsDao().getWalletById(walletPagerAdapter.getSelectedWalletId(pagerWallets.getCurrentItem()));
         final byte[] seed = RealmManager.getSettingsDao().getSeed().getSeed();
         FastReceiver receiver = receiversPagerAdapter.getReceiver(pagerRequests.getCurrentItem());
         String changeAddress = "";
@@ -416,7 +495,6 @@ public class TestOperationsActivity extends BaseActivity {
             case ETH:
                 hex = "0x" + hex;
         }
-//        final String jwt = Prefs.getString(Constants.PREF_AUTH, "");
         final HdTransactionRequestEntity entity = new HdTransactionRequestEntity(wallet.getCurrencyId(), wallet.getNetworkId(),
                 new HdTransactionRequestEntity.Payload(changeAddress, wallet.getAddresses().size(),
                         wallet.getIndex(), hex, isHd));
@@ -429,7 +507,7 @@ public class TestOperationsActivity extends BaseActivity {
 //                    if (result.contains("success")) {
 //                        showSuccess();
 //                    } else {
-//                        showError();
+//                        showError(null);
 //                    }
 //                });
 //            }
@@ -482,7 +560,6 @@ public class TestOperationsActivity extends BaseActivity {
 
     private void animateSend() {
         final float yTo = textScanning.getY();
-        hideCoin();
         containerSend.animate().translationY(-yTo)
                 .withEndAction(() -> {
                     bringViewsBack();
@@ -500,29 +577,6 @@ public class TestOperationsActivity extends BaseActivity {
 
                     receiversPagerAdapter.showSuccess(pagerRequests.getCurrentItem());
                 }).setDuration(500).alpha(0).setInterpolator(new AnticipateOvershootInterpolator()).start();
-    }
-
-    private void initGestureDetector() {
-        gestureDetector = new GestureDetectorCompat(this, new GestureDetector.SimpleOnGestureListener() {
-
-            private static final int SWIPE_MIN_DISTANCE = 300;
-            private static final int SWIPE_THRESHOLD_VELOCITY = 100;
-
-            @Override
-            public boolean onDown(MotionEvent e) {
-                return true;
-            }
-
-            @Override
-            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                //&& Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY
-                if (e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE) {
-                    animateSend();
-                }
-                return true;
-            }
-        });
-        gestureDetector.setIsLongpressEnabled(false);
     }
 
     private void start() {
@@ -562,7 +616,7 @@ public class TestOperationsActivity extends BaseActivity {
                         String sendUUID = uuid.getUuid().toString();
                         sendUUID = sendUUID.substring(sendUUID.length() - 8);
                         sendUUID = sendUUID.toUpperCase();
-                        Timber.i("onScanResult " + sendUUID);
+//                        Timber.i("onScanResult " + sendUUID);
 
                         if (sendUUID.length() > 0 && !leIds.contains(sendUUID)) {
                             leIds.add(sendUUID);
@@ -607,7 +661,6 @@ public class TestOperationsActivity extends BaseActivity {
             return;
         }
 
-        Log.d("wise", "No new permission required");
         start();
     }
 
@@ -680,11 +733,6 @@ public class TestOperationsActivity extends BaseActivity {
             emitUpdateReceivers();
             handler.postDelayed(updateReceiversAction, UPDATE_PERIOD);
         };
-    }
-
-    public int dpToPx(int dps) {
-        int px = (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dps, getResources().getDisplayMetrics()));
-        return px;
     }
 
     @OnClick(R.id.button_qr)

@@ -103,7 +103,8 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
             case BTC:
                 return NumberFormatter.getInstance().format(getBtcDoubleValue()) + " BTC";
             case ETH:
-                return NumberFormatter.getEthInstance().format(getEthValue()) + " ETH";
+//                return NumberFormatter.getInstance().format(getEthValue()) + " ETH";
+            return checkEthValue(getEthValue()) + " ETH";
             default:
                 return "unsupported";
         }
@@ -117,7 +118,8 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
             case BTC:
                 return NumberFormatter.getInstance().format(getBtcDoubleValue());
             case ETH:
-                return NumberFormatter.getInstance().format(getEthValue());
+//                return NumberFormatter.getInstance().format(getEthValue());
+                return checkEthValue(getEthValue());
             default:
                 return "unsupported";
         }
@@ -128,10 +130,18 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
             case BTC:
                 return NumberFormatter.getInstance().format(getBtcAvailableDoubleValue()) + " BTC";
             case ETH:
-                return NumberFormatter.getEthInstance().format(getEthAvailableValue()) + " ETH";
+                return checkEthValue(getEthAvailableValue()) + " ETH";
             default:
                 return "unsupported";
         }
+    }
+
+    private String checkEthValue(BigDecimal ethValue) {
+        String eth = NumberFormatter.getInstance().format(ethValue);
+        if (Double.valueOf(eth) == 0.0d) {
+            eth = String.valueOf(0);
+        }
+        return eth;
     }
 
     @Override

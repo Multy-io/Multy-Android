@@ -50,6 +50,8 @@ import io.multy.ui.fragments.dialogs.CompleteDialogFragment;
 import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
 import io.multy.util.NativeDataHelper;
+import io.multy.util.analytics.Analytics;
+import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.AssetRequestViewModel;
 import io.realm.Realm;
 import io.socket.client.Socket;
@@ -150,18 +152,8 @@ public class MyReceiveFragment extends BaseFragment {
             final double amount = viewModel.getAmount();
             final int currencyId = viewModel.getWallet().getCurrencyId();
             socketManager.getSocket().on(Socket.EVENT_CONNECT, args -> becomeReceiver(amount, currencyId));
-            socketManager.getSocket().on(EVENT_TRANSACTION_UPDATE_BTC, new Emitter.Listener() {
-                @Override
-                public void call(Object... args) {
-                    getActivity().runOnUiThread(() -> verifyTransactionUpdate(args[0].toString()));
-                }
-            });
-            socketManager.getSocket().on(EVENT_TRANSACTION_UPDATE, new Emitter.Listener() {
-                @Override
-                public void call(Object... args) {
-                    getActivity().runOnUiThread(() -> verifyTransactionUpdate(args[0].toString()));
-                }
-            });
+            socketManager.getSocket().on(EVENT_TRANSACTION_UPDATE_BTC, args -> getActivity().runOnUiThread(() -> verifyTransactionUpdate(args[0].toString())));
+            socketManager.getSocket().on(EVENT_TRANSACTION_UPDATE, args -> getActivity().runOnUiThread(() -> verifyTransactionUpdate(args[0].toString())));
         }
     }
 
@@ -191,6 +183,7 @@ public class MyReceiveFragment extends BaseFragment {
                         amount = CryptoFormatUtils.weiToEthLabel(CryptoFormatUtils.FORMAT_ETH.format(response.getEntity().getAmount()));
                         break;
                 }
+                Analytics.getInstance(getActivity()).logEvent(AnalyticsConstants.KF_RECEIVED_TRANSACTION, AnalyticsConstants.KF_RECEIVED_TRANSACTION, "true");
                 CompleteDialogFragment.newInstance(viewModel.getWallet().getCurrencyId(), amount,
                         response.getEntity().getAddress()).show(getActivity().getSupportFragmentManager(), "");
             }

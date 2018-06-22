@@ -182,7 +182,13 @@ public class TransactionFeeFragment extends BaseFragment implements MyFeeAdapter
 
         dialogBuilder.setTitle(R.string.custom_fee);
         dialogBuilder.setPositiveButton(R.string.done, (dialog, whichButton) -> {
-            ((MyFeeAdapter) recyclerView.getAdapter()).setCustomFee(Long.valueOf(input.getText().toString()));
+            long satoshi = Long.valueOf(input.getText().toString());
+            if (satoshi < 2) {
+                satoshi = 2;
+                Toast.makeText(getActivity(), "Fee can't be less than 2 Sat/B", Toast.LENGTH_SHORT).show();
+            }
+
+            ((MyFeeAdapter) recyclerView.getAdapter()).setCustomFee(satoshi);
             Analytics.getInstance(getActivity()).logTransactionFee(AnalyticsConstants.TRANSACTION_FEE_CUSTOM_SET, viewModel.getChainId());
             input.clearFocus();
             hideKeyboard(getActivity());

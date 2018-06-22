@@ -10,18 +10,18 @@
     android:id="@+id/container_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:keepScreenOn="true"
-    android:background="@drawable/gradient_vertical_blue">
+    android:background="@drawable/gradient_vertical_blue"
+    android:keepScreenOn="true">
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/animation_view"
         android:layout_width="match_parent"
         android:layout_height="320dp"
-        app:layout_constraintVertical_bias="0.25"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.25"
         app:lottie_autoPlay="true"
         app:lottie_fileName="sonar.json"
         app:lottie_loop="true" />
@@ -53,15 +53,71 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/animation_view" />
 
-    <ImageView
-        android:id="@+id/image_coin"
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/container_send"
         android:layout_width="wrap_content"
-        android:layout_height="18dp"
-        android:layout_marginBottom="-25dp"
-        android:src="@drawable/ic_btc_half"
-        app:layout_constraintBottom_toTopOf="@id/pager_wallets"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="76dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:minWidth="100dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@id/pager_wallets"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <LinearLayout
+            android:id="@+id/container_sums"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_white_rounded"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="6dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent">
+
+            <TextView
+                android:id="@+id/text_send_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:textColor="@color/black"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toTopOf="@+id/text_send_amount_fiat"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed"
+                tools:text="0.1 BTC" />
+
+            <TextView
+                android:id="@+id/text_send_amount_fiat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="500 USD"
+                android:textColor="@color/gray"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_send_amount" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/image_coin"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginTop="4dp"
+            android:src="@drawable/ic_btc_huge"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/container_sums" />
+    </android.support.constraint.ConstraintLayout>
 
     <android.support.v4.view.ViewPager
         android:id="@+id/pager_wallets"
@@ -72,7 +128,6 @@
         android:paddingLeft="56dp"
         android:paddingRight="56dp"
         app:layout_constraintBottom_toTopOf="@id/button_cancel" />
-
 
     <ImageButton
         android:id="@+id/button_cancel"
@@ -97,59 +152,22 @@
         android:src="@drawable/ic_qr"
         android:tint="@color/white"
         app:layout_constraintBottom_toBottomOf="@id/button_cancel"
-        app:layout_constraintHorizontal_bias="0.4"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="@id/button_cancel"
         app:layout_constraintTop_toTopOf="@id/button_cancel" />
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/container_send"
-        android:layout_width="wrap_content"
-        android:layout_height="60dp"
-        android:layout_marginBottom="2dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:background="@drawable/shape_white_rounded"
-        android:foreground="?android:attr/selectableItemBackground"
-        android:minWidth="100dp"
-        app:layout_constraintBottom_toTopOf="@id/image_coin"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <TextView
-            android:id="@+id/text_send_amount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:textColor="@color/black"
-            android:textSize="14sp"
-            app:layout_constraintBottom_toTopOf="@+id/text_send_amount_fiat"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="packed"
-            tools:text="0.1 BTC" />
-
-        <TextView
-            android:id="@+id/text_send_amount_fiat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="500 USD"
-            android:textColor="@color/gray"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/text_send_amount" />
-    </android.support.constraint.ConstraintLayout>
-
-    <android.support.constraint.Group
-        android:id="@+id/group_send"
+    <TextView
+        android:id="@+id/text_hint"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="invisible"
-        app:constraint_referenced_ids="image_coin, container_send" />
+        android:layout_marginBottom="4dp"
+        android:drawableBottom="@drawable/ic_chevron_down_hold"
+        android:drawablePadding="8dp"
+        android:text="@string/hold_n_drag"
+        android:textColor="@color/white_transparent"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/pager_wallets"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
 </android.support.constraint.ConstraintLayout>
