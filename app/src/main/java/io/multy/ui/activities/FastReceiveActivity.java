@@ -29,6 +29,8 @@ import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.MyReceiveFragment;
 import io.multy.ui.fragments.receive.AmountChooserFragment;
 import io.multy.util.Constants;
+import io.multy.util.analytics.Analytics;
+import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.AssetRequestViewModel;
 
 public class FastReceiveActivity extends BaseActivity {
@@ -49,6 +51,7 @@ public class FastReceiveActivity extends BaseActivity {
 
         viewModel.setWallet(RealmManager.getAssetsDao().getWalletById(id));
         viewModel.setAmount(amount);
+        Analytics.getInstance(this).logActivityLaunch(FastReceiveActivity.class.getSimpleName());
     }
 
     @Override
@@ -60,6 +63,12 @@ public class FastReceiveActivity extends BaseActivity {
                 start();
             }
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        Analytics.getInstance(this).logActivityClose(FastReceiveActivity.class.getSimpleName());
+        super.onDestroy();
     }
 
     private void start() {
@@ -76,11 +85,11 @@ public class FastReceiveActivity extends BaseActivity {
             case REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS:
                 for (int i = 0; i < grantResults.length; i++) {
                     if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
-                        Log.i("wise", "permission not granted: " + permissions[i]);
+                        Analytics.getInstance(this).logEvent(AnalyticsConstants.KF_PERMISSIONS_GRANTED, AnalyticsConstants.KF_PERMISSIONS_GRANTED + "_Receiver", "false_" + permissions[i]);
                         finish();
                     }
                 }
-                Log.i("wise", "all permissions granted");
+                Analytics.getInstance(this).logEvent(AnalyticsConstants.KF_PERMISSIONS_GRANTED, AnalyticsConstants.KF_PERMISSIONS_GRANTED + "_Receiver", "true");
                 break;
             default:
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -124,7 +133,6 @@ public class FastReceiveActivity extends BaseActivity {
 
         if (checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
             permissionsList.add(permission);
-            // Check for Rationale Option
             if (!shouldShowRequestPermissionRationale(permission))
                 return false;
         }

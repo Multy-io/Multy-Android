@@ -303,4 +303,5 @@
     <string name="resync">Hold on.\nWallet is resyncing</string>
     <string name="push_new_transaction_notification">You got transaction with %s</string>
     <string name="you_have_transaction">You have a new incoming transaction</string>
+    <string name="hold_n_drag">Hold and Drag</string>
 </resources>

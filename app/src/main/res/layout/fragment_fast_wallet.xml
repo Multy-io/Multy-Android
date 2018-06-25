@@ -16,7 +16,7 @@
         android:layout_width="230dp"
         android:layout_height="@dimen/list_item_height"
         android:layout_gravity="center_horizontal"
-        android:layout_margin="24dp"
+        android:layout_margin="16dp"
         android:background="@drawable/shape_squircle_white"
         android:elevation="@dimen/elevation_4dp"
         android:foreground="?android:attr/selectableItemBackground"

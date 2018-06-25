@@ -20,11 +20,11 @@ import io.multy.ui.fragments.FastWalletFragment;
 
 public class MyWalletPagerAdapter extends FragmentStatePagerAdapter {
 
-    private View.OnClickListener listener;
     private List<Wallet> data;
+    View.OnTouchListener listener;
     SparseArray<FastWalletFragment> registeredFragments = new SparseArray<>();
 
-    public MyWalletPagerAdapter(FragmentManager fm, View.OnClickListener listener, List<Wallet> data) {
+    public MyWalletPagerAdapter(FragmentManager fm, View.OnTouchListener listener, List<Wallet> data) {
         super(fm);
         this.listener = listener;
         this.data = data;
@@ -58,6 +58,10 @@ public class MyWalletPagerAdapter extends FragmentStatePagerAdapter {
 
     public Fragment getRegisteredFragment(int position) {
         return registeredFragments.get(position);
+    }
+
+    public long getSelectedWalletId(int position) {
+        return registeredFragments.get(position).getWalletId();
     }
 
     public void hideElements(int currentPosition) {

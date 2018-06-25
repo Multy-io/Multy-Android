@@ -6,8 +6,19 @@
 
 package io.multy.ui.fragments;
 
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
+import android.support.annotation.ColorRes;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,6 +50,7 @@ public class FastReceiverFragment extends Fragment {
     TextView textAddress;
 
     private FastReceiver receiver;
+    private boolean isColorStateGreen = false;
 
     public static FastReceiverFragment newInstance() {
         Bundle args = new Bundle();
@@ -55,7 +67,7 @@ public class FastReceiverFragment extends Fragment {
         if (receiver != null) {
             switch (NativeDataHelper.Blockchain.valueOf(receiver.getCurrencyId())) {
                 case BTC:
-                    textAmount.setText(CryptoFormatUtils.satoshiToBtcLabel((long)Double.parseDouble(receiver.getAmount())));
+                    textAmount.setText(CryptoFormatUtils.satoshiToBtcLabel((long) Double.parseDouble(receiver.getAmount())));
                     break;
                 case ETH:
                     textAmount.setText(CryptoFormatUtils.weiToEthLabel(receiver.getAmount()));
@@ -65,6 +77,20 @@ public class FastReceiverFragment extends Fragment {
             circleView.setImageResource(FastReceiver.getImageResId(receiver.getAddress()));
         }
         return convertView;
+    }
+
+    public void setGreenColorMode() {
+        if (!isColorStateGreen) {
+            circleView.setColorFilter(getActivity().getResources().getColor(R.color.green_transparent));
+            isColorStateGreen = true;
+        }
+    }
+
+    public void setNormalColorMode() {
+        if (isColorStateGreen) {
+            circleView.setColorFilter(null);
+            isColorStateGreen = false;
+        }
     }
 
     public void setReceiver(FastReceiver receiver) {

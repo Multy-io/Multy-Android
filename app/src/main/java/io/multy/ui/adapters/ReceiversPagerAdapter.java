@@ -113,11 +113,30 @@ public class ReceiversPagerAdapter extends FragmentStatePagerAdapter {
         return registeredFragments.get(position);
     }
 
-    public void showSuccess(int currentItem) {
-        FastReceiverFragment fragment = (FastReceiverFragment) getRegisteredFragment(currentItem);
+    public void showSuccess(int position) {
+        FastReceiverFragment fragment = getFragment(position);
         if (fragment != null) {
             fragment.animateSuccess();
         }
+    }
+
+    public void setGreenState(int position) {
+        FastReceiverFragment fragment = getFragment(position);
+        if (fragment != null) {
+            fragment.setGreenColorMode();
+        }
+    }
+
+    public void resetColorState(int position) {
+        FastReceiverFragment fragment = getFragment(position);
+        if (fragment != null) {
+            fragment.setNormalColorMode();
+        }
+    }
+
+    public FastReceiverFragment getFragment(int position) {
+        FastReceiverFragment fragment = (FastReceiverFragment) getRegisteredFragment(position);
+        return fragment;
     }
 
     public void hideElements(int currentPosition) {
