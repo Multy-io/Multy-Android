@@ -5,6 +5,6 @@
  */
 
 ext {
-    DMULTY_ANDROID_PATH_TO_JNI_WRAPPER = '-DMULTY_ANDROID_PATH_TO_JNI_WRAPPER=YOUR_PATH_TO_PROJECT/app/src/main/cpp/scratch.cpp'
-    CMAKE_PATH = 'YOUR_PATH_TO_FILE/CMakeLists.txt'
+    DMULTY_ANDROID_PATH_TO_JNI_WRAPPER = '-DMULTY_ANDROID_PATH_TO_JNI_WRAPPER=C:/workspace/Multy-android/Multy-Android/app/src/main/cpp/scratch.cpp'
+    CMAKE_PATH = 'C:/workspace/Multy-Core/CMakeLists.txt'
 }

@@ -24,12 +24,8 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
-import android.util.TypedValue;
-import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -81,10 +77,9 @@ import retrofit2.Response;
 import timber.log.Timber;
 
 import static io.multy.api.socket.BlueSocketManager.EVENT_SENDER_CHECK;
-import static io.multy.api.socket.BlueSocketManager.EVENT_SEND_RAW;
 import static io.multy.ui.fragments.send.SendSummaryFragment.byteArrayToHex;
 
-public class TestOperationsActivity extends BaseActivity {
+public class MagicSendActivity extends BaseActivity {
 
     private static final String TAG_SEND = "Send";
     public static final int UPDATE_PERIOD = 5000;
@@ -123,9 +118,9 @@ public class TestOperationsActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_test_operations);
+        setContentView(R.layout.activity_magic_send);
         ButterKnife.bind(this);
-        Analytics.getInstance(this).logActivityLaunch(TestOperationsActivity.class.getSimpleName());
+        Analytics.getInstance(this).logActivityLaunch(MagicSendActivity.class.getSimpleName());
         initUpdateAction();
         initPagers();
         initPermissions();
@@ -164,7 +159,7 @@ public class TestOperationsActivity extends BaseActivity {
         if (receiversPagerAdapter != null) {
             Analytics.getInstance(this).logEvent(AnalyticsConstants.KF_FOUND_DEVICES, AnalyticsConstants.KF_FOUND_DEVICES, String.valueOf(receiversPagerAdapter.getCount()));
         }
-        Analytics.getInstance(this).logActivityClose(TestOperationsActivity.class.getSimpleName());
+        Analytics.getInstance(this).logActivityClose(MagicSendActivity.class.getSimpleName());
         super.onDestroy();
     }
 
@@ -314,7 +309,6 @@ public class TestOperationsActivity extends BaseActivity {
                                 containerSend.setY(endY);
                             }
 
-
                             if (event.getRawY() < pagerRequests.getBottom() && event.getRawY() > pagerRequests.getTop()) {
                                 receiversPagerAdapter.setGreenState(pagerRequests.getCurrentItem());
                             } else {
@@ -438,6 +432,9 @@ public class TestOperationsActivity extends BaseActivity {
      * Chain of animations. Image coin showing first. containerSend showing after
      */
     private void showSendState() {
+        if (receiversPagerAdapter == null || receiversPagerAdapter.getCount() == 0) {
+            return;
+        }
         handler.removeCallbacksAndMessages(null);
         textHint.setVisibility(View.GONE);
 
@@ -499,19 +496,6 @@ public class TestOperationsActivity extends BaseActivity {
                 new HdTransactionRequestEntity.Payload(changeAddress, wallet.getAddresses().size(),
                         wallet.getIndex(), hex, isHd));
 
-//        socketManager.getSocket().emit(EVENT_SEND_RAW, new JSONObject(new Gson().toJson(entity)), new Ack() {
-//            @Override
-//            public void call(Object... args) {
-//                TestOperationsActivity.this.runOnUiThread(() -> {
-//                    final String result = args[0].toString();
-//                    if (result.contains("success")) {
-//                        showSuccess();
-//                    } else {
-//                        showError(null);
-//                    }
-//                });
-//            }
-//        });
         Timber.i("hex=%s", hex);
         Timber.i("change address=%s", changeAddress);
         MultyApi.INSTANCE.sendHdTransaction(entity).enqueue(new Callback<ResponseBody>() {
@@ -544,7 +528,7 @@ public class TestOperationsActivity extends BaseActivity {
 
     private void showError(Exception e) {
         Analytics.getInstance(this).logEvent(AnalyticsConstants.KF_TRANSACTION_ERROR, AnalyticsConstants.KF_TRANSACTION_ERROR, e == null ? "Unknown error" : e.getMessage());
-        AlertDialog dialog = new AlertDialog.Builder(TestOperationsActivity.this)
+        AlertDialog dialog = new AlertDialog.Builder(MagicSendActivity.this)
                 .setTitle(getString(R.string.error_sending_tx))
                 .setPositiveButton(R.string.ok, (dialog1, which) -> dialog1.dismiss())
                 .setCancelable(false)
@@ -688,7 +672,7 @@ public class TestOperationsActivity extends BaseActivity {
 
     private void emitUpdateReceivers() {
         try {
-            socketManager.getSocket().emit(EVENT_SENDER_CHECK, getIdsJson(), (Ack) args -> TestOperationsActivity.this.runOnUiThread(() -> {
+            socketManager.getSocket().emit(EVENT_SENDER_CHECK, getIdsJson(), (Ack) args -> MagicSendActivity.this.runOnUiThread(() -> {
                 int prevNetworkId = -1;
                 int prevCurrencyId = -1;
 

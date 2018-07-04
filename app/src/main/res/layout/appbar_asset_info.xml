@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2018 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container_info"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="56dp"
+    android:background="@drawable/background_gradient_blue"
+    android:paddingBottom="28dp"
+    tools:showIn="@layout/fragment_asset_info">
+
+    <TextView
+        android:id="@+id/text_available_balance_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/available_balance"
+        android:textColor="@color/blue_light_bright"
+        android:textSize="12sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <TextView
+        android:id="@+id/text_balance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        tools:text="10.34 BTC"
+        android:textColor="@color/white"
+        android:textSize="34sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_available_balance_label" />
+
+    <TextView
+        android:id="@+id/text_balance_fiat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="$1000000"
+        android:textColor="@color/blue_light_bright"
+        android:textSize="16sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_balance" />
+
+    <net.cachapa.expandablelayout.ExpandableLayout
+        android:id="@+id/container_pending"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:el_duration="500"
+        app:el_expanded="true"
+        app:el_parallax="1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_balance_fiat">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp">
+
+            <View
+                android:id="@+id/divider_pending"
+                android:layout_width="160dp"
+                android:layout_height="0.5dp"
+                android:background="@color/blue_light_bright"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/text_pending_balance_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/pending_balance"
+                android:textColor="@color/blue_light_bright"
+                android:textSize="12sp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/divider_pending" />
+
+            <TextView
+                android:id="@+id/text_pending_balance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:layout_marginTop="6dp"
+                tools:text="15.23 ETH"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toStartOf="@+id/text_pending_balance_fiat"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/text_pending_balance_label" />
+
+            <TextView
+                android:id="@+id/text_pending_balance_fiat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="6dp"
+                tools:text="$7100"
+                android:textColor="@color/blue_light_bright"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/text_pending_balance"
+                app:layout_constraintTop_toBottomOf="@id/text_pending_balance_label" />
+        </android.support.constraint.ConstraintLayout>
+
+    </net.cachapa.expandablelayout.ExpandableLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/button_copy"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/container_pending">
+
+        <TextView
+            android:id="@+id/text_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat_bold"
+            android:gravity="center"
+            android:letterSpacing="-0.02"
+            android:paddingBottom="10dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="10dp"
+            tools:text="83T28WCp4Cu5LQiddJnDJJmKWvmmXJSP9L"
+            android:textColor="@android:color/white"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/image_copy"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/image_copy"
+            android:layout_width="wrap_content"
+            android:layout_height="14dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/text_address"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_share_mini" />
+    </android.support.constraint.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/button_share"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:background="@drawable/selector_wallet_header_button"
+        android:gravity="center"
+        android:padding="12dp"
+        android:text="@string/share_address"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toStartOf="@+id/button_addresses"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/button_copy" />
+
+    <TextView
+        android:id="@+id/button_addresses"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:layout_marginStart="24dp"
+        android:background="@drawable/selector_wallet_header_button"
+        android:gravity="center"
+        android:padding="12dp"
+        android:text="@string/show_all_addresses"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/button_share"
+        app:layout_constraintTop_toBottomOf="@id/button_copy" />
+
+</android.support.constraint.ConstraintLayout>

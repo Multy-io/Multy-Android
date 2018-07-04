@@ -33,7 +33,7 @@ public class MultyRealmMigration implements io.realm.RealmMigration {
             addressSchema.addField("amount", String.class);
         } else if (oldVersion == 3) {
             final RealmObjectSchema walletSchema = schema.get(Wallet.class.getSimpleName());
-            walletSchema.addField("syncing", Boolean.class);
+            walletSchema.addField("syncing", boolean.class);
         }
     }
 

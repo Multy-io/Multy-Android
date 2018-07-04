@@ -16,7 +16,7 @@ android {
         applicationId "io.multy"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 13
+        versionCode 15
         versionName "1.0.4"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         
@@ -122,6 +122,7 @@ dependencies {
     implementation 'com.github.khirr:Android-Foreground-Detection:1.0.1'
     implementation 'org.greenrobot:eventbus:3.1.1'
     implementation 'com.airbnb.android:lottie:2.5.4'
+    implementation 'net.cachapa.expandablelayout:expandablelayout:2.9.2'
 }
 
 apply plugin: 'com.google.gms.google-services'

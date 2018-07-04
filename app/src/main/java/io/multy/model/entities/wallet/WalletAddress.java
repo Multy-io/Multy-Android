@@ -23,7 +23,7 @@ public class WalletAddress extends RealmObject {
     private String amount = "0";
     @SerializedName("spendableoutputs")
     private RealmList<Output> outputs;
-    @SerializedName("lastActionTime")
+    @SerializedName("lastactiontime")
     private long date;
 
     public WalletAddress() {
