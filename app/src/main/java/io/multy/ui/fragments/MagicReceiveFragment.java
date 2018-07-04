@@ -24,7 +24,6 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,9 +42,9 @@ import io.multy.Multy;
 import io.multy.R;
 import io.multy.api.socket.BlueSocketManager;
 import io.multy.api.socket.TransactionUpdateResponse;
-import io.multy.model.entities.FastReceiver;
 import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.storage.SettingsDao;
+import io.multy.ui.Hash2PicView;
 import io.multy.ui.fragments.dialogs.CompleteDialogFragment;
 import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
@@ -55,20 +54,19 @@ import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.AssetRequestViewModel;
 import io.realm.Realm;
 import io.socket.client.Socket;
-import io.socket.emitter.Emitter;
 
 import static io.multy.api.socket.BlueSocketManager.EVENT_PAY_RECEIVE;
 import static io.multy.api.socket.BlueSocketManager.EVENT_TRANSACTION_UPDATE;
 import static io.multy.api.socket.BlueSocketManager.EVENT_TRANSACTION_UPDATE_BTC;
 
-public class MyReceiveFragment extends BaseFragment {
+public class MagicReceiveFragment extends BaseFragment {
 
     public static final int REQUEST_CODE_LOCATION = 523;
     public static final int REQUEST_CODE_BLUETOOTH = 524;
     private static final char[] HEX_CHARS = "0123456789ABCDEF".toCharArray();
 
     @BindView(R.id.image_fast_icon)
-    ImageView imageFastId;
+    Hash2PicView imageFastId;
     @BindView(R.id.text_address)
     TextView textAddress;
     @BindView(R.id.text_amount)
@@ -91,7 +89,7 @@ public class MyReceiveFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View convertView = inflater.inflate(R.layout.fragment_my_receive_test, container, false);
+        View convertView = inflater.inflate(R.layout.fragment_magic_receive, container, false);
         ButterKnife.bind(this, convertView);
         viewModel = ViewModelProviders.of(getActivity()).get(AssetRequestViewModel.class);
         setBaseViewModel(viewModel);
@@ -216,7 +214,8 @@ public class MyReceiveFragment extends BaseFragment {
     public void setupRequestSum() {
         final String address = viewModel.getWallet().getActiveAddress().getAddress();
         textAddress.setText(address);
-        imageFastId.setImageResource(FastReceiver.getImageResId(address));
+        imageFastId.setAvatar(address);
+//        imageFastId.setImageResource(FastReceiver.getImageResId(address));
         String amount = "";
         String fiatAmount = "";
         switch (NativeDataHelper.Blockchain.valueOf(viewModel.getWallet().getCurrencyId())) {

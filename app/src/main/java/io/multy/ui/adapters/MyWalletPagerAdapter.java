@@ -33,7 +33,7 @@ public class MyWalletPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
         FastWalletFragment fastWalletFragment = new FastWalletFragment();
-        fastWalletFragment.setWallet(data.get(position));
+        fastWalletFragment.setWalletId(data.get(position).getId());
         fastWalletFragment.setListener(listener);
         return fastWalletFragment;
     }

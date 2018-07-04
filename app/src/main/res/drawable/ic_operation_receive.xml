@@ -1,0 +1,24 @@
+<!--
+  ~ Copyright 2018 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+  <path
+      android:pathData="M17.0003,2.9992C16.4482,2.9992 16.0007,2.5517 16.0007,1.9996C16.0007,1.4475 16.4482,1 17.0003,1L19.1655,1C21.3128,1 23,2.912 23,5.2124L23,18.7866C23,21.0878 21.313,23 19.1655,23L4.8345,23C2.687,23 1,21.0878 1,18.7866L1,5.2124C1,2.912 2.6872,1 4.8345,1L6.9997,1C7.5518,1 7.9993,1.4475 7.9993,1.9996C7.9993,2.5517 7.5518,2.9992 6.9997,2.9992L4.8345,2.9992C3.8509,2.9992 2.9992,3.9643 2.9992,5.2124L2.9992,18.7866C2.9992,20.0355 3.8508,21.0008 4.8345,21.0008L19.1655,21.0008C20.1492,21.0008 21.0008,20.0355 21.0008,18.7866L21.0008,5.2124C21.0008,3.9643 20.1491,2.9992 19.1655,2.9992L17.0003,2.9992Z"
+      android:strokeWidth="1"
+      android:fillColor="#FFFFFF"
+      android:fillType="nonZero"
+      android:strokeColor="#00000000"/>
+  <path
+      android:pathData="M13,13.4621L14.2929,12.2682C14.6835,11.9076 15.3166,11.9076 15.7071,12.2683C16.0976,12.629 16.0976,13.2137 15.7071,13.5743L11.9995,16.9978L8.2929,13.5743C7.9024,13.2136 7.9024,12.6289 8.2929,12.2682C8.6835,11.9076 9.3166,11.9076 9.7071,12.2683L11,13.4624L11,6.9996C11,6.4475 11.4477,6 12,6C12.5523,6 13,6.4475 13,6.9996L13,13.4621Z"
+      android:strokeWidth="1"
+      android:fillColor="#FFFFFF"
+      android:fillType="nonZero"
+      android:strokeColor="#00000000"/>
+</vector>

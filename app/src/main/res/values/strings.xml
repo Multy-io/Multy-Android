@@ -304,4 +304,7 @@
     <string name="push_new_transaction_notification">You got transaction with %s</string>
     <string name="you_have_transaction">You have a new incoming transaction</string>
     <string name="hold_n_drag">Hold and Drag</string>
+    <string name="available_balance">Available balance</string>
+    <string name="pending_balance">Pending balance</string>
+    <string name="share_address">Share address</string>
 </resources>

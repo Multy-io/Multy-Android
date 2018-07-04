@@ -14,12 +14,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.airbnb.lottie.LottieAnimationView;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.multy.R;
 import io.multy.model.entities.wallet.Wallet;
+import io.multy.storage.RealmManager;
 
 public class FastWalletFragment extends Fragment {
 
@@ -37,30 +36,41 @@ public class FastWalletFragment extends Fragment {
 
     private Wallet wallet;
     private View.OnTouchListener listener;
+    private long walletId = -1;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ViewGroup convertView = (ViewGroup) inflater.inflate(R.layout.fragment_fast_wallet, container, false);
         ButterKnife.bind(this, convertView);
 
-        if (wallet != null) {
-            walletName.setText(wallet.getWalletName());
-            textBalance.setText(wallet.getBalanceLabel());
-            textBalanceFiat.setText(wallet.getFiatBalanceLabel());
-            imageLogo.setImageResource(wallet.getIconResourceId());
-
-            rootView.setTag(wallet.getId());
-            rootView.setOnTouchListener(listener);
+        if (walletId != -1) {
+            setupInfo();
         }
 
         return convertView;
     }
 
-    public void setWallet(Wallet wallet) {
-        this.wallet = wallet;
+    private void setupInfo() {
+        if (wallet == null || !wallet.isValid()) {
+            wallet = RealmManager.getAssetsDao().getWalletById(walletId);
+        }
+
+        walletName.setText(wallet.getWalletName());
+        textBalance.setText(wallet.getBalanceLabel());
+        textBalanceFiat.setText(wallet.getFiatBalanceLabel());
+        imageLogo.setImageResource(wallet.getIconResourceId());
+
+        rootView.setOnClickListener(v -> {
+            v.setTag(walletId);
+            rootView.setOnTouchListener(listener);
+        });
+    }
+
+    public void setWalletId(long walletId) {
+        this.walletId = walletId;
     }
 
     public long getWalletId() {
-        return wallet.getId();
+        return walletId;
     }
 
     public void setListener(View.OnTouchListener listener) {

@@ -1,0 +1,18 @@
+<!--
+  ~ Copyright 2018 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+  <path
+      android:pathData="M19,18.6109L19,6.4995C19,5.3903 18.1295,4.5 17.0672,4.5L10,4.5L10,2.5L17.0672,2.5C19.2442,2.5 21,4.2957 21,6.4995L21,18.6109L22.2929,17.2975C22.6834,16.9008 23.3166,16.9008 23.7071,17.2975C24.0976,17.6942 24.0976,18.3374 23.7071,18.7342L20,22.5L16.2929,18.7342C15.9024,18.3374 15.9024,17.6942 16.2929,17.2975C16.6834,16.9008 17.3166,16.9008 17.7071,17.2975L19,18.6109ZM5,5.3891L5,17.5005C5,18.6047 5.8953,19.5 6.9995,19.5L13,19.5L13,21.5L6.9995,21.5C4.7907,21.5 3,19.7093 3,17.5005L3,5.3891L1.7071,6.7025C1.3166,7.0992 0.6834,7.0992 0.2929,6.7025C-0.0976,6.3058 -0.0976,5.6626 0.2929,5.2658L4,1.5L7.7071,5.2658C8.0976,5.6626 8.0976,6.3058 7.7071,6.7025C7.3166,7.0992 6.6834,7.0992 6.2929,6.7025L5,5.3891Z"
+      android:strokeWidth="1"
+      android:fillColor="#FFFFFF"
+      android:fillType="nonZero"
+      android:strokeColor="#00000000"/>
+</vector>

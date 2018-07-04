@@ -28,7 +28,7 @@ import io.multy.R;
 import io.multy.model.entities.wallet.RecentAddress;
 import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetSendActivity;
-import io.multy.ui.activities.TestOperationsActivity;
+import io.multy.ui.activities.MagicSendActivity;
 import io.multy.ui.adapters.RecentAddressesAdapter;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.dialogs.DonateDialog;
@@ -166,7 +166,7 @@ public class AssetSendFragment extends BaseFragment {
     @OnClick(R.id.button_scan_wireless)
     void onClickWirelessScan(){
         Analytics.getInstance(getActivity()).logSendTo(AnalyticsConstants.SEND_TO_WIRELESS);
-        startActivity(new Intent(getActivity(), TestOperationsActivity.class));
+        startActivity(new Intent(getActivity(), MagicSendActivity.class));
 //        if (getActivity() != null) {
 //            DonateDialog.getInstance(Constants.DONATE_ADDING_WIRELESS_SCAN)
 //                    .show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);

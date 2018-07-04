@@ -66,11 +66,10 @@
         app:lottie_fileName="sonar.json"
         app:lottie_loop="true" />
 
-    <ImageView
+    <io.multy.ui.Hash2PicView
         android:id="@+id/image_fast_icon"
         android:layout_width="180dp"
         android:layout_height="180dp"
-        android:src="@drawable/ic_1"
         app:layout_constraintBottom_toBottomOf="@id/animation_view"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

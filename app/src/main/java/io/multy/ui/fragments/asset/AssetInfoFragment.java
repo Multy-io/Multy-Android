@@ -13,10 +13,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -25,14 +25,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.samwolfand.oneprefs.Prefs;
+
+import net.cachapa.expandablelayout.ExpandableLayout;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.text.DecimalFormat;
+import java.math.BigDecimal;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -45,13 +48,17 @@ import io.multy.model.responses.SingleWalletResponse;
 import io.multy.storage.AssetsDao;
 import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetActivity;
+import io.multy.ui.activities.AssetRequestActivity;
+import io.multy.ui.activities.AssetSendActivity;
 import io.multy.ui.activities.SeedActivity;
 import io.multy.ui.adapters.AssetTransactionsAdapter;
-import io.multy.ui.adapters.EmptyTransactionsAdapter;
+import io.multy.ui.adapters.EthTransactionsAdapter;
 import io.multy.ui.fragments.AddressesFragment;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.dialogs.AddressActionsDialogFragment;
+import io.multy.ui.fragments.dialogs.DonateDialog;
 import io.multy.util.Constants;
+import io.multy.util.CryptoFormatUtils;
 import io.multy.util.NativeDataHelper;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
@@ -59,9 +66,6 @@ import io.multy.viewmodels.WalletViewModel;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
 
 public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOffsetChangedListener {
 
@@ -71,85 +75,129 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     CollapsingToolbarLayout collapsingToolbarLayout;
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
-    @BindView(R.id.text_value)
-    TextView textBalanceOriginal;
-    @BindView(R.id.text_amount)
-    TextView textBalanceFiat;
-    @BindView(R.id.text_wallet_name)
-    TextView textWalletName;
     @BindView(R.id.text_address)
     TextView textAddress;
+    @BindView(R.id.button_addresses)
+    View buttonAddresses;
+    @BindView(R.id.text_wallet_name)
+    TextView textWalletName;
     @BindView(R.id.swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
-    @BindView(R.id.button_warn)
-    FloatingActionButton buttonWarn;
-    @BindView(R.id.container_available)
-    View containerAvailableBalance;
-    @BindView(R.id.text_available_value)
-    TextView textAvailableValue;
-    @BindView(R.id.text_available_fiat)
-    TextView textAvailableFiat;
+
+    @BindView(R.id.text_balance)
+    TextView textBalance;
+    @BindView(R.id.text_balance_fiat)
+    TextView textBalanceFiat;
+    @BindView(R.id.text_pending_balance)
+    TextView textPendingBalance;
+    @BindView(R.id.text_pending_balance_fiat)
+    TextView textPendingBalanceFiat;
+
+    @BindView(R.id.container_pending)
+    ExpandableLayout containerPending;
     @BindView(R.id.appbar_layout)
     AppBarLayout appBarLayout;
-    @BindView(R.id.container_info)
-    View containerInfo;
-    @BindView(R.id.card_addresses)
-    View containerAddresses;
+
     @BindView(R.id.image_arrow)
     ImageView imageArrow;
     @BindView(R.id.text_operations_empty)
     TextView textEmpty;
     @BindView(R.id.text_operation_create)
     TextView textCreate;
+    @BindView(R.id.button_warn)
+    View buttonWarn;
+    @BindView(R.id.container_dummy)
+    View containerDummy;
 
     private WalletViewModel viewModel;
-    private final static DecimalFormat format = new DecimalFormat("#.##");
-    private AssetTransactionsAdapter transactionsAdapter;
-    private SharingBroadcastReceiver receiver;
-
-    public static AssetInfoFragment newInstance() {
-        return new AssetInfoFragment();
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        transactionsAdapter = new AssetTransactionsAdapter();
-    }
+    private SharingBroadcastReceiver receiver = new SharingBroadcastReceiver();
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_asset_info, container, false);
-        ButterKnife.bind(this, view);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View convertView = inflater.inflate(R.layout.fragment_asset_info, container, false);
+        ButterKnife.bind(this, convertView);
 
         viewModel = ViewModelProviders.of(getActivity()).get(WalletViewModel.class);
+        Wallet wallet = viewModel.getWallet(getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0));
         setBaseViewModel(viewModel);
-        setTransactionsState();
-        receiver = new SharingBroadcastReceiver();
-        viewModel.rates.observe(this, currenciesRate -> updateBalanceViews());
-        viewModel.transactionUpdate.observe(this, transactionUpdateEntity -> {
-            new Handler().postDelayed(this::refreshWallet, 300);
-        });
+
+        subscribeWalletUpdates();
+        showWalletInfo(wallet);
+        setAddressesVisibility(wallet.getCurrencyId());
+        initSwipeRefresh();
+        requestTransactions(wallet.getCurrencyId(), wallet.getNetworkId(), wallet.getIndex());
+        setButtonWarnVisibility();
+//        setTransactionsState();
+
+        Analytics.getInstance(getActivity()).logWalletLaunch(AnalyticsConstants.WALLET_SCREEN, viewModel.getChainId());
+        return convertView;
+    }
+
+    private void setButtonWarnVisibility() {
+        if (Prefs.getBoolean(Constants.PREF_BACKUP_SEED)) {
+            buttonWarn.setVisibility(View.GONE);
+            buttonWarn.getLayoutParams().height = 0;
+
+//            buttonWarn.post(() -> {
+//                ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) recyclerView.getLayoutParams();
+//                final int margin = ((ConstraintLayout.LayoutParams) buttonWarn.getLayoutParams()).topMargin * 2;
+//                params.topMargin = buttonWarn.getMeasuredHeight() + margin;
+//                recyclerView.setLayoutParams(params);
+//            });
+        }
+    }
+
+    private void initSwipeRefresh() {
         swipeRefreshLayout.setOnRefreshListener(() -> {
             Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_PULL, viewModel.getChainId());
             refreshWallet();
         });
+    }
 
-        Wallet wallet = viewModel.getWallet(getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0));
-        viewModel.getWalletLive().observe(this, AssetInfoFragment.this::setupWalletInfo);
-        viewModel.getWalletLive().setValue(wallet);
-        Analytics.getInstance(getActivity()).logWalletLaunch(AnalyticsConstants.WALLET_SCREEN, viewModel.getChainId());
-        return view;
+    private void setAddressesVisibility(int chainId) {
+        buttonAddresses.setVisibility(chainId == NativeDataHelper.Blockchain.BTC.getValue() ? View.VISIBLE : View.GONE);
+    }
+
+    private void subscribeWalletUpdates() {
+        viewModel.rates.observe(this, currenciesRate -> updateBalanceViews());
+        viewModel.transactionUpdate.observe(this, transactionUpdateEntity -> {
+            new Handler().postDelayed(this::refreshWallet, 300);
+        });
+    }
+
+    private void showWalletInfo(Wallet wallet) {
+        textWalletName.setText(wallet.getWalletName());
+        textAddress.setText(wallet.getActiveAddress().getAddress());
+        updateBalanceViews();
+    }
+
+    private void updateBalanceViews() {
+        Wallet wallet = viewModel.getWalletLive().getValue();
+
+        textBalance.setText(wallet.getBalanceLabel());
+        textBalanceFiat.setText(wallet.getFiatBalanceLabel());
+
+        if (wallet.isPending()) {
+            containerPending.expand();
+            if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()) {
+                textPendingBalance.setText(CryptoFormatUtils.satoshiToBtc(wallet.getPendingBalance().longValue()));
+                textPendingBalanceFiat.setText(CryptoFormatUtils.satoshiToUsd(wallet.getPendingBalance().longValue()));
+            } else {
+                textPendingBalance.setText(wallet.getEthWallet().getPendingBalanceLabel());
+                textPendingBalanceFiat.setText(wallet.getEthWallet().getFiatPendingBalanceLabel());
+            }
+        } else {
+            containerPending.collapse();
+        }
     }
 
     private void refreshWallet() {
         swipeRefreshLayout.setRefreshing(false);
-        viewModel.isLoading.postValue(true);
+//        viewModel.isLoading.postValue(true);
 
         if (!viewModel.getWalletLive().getValue().isValid()) {
-            Wallet wallet = viewModel.getWallet(getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0));
-            viewModel.getWalletLive().setValue(wallet);
+            viewModel.getWallet(getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0));
         }
 
         final int walletIndex = viewModel.getWalletLive().getValue().getIndex();
@@ -180,16 +228,82 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         });
     }
 
+    private void requestTransactions(final int currencyId, final int networkId, final int walletIndex) {
+        viewModel.isLoading.postValue(true);
+        viewModel.getTransactionsHistory(currencyId, networkId, walletIndex).observe(this, transactions -> {
+            if (transactions != null && !transactions.isEmpty()) {
+                try {
+                    final long walletId = viewModel.wallet.getValue().isValid() ?
+                            viewModel.wallet.getValue().getId() :
+                            viewModel.getWallet(getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0)).getId();
+
+                    recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                    if (currencyId == NativeDataHelper.Blockchain.BTC.getValue()) {
+                        recyclerView.setAdapter(new AssetTransactionsAdapter(transactions, walletId));
+                    } else {
+                        recyclerView.setAdapter(new EthTransactionsAdapter(transactions, walletId));
+
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            setTransactionsState();
+            viewModel.isLoading.postValue(false);
+        });
+    }
+
+    private void setTransactionsState() {
+        if (recyclerView.getAdapter() == null || recyclerView.getAdapter().getItemCount() == 0) {
+//            swipeRefreshLayout.setEnabled(false);
+            setNotificationsVisibility(View.VISIBLE);
+            setToolbarScrollFlag(0);
+        } else {
+            swipeRefreshLayout.setEnabled(true);
+            setNotificationsVisibility(View.GONE);
+            setToolbarScrollFlag(3);
+        }
+    }
+
+    private void setNotificationsVisibility(int visibility) {
+        imageArrow.setVisibility(visibility);
+        textEmpty.setVisibility(visibility);
+        textCreate.setVisibility(visibility);
+        containerDummy.setVisibility(visibility);
+    }
+
+    private void setToolbarScrollFlag(int flag) {
+        AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) collapsingToolbarLayout.getLayoutParams();
+        params.setScrollFlags(flag);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onTransactionUpdateEvent(TransactionUpdateEvent event) {
+//        refreshWallet();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
     @Override
     public void onResume() {
         super.onResume();
         if (getActivity() != null) {
             getActivity().registerReceiver(receiver, new IntentFilter());
         }
-        updateBalanceViews();
+
         viewModel.subscribeSocketsUpdate();
         appBarLayout.addOnOffsetChangedListener(this);
-        checkWarnVisibility();
     }
 
     @Override
@@ -206,221 +320,86 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         appBarLayout.removeOnOffsetChangedListener(this);
     }
 
+    @OnClick(R.id.button_send)
+    void onClickSend() {
+        Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_SEND, viewModel.getChainId());
+        if (viewModel.getWalletLive().getValue() != null &&
+                viewModel.getWalletLive().getValue().getAvailableBalanceNumeric().compareTo(BigDecimal.ZERO) <= 0) {
+            Toast.makeText(getActivity(), R.string.no_balance, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        startActivity(new Intent(getActivity(), AssetSendActivity.class)
+                .addCategory(Constants.EXTRA_SENDER_ADDRESS)
+                .putExtra(Constants.EXTRA_WALLET_ID, getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0)));
+    }
+
+    @OnClick(R.id.button_receive)
+    void onClickReceive() {
+        Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_RECEIVE, viewModel.getChainId());
+        startActivity(new Intent(getActivity(), AssetRequestActivity.class)
+                .putExtra(Constants.EXTRA_WALLET_ID, getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0)));
+    }
+
+    @OnClick(R.id.button_exchange)
+    void onClickExchange() {
+        Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_EXCHANGE, viewModel.getChainId());
+//        Toast.makeText(this, R.string.not_implemented, Toast.LENGTH_SHORT).show();
+//        DonationActivity.showDonation(this, Constants.DONATE_ADDING_EXCHANGE);
+        DonateDialog.getInstance(Constants.DONATE_ADDING_EXCHANGE).show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
+    }
+
+    @OnClick(R.id.button_addresses)
+    public void onClickAddresses() {
+        Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_ADDRESSES, viewModel.getChainId());
+        if (viewModel.getWalletLive().getValue() != null) {
+            ((AssetActivity) getActivity()).setFragment(R.id.container_full, AddressesFragment.newInstance(viewModel.getWalletLive().getValue().getId()));
+        } else {
+            Wallet wallet = viewModel.getWallet(getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0));
+            ((AssetActivity) getActivity()).setFragment(R.id.container_full, AddressesFragment.newInstance(wallet.getId()));
+        }
+    }
+
     @Override
-    public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
-//        final int total = appBarLayout.getTotalScrollRange();
-//        final int offset = Math.abs(i);
-//        final int percentage = offset == 0 ? 0 : offset / total;
-//        containerInfo.setBackgroundColor((Integer) argbEvaluator.evaluate(colorOffset, colorTransparent, colorPrimaryDark));
-        swipeRefreshLayout.setEnabled(i == 0);
-//        containerInfo.setAlpha(1 - percentage);
-    }
-
-    private void initialize() {
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        if (transactionsAdapter.getItemCount() == 0) {
-            swipeRefreshLayout.setEnabled(false);
-            recyclerView.setAdapter(new EmptyTransactionsAdapter());
-            recyclerView.setOnTouchListener((v, event) -> true);
-            setToolbarScrollFlag(0);
-        } else {
-            recyclerView.setAdapter(transactionsAdapter);
-            recyclerView.setOnTouchListener((v, event) -> false);
-            swipeRefreshLayout.setEnabled(true);
-            setToolbarScrollFlag(3);
-        }
-
-        checkWarnVisibility();
-    }
-
-    private void checkWarnVisibility() {
-        if (Prefs.getBoolean(Constants.PREF_BACKUP_SEED)) {
-            buttonWarn.setVisibility(View.GONE);
-            buttonWarn.getLayoutParams().height = 0;
-        }
-    }
-
-    private void setTransactionsState() {
-        if (transactionsAdapter.getItemCount() == 0) {
-            swipeRefreshLayout.setEnabled(false);
-            recyclerView.setAdapter(new EmptyTransactionsAdapter());
-            setNotificationsVisibility(VISIBLE);
-            setToolbarScrollFlag(0);
-        } else {
-            swipeRefreshLayout.setEnabled(true);
-            setNotificationsVisibility(GONE);
-            setToolbarScrollFlag(3);
-        }
-    }
-
-    private void setupWalletInfo(Wallet wallet) {
-        if (wallet == null) {
-            return;
-        }
-        initialize();
-        requestTransactions(wallet.getCurrencyId(), wallet.getNetworkId(), wallet.getIndex());
-
-        textWalletName.setText(wallet.getWalletName());
-        textAddress.setText(wallet.getActiveAddress().getAddress()); //need test this so don't remove commented code below
-
-        containerAddresses.setVisibility(viewModel.wallet.getValue().getCurrencyId() != NativeDataHelper.Blockchain.BTC.getValue() ?
-                GONE : VISIBLE);
-
-//        if (wallet.getAddresses() != null && !wallet.getAddresses().isEmpty()) {
-//            textAddress.setText(wallet.getAddresses().get(wallet.getAddresses().size() - 1).getAddress());
-//        } else {
-//            textAddress.setText(wallet.getCreationAddress());
-//        }
-
-        updateBalanceViews();
-    }
-
-    private void updateBalanceViews() {
-        Wallet wallet = viewModel.getWalletLive().getValue();
-        if (!wallet.isValid()) {
-            return;
-        }
-
-        final long balance = wallet.getBalanceNumeric().longValue();
-        final long availableBalance = wallet.getAvailableBalanceNumeric().longValue();
-
-        if (balance == availableBalance) {
-            hideAvailableAmount();
-        } else {
-            showAvailableAmount();
-        }
-
-        textAvailableFiat.setText(wallet.getAvailableFiatBalanceLabel());
-        textBalanceFiat.setText(wallet.getFiatBalanceLabel());
-
-        textBalanceOriginal.setText(wallet.getBalanceLabelTrimmed());
-        textAvailableValue.setText(wallet.getAvailableBalanceLabel());
-    }
-
-    private void showAvailableAmount() {
-        containerAvailableBalance.setVisibility(VISIBLE);
-    }
-
-    private void hideAvailableAmount() {
-        containerAvailableBalance.setVisibility(View.GONE);
-    }
-
-    private void requestTransactions(final int currencyId, final int networkId, final int walletIndex) {
-        viewModel.getTransactionsHistory(currencyId, networkId, walletIndex).observe(this, transactions -> {
-            if (transactions != null && !transactions.isEmpty()) {
-                try {
-                    final long walletId = viewModel.wallet.getValue().isValid() ?
-                            viewModel.wallet.getValue().getId() :
-                            viewModel.getWallet(getActivity().getIntent()
-                                    .getLongExtra(Constants.EXTRA_WALLET_ID, 0)).getId();
-                    transactionsAdapter = new AssetTransactionsAdapter(transactions, walletId);
-                    recyclerView.setAdapter(transactionsAdapter);
-                    recyclerView.setOnTouchListener((v, event) -> false);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            setTransactionsState();
-        });
-    }
-
-    private void setToolbarScrollFlag(int flag) {
-        AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) collapsingToolbarLayout.getLayoutParams();
-        params.setScrollFlags(flag);
-    }
-
-    private String getAddressToShare() {
-        return viewModel.wallet.getValue().getActiveAddress().getAddress();
-    }
-
-    private void setNotificationsVisibility(int visibility) {
-        imageArrow.setVisibility(visibility);
-        textEmpty.setVisibility(visibility);
-        textCreate.setVisibility(visibility);
+    public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+        swipeRefreshLayout.setEnabled(verticalOffset == 0);
     }
 
     @OnClick(R.id.options)
-    void onClickOptions() {
+    public void onClickOptions() {
         Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_SETTINGS, viewModel.getChainId());
         ((AssetActivity) getActivity()).setFragment(R.id.container_full, AssetSettingsFragment.newInstance());
     }
 
-    @OnClick(R.id.card_addresses)
-    void onClickAddress() {
-        Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_ADDRESSES, viewModel.getChainId());
-        if (viewModel.getWalletLive().getValue() != null) {
-            ((AssetActivity) getActivity()).setFragment(R.id.container_full,
-                    AddressesFragment.newInstance(viewModel.getWalletLive().getValue().getId()));
-        } else {
-            Wallet wallet = viewModel.getWallet(getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0));
-            ((AssetActivity) getActivity()).setFragment(R.id.container_full,
-                    AddressesFragment.newInstance(wallet.getId()));
-        }
-    }
-
     @OnClick(R.id.button_share)
-    void onClickShare() {
+    public void onClickShare() {
         Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_SHARE, viewModel.getChainId());
-        viewModel.share(getActivity(), getAddressToShare());
+        viewModel.shareAddress(getActivity());
     }
 
     @OnClick(R.id.button_copy)
-    void onClickCopy(View view) {
+    public void onClickCopy() {
         Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_ADDRESS, viewModel.getChainId());
-        view.setEnabled(false);
-        view.postDelayed(() -> view.setEnabled(true), 500);
         AddressActionsDialogFragment.getInstance(viewModel.getWalletLive().getValue(),
                 viewModel.getWalletLive().getValue().getActiveAddress().getAddress())
                 .show(getChildFragmentManager(), AddressActionsDialogFragment.TAG);
     }
 
     @OnClick(R.id.close)
-    void onClickClose() {
+    public void onClickClose() {
         Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.BUTTON_CLOSE, viewModel.getChainId());
         getActivity().finish();
     }
 
     @OnClick(R.id.button_warn)
-    void onClickWarn() {
+    public void onClickWarn() {
         Analytics.getInstance(getActivity()).logWalletBackup(AnalyticsConstants.WALLET_BACKUP_SEED);
         startActivity(new Intent(getActivity(), SeedActivity.class));
     }
 
-    @OnClick(R.id.text_value)
-    void onClickBalance() {
-        Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_BALANCE, viewModel.getChainId());
-    }
 
-    @OnClick(R.id.text_coin)
-    void onClickBalanceCurrency() {
-        Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_BALANCE, viewModel.getChainId());
-    }
-
-    @OnClick(R.id.text_amount)
-    void onClickBalanceFiat() {
-        Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_BALANCE_FIAT, viewModel.getChainId());
-    }
-
-    @OnClick(R.id.text_money)
-    void onClickBalanceFiatCurrency() {
-        Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_BALANCE_FIAT, viewModel.getChainId());
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        EventBus.getDefault().register(this);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        EventBus.getDefault().unregister(this);
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onTransactionUpdateEvent(TransactionUpdateEvent event) {
-        refreshWallet();
+    @OnClick(R.id.text_address)
+    public void onClickAddress() {
+        onClickShare();
     }
 
     public static class SharingBroadcastReceiver extends BroadcastReceiver {
@@ -438,5 +417,4 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
             }
         }
     }
-
 }

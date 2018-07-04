@@ -10,23 +10,19 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import io.multy.R;
 import io.multy.storage.RealmManager;
-import io.multy.ui.fragments.MyReceiveFragment;
+import io.multy.ui.fragments.MagicReceiveFragment;
 import io.multy.ui.fragments.receive.AmountChooserFragment;
 import io.multy.util.Constants;
 import io.multy.util.analytics.Analytics;
@@ -72,7 +68,7 @@ public class FastReceiveActivity extends BaseActivity {
     }
 
     private void start() {
-        getSupportFragmentManager().beginTransaction().add(R.id.container_main, new MyReceiveFragment()).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.container_main, new MagicReceiveFragment()).commit();
     }
 
     public void showAmountChooser() {

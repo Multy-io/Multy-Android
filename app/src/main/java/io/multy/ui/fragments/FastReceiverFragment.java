@@ -6,40 +6,27 @@
 
 package io.multy.ui.fragments;
 
-import android.content.Context;
-import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.ColorInt;
-import android.support.annotation.ColorRes;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
 
-import butterknife.BindInt;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.multy.R;
 import io.multy.model.entities.FastReceiver;
+import io.multy.ui.Hash2PicView;
 import io.multy.util.CryptoFormatUtils;
 import io.multy.util.NativeDataHelper;
 
 public class FastReceiverFragment extends Fragment {
 
     @BindView(R.id.circle)
-    ImageView circleView;
+    Hash2PicView circleView;
     @BindView(R.id.animation_view)
     LottieAnimationView animationView;
     @BindView(R.id.root)
@@ -74,7 +61,8 @@ public class FastReceiverFragment extends Fragment {
                     break;
             }
             textAddress.setText(receiver.getAddress());
-            circleView.setImageResource(FastReceiver.getImageResId(receiver.getAddress()));
+            circleView.setAvatar(receiver.getAddress());
+//            circleView.setImageResource(FastReceiver.getImageResId(receiver.getAddress()));
         }
         return convertView;
     }

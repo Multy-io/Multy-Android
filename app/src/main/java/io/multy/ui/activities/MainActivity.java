@@ -325,7 +325,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
     @OnClick(R.id.fast_operations)
     void onFastOperationsClick(final View v) {
         Analytics.getInstance(this).logMain(AnalyticsConstants.MAIN_FAST_OPERATIONS);
-        startActivity(new Intent(this, TestOperationsActivity.class));
+        startActivity(new Intent(this, MagicSendActivity.class));
 //        v.setEnabled(false);
 //        v.postDelayed(() -> v.setEnabled(true), AnimationUtils.DURATION_MEDIUM * 2);
 //        Fragment fastOperationsFragment = getSupportFragmentManager().findFragmentByTag(FastOperationsFragment.TAG);
