@@ -18,6 +18,8 @@ public class TransactionUpdateEntity {
     private String txId;
     @SerializedName("address")
     private String address;
+    @SerializedName("from")
+    private String addressFrom;
 
     public int getType() {
         return type;
@@ -33,5 +35,9 @@ public class TransactionUpdateEntity {
 
     public String getAddress() {
         return address;
+    }
+
+    public String getAddressFrom() {
+        return addressFrom;
     }
 }

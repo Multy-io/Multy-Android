@@ -35,11 +35,13 @@ import butterknife.OnClick;
 import io.multy.R;
 import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.main.AssetsFragment;
-import io.multy.ui.fragments.main.ContactsFragment;
 import io.multy.ui.fragments.main.FastOperationsFragment;
 import io.multy.ui.fragments.main.FeedFragment;
 import io.multy.ui.fragments.main.SettingsFragment;
+import io.multy.ui.fragments.main.contacts.ContactInfoFragment;
+import io.multy.ui.fragments.main.contacts.ContactsFragment;
 import io.multy.util.Constants;
+import io.multy.util.ContactUtils;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.WalletViewModel;
@@ -75,6 +77,12 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
             showLock();
         }
         logFirstLaunch();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        checkContactAction();
     }
 
     @Override
@@ -212,6 +220,45 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         View emptyView = container.getChildCount() >= 2 ? container.getChildAt(2) : null;
         if (emptyView != null) {
             emptyView.setOnTouchListener((view, motionEvent) -> true);
+        }
+    }
+
+    private void checkContactAction() {
+        if (getIntent() != null && getIntent().hasExtra(ContactUtils.EXTRA_ACTION)) {
+            int action = getIntent().getIntExtra(ContactUtils.EXTRA_ACTION, ContactUtils.EXTRA_ACTION_OPEN_CONTACTS);
+            switch (action) {
+                case ContactUtils.EXTRA_ACTION_OPEN_CONTACT: {
+                    TabLayout.Tab tab = tabLayout.getTabAt(Constants.POSITION_CONTACTS);
+                    if (tab != null) {
+                        tab.select();
+                    }
+                    long contactId = getIntent().getLongExtra(ContactUtils.EXTRA_RAW_CONTACT_ID, 0);
+                    if (contactId != 0) {
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.full_container, ContactInfoFragment.getInstance(contactId))
+                                .addToBackStack(getClass().getSimpleName())
+                                .commit();
+                    }
+                    break;
+                }
+                case ContactUtils.EXTRA_ACTION_OPEN_SEND: {
+                    TabLayout.Tab tab = tabLayout.getTabAt(Constants.POSITION_ASSETS);
+                    if (tab != null) {
+                        tab.select();
+                    }
+                    final String address = getIntent().getStringExtra(Constants.EXTRA_ADDRESS);
+                    startActivity(new Intent(this, AssetSendActivity.class)
+                            .putExtra(Constants.EXTRA_ADDRESS, address)
+                            .putExtra(Constants.EXTRA_AMOUNT, ""));
+                    break;
+                }
+                default:
+                    TabLayout.Tab tab = tabLayout.getTabAt(Constants.POSITION_CONTACTS);
+                    if (tab != null) {
+                        tab.select();
+                    }
+            }
+            getIntent().removeExtra(ContactUtils.EXTRA_ACTION);
         }
     }
 

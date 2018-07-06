@@ -278,6 +278,14 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         params.setScrollFlags(flag);
     }
 
+    private void showAddressAction() {
+        Wallet wallet = viewModel.getWalletLive().getValue();
+        AddressActionsDialogFragment.getInstance(wallet.getActiveAddress().getAddress(), wallet.getCurrencyId(),
+                wallet.getNetworkId(), wallet.getIconResourceId(), false, () ->
+                        recyclerView.getAdapter().notifyDataSetChanged())
+                .show(getChildFragmentManager(), AddressActionsDialogFragment.TAG);
+    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onTransactionUpdateEvent(TransactionUpdateEvent event) {
 //        refreshWallet();
@@ -300,6 +308,10 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         super.onResume();
         if (getActivity() != null) {
             getActivity().registerReceiver(receiver, new IntentFilter());
+        }
+
+        if (recyclerView.getAdapter() != null) {
+            recyclerView.getAdapter().notifyDataSetChanged();
         }
 
         viewModel.subscribeSocketsUpdate();
@@ -373,15 +385,13 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     @OnClick(R.id.button_share)
     public void onClickShare() {
         Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_SHARE, viewModel.getChainId());
-        viewModel.shareAddress(getActivity());
+        showAddressAction();
     }
 
     @OnClick(R.id.button_copy)
     public void onClickCopy() {
         Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_ADDRESS, viewModel.getChainId());
-        AddressActionsDialogFragment.getInstance(viewModel.getWalletLive().getValue(),
-                viewModel.getWalletLive().getValue().getActiveAddress().getAddress())
-                .show(getChildFragmentManager(), AddressActionsDialogFragment.TAG);
+        showAddressAction();
     }
 
     @OnClick(R.id.close)
@@ -394,12 +404,6 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     public void onClickWarn() {
         Analytics.getInstance(getActivity()).logWalletBackup(AnalyticsConstants.WALLET_BACKUP_SEED);
         startActivity(new Intent(getActivity(), SeedActivity.class));
-    }
-
-
-    @OnClick(R.id.text_address)
-    public void onClickAddress() {
-        onClickShare();
     }
 
     public static class SharingBroadcastReceiver extends BroadcastReceiver {

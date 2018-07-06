@@ -307,4 +307,9 @@
     <string name="available_balance">Available balance</string>
     <string name="pending_balance">Pending balance</string>
     <string name="share_address">Share address</string>
+    <string name="contact_default_link_name">Multy wallet</string>
+    <string name="address_bind">The selected address already bind!</string>
+    <string name="shure_delete_address">Are you sure want to delete selected address?</string>
+    <string name="delete">Delete</string>
+    <string name="shure_delete_contact">Are you sure want to delete selected contact?</string>
 </resources>

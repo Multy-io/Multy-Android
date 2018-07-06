@@ -57,7 +57,6 @@ import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 import timber.log.Timber;
 
-import static io.multy.api.socket.BlueSocketManager.EVENT_TRANSACTION_UPDATE;
 import static io.multy.api.socket.BlueSocketManager.EVENT_TRANSACTION_UPDATE_BTC;
 
 
@@ -259,8 +258,10 @@ public class RequestSummaryFragment extends BaseFragment {
                 ((AssetRequestActivity) getActivity()).setFragment(R.string.all_addresses, fragment);
                 break;
             case ETH:
-                AddressActionsDialogFragment.getInstance(viewModel.getWallet(), viewModel.getWallet().getActiveAddress().getAddress())
-                        .show(getChildFragmentManager(), AddressActionsDialogFragment.TAG);
+                AddressActionsDialogFragment.getInstance(viewModel.getWallet().getActiveAddress().getAddress(),
+                        viewModel.getWalletLive().getValue().getCurrencyId(), viewModel.getWalletLive().getValue().getNetworkId(),
+                        viewModel.getWalletLive().getValue().getIconResourceId(), false)
+                .show(getChildFragmentManager(), AddressActionsDialogFragment.TAG);
                 break;
         }
     }

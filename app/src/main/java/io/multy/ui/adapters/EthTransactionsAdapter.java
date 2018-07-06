@@ -238,7 +238,14 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
     private void setAddress(String text, ViewGroup destination) {
         TextView textView = (TextView) LayoutInflater.from(destination.getContext()).inflate(R.layout.item_history_address, destination, false);
-        textView.setText(text);
+        String name = RealmManager.getSettingsDao().getContactNameOrNull(text);
+        textView.setText(name == null ? text : name);
+//        if (name != null) {
+//            TextView textName = (TextView) LayoutInflater.from(destination.getContext()).inflate(R.layout.item_history_address, destination, false);
+//            textName.setText(name);
+//            destination.addView(textName);
+//        }
+//        textView.setText(text);
         destination.addView(textView);
     }
 

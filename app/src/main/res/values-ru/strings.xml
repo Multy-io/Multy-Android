@@ -13,6 +13,7 @@
     <string name="terms_please">Извините\nДля того чтобы пользоваться Multy, вам необходимо сначала выразить свое согласие с Условиями предоставления услуг. Нажимая \"Принять\", вы подтверждаете, что прочитали, поняли и согласны со следующими Условиями предоставления услуг, а также что вы вправе заключать юридически обязательный договор.</string>
     <string name="create_first_wallet">Создать Первый Кошелек</string>
     <string name="restore_multy">Восстановить Multy</string>
+    <string name="restore_wallet_description">Нажмите кнопку, чтобы создать новый кошелек или импортировать существующий.</string>
     <string name="create_wallet">Создать Кошелек</string>
     <string name="CANCEL">Отменить</string>
     <string name="cancel">Отменить</string>
@@ -231,4 +232,8 @@
     <string name="magic_send">Магическая отправка</string>
     <string name="push_new_transaction_notification">Вы получили траназкцию на сумму %s</string>
     <string name="you_have_transaction">У вас есть новая входящая транзакция</string>
+    <string name="address_bind">Выбранный адрес уже добавлен другому контакту!</string>
+    <string name="shure_delete_address">Удалить адрес из контакта?</string>
+    <string name="delete">Удаление</string>
+    <string name="shure_delete_contact">Удалить контакт?</string>
 </resources>
