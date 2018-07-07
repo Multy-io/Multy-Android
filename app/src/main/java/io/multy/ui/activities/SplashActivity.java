@@ -12,9 +12,11 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -38,6 +40,7 @@ import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
 import io.multy.ui.fragments.dialogs.TermsDialogFragment;
 import io.multy.util.Constants;
+import io.multy.util.ContactUtils;
 import io.multy.util.FirstLaunchHelper;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
@@ -213,6 +216,7 @@ public class SplashActivity extends AppCompatActivity {
                             .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                     mainActivityIntent.putExtra(MainActivity.IS_ANIMATION_MUST_SHOW, true);
                     addDeepLinkExtra(mainActivityIntent);
+                    checkForContactAction(mainActivityIntent);
                     startActivity(mainActivityIntent);
                     finish();
                 } catch (Exception e) {
@@ -250,6 +254,41 @@ public class SplashActivity extends AppCompatActivity {
         }
         if (getIntent().hasExtra(Constants.EXTRA_AMOUNT)) {
             intent.putExtra(Constants.EXTRA_AMOUNT, getIntent().getStringExtra(Constants.EXTRA_AMOUNT));
+        }
+    }
+
+    private void checkForContactAction(Intent intent) {
+        if (getIntent() != null && getIntent().getAction() != null &&
+                getIntent().getAction().equals(Intent.ACTION_VIEW) && getIntent().getData() != null) {
+            try {
+                final String[] projection = new String[] {
+                        ContactsContract.Data.RAW_CONTACT_ID,
+                        ContactsContract.Data.DATA2,
+                        ContactsContract.Data.DATA3
+                };
+                Cursor clickedDataCursor = getContentResolver().query(getIntent().getData(), projection,
+                        null, null, null);
+                if (clickedDataCursor != null) {
+                    clickedDataCursor.moveToFirst();
+                    final String clickedData = clickedDataCursor.getString(1);
+                    if (clickedData == null) {
+                        intent.putExtra(ContactUtils.EXTRA_ACTION, ContactUtils.EXTRA_ACTION_OPEN_CONTACT);
+                        intent.putExtra(ContactUtils.EXTRA_RAW_CONTACT_ID, clickedDataCursor.getLong(0));
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    } else {
+                        final String address = clickedData.split("\n")[2];
+                        intent.putExtra(ContactUtils.EXTRA_ACTION, ContactUtils.EXTRA_ACTION_OPEN_SEND);
+                        intent.putExtra(Constants.EXTRA_ADDRESS, address);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    }
+                    clickedDataCursor.close();
+                }
+            } catch (Throwable t) {
+                t.printStackTrace();
+                if (BuildConfig.DEBUG) {
+                    Toast.makeText(SplashActivity.this, "Error open contact data!", Toast.LENGTH_SHORT).show();
+                }
+            }
         }
     }
 

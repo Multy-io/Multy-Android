@@ -13,6 +13,7 @@
     <string name="terms_please">Вибачте,\nДля того щоб користуватися Multy, вам необхідно спочатку висловити свою згоду з Умовами надання послуг. Натискаючи \"Прийняти"\, ви підтверджуєте, що прочитали, зрозуміли і згодні з наступними умовами надання послуг, а також що ви маєте право укладати юридично обов'язковий договір.</string>
     <string name="create_first_wallet">Створити Перший гаманець</string>
     <string name="restore_multy">Відновити Multy</string>
+    <string name="restore_wallet_description">Натисніть кнопку, щоб створити новий або імпортувати існуючий гаманець.</string>
     <string name="create_wallet">Створити Гаманець</string>
     <string name="CANCEL">Скасувати</string>
     <string name="cancel">Скасувати</string>
@@ -232,4 +233,8 @@
     <string name="magic_send">Магічна відправка</string>
     <string name="push_new_transaction_notification">Ви отримали траназкцію на суму %s</string>
     <string name="you_have_transaction">У вас є нова входить транзакція</string>
+    <string name="address_bind">Обраний адреса вже доданий іншого контакту!</string>
+    <string name="shure_delete_address">Видалити адресу з контакту?</string>
+    <string name="delete">Видалення</string>
+    <string name="shure_delete_contact">Видалити контакт?</string>
 </resources>

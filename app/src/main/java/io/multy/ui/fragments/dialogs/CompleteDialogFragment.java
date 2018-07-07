@@ -23,6 +23,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
+import io.multy.storage.RealmManager;
 import io.multy.ui.activities.MainActivity;
 import io.multy.ui.fragments.DonationFragment;
 import io.multy.ui.fragments.send.SendSummaryFragment;
@@ -40,6 +41,8 @@ public class CompleteDialogFragment extends DialogFragment {
     TextView textAmount;
     @BindView(R.id.text_address)
     TextView textAddress;
+    @BindView(R.id.text_name)
+    TextView textName;
     @BindView(R.id.group_amount)
     Group groupAmount;
 
@@ -100,8 +103,14 @@ public class CompleteDialogFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.dialog_complete, container, false);
         ButterKnife.bind(this, view);
         if (getArguments() != null && getArguments().getBoolean(EXTRA_AMOUNT_COMPLETE_DIALOG)) {
-            textAddress.setText(getArguments().getString(Constants.EXTRA_ADDRESS));
+            String address = getArguments().getString(Constants.EXTRA_ADDRESS);
+            textAddress.setText(address);
             textAmount.setText(getArguments().getString(Constants.EXTRA_AMOUNT));
+            String name = RealmManager.getSettingsDao().getContactNameOrNull(address);
+            if (name != null) {
+                textName.setVisibility(View.VISIBLE);
+                textName.setText(name);
+            }
         } else {
             groupAmount.setVisibility(GONE);
         }

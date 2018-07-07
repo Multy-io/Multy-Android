@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2018 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<ContactsSource xmlns:android="http://schemas.android.com/apk/res/android">
+    <ContactsDataKind
+        android:mimeType="vnd.android.cursor.item/vnd.io.multy.contacts.profile"
+        android:icon="@mipmap/ic_launcher_app"
+        android:detailSocialSummary="true"
+        android:summaryColumn="data2"
+        android:detailColumn="data3" />
+</ContactsSource>

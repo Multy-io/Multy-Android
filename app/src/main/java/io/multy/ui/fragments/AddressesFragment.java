@@ -92,7 +92,8 @@ public class AddressesFragment extends BaseFragment {
             textViewTitle.setText(wallet.getWalletName());
             recyclerView.setAdapter(new AddressesAdapter(wallet.getBtcWallet().getAddresses(), selectedAddress -> {
                 if (getTargetFragment() == null) {
-                    AddressActionsDialogFragment.getInstance(wallet, selectedAddress.getAddress())
+                    AddressActionsDialogFragment.getInstance(selectedAddress.getAddress(), wallet.getCurrencyId(),
+                            wallet.getNetworkId(), wallet.getIconResourceId(), false)
                             .show(getChildFragmentManager(), AddressActionsDialogFragment.TAG);
                 } else {
                     Intent data = new Intent();
@@ -134,7 +135,8 @@ public class AddressesFragment extends BaseFragment {
                     recyclerView.setAdapter(new AddressesAdapter(response.body().getWallets().get(0).getBtcWallet().getAddresses(), selectedAddress -> {
                         if (getTargetFragment() == null) {
                             Wallet wallet = RealmManager.getAssetsDao().getWalletById(getArguments().getLong(Constants.EXTRA_WALLET_ID, -1));
-                            AddressActionsDialogFragment.getInstance(wallet, selectedAddress.getAddress())
+                            AddressActionsDialogFragment.getInstance(selectedAddress.getAddress(), wallet.getCurrencyId(),
+                                    wallet.getNetworkId(), wallet.getIconResourceId(), false)
                                     .show(getChildFragmentManager(), AddressActionsDialogFragment.TAG);
                         } else {
                             Intent data = new Intent();

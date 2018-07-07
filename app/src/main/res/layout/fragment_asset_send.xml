@@ -71,20 +71,6 @@
         app:layout_constraintRight_toLeftOf="@+id/button_scan_wireless"
         app:layout_constraintTop_toBottomOf="@id/input_address" />
 
-    <TextView
-        android:id="@+id/text_contacts_progress"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:elevation="@dimen/base_view_elevation"
-        android:gravity="center_horizontal"
-        android:paddingBottom="20dp"
-        android:text="@string/work_in_progress"
-        android:textColor="@color/red_warn"
-        android:textSize="10sp"
-        app:layout_constraintBottom_toBottomOf="@id/button_address"
-        app:layout_constraintEnd_toEndOf="@id/button_address"
-        app:layout_constraintStart_toStartOf="@id/button_address" />
-
     <android.support.constraint.ConstraintLayout
         android:id="@+id/button_scan_wireless"
         android:layout_width="98dp"

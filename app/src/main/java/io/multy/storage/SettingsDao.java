@@ -6,10 +6,15 @@
 
 package io.multy.storage;
 
+import android.util.Log;
+
+import java.util.Collection;
 import java.util.List;
 
 import io.multy.api.socket.CurrenciesRate;
 import io.multy.model.entities.ByteSeed;
+import io.multy.model.entities.Contact;
+import io.multy.model.entities.ContactAddress;
 import io.multy.model.entities.DeviceId;
 import io.multy.model.entities.DonateFeatureEntity;
 import io.multy.model.entities.Mnemonic;
@@ -21,6 +26,7 @@ import io.multy.util.NativeDataHelper;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.annotations.Nullable;
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 
 public class SettingsDao {
@@ -142,5 +148,72 @@ public class SettingsDao {
     public DonateFeatureEntity getDonationFeature(String address) {
         return realm.where(DonateFeatureEntity.class)
                 .equalTo(DonateFeatureEntity.DONATION_ADDRESS, address).findFirst();
+    }
+
+    public void saveContacts(Collection<Contact> contacts, Realm.Transaction.OnSuccess onSuccess) {
+        realm.executeTransactionAsync(realm -> {
+            realm.insertOrUpdate(contacts);
+        }, onSuccess,  Throwable::printStackTrace);
+    }
+
+    public RealmResults<Contact> getContacts() {
+        return realm.where(Contact.class).findAll();
+    }
+
+    public Contact getContact(long contactId) {
+        return realm.where(Contact.class).equalTo(Contact.ID, contactId).findFirst();
+    }
+
+    public @Nullable String getContactNameOrNull (String address) {
+        ContactAddress contactAddress = realm.where(ContactAddress.class).equalTo(ContactAddress.ADDRESS, address).findFirst();
+        if (contactAddress == null) {
+            return null;
+        }
+        Contact contact = realm.where(Contact.class).equalTo(Contact.ID, contactAddress.getContactId()).findFirst();
+        if (contact == null) {
+            Log.e(getClass().getSimpleName(), "Mistake in contact DB! Address without contact!");
+            return null;
+        }
+        return contact.getName();
+    }
+
+    public void removeContact(long contactId, Realm.Transaction.OnSuccess onSuccess) {
+        realm.executeTransactionAsync(realm -> {
+            realm.where(ContactAddress.class).equalTo(ContactAddress.CONTACT_ID, contactId).findAll().deleteAllFromRealm();
+            realm.where(Contact.class).equalTo(Contact.ID, contactId).findAll().deleteAllFromRealm();
+        }, onSuccess, Throwable::printStackTrace);
+    }
+
+    public void removeAllContacts(Realm.Transaction.OnSuccess onSuccess) {
+        realm.executeTransactionAsync(realm -> {
+            realm.where(ContactAddress.class).findAll().deleteAllFromRealm();
+            realm.where(Contact.class).findAll().deleteAllFromRealm();
+        }, onSuccess);
+    }
+
+    public void saveAddressesToContact(long multyRowId, String address, int currencyId, int networkId,
+                                       int currencyImgId, Realm.Transaction.OnSuccess onSuccess) {
+        realm.executeTransactionAsync(realm -> {
+            Contact contact = realm.where(Contact.class).equalTo(Contact.ID, multyRowId).findFirst();
+            if (contact == null) {
+                throw new NullPointerException("There is no contact with selected ID!");
+            } else {
+                RealmList<ContactAddress> addresses = contact.getAddresses();
+                ContactAddress selectedAddress = new ContactAddress(address, multyRowId, currencyId, networkId, currencyImgId);
+                addresses.add(realm.copyToRealmOrUpdate(selectedAddress));
+                contact.setAddresses(addresses);
+                realm.insertOrUpdate(contact);
+            }
+        }, onSuccess);
+    }
+
+    public RealmResults<ContactAddress> getContactsAddresses() {
+        return realm.where(ContactAddress.class).findAll();
+    }
+
+    public void removeAddressFromContact(String address, Realm.Transaction.OnSuccess onSuccess) {
+        realm.executeTransactionAsync(realm ->
+                realm.where(ContactAddress.class).equalTo(ContactAddress.ADDRESS, address).findAll().deleteAllFromRealm(),
+                onSuccess, Throwable::printStackTrace);
     }
 }

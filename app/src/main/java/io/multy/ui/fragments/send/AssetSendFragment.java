@@ -6,6 +6,7 @@
 
 package io.multy.ui.fragments.send;
 
+import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,6 +25,7 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.Unbinder;
 import io.multy.R;
 import io.multy.model.entities.wallet.RecentAddress;
 import io.multy.storage.RealmManager;
@@ -31,7 +33,8 @@ import io.multy.ui.activities.AssetSendActivity;
 import io.multy.ui.activities.MagicSendActivity;
 import io.multy.ui.adapters.RecentAddressesAdapter;
 import io.multy.ui.fragments.BaseFragment;
-import io.multy.ui.fragments.dialogs.DonateDialog;
+import io.multy.ui.fragments.dialogs.AddressActionsDialogFragment;
+import io.multy.ui.fragments.main.contacts.ContactsFragment;
 import io.multy.ui.fragments.send.ethereum.EthTransactionFeeFragment;
 import io.multy.util.Constants;
 import io.multy.util.NativeDataHelper;
@@ -40,11 +43,9 @@ import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.AssetSendViewModel;
 import io.realm.RealmResults;
 
-public class AssetSendFragment extends BaseFragment {
+public class AssetSendFragment extends BaseFragment implements RecentAddressesAdapter.OnRecentAddressClickListener {
 
-    public static AssetSendFragment newInstance(){
-        return new AssetSendFragment();
-    }
+    public static final int REQUEST_CONTACT = 1101;
 
     @BindView(R.id.input_address)
     EditText inputAddress;
@@ -56,12 +57,17 @@ public class AssetSendFragment extends BaseFragment {
     private int blockchainId;
     private int networkId;
     private AssetSendViewModel viewModel;
+    private Unbinder unbinder;
+
+    public static AssetSendFragment newInstance(){
+        return new AssetSendFragment();
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_asset_send, container, false);
-        ButterKnife.bind(this, view);
+        this.unbinder = ButterKnife.bind(this, view);
         viewModel = ViewModelProviders.of(getActivity()).get(AssetSendViewModel.class);
         setBaseViewModel(viewModel);
         viewModel.getReceiverAddress().observe(getActivity(), s -> {
@@ -85,17 +91,42 @@ public class AssetSendFragment extends BaseFragment {
         } else {
             recentAddresses = RealmManager.getAssetsDao().getRecentAddresses();
         }
-        recyclerView.setAdapter(new RecentAddressesAdapter(recentAddresses, address -> {
-            inputAddress.setText(address);
-            inputAddress.setSelection(inputAddress.length());
-            inputAddress.postDelayed(this::onClickNext, 300);
-        }));
+        recyclerView.setAdapter(new RecentAddressesAdapter(recentAddresses, this));
     }
 
     @Override
     public void onDestroyView() {
         hideKeyboard(getActivity());
         super.onDestroyView();
+        unbinder.unbind();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CONTACT && resultCode == Activity.RESULT_OK && data != null) {
+            setArguments(data.getExtras());
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
+    public void onClickRecentAddress(String address) {
+        inputAddress.setText(address);
+        inputAddress.setSelection(inputAddress.length());
+        inputAddress.postDelayed(this::onClickNext, 300);
+    }
+
+    @Override
+    public boolean onLongClickRecentAddress(String address, int currencyId, int networkId, int resImgId) {
+        AddressActionsDialogFragment.getInstance(address, currencyId, networkId, resImgId, true, () -> {
+            recyclerView.postDelayed(() -> {
+                viewModel.setWallet(RealmManager.getAssetsDao().getWalletById(getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, -1)));
+                initRecentAddresses();
+            }, 2000);
+        })
+                .show(getChildFragmentManager(), AddressActionsDialogFragment.TAG);
+        return true;
     }
 
     private void setupInputAddress() {
@@ -125,6 +156,12 @@ public class AssetSendFragment extends BaseFragment {
 
             }
         });
+        if (getArguments() != null) {
+            inputAddress.post(() -> {
+                inputAddress.setText(getArguments().getString(Constants.EXTRA_ADDRESS));
+                getArguments().remove(Constants.EXTRA_ADDRESS);
+            });
+        }
     }
 
     private boolean checkAddressForValidation(String address) {
@@ -157,9 +194,17 @@ public class AssetSendFragment extends BaseFragment {
     @OnClick(R.id.button_address)
     void onClickAddressBook(){
         Analytics.getInstance(getActivity()).logSendTo(AnalyticsConstants.SEND_TO_ADDRESS_BOOK);
-        if (getActivity() != null) {
-            DonateDialog.getInstance(Constants.DONATE_ADDING_CONTACTS)
-                    .show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
+//        if (getActivity() != null) {
+//            DonateDialog.getInstance(Constants.DONATE_ADDING_CONTACTS)
+//                    .show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
+//        }
+        ContactsFragment fragment = ContactsFragment.newInstance();
+        fragment.setTargetFragment(this, REQUEST_CONTACT);
+        if (getActivity() != null && getView() != null) {
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(((View) getView().getParent()).getId(), fragment, ContactsFragment.TAG)
+                    .addToBackStack(ContactsFragment.TAG)
+                    .commit();
         }
     }
 
@@ -167,10 +212,6 @@ public class AssetSendFragment extends BaseFragment {
     void onClickWirelessScan(){
         Analytics.getInstance(getActivity()).logSendTo(AnalyticsConstants.SEND_TO_WIRELESS);
         startActivity(new Intent(getActivity(), MagicSendActivity.class));
-//        if (getActivity() != null) {
-//            DonateDialog.getInstance(Constants.DONATE_ADDING_WIRELESS_SCAN)
-//                    .show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
-//        }
     }
 
     @OnClick(R.id.button_scan_qr)

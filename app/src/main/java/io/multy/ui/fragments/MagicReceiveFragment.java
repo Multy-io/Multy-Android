@@ -183,7 +183,7 @@ public class MagicReceiveFragment extends BaseFragment {
                 }
                 Analytics.getInstance(getActivity()).logEvent(AnalyticsConstants.KF_RECEIVED_TRANSACTION, AnalyticsConstants.KF_RECEIVED_TRANSACTION, "true");
                 CompleteDialogFragment.newInstance(viewModel.getWallet().getCurrencyId(), amount,
-                        response.getEntity().getAddress()).show(getActivity().getSupportFragmentManager(), "");
+                        response.getEntity().getAddressFrom()).show(getActivity().getSupportFragmentManager(), "");
             }
         }
     }

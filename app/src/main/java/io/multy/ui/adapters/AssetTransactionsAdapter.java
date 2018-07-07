@@ -338,7 +338,8 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
 
     private void setAddress(String text, ViewGroup destination) {
         TextView textView = (TextView) LayoutInflater.from(destination.getContext()).inflate(R.layout.item_history_address, destination, false);
-        textView.setText(text);
+        String name = RealmManager.getSettingsDao().getContactNameOrNull(text);
+        textView.setText(name == null ? text : name);
         destination.addView(textView);
     }
 

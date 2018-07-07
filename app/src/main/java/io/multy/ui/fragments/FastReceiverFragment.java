@@ -19,6 +19,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.multy.R;
 import io.multy.model.entities.FastReceiver;
+import io.multy.storage.RealmManager;
 import io.multy.ui.Hash2PicView;
 import io.multy.util.CryptoFormatUtils;
 import io.multy.util.NativeDataHelper;
@@ -35,6 +36,8 @@ public class FastReceiverFragment extends Fragment {
     TextView textAmount;
     @BindView(R.id.text_address)
     TextView textAddress;
+    @BindView(R.id.text_name)
+    TextView textName;
 
     private FastReceiver receiver;
     private boolean isColorStateGreen = false;
@@ -60,6 +63,8 @@ public class FastReceiverFragment extends Fragment {
                     textAmount.setText(CryptoFormatUtils.weiToEthLabel(receiver.getAmount()));
                     break;
             }
+            String name = RealmManager.getSettingsDao().getContactNameOrNull(receiver.getAddress());
+            textName.setText(name);
             textAddress.setText(receiver.getAddress());
             circleView.setAvatar(receiver.getAddress());
 //            circleView.setImageResource(FastReceiver.getImageResId(receiver.getAddress()));

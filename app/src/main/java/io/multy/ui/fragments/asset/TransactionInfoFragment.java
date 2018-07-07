@@ -334,7 +334,9 @@ public class TransactionInfoFragment extends BaseFragment {
     }
 
     private void onClickAddress(String clickedAddress) {
-        AddressActionsDialogFragment.getInstance(viewModel.getWalletLive().getValue(), clickedAddress)
+        AddressActionsDialogFragment.getInstance(clickedAddress, viewModel.getWalletLive().getValue().getCurrencyId(),
+                viewModel.getWalletLive().getValue().getNetworkId(), viewModel.getWalletLive().getValue().getIconResourceId(),
+                true, () -> viewModel.transactions.setValue(viewModel.transactions.getValue()))
                 .show(getChildFragmentManager(), AddressActionsDialogFragment.TAG);
     }
 

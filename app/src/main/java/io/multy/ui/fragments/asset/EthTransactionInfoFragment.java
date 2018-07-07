@@ -259,7 +259,10 @@ public class EthTransactionInfoFragment extends BaseFragment {
     @OnClick({R.id.text_addresses_from, R.id.text_addresses_to})
     void onClickAddress(View view) {
         if (view instanceof TextView) {
-            AddressActionsDialogFragment.getInstance(viewModel.getWalletLive().getValue(), ((TextView) view).getText().toString())
+            AddressActionsDialogFragment.getInstance(((TextView) view).getText().toString(),
+                    viewModel.getWalletLive().getValue().getCurrencyId(), viewModel.getWalletLive().getValue().getNetworkId(),
+                    viewModel.getWalletLive().getValue().getIconResourceId(), true, () ->
+                            viewModel.transactions.setValue(viewModel.transactions.getValue()))
                     .show(getChildFragmentManager(), AddressActionsDialogFragment.TAG);
         }
     }
