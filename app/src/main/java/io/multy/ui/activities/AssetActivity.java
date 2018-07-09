@@ -24,9 +24,11 @@ import io.multy.R;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.ui.fragments.AddressesFragment;
 import io.multy.ui.fragments.asset.AssetInfoFragment;
+import io.multy.ui.fragments.asset.EthTransactionInfoFragment;
 import io.multy.ui.fragments.asset.TransactionInfoFragment;
 import io.multy.ui.fragments.dialogs.DonateDialog;
 import io.multy.util.Constants;
+import io.multy.util.NativeDataHelper;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.WalletViewModel;
@@ -53,7 +55,11 @@ public class AssetActivity extends BaseActivity {
         Wallet wallet = viewModel.getWallet(getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0));
 
         if (getIntent().hasExtra(Constants.EXTRA_TX_HASH)) {
-            setFragment(R.id.container_full, TransactionInfoFragment.newInstance(createBundle(wallet)));
+            if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()) {
+                setFragment(R.id.container_full, TransactionInfoFragment.newInstance(createBundle(wallet)));
+            } else {
+                setFragment(R.id.container_full, EthTransactionInfoFragment.newInstance(createBundle(wallet)));
+            }
         } else {
             setFragment(R.id.frame_container, new AssetInfoFragment());
         }
