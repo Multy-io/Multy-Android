@@ -72,6 +72,14 @@
             android:layout_height="match_parent"
             android:layout_margin="26dp" />
 
+        <View
+            android:id="@+id/circle_green"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="26dp"
+            android:alpha="0"
+            android:background="@drawable/circle_green_transparent" />
+
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/animation_view"
             android:layout_width="match_parent"

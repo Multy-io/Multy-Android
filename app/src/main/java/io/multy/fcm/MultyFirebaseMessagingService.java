@@ -18,6 +18,8 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.samwolfand.oneprefs.Prefs;
 
+import net.khirr.library.foreground.Foreground;
+
 import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.model.entities.wallet.Wallet;
@@ -45,50 +47,51 @@ public class MultyFirebaseMessagingService extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-
         if (Prefs.getBoolean(Constants.PREF_IS_PUSH_ENABLED, true) && remoteMessage.getData().size() > 0) {
-            try {
-                final int currencyId = Integer.parseInt(remoteMessage.getData().get(KEY_CURRENCY_ID));
-                //todo hotfix for eth pushes; remove later
-                final int networkId = currencyId == NativeDataHelper.Blockchain.ETH.getValue() ?
-                        4 : Integer.parseInt(remoteMessage.getData().get(KEY_NETWORK_ID));
-                final int walletIndex = Integer.parseInt(remoteMessage.getData().get(KEY_WALLET_INDEX));
-                MultyApi.INSTANCE.getWalletVerbose(walletIndex, currencyId, networkId).enqueue(new Callback<SingleWalletResponse>() {
-                    @Override
-                    public void onResponse(Call<SingleWalletResponse> call, Response<SingleWalletResponse> response) {
-                        if (response.isSuccessful() && response.body().getWallets() != null) {
-                            RealmManager.getAssetsDao().saveWallet(response.body().getWallets().get(0));
-                            String amount = "";
-                            switch (NativeDataHelper.Blockchain.valueOf(currencyId)) {
-                                case BTC:
-                                    amount = CryptoFormatUtils.satoshiToBtcLabel(Long.parseLong(remoteMessage.getData().get(KEY_AMOUNT)));
-                                    break;
-                                case ETH:
-                                    amount = CryptoFormatUtils.weiToEthLabel(remoteMessage.getData().get(KEY_AMOUNT));
-                                    break;
+            if (Foreground.Companion.isBackground()) {
+                try {
+                    final int currencyId = Integer.parseInt(remoteMessage.getData().get(KEY_CURRENCY_ID));
+                    //todo hotfix for eth pushes; remove later
+                    final int networkId = currencyId == NativeDataHelper.Blockchain.ETH.getValue() ?
+                            4 : Integer.parseInt(remoteMessage.getData().get(KEY_NETWORK_ID));
+                    final int walletIndex = Integer.parseInt(remoteMessage.getData().get(KEY_WALLET_INDEX));
+                    MultyApi.INSTANCE.getWalletVerbose(walletIndex, currencyId, networkId).enqueue(new Callback<SingleWalletResponse>() {
+                        @Override
+                        public void onResponse(Call<SingleWalletResponse> call, Response<SingleWalletResponse> response) {
+                            if (response.isSuccessful() && response.body().getWallets() != null) {
+                                RealmManager.getAssetsDao().saveWallet(response.body().getWallets().get(0));
+                                String amount = "";
+                                switch (NativeDataHelper.Blockchain.valueOf(currencyId)) {
+                                    case BTC:
+                                        amount = CryptoFormatUtils.satoshiToBtcLabel(Long.parseLong(remoteMessage.getData().get(KEY_AMOUNT)));
+                                        break;
+                                    case ETH:
+                                        amount = CryptoFormatUtils.weiToEthLabel(remoteMessage.getData().get(KEY_AMOUNT));
+                                        break;
+                                }
+                                final String notification = String.format(getString(R.string.push_new_transaction_notification), amount);
+                                Wallet wallet = RealmManager.getAssetsDao().getWallet(currencyId, networkId, walletIndex);
+                                final String txHash = remoteMessage.getData().get(KEY_TX_HASH);
+                                sendNotification(notification, wallet.getId(), txHash);
+                            } else {
+                                Log.e(TAG, "get wallet verbose error. walletId = " + String.valueOf(walletIndex) +
+                                        ", currencyId = " + String.valueOf(currencyId) +
+                                        ", networkId = " + String.valueOf(networkId));
                             }
-                            final String notification = String.format(getString(R.string.push_new_transaction_notification), amount);
-                            Wallet wallet = RealmManager.getAssetsDao().getWallet(currencyId, networkId, walletIndex);
-                            final String txHash = remoteMessage.getData().get(KEY_TX_HASH);
-                            sendNotification(notification, wallet.getId(), txHash);
-                        } else {
-                            Log.e(TAG, "get wallet verbose error. walletId = " + String.valueOf(walletIndex) +
-                                    ", currencyId = " + String.valueOf(currencyId) +
-                                    ", networkId = " + String.valueOf(networkId));
                         }
-                    }
 
-                    @Override
-                    public void onFailure(Call<SingleWalletResponse> call, Throwable t) {
-                        t.printStackTrace();
-                    }
-                });
-                Analytics.getInstance(this).logPush(AnalyticsConstants.PUSH_RECEIVED, remoteMessage.getMessageId());
+                        @Override
+                        public void onFailure(Call<SingleWalletResponse> call, Throwable t) {
+                            t.printStackTrace();
+                        }
+                    });
+                    Analytics.getInstance(this).logPush(AnalyticsConstants.PUSH_RECEIVED, remoteMessage.getMessageId());
 //                EventBus.getDefault().post(new TransactionUpdateEvent());
-            } catch (Exception e) {
-                e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                Log.d(TAG, "Message data payload: " + remoteMessage.getData());
             }
-            Log.d(TAG, "Message data payload: " + remoteMessage.getData());
         }
     }
 
@@ -99,7 +102,7 @@ public class MultyFirebaseMessagingService extends FirebaseMessagingService {
         assetIntent.putExtra(Constants.EXTRA_WALLET_ID, walletId);
         Log.i(TAG, "wallet id = " + String.valueOf(walletId));
         assetIntent.putExtra(Constants.EXTRA_TX_HASH, txHash);
-        Intent[] intents = new Intent[] {mainIntent, assetIntent};
+        Intent[] intents = new Intent[]{mainIntent, assetIntent};
         PendingIntent pendingIntent = PendingIntent.getActivities(this, 0 /* Request code */, intents, PendingIntent.FLAG_ONE_SHOT);
 
         NotificationCompat.Builder notification =
