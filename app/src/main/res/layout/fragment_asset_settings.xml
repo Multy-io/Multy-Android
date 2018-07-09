@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2018 Idealnaya rabota LLC
   ~ Licensed under Multy.io license.
   ~ See LICENSE for details
@@ -111,8 +110,8 @@
                 android:id="@+id/text_general"
                 style="@style/SettingSubtite"
                 android:layout_marginTop="24dp"
-                android:text="@string/general"
                 android:letterSpacing="-0.02"
+                android:text="@string/general"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -128,6 +127,7 @@
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/text_name"
                 style="@style/InputLayout"
+                android:hint="@string/wallet_name"
                 android:theme="@style/InputLayoutAccent"
                 app:hintTextAppearance="@style/HintInputAppearance"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -137,10 +137,9 @@
                 <android.support.design.widget.TextInputEditText
                     android:id="@+id/edit_name"
                     style="@style/InputEdit"
-                    android:hint="@string/wallet_name"
+                    android:inputType="textCapSentences"
                     android:lineSpacingExtra="6sp"
                     android:maxLength="25"
-                    android:inputType="textCapSentences"
                     android:text="@string/personal"
                     tools:text="Personal" />
             </android.support.design.widget.TextInputLayout>
@@ -188,11 +187,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:fontFamily="@font/montserrat"
+                android:lineSpacingExtra="6sp"
                 android:text="@string/us_dollars_usd"
                 android:textColor="@color/text_main_dark"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:lineSpacingExtra="6sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_hint" />
@@ -219,8 +218,8 @@
                 android:id="@+id/text_security"
                 style="@style/SettingSubtite"
                 android:layout_marginTop="24dp"
-                android:text="@string/security"
                 android:letterSpacing="-0.02"
+                android:text="@string/security"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/divider_currency" />
@@ -265,11 +264,11 @@
             <TextView
                 android:id="@+id/notice_key"
                 style="@style/NotificationSettings"
+                android:letterSpacing="-0.02"
+                android:lineSpacingExtra="5sp"
                 android:text="@string/about_private_key"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                android:letterSpacing="-0.02"
-                android:lineSpacingExtra="5sp"
                 app:layout_constraintTop_toBottomOf="@+id/divider_key" />
 
             <View
@@ -289,10 +288,10 @@
                 android:focusable="true"
                 android:fontFamily="@font/montserrat"
                 android:gravity="center"
+                android:lineSpacingExtra="6sp"
                 android:text="@string/delete_wallet"
                 android:textColor="@color/text_red"
                 android:textSize="16sp"
-                android:lineSpacingExtra="6sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/divider_notice" />

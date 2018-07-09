@@ -23,6 +23,9 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import io.multy.Multy;
+import io.multy.R;
+
 public class Hash2PicView extends AppCompatImageView {
 
     private RectF rect;
@@ -101,6 +104,7 @@ public class Hash2PicView extends AppCompatImageView {
 
             colors.clear();
             fitColors();
+            index = 1;
         }
 
         super.onDraw(canvas);
@@ -143,11 +147,6 @@ public class Hash2PicView extends AppCompatImageView {
 
     private void initializeView() {
         density = getResources().getDisplayMetrics().density;
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            setLayerType(LAYER_TYPE_SOFTWARE, null);
-        }
 
         rect = new RectF();
         path = new Path();

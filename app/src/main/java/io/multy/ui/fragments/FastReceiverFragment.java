@@ -38,6 +38,8 @@ public class FastReceiverFragment extends Fragment {
     TextView textAddress;
     @BindView(R.id.text_name)
     TextView textName;
+    @BindView(R.id.circle_green)
+    View circleGreen;
 
     private FastReceiver receiver;
     private boolean isColorStateGreen = false;
@@ -72,17 +74,21 @@ public class FastReceiverFragment extends Fragment {
         return convertView;
     }
 
+    public LottieAnimationView getAnimationView() {
+        return animationView;
+    }
+
     public void setGreenColorMode() {
         if (!isColorStateGreen) {
-            circleView.setColorFilter(getActivity().getResources().getColor(R.color.green_transparent));
             isColorStateGreen = true;
+            circleGreen.setAlpha(0.5f);
         }
     }
 
     public void setNormalColorMode() {
         if (isColorStateGreen) {
-            circleView.setColorFilter(null);
             isColorStateGreen = false;
+            circleGreen.setAlpha(0f);
         }
     }
 
@@ -96,18 +102,18 @@ public class FastReceiverFragment extends Fragment {
     }
 
     public void hideRight() {
-        rootView.animate().translationXBy(rootView.getWidth()).setDuration(100).start();
+        rootView.animate().translationXBy(rootView.getWidth()).alpha(0).setDuration(100).start();
     }
 
     public void hideLeft() {
-        rootView.animate().translationXBy(-rootView.getWidth()).setDuration(100).start();
+        rootView.animate().translationXBy(-rootView.getWidth()).alpha(0).setDuration(100).start();
     }
 
     public void showRight() {
-        rootView.animate().translationXBy(-rootView.getWidth()).setDuration(100).start();
+        rootView.animate().translationXBy(-rootView.getWidth()).alpha(1).setDuration(100).start();
     }
 
     public void showLeft() {
-        rootView.animate().translationXBy(rootView.getWidth()).setDuration(100).start();
+        rootView.animate().translationXBy(rootView.getWidth()).alpha(1).setDuration(100).start();
     }
 }

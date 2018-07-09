@@ -7,6 +7,8 @@
 package io.multy.ui.activities;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.le.ScanCallback;
@@ -26,6 +28,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -34,6 +37,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -114,6 +118,7 @@ public class MagicSendActivity extends BaseActivity {
     private Runnable updateReceiversAction;
     private ScanCallback bleScanCallback;
     private Handler animationHandler = new Handler();
+    private float startY;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -209,7 +214,7 @@ public class MagicSendActivity extends BaseActivity {
     @Override
     public void onBackPressed() {
         if (containerSend.getVisibility() == View.VISIBLE) {
-            hideSendGroup();
+            hideSendState();
             enableScroll();
             receiversPagerAdapter.showElements(pagerRequests.getCurrentItem());
             walletPagerAdapter.showElements(pagerWallets.getCurrentItem());
@@ -289,7 +294,7 @@ public class MagicSendActivity extends BaseActivity {
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        if (containerSend.getVisibility() != View.VISIBLE) {
+                        if (containerSend.getVisibility() != View.VISIBLE && receiversPagerAdapter != null && receiversPagerAdapter.getCount() > 0) {
                             animationHandler.postDelayed(() -> showSendState(), ViewConfiguration.getLongPressTimeout());
                         }
                         break;
@@ -317,15 +322,19 @@ public class MagicSendActivity extends BaseActivity {
                         }
                         break;
                     case MotionEvent.ACTION_UP:
-                        receiversPagerAdapter.resetColorState(pagerRequests.getCurrentItem());
+                        animationHandler.removeCallbacksAndMessages(null);
 
-                        if (event.getRawY() < pagerRequests.getBottom() && event.getRawY() > pagerRequests.getTop()) {
-                            animateSend();
-                        } else {
-                            hideSendState();
+                        if (containerSend.getVisibility() == View.VISIBLE) {
+                            receiversPagerAdapter.resetColorState(pagerRequests.getCurrentItem());
+                            if (event.getRawY() < pagerRequests.getBottom() && event.getRawY() > pagerRequests.getTop()) {
+                                animateSend();
+                            } else {
+                                hideSendState();
+                            }
                         }
                         break;
                     case MotionEvent.ACTION_CANCEL:
+                        animationHandler.removeCallbacksAndMessages(null);
                         hideSendState();
                         break;
                 }
@@ -336,12 +345,14 @@ public class MagicSendActivity extends BaseActivity {
         pagerWallets.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                animationHandler.removeCallbacksAndMessages(null);
             }
 
             @Override
             public void onPageSelected(int position) {
                 animationHandler.removeCallbacksAndMessages(null);
+                if (containerSend.getVisibility() == View.VISIBLE) {
+                    hideSendState();
+                }
             }
 
             @Override
@@ -393,16 +404,6 @@ public class MagicSendActivity extends BaseActivity {
         pagerRequests.setOnTouchListener((v, event) -> true);
     }
 
-    private void showSendGroup() {
-        containerSend.setVisibility(View.VISIBLE);
-    }
-
-    private void hideSendGroup() {
-        containerSend.setVisibility(View.GONE);
-        showPagerElements();
-        handler.postDelayed(updateReceiversAction, UPDATE_PERIOD / 5);
-    }
-
     private void setupSendGroup() {
         String amount = "";
         String amountFiat = "";
@@ -437,6 +438,7 @@ public class MagicSendActivity extends BaseActivity {
         }
         handler.removeCallbacksAndMessages(null);
         textHint.setVisibility(View.GONE);
+        startY = containerSend.getY();
 
         final float sendY = containerSend.getHeight() / 2;
         containerSend.animate().translationYBy(sendY).setDuration(0).alpha(0).withEndAction(() -> {
@@ -447,16 +449,19 @@ public class MagicSendActivity extends BaseActivity {
         selectedWalletId = walletPagerAdapter.getSelectedWalletId(pagerWallets.getCurrentItem());
         hidePagerElements();
         setupSendGroup();
+
     }
 
     private void hideSendState() {
         final float sendY = containerSend.getHeight() / 2;
         containerSend.animate().translationYBy(sendY).setDuration(100).alpha(0).setInterpolator(new DecelerateInterpolator()).withEndAction(() -> {
             containerSend.setVisibility(View.INVISIBLE);
-            containerSend.animate().translationYBy(-sendY).setDuration(0).alpha(0).start();
+            containerSend.setY(startY);
+//            containerSend.animate().translationY(sendY).setDuration(0).alpha(0).start();
         }).start();
 
         textHint.setVisibility(View.VISIBLE);
+        showPagerElements();
     }
 
     private boolean send() throws JniException, JSONException {
@@ -523,7 +528,19 @@ public class MagicSendActivity extends BaseActivity {
             socketManager.disconnect();
         }
         Analytics.getInstance(this).logEvent(AnalyticsConstants.KF_TRANSACTION_SUCCESS, AnalyticsConstants.KF_TRANSACTION_SUCCESS, String.valueOf(true));
-        new CompleteDialogFragment().show(getSupportFragmentManager(), "");
+
+        LottieAnimationView animationView = receiversPagerAdapter.getAnimationView(pagerRequests.getCurrentItem());
+
+        if (animationView != null && animationView.isAnimating()) {
+            animationView.addAnimatorListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    new CompleteDialogFragment().show(getSupportFragmentManager(), "");
+                }
+            });
+        } else {
+            new CompleteDialogFragment().show(getSupportFragmentManager(), "");
+        }
     }
 
     private void showError(Exception e) {
@@ -538,7 +555,7 @@ public class MagicSendActivity extends BaseActivity {
 
     private void bringViewsBack() {
         final float yTo = textScanning.getY();
-        hideSendGroup();
+        hideSendState();
         containerSend.animate().translationYBy(yTo).alpha(1).setDuration(0).start();
     }
 
@@ -546,6 +563,7 @@ public class MagicSendActivity extends BaseActivity {
         final float yTo = textScanning.getY();
         containerSend.animate().translationY(-yTo)
                 .withEndAction(() -> {
+                    containerSend.setVisibility(View.INVISIBLE);
                     bringViewsBack();
                     receiversPagerAdapter.showElements(pagerRequests.getCurrentItem());
                     walletPagerAdapter.showElements(pagerWallets.getCurrentItem());

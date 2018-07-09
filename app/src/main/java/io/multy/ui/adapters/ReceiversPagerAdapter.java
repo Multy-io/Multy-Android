@@ -14,6 +14,8 @@ import android.support.v4.view.PagerAdapter;
 import android.util.SparseArray;
 import android.view.ViewGroup;
 
+import com.airbnb.lottie.LottieAnimationView;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -118,6 +120,15 @@ public class ReceiversPagerAdapter extends FragmentStatePagerAdapter {
         if (fragment != null) {
             fragment.animateSuccess();
         }
+    }
+
+    public LottieAnimationView getAnimationView(int position) {
+        FastReceiverFragment fragment = getFragment(position);
+        if (fragment != null) {
+            return fragment.getAnimationView();
+        }
+
+        return null;
     }
 
     public void setGreenState(int position) {

@@ -8,6 +8,7 @@ package io.multy.ui.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +38,7 @@ public class FastWalletFragment extends Fragment {
     private Wallet wallet;
     private View.OnTouchListener listener;
     private long walletId = -1;
+    private float startX = 0;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ViewGroup convertView = (ViewGroup) inflater.inflate(R.layout.fragment_fast_wallet, container, false);
@@ -58,11 +60,8 @@ public class FastWalletFragment extends Fragment {
         textBalance.setText(wallet.getBalanceLabel());
         textBalanceFiat.setText(wallet.getFiatBalanceLabel());
         imageLogo.setImageResource(wallet.getIconResourceId());
-
-        rootView.setOnClickListener(v -> {
-            v.setTag(walletId);
-            rootView.setOnTouchListener(listener);
-        });
+        rootView.setTag(walletId);
+        rootView.setOnTouchListener(listener);
     }
 
     public void setWalletId(long walletId) {
@@ -78,18 +77,24 @@ public class FastWalletFragment extends Fragment {
     }
 
     public void hideRight() {
+        if (startX == 0) {
+            startX = rootView.getTranslationX();
+        }
         rootView.animate().translationXBy(rootView.getWidth()).setDuration(100).start();
     }
 
     public void hideLeft() {
+        if (startX == 0) {
+            startX = rootView.getTranslationX();
+        }
         rootView.animate().translationXBy(-rootView.getWidth()).setDuration(100).start();
     }
 
     public void showRight() {
-        rootView.animate().translationXBy(-rootView.getWidth()).setDuration(100).start();
+        rootView.animate().translationX(startX).setDuration(100).start();
     }
 
     public void showLeft() {
-        rootView.animate().translationXBy(rootView.getWidth()).setDuration(100).start();
+        rootView.animate().translationX(startX).setDuration(100).start();
     }
 }
