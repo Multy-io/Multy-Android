@@ -237,4 +237,6 @@
     <string name="shure_delete_address">Видалити адресу з контакту?</string>
     <string name="delete">Видалення</string>
     <string name="shure_delete_contact">Видалити контакт?</string>
+    <string name="add_to_contact">Призначити контакту</string>
+    <string name="address_not_match">Адресу не підходить для обраного блокчейна</string>
 </resources>

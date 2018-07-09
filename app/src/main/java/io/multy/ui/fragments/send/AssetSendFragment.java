@@ -105,6 +105,7 @@ public class AssetSendFragment extends BaseFragment implements RecentAddressesAd
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CONTACT && resultCode == Activity.RESULT_OK && data != null) {
             setArguments(data.getExtras());
+            setAddressAndNext(data.getStringExtra(Constants.EXTRA_ADDRESS));
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
@@ -112,9 +113,7 @@ public class AssetSendFragment extends BaseFragment implements RecentAddressesAd
 
     @Override
     public void onClickRecentAddress(String address) {
-        inputAddress.setText(address);
-        inputAddress.setSelection(inputAddress.length());
-        inputAddress.postDelayed(this::onClickNext, 300);
+        setAddressAndNext(address);
     }
 
     @Override
@@ -127,6 +126,12 @@ public class AssetSendFragment extends BaseFragment implements RecentAddressesAd
         })
                 .show(getChildFragmentManager(), AddressActionsDialogFragment.TAG);
         return true;
+    }
+
+    private void setAddressAndNext(String address) {
+        inputAddress.setText(address);
+        inputAddress.setSelection(inputAddress.length());
+        inputAddress.postDelayed(this::onClickNext, 300);
     }
 
     private void setupInputAddress() {
@@ -202,7 +207,7 @@ public class AssetSendFragment extends BaseFragment implements RecentAddressesAd
         fragment.setTargetFragment(this, REQUEST_CONTACT);
         if (getActivity() != null && getView() != null) {
             getActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(((View) getView().getParent()).getId(), fragment, ContactsFragment.TAG)
+                    .replace(R.id.container_full, fragment, ContactsFragment.TAG)
                     .addToBackStack(ContactsFragment.TAG)
                     .commit();
         }

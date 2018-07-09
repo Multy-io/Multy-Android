@@ -165,7 +165,7 @@ public class ContactDialog extends BottomSheetDialogFragment implements DialogIn
             if (isValidData(address, chainId, netId)) {
                 addAddressToContact(view.getContext(), address, chainId, netId, imgId);
             } else {
-                Toast.makeText(getContext(), "Incorrect input!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.address_not_match, Toast.LENGTH_SHORT).show();
             }
         }
     }
