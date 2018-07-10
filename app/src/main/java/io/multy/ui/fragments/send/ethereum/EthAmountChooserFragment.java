@@ -14,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.Group;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.SwitchCompat;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -60,7 +61,7 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
     @BindView(R.id.group_send)
     Group groupSend;
     @BindView(R.id.input_balance_original)
-    EditText inputOriginal;
+    AppCompatEditText inputOriginal;
     @BindView(R.id.input_balance_currency)
     EditText inputCurrency;
     @BindView(R.id.text_spendable)
@@ -86,6 +87,9 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
     private BigDecimal spendableWei;
     private double transactionPriceEth;
 
+    private TextWatcher textWatcherOriginal;
+    private TextWatcher textWatcherFiat;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,6 +113,7 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
                     .getWalletById(getActivity().getIntent().getExtras().getLong(Constants.EXTRA_WALLET_ID, -1)));
         }
 
+        initWatchers();
         subscribeToUpdates();
         setupSwitcher();
         initSpendable();
@@ -235,15 +240,24 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
 //        }
         switcher.setChecked(false);
 
-        String maxSpendableEth = CryptoFormatUtils.FORMAT_ETH.format(initSpendable());
-        if (maxSpendableEth.contains(",")) {
-            maxSpendableEth = maxSpendableEth.replaceAll(",", ".");
-        }
+        disableInputsListeners();
+        final String maxSpendableEth = getMaxSpendableEth();
 
         inputOriginal.setText(maxSpendableEth);
         inputOriginal.setSelection(maxSpendableEth.length());
         inputCurrency.setText(CryptoFormatUtils.ethToUsd(Double.parseDouble(maxSpendableEth)));
         setMaxAmountToSpend();
+
+        enableInputsListeners();
+    }
+
+    private String getMaxSpendableEth() {
+        String maxSpendableEth = CryptoFormatUtils.FORMAT_ETH.format(initSpendable());
+        if (maxSpendableEth.contains(",")) {
+            maxSpendableEth = maxSpendableEth.replaceAll(",", ".");
+        }
+
+        return maxSpendableEth;
     }
 
     private void animateOriginalBalance() {
@@ -293,36 +307,11 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
         viewModel.setAmount(Double.parseDouble(sum));
     }
 
-    @SuppressLint("ClickableViewAccessibility")
-    private void setupInputEth() {
-        if (viewModel.getAmount() != 0) {
-            inputOriginal.setText(NumberFormatter.getInstance().format(viewModel.getAmount()));
-        }
-
-        inputOriginal.setOnTouchListener((v, event) -> {
-            inputOriginal.setSelection(inputOriginal.getText().length());
-            if (!inputOriginal.hasFocus()) {
-                inputOriginal.requestFocus();
-                return true;
-            }
-            showKeyboard(getActivity(), v);
-            Analytics.getInstance(getActivity()).logSendChooseAmount(AnalyticsConstants.SEND_AMOUNT_CRYPTO, viewModel.getChainId());
-            return true;
-        });
-
-        inputOriginal.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
-                EthAmountChooserFragment.this.animateOriginalBalance();
-                inputOriginal.setSelection(inputOriginal.getText().length());
-                showTotalSum(inputOriginal.getText().toString());
-                buttonClearOriginal.setVisibility(View.VISIBLE);
-                buttonClearCurrency.setVisibility(View.GONE);
-            }
-        });
-
-        inputOriginal.addTextChangedListener(new TextWatcher() {
+    private void initWatchers() {
+        textWatcherOriginal = new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -339,7 +328,7 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
                         inputCurrency.getText().clear();
                         inputOriginal.getText().clear();
                     }
-                    checkMaxLengthAfterPoint(inputOriginal, 9, i, i2);
+                    checkMaxLengthAfterPoint(inputOriginal, 10, i, i2);
                     checkMaxLengthBeforePoint(inputOriginal, 6, i, i1, i2);
                 }
             }
@@ -350,36 +339,9 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
                     checkForPointAndZeros(editable.toString(), inputOriginal);
                 }
             }
-        });
-    }
+        };
 
-    private void setupInputFiat() {
-        if (viewModel.getAmount() != 0) {
-            inputCurrency.setText(NumberFormatter.getFiatInstance().format(viewModel.getAmount() * currenciesRate.getBtcToUsd()));
-        }
-
-        inputCurrency.setOnTouchListener((v, event) -> {
-            inputCurrency.setSelection(inputCurrency.getText().length());
-            if (!inputCurrency.hasFocus()) {
-                inputCurrency.requestFocus();
-                return true;
-            }
-            showKeyboard(getActivity(), v);
-            Analytics.getInstance(getActivity()).logSendChooseAmount(AnalyticsConstants.SEND_AMOUNT_FIAT, viewModel.getChainId());
-            return true;
-        });
-
-        inputCurrency.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
-                animateCurrencyBalance();
-                inputCurrency.setSelection(inputCurrency.getText().length());
-                showTotalSum(inputCurrency.getText().toString());
-                buttonClearOriginal.setVisibility(View.GONE);
-                buttonClearCurrency.setVisibility(View.VISIBLE);
-            }
-        });
-
-        inputCurrency.addTextChangedListener(new TextWatcher() {
+        textWatcherFiat = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -417,7 +379,76 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
                     checkForPointAndZeros(editable.toString(), inputCurrency);
                 }
             }
+        };
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void setupInputEth() {
+        if (viewModel.getAmount() != 0) {
+            inputOriginal.setText(NumberFormatter.getInstance().format(viewModel.getAmount()));
+        }
+
+        inputOriginal.setOnTouchListener((v, event) -> {
+            inputOriginal.setSelection(inputOriginal.getText().length());
+            if (!inputOriginal.hasFocus()) {
+                inputOriginal.requestFocus();
+                return true;
+            }
+            showKeyboard(getActivity(), v);
+            Analytics.getInstance(getActivity()).logSendChooseAmount(AnalyticsConstants.SEND_AMOUNT_CRYPTO, viewModel.getChainId());
+            return true;
         });
+
+        inputOriginal.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                EthAmountChooserFragment.this.animateOriginalBalance();
+                inputOriginal.setSelection(inputOriginal.getText().length());
+                showTotalSum(inputOriginal.getText().toString());
+                buttonClearOriginal.setVisibility(View.VISIBLE);
+                buttonClearCurrency.setVisibility(View.GONE);
+            }
+        });
+
+        inputOriginal.addTextChangedListener(textWatcherOriginal);
+    }
+
+    private void setupInputFiat() {
+        if (viewModel.getAmount() != 0) {
+            inputCurrency.setText(NumberFormatter.getFiatInstance().format(viewModel.getAmount() * currenciesRate.getBtcToUsd()));
+        }
+
+        inputCurrency.setOnTouchListener((v, event) -> {
+            inputCurrency.setSelection(inputCurrency.getText().length());
+            if (!inputCurrency.hasFocus()) {
+                inputCurrency.requestFocus();
+                return true;
+            }
+            showKeyboard(getActivity(), v);
+            Analytics.getInstance(getActivity()).logSendChooseAmount(AnalyticsConstants.SEND_AMOUNT_FIAT, viewModel.getChainId());
+            return true;
+        });
+
+        inputCurrency.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                animateCurrencyBalance();
+                inputCurrency.setSelection(inputCurrency.getText().length());
+                showTotalSum(inputCurrency.getText().toString());
+                buttonClearOriginal.setVisibility(View.GONE);
+                buttonClearCurrency.setVisibility(View.VISIBLE);
+            }
+        });
+
+        inputCurrency.addTextChangedListener(textWatcherFiat);
+    }
+
+    private void disableInputsListeners() {
+        inputOriginal.removeTextChangedListener(textWatcherOriginal);
+        inputCurrency.removeTextChangedListener(textWatcherFiat);
+    }
+
+    private void enableInputsListeners() {
+        inputOriginal.addTextChangedListener(textWatcherOriginal);
+        inputCurrency.addTextChangedListener(textWatcherFiat);
     }
 
     /**

@@ -26,10 +26,6 @@ import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.WalletViewModel;
 
-/**
- * Created by anschutz1927@gmail.com on 07.12.17.
- */
-
 public class AssetSettingsFragment extends BaseFragment {
 
     public static final String TAG = AssetSettingsFragment.class.getSimpleName();
@@ -104,6 +100,7 @@ public class AssetSettingsFragment extends BaseFragment {
                 return;
             }
             viewModel.isLoading.setValue(false);
+            ((AssetActivity) getActivity()).setWalletName(inputName.getText().toString());
             if (getActivity() != null) {
                 getActivity().onBackPressed();
             }

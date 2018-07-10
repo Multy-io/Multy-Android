@@ -121,6 +121,16 @@ public class AssetActivity extends BaseActivity {
         super.onBackPressed();
     }
 
+    public void setWalletName(String name) {
+        List<Fragment> backStackFragments = getSupportFragmentManager().getFragments();
+        for (Fragment backStackFragment : backStackFragments) {
+            if (backStackFragment instanceof AssetInfoFragment) {
+                ((AssetInfoFragment) backStackFragment).setWalletName(name);
+                break;
+            }
+        }
+    }
+
     private void logCancel() {
         List<Fragment> backStackFragments = getSupportFragmentManager().getFragments();
         for (Fragment backStackFragment : backStackFragments) {

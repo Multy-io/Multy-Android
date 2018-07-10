@@ -420,7 +420,11 @@ public class MagicSendActivity extends BaseActivity {
             case ETH:
                 amount = CryptoFormatUtils.weiToEthLabel(receiver.getAmount());
                 amountFiat = CryptoFormatUtils.weiToUsd(new BigInteger(receiver.getAmount())) + " " + CurrencyCode.USD.name();
-                coinResId = receiver.getNetworkId() == NativeDataHelper.NetworkId.RINKEBY.getValue() ? R.drawable.ic_coin_eth_test : R.drawable.ic_coin_eth_test;
+                if (receiver.getNetworkId() == NativeDataHelper.NetworkId.RINKEBY.getValue()) {
+                    coinResId = R.drawable.ic_coin_eth_test;
+                } else if (receiver.getNetworkId() == NativeDataHelper.NetworkId.ETH_MAIN_NET.getValue()) {
+                    coinResId = R.drawable.ic_eth_medium_icon;
+                }
                 break;
         }
 
