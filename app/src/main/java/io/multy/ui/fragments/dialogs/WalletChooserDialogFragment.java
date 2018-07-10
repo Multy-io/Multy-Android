@@ -36,9 +36,16 @@ public class WalletChooserDialogFragment extends DialogFragment {
 
     public static final String ARG_PAYABLE = "arg_payable";
 
+    private boolean isMainNet = false;
+
     public static WalletChooserDialogFragment newInstance() {
-        WalletChooserDialogFragment walletChooserDialogFragment = new WalletChooserDialogFragment();
         return new WalletChooserDialogFragment();
+    }
+
+    public static WalletChooserDialogFragment newInstance(boolean mainNet) {
+        WalletChooserDialogFragment walletChooserDialogFragment = new WalletChooserDialogFragment();
+        walletChooserDialogFragment.setMainNet(mainNet);
+        return walletChooserDialogFragment;
     }
 
     @BindView(R.id.recycler_view)
@@ -92,10 +99,15 @@ public class WalletChooserDialogFragment extends DialogFragment {
         for (Wallet walletRealmObject : RealmManager.getAssetsDao().getWallets()) {
             if (walletRealmObject.isPayable() &&
                     Long.valueOf(walletRealmObject.getAvailableBalance()) > 150 &&
-                    walletRealmObject.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()
-//                    && walletRealmObject.getNetworkId() == NativeDataHelper.NetworkId.MAIN_NET.getValue()
-                    ) {
-                wallets.add(walletRealmObject);
+                    walletRealmObject.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()) {
+                if (isMainNet) {
+                    if (walletRealmObject.getNetworkId() == NativeDataHelper.NetworkId.MAIN_NET.getValue()) {
+                        wallets.add(walletRealmObject);
+
+                    }
+                } else {
+                    wallets.add(walletRealmObject);
+                }
             }
         }
 
@@ -105,5 +117,13 @@ public class WalletChooserDialogFragment extends DialogFragment {
     @OnClick(R.id.button_back)
     void onClickBack() {
         dismiss();
+    }
+
+    public boolean isMainNet() {
+        return isMainNet;
+    }
+
+    public void setMainNet(boolean mainNet) {
+        isMainNet = mainNet;
     }
 }

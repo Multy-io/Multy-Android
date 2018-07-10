@@ -449,7 +449,6 @@ public class MagicSendActivity extends BaseActivity {
         selectedWalletId = walletPagerAdapter.getSelectedWalletId(pagerWallets.getCurrentItem());
         hidePagerElements();
         setupSendGroup();
-
     }
 
     private void hideSendState() {
@@ -462,6 +461,7 @@ public class MagicSendActivity extends BaseActivity {
 
         textHint.setVisibility(View.VISIBLE);
         showPagerElements();
+        handler.postDelayed(updateReceiversAction, UPDATE_PERIOD / 5);
     }
 
     private boolean send() throws JniException, JSONException {
