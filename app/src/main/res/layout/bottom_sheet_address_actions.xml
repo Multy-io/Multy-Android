@@ -124,7 +124,7 @@
         android:focusable="true"
         android:gravity="center_vertical"
         android:paddingStart="16dp"
-        android:text="Add to contact"
+        android:text="@string/add_to_contact"
         android:textColor="@color/black_light"
         android:textSize="16sp"
         android:lineSpacingExtra="8sp"

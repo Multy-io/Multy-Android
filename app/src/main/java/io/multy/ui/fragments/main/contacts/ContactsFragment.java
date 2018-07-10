@@ -65,6 +65,8 @@ public class ContactsFragment extends BaseFragment implements ContactAdapter.OnC
     RecyclerView recyclerView;
     @BindView(R.id.button_add)
     View buttonAdd;
+    @BindView(R.id.button_back)
+    View buttonBack;
 
     private ContactsViewModel viewModel;
     private ContactAdapter contactAdapter;
@@ -232,6 +234,7 @@ public class ContactsFragment extends BaseFragment implements ContactAdapter.OnC
         viewModel.getNotifyData().observe(this, b -> contactAdapter.notifyData());
         if (getTargetFragment() != null) {
             buttonAdd.setVisibility(View.GONE);
+            buttonBack.setVisibility(View.VISIBLE);
         }
     }
 
@@ -263,6 +266,11 @@ public class ContactsFragment extends BaseFragment implements ContactAdapter.OnC
         } else {
             requestPermissions();
         }
+    }
+
+    @OnClick(R.id.button_back)
+    void onClick() {
+        getActivity().onBackPressed();
     }
 
 //    @OnClick(R.id.button_delete)

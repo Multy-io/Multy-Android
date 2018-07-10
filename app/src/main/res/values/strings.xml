@@ -312,6 +312,8 @@
     <string name="shure_delete_address">Are you sure want to delete selected address?</string>
     <string name="delete">Delete</string>
     <string name="shure_delete_contact">Are you sure want to delete selected contact?</string>
+    <string name="add_to_contact">Add to contact</string>
+    <string name="address_not_match">The address does not match the selected blockchain</string>
     <string name="user_joined">Users joined</string>
     <string name="invitation_code">Invitation Code</string>
 </resources>
