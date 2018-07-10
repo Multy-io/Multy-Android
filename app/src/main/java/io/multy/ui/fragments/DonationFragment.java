@@ -335,7 +335,7 @@ public class DonationFragment extends BaseFragment {
 
     @OnClick(R.id.button_wallet)
     void onClickWallet() {
-        WalletChooserDialogFragment walletChooser = WalletChooserDialogFragment.newInstance();
+        WalletChooserDialogFragment walletChooser = WalletChooserDialogFragment.newInstance(true);
         walletChooser.setOnWalletClickListener(wallet -> pickWallet(wallet.getId()));
         walletChooser.show(getFragmentManager(), "");
     }
