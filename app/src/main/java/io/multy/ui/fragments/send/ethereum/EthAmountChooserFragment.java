@@ -414,7 +414,7 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
 
     private void setupInputFiat() {
         if (viewModel.getAmount() != 0) {
-            inputCurrency.setText(NumberFormatter.getFiatInstance().format(viewModel.getAmount() * currenciesRate.getBtcToUsd()));
+            inputCurrency.setText(NumberFormatter.getFiatInstance().format(viewModel.getAmount() * currenciesRate.getEthToUsd()));
         }
 
         inputCurrency.setOnTouchListener((v, event) -> {
