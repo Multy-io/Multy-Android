@@ -20,6 +20,7 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,13 +37,16 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.api.MultyApi;
+import io.multy.model.entities.Output;
 import io.multy.model.entities.wallet.Wallet;
+import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.events.TransactionUpdateEvent;
 import io.multy.model.responses.SingleWalletResponse;
 import io.multy.storage.AssetsDao;
@@ -175,10 +179,10 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     private void updateBalanceViews() {
         Wallet wallet = viewModel.getWalletLive().getValue();
 
-        textBalance.setText(wallet.getBalanceLabel());
-        textBalanceFiat.setText(wallet.getFiatBalanceLabel());
-
         if (wallet.isPending()) {
+            textBalance.setText(wallet.getAvailableBalanceLabel());
+            textBalanceFiat.setText(wallet.getAvailableFiatBalanceLabel());
+
             containerPending.expand();
             if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()) {
                 textPendingBalance.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(wallet.getPendingBalance().longValue())));
@@ -188,6 +192,8 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
                 textPendingBalanceFiat.setText(wallet.getEthWallet().getFiatPendingBalanceLabel());
             }
         } else {
+            textBalance.setText(wallet.getBalanceLabel());
+            textBalanceFiat.setText(wallet.getFiatBalanceLabel());
             containerPending.collapse();
         }
     }
@@ -226,6 +232,10 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
                 t.printStackTrace();
             }
         });
+    }
+
+    public void setWalletName(String name) {
+        textWalletName.setText(name);
     }
 
     private void requestTransactions(final int currencyId, final int networkId, final int walletIndex) {

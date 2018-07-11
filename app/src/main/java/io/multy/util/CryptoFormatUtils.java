@@ -8,6 +8,7 @@ package io.multy.util;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
@@ -20,7 +21,7 @@ public class CryptoFormatUtils {
 
     private final static DecimalFormatSymbols symbols = getSymbols();
     public final static DecimalFormat FORMAT_BTC = new DecimalFormat("#.##################", symbols);
-    public final static DecimalFormat FORMAT_ETH = new DecimalFormat("#.##########", symbols);
+    public final static DecimalFormat FORMAT_ETH = new DecimalFormat("#.########", symbols);
     public final static DecimalFormat FORMAT_USD = new DecimalFormat("#.##", symbols);
 
     public static String satoshiToBtc(long satoshi) {
@@ -142,7 +143,7 @@ public class CryptoFormatUtils {
     }
 
     public static String weiToEthLabel(String wei) {
-        return wei.equals("0") ? "0" : FORMAT_ETH.format(new BigDecimal(wei).divide(EthWallet.DIVISOR).doubleValue()) + " ETH";
+        return wei.equals("0") ? "0 ETH" : FORMAT_ETH.format(new BigDecimal(wei).divide(EthWallet.DIVISOR).doubleValue()) + " ETH";
     }
 
     public static String ethToWei(String eth) {
@@ -158,7 +159,7 @@ public class CryptoFormatUtils {
     }
 
     public static String ethToUsd(double eth) {
-        String result = "0.0";
+        String result = "$0.0";
 
         final CurrenciesRate currenciesRate = RealmManager.getSettingsDao().getCurrenciesRate();
         if (currenciesRate != null && eth != 0) {

@@ -48,7 +48,7 @@ public class WalletDeserializer implements JsonDeserializer<List<Wallet>> {
                         break;
                     case BTC:
                         BtcWallet btcWallet = gson.fromJson(jsonItemString, BtcWallet.class);
-                        btcWallet.calculateAvailableBalance();
+                        wallet.setAvailableBalance(String.valueOf(btcWallet.calculateAvailableBalance()));
                         wallet.setBalance(String.valueOf(btcWallet.calculateBalance()));
                         wallet.setBtcWallet(btcWallet);
                         break;

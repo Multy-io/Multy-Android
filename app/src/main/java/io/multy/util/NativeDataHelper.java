@@ -27,7 +27,7 @@ public class NativeDataHelper {
     }
 
     public enum Blockchain {
-//        BTC(0x80000000),
+        //        BTC(0x80000000),
 //        ETH(0x8000003c);
         BTC(0),
         ETH(60);
@@ -55,9 +55,11 @@ public class NativeDataHelper {
         }
     }
 
+    //TODO make own network ids for each chain
     public enum NetworkId {
         MAIN_NET(0),
         TEST_NET(1),
+        ETH_MAIN_NET(1),
         RINKEBY(4);
 
         private final int value;

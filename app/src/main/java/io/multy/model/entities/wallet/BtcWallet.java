@@ -57,10 +57,6 @@ public class BtcWallet extends RealmObject {
         this.addressIndex = addressIndex;
     }
 
-    public long getAvailableBalance() {
-        return availableBalance;
-    }
-
     public void setAvailableBalance(long availableBalance) {
         this.availableBalance = availableBalance;
     }
@@ -93,7 +89,7 @@ public class BtcWallet extends RealmObject {
     }
 
     public long calculateAvailableBalance() {
-        availableBalance = 0;
+        long availableBalance = 0;
         for (WalletAddress walletAddress : addresses) {
             if (walletAddress.getOutputs() != null) {
                 for (Output output : walletAddress.getOutputs()) {
