@@ -211,6 +211,7 @@
     <string name="select_wallet_donation">Виберіть гаманець і суму пожертви</string>
     <string name="wallet">Гаманець</string>
     <string name="custom_fee">Комісія користувача</string>
+    <string name="address">Адреса</string>
     <string name="error_donation">Помилка при відправці пожертви</string>
     <string name="error_donation_message">Неможливо відправити пожертву. Будь ласка, перевірте, що сума пожертви більше 5000 сатоши, і наявність необхідного балансу на гаманці.</string>
     <string name="check_connection">Перевірте з\'єднання</string>
@@ -233,7 +234,7 @@
     <string name="magic_send">Магічна відправка</string>
     <string name="push_new_transaction_notification">Ви отримали траназкцію на суму %s</string>
     <string name="you_have_transaction">У вас є нова входить транзакція</string>
-    <string name="address_bind">Обраний адреса вже доданий іншого контакту!</string>
+    <string name="address_bind">Обраний адреса вже доданий до контакту!</string>
     <string name="shure_delete_address">Видалити адресу з контакту?</string>
     <string name="delete">Видалення</string>
     <string name="shure_delete_contact">Видалити контакт?</string>

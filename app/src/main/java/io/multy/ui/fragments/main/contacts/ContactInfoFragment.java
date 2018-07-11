@@ -37,6 +37,7 @@ import io.multy.ui.fragments.dialogs.ContactDialog;
 import io.multy.ui.fragments.send.AssetSendFragment;
 import io.multy.util.Constants;
 import io.multy.util.ContactUtils;
+import io.multy.util.analytics.Analytics;
 import io.multy.viewmodels.ContactsViewModel;
 
 /**
@@ -91,6 +92,14 @@ public class ContactInfoFragment extends BaseFragment implements ContactAddresse
     }
 
     @Override
+    public void onResume() {
+        if (contact != null && (!contact.isLoaded() || !contact.isValid() || !contact.isManaged()) && getActivity() != null) {
+            getActivity().onBackPressed();
+        }
+        super.onResume();
+    }
+
+    @Override
     public void onDestroyView() {
         if (!parentStartVisibility && getView() != null) {
             ((View) getView().getParent()).setVisibility(View.GONE);
@@ -109,11 +118,12 @@ public class ContactInfoFragment extends BaseFragment implements ContactAddresse
             AddressActionsDialogFragment.getInstance(contactAddress.getAddress(), contactAddress.getCurrencyId(),
                     contactAddress.getNetworkId(), contactAddress.getCurrencyImgId(), false);
         }
+        Analytics.getInstance(getContext()).logContactAddressSelected();
     }
 
     @Override
     public boolean onLongClickAddress(String address, int currencyId, int networkId) {
-        if (getContext() != null) {
+        if (getContext() != null && contact.isManaged() && contact.isValid()) {
             AlertDialog dialog = new AlertDialog.Builder(getContext())
                     .setTitle(R.string.delete)
                     .setMessage(R.string.shure_delete_address)
@@ -121,6 +131,7 @@ public class ContactInfoFragment extends BaseFragment implements ContactAddresse
                         ContactUtils.deleteMultyAddress(getContext(), address, currencyId, networkId, this::notifyData);
                         dialog1.dismiss();
                         viewModel.setNotifyData(true);
+                        Analytics.getInstance(getContext()).logContactAddressDeleted();
                     }).setNegativeButton(R.string.no, ((dialog1, which) -> dialog1.dismiss()))
                     .setCancelable(true)
                     .create();
@@ -147,7 +158,11 @@ public class ContactInfoFragment extends BaseFragment implements ContactAddresse
 
     private void notifyData() {
         contact = RealmManager.getSettingsDao().getContact(contactId);
-        addressesAdapter.setData(contact.getAddresses());
+        if (contact != null) {
+            addressesAdapter.setData(contact.getAddresses());
+        } else if (getActivity() != null) {
+            getActivity().onBackPressed();
+        }
     }
 
     @OnClick(R.id.button_back)

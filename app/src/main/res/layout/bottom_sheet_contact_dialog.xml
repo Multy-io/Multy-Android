@@ -28,7 +28,13 @@
             android:id="@+id/input_address"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+            android:gravity="center_vertical"
             android:hint="@string/address"
+            android:imeOptions="actionDone"
+            android:inputType="textNoSuggestions"
+            android:maxLines="2"
+            android:minLines="2"
             tools:text="adadasdadad" />
     </android.support.design.widget.TextInputLayout>
 

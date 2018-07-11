@@ -65,7 +65,7 @@ public class ContactUtils {
 
     public static void logCursor(Cursor cursor) {
         Log.i(ContactUtils.class.getSimpleName(), "Cursor size = " + String.valueOf(cursor.getCount()));
-        if (cursor.getCount() > 0) {
+        if (cursor.moveToFirst()) {
             do {
                 for (String column : cursor.getColumnNames()) {
                     int index = cursor.getColumnIndex(column);
@@ -228,20 +228,71 @@ public class ContactUtils {
         }
     }
 
-    public static void updateContactName(Context context, String rawMultyContactId, String name, String family, String displayName) {
-//        ArrayList<ContentProviderOperation> operations = new ArrayList<>();
-//        String selection = ContactsContract.Data.RAW_CONTACT_ID + " = ? AND " +
-//                ;
-//        String[] args;
-//        operations.add(ContentProviderOperation.newUpdate(buildSyncAdapterUri(ContactsContract.Data.CONTENT_URI))
-//                .withSelection(selection, args)
-//                .withValue()
-//                .build());
-//        try {
-//            context.getContentResolver().applyBatch(ContactsContract.AUTHORITY, operations);
-//        } catch (RemoteException | OperationApplicationException e) {
-//            e.printStackTrace();
+    public static boolean renameMultyContact(Context context, String rawMultyContactId, String name, String family, String displayName) {
+        ArrayList<ContentProviderOperation> operations = new ArrayList<>();
+//        {
+//            String[] args = new String[] {rawMultyContactId};
+//            String selection = ContactsContract.RawContacts._ID + " = ?";
+//            operations.add(ContentProviderOperation.newUpdate(buildSyncAdapterUri(ContactsContract.RawContacts.CONTENT_URI))
+//                    .withSelection(selection, args)
+//                    .withValue(ContactsContract.RawContacts.DIRTY, "0")
+//                    .build());
 //        }
+        {
+            String selection = ContactsContract.Data.RAW_CONTACT_ID + " = ? AND " +
+                    ContactsContract.Data.MIMETYPE + " = ? ";
+            String[] args = new String[] {
+                rawMultyContactId,
+                ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE
+            };
+            operations.add(ContentProviderOperation.newUpdate(buildSyncAdapterUri(ContactsContract.Data.CONTENT_URI))
+                    .withSelection(selection, args)
+                    .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, displayName)
+                    .withValue(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME, name)
+                    .withValue(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME, family)
+                    .build());
+        }
+        try {
+            ContentProviderResult[] results = context.getContentResolver().applyBatch(ContactsContract.AUTHORITY, operations);
+            Log.i(ContactUtils.class.getSimpleName(), "apply batch result :");
+            String resultString = "";
+            for (ContentProviderResult result : results) {
+                resultString = resultString.concat(result.toString()).concat("_");
+            }
+            Log.i(ContactUtils.class.getSimpleName(), resultString);
+            return true;
+        } catch (RemoteException | OperationApplicationException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public static boolean updateMultyPhoto(Context context, String rawMultyContactId, String photoUri, String photoThumbnailUri) {
+        ArrayList<ContentProviderOperation> operations = new ArrayList<>();
+        String selection = ContactsContract.Data.RAW_CONTACT_ID + " = ? AND " +
+                ContactsContract.Data.MIMETYPE + " = ? ";
+        String[] args = new String[] {
+                rawMultyContactId,
+                ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE
+        };
+        operations.add(ContentProviderOperation.newUpdate(buildSyncAdapterUri(ContactsContract.Data.CONTENT_URI))
+                .withSelection(selection, args)
+                .withValue(ContactsContract.CommonDataKinds.Photo.PHOTO_URI, photoUri)
+                .withValue(ContactsContract.CommonDataKinds.Photo.PHOTO_THUMBNAIL_URI, photoThumbnailUri)
+                .build());
+        try {
+            ContentProviderResult[] results = context.getContentResolver().applyBatch(ContactsContract.AUTHORITY, operations);
+            Log.i(ContactUtils.class.getSimpleName(), "apply batch result :");
+            String resultString = "";
+            for (ContentProviderResult result : results) {
+                resultString = resultString.concat(result.toString()).concat("_");
+            }
+            Log.i(ContactUtils.class.getSimpleName(), resultString);
+            return true;
+        } catch (RemoteException | OperationApplicationException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public static void deleteMultyAddress(Context context, String address, int currencyId,
@@ -345,5 +396,9 @@ public class ContactUtils {
             return rawId;
         }
         return null;
+    }
+
+    public static String getFormattedAddressString(int currencyId, String address) {
+        return NativeDataHelper.Blockchain.valueOf(currencyId).name().concat(" ").concat(address);
     }
 }

@@ -20,12 +20,14 @@ import butterknife.ButterKnife;
 import io.multy.R;
 import io.multy.model.entities.Contact;
 import io.multy.storage.RealmManager;
+import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 
 /**
  * Created by anschutz1927@gmail.com on 21.06.18.
  */
-public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Holder> {
+public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Holder>
+        implements RealmChangeListener<RealmResults<Contact>>{
 
     private final OnClickListener listener;
     private RealmResults<Contact> contacts;
@@ -57,9 +59,22 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Holder> 
         return contacts == null ? 0 : contacts.size();
     }
 
+    @Override
+    public void onChange(RealmResults<Contact> contacts) {
+        notifyData();
+    }
+
     public void notifyData() {
+        if (contacts != null) {
+            contacts.removeAllChangeListeners();
+        }
         contacts = RealmManager.getSettingsDao().getContacts();
+        contacts.addChangeListener(this);
         notifyDataSetChanged();
+    }
+
+    public void removeRealmListener() {
+        contacts.removeAllChangeListeners();
     }
 
     public class Holder extends RecyclerView.ViewHolder {

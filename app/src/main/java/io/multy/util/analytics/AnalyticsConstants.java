@@ -250,6 +250,15 @@ public class AnalyticsConstants {
     //donation success screen
     public static final String DONATION_SUCCESS_SCREEN = "Screen_Donation_Success";
 
+    //contacts events
+    public static final String CONTACT_EVENT = "Contact_Events";
+    public static final String CONTACT_ADDED = "Contact_Added";
+    public static final String CONTACT_DELETED = "Contact_Deleted";
+    public static final String CONTACT_ADDRESS_ADDED = "Address_Added";
+    public static final String CONTACT_ADDRESS_DELETED = "Address_Deleted";
+    public static final String CONTACT_ADDRESS_SELECTED = "Address_Selected";
+    public static final String CONTACT_PHONEBOOK_OPENED = "Phone_Contacts_Opened";
+
     public static final String KF_TRANSACTION_ERROR = "KF_Transaction_Error";
     public static final String KF_TRANSACTION_SUCCESS = "KF_Transaction_Success";
     public static final String KF_FOUND_DEVICES = "KF_Found_Devices";

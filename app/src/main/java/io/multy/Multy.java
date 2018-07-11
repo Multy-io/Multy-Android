@@ -77,6 +77,11 @@ public class Multy extends Application {
 
     @Nullable
     public static RealmConfiguration getRealmConfiguration() {
+        return getRealmConfiguration(context);
+    }
+
+    @Nullable
+    public static RealmConfiguration getRealmConfiguration(Context context) {
         String key = SecurePreferencesHelper.getString(context, Constants.PREF_KEY);
 
         try {

@@ -42,7 +42,7 @@
     <string name="DONATE">Пожертвовать</string>
     <string name="you_are_have_no_wallets">У вас еще нет кошельков. Пожалуйста, создайте хотя бы один.</string>
     <string name="create_or_import_new_wallet">Создать или импортировать новый кошелек</string>
-    <string name="create_new">Создавать Новый</string>
+    <string name="create_new">Создать Новый</string>
     <string name="import_wallet">Импортировать кошелек</string>
     <string name="feature_challenge">Голосуй криптой</string>
     <string name="feature_challenge_message">Мы хотим узнать ваше мнение. Проголосовав за функционал, вы даете нам знать, что он важен, и одновременно поддерживаете разработчиков проекта. Ваш голос поможет нам выбрать правильный путь.</string>
@@ -211,6 +211,7 @@
     <string name="select_wallet_donation">Выберите кошелек и сумму пожертвования</string>
     <string name="wallet">Кошелек</string>
     <string name="custom_fee">Пользовательская комиссия</string>
+    <string name="address">Адрес</string>
     <string name="error_donation">Ошибка при отправке пожертвования</string>
     <string name="error_donation_message">Невозможно отправить пожертвование. Пожалуйста, проверьте, что сумма пожертвования больше 5000 сатоши, и наличие требуемого баланса на кошельке.</string>
     <string name="check_connection">Проверьте соединение</string>
@@ -232,7 +233,7 @@
     <string name="magic_send">Магическая отправка</string>
     <string name="push_new_transaction_notification">Вы получили траназкцию на сумму %s</string>
     <string name="you_have_transaction">У вас есть новая входящая транзакция</string>
-    <string name="address_bind">Выбранный адрес уже добавлен другому контакту!</string>
+    <string name="address_bind">Выбранный адрес уже добавлен к контакту!</string>
     <string name="shure_delete_address">Удалить адрес из контакта?</string>
     <string name="delete">Удаление</string>
     <string name="shure_delete_contact">Удалить контакт?</string>
