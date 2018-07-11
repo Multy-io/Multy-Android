@@ -180,16 +180,18 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         Wallet wallet = viewModel.getWalletLive().getValue();
 
         if (wallet.isPending()) {
-            textBalance.setText(wallet.getAvailableBalanceLabel());
-            textBalanceFiat.setText(wallet.getAvailableFiatBalanceLabel());
+//            textBalance.setText(wallet.getAvailableBalanceLabel());
+//            textBalanceFiat.setText(wallet.getAvailableFiatBalanceLabel());
+            textBalance.setText(String.format("%d %s", 0, wallet.getCurrencyName()));
+            textBalanceFiat.setText(String.format("%d %s", 0, wallet.getFiatString()));
 
             containerPending.expand();
             if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()) {
                 textPendingBalance.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(wallet.getPendingBalance().longValue())));
                 textPendingBalanceFiat.setText(String.format("%s%s", wallet.getFiatString(), CryptoFormatUtils.satoshiToUsd(wallet.getPendingBalance().longValue())));
             } else {
-                textPendingBalance.setText(wallet.getEthWallet().getPendingBalanceLabel());
-                textPendingBalanceFiat.setText(wallet.getEthWallet().getFiatPendingBalanceLabel());
+                textBalance.setText(wallet.getEthWallet().getPendingBalanceLabel());
+                textBalanceFiat.setText(wallet.getEthWallet().getFiatPendingBalanceLabel());
             }
         } else {
             textBalance.setText(wallet.getBalanceLabel());
