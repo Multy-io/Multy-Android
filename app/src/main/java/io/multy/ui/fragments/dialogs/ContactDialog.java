@@ -134,16 +134,18 @@ public class ContactDialog extends BottomSheetDialogFragment implements DialogIn
     }
 
     private void addAddressToContact(Context context, String address, int currencyId, int networkId, int imgId) {
-        String formattedAddress = NativeDataHelper.Blockchain.valueOf(currencyId).name().concat(" ").concat(address);
+        String formattedAddress = ContactUtils.getFormattedAddressString(currencyId, address);
         if (!ContactUtils.isMultyAddressLinked(context, formattedAddress)) {
             ContactUtils.updateContact(context, String.valueOf(contactId), formattedAddress, currencyId, networkId, address);
+            ContactUtils.addAddressToLocalContact(contactId, address, currencyId, networkId, imgId, () -> {
+                if (callback != null) {
+                    callback.onComplete();
+                }
+                dismiss();
+            });
+        } else {
+            Toast.makeText(context, R.string.address_bind, Toast.LENGTH_SHORT).show();
         }
-        ContactUtils.addAddressToLocalContact(contactId, address, currencyId, networkId, imgId, () -> {
-            if (callback != null) {
-                callback.onComplete();
-            }
-            dismiss();
-        });
     }
 
     public void setCallback(Callback callback) {
@@ -172,8 +174,8 @@ public class ContactDialog extends BottomSheetDialogFragment implements DialogIn
 
     @OnClick(R.id.button_cancel)
     void onClickCancel() {
-        if (getActivity() != null) {
-            getActivity().onBackPressed();
+        if (getDialog() != null) {
+            getDialog().dismiss();
         }
     }
 

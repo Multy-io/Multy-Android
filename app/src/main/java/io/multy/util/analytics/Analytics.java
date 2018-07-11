@@ -369,11 +369,33 @@ public class Analytics {
         logEvent(AnalyticsConstants.DONATION_SUCCESS_SCREEN, AnalyticsConstants.DONATION_SUCCESS_SCREEN, String.format(Locale.US, AnalyticsConstants.FEATURE_ID, featureId));
     }
 
+    public void logContactAdded() {
+        logEvent(AnalyticsConstants.CONTACT_EVENT, AnalyticsConstants.CONTACT_ADDED, null);
+    }
+
+    public void logContactDeleted() {
+        logEvent(AnalyticsConstants.CONTACT_EVENT, AnalyticsConstants.CONTACT_DELETED, null);
+    }
+
+    public void logContactAddressAdded() {
+        logEvent(AnalyticsConstants.CONTACT_EVENT, AnalyticsConstants.CONTACT_ADDRESS_ADDED, null);
+    }
+
+    public void logContactAddressDeleted() {
+        logEvent(AnalyticsConstants.CONTACT_EVENT, AnalyticsConstants.CONTACT_ADDRESS_DELETED, null);
+    }
+
+    public void logContactAddressSelected() {
+        logEvent(AnalyticsConstants.CONTACT_EVENT, AnalyticsConstants.CONTACT_ADDRESS_SELECTED, null);
+    }
+
+    public void logContactPhoneBook() {
+        logEvent(AnalyticsConstants.CONTACT_EVENT, AnalyticsConstants.CONTACT_PHONEBOOK_OPENED, null);
+    }
+
     public void logEvent(String event, String argumentName, String argument) {
         Bundle bundle = new Bundle();
         bundle.putString(argumentName, argument);
         analytics.logEvent(event, bundle);
     }
-
-
 }

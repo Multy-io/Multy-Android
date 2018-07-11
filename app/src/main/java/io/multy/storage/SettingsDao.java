@@ -164,6 +164,10 @@ public class SettingsDao {
         return realm.where(Contact.class).equalTo(Contact.ID, contactId).findFirst();
     }
 
+    public boolean isAddressInContact(String address) {
+        return realm.where(ContactAddress.class).equalTo(ContactAddress.ADDRESS, address).findFirst() != null;
+    }
+
     public @Nullable String getContactNameOrNull (String address) {
         ContactAddress contactAddress = realm.where(ContactAddress.class).equalTo(ContactAddress.ADDRESS, address).findFirst();
         if (contactAddress == null) {
@@ -175,6 +179,18 @@ public class SettingsDao {
             return null;
         }
         return contact.getName();
+    }
+
+    public void renameContact(Contact contact, String name) {
+        realm.executeTransaction(realm -> {
+            contact.setName(name);
+        });
+    }
+
+    public void updateContactPhoto(Contact contact, String photoUri) {
+        realm.executeTransaction(realm -> {
+            contact.setPhotoUri(photoUri);
+        });
     }
 
     public void removeContact(long contactId, Realm.Transaction.OnSuccess onSuccess) {

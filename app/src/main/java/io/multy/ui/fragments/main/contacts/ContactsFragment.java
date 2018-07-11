@@ -110,6 +110,12 @@ public class ContactsFragment extends BaseFragment implements ContactAdapter.OnC
     }
 
     @Override
+    public void onDestroyView() {
+        contactAdapter.removeRealmListener();
+        super.onDestroyView();
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == ContactsFragment.PICK_CONTACT_CODE && resultCode == Activity.RESULT_OK) {
             if (getContext() != null && data.getData() != null && (account != null || initContactAccount())) {
@@ -132,6 +138,7 @@ public class ContactsFragment extends BaseFragment implements ContactAdapter.OnC
                     contactCursor.close();
                 }
             }
+            Analytics.getInstance(getContext()).logContactAdded();
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
@@ -177,6 +184,7 @@ public class ContactsFragment extends BaseFragment implements ContactAdapter.OnC
                         ContactUtils.deleteMultyContact(getContext(), contactId, () -> {
                             contactAdapter.notifyData();
                             checkNotificationVisibility();
+                            Analytics.getInstance(getContext()).logContactDeleted();
                         });
                         dialog1.dismiss();
                     }).setNegativeButton(R.string.no, ((dialog1, which) -> dialog1.dismiss()))
@@ -250,6 +258,7 @@ public class ContactsFragment extends BaseFragment implements ContactAdapter.OnC
             Intent pickIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
             if (getActivity() != null && pickIntent.resolveActivity(getActivity().getPackageManager()) != null) {
                 startActivityForResult(pickIntent, ContactsFragment.PICK_CONTACT_CODE);
+                Analytics.getInstance(v.getContext()).logContactPhoneBook();
             }
         } else {
             requestPermissions();
@@ -272,42 +281,4 @@ public class ContactsFragment extends BaseFragment implements ContactAdapter.OnC
     void onClick() {
         getActivity().onBackPressed();
     }
-
-//    @OnClick(R.id.button_delete)
-//    void deleteAll(View view) {
-//        view.setEnabled(false);
-//        view.postDelayed(() -> view.setEnabled(true), 1000);
-//        ContactUtils.deleteAllMultyContacts(view.getContext(), () -> {
-//            if (contactAdapter != null) {
-//                contactAdapter.notifyData();
-//                checkNotificationVisibility();
-//            }
-//        });
-//    }
-
-//    @OnClick(R.id.button_action)
-//    void action() {
-//        Cursor cursor1 = getContext().getContentResolver().query(
-//                ContactsContract.RawContacts.CONTENT_URI,
-//                null,
-//                ContactsContract.RawContacts.DIRTY + "=1",
-//                null,null);
-//        if (cursor1 != null) {
-//            cursor1.moveToFirst();
-//            ContactUtils.logCursor(cursor1);
-//            cursor1.close();
-//        }
-//        Cursor cursor2 = getContext().getContentResolver().query(
-//                ContactsContract.Contacts.CONTENT_URI,
-//                null,
-//                ContactsContract.Contacts._ID + " = 972",
-//                null,
-//                null
-//        );
-//        if (cursor2 != null) {
-//            cursor2.moveToFirst();
-//            ContactUtils.logCursor(cursor2);
-//            cursor2.close();
-//        }
-//    }
 }

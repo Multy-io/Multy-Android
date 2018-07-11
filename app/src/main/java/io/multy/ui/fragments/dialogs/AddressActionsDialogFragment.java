@@ -46,6 +46,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
+import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.asset.AssetInfoFragment;
 import io.multy.ui.fragments.main.contacts.ContactsFragment;
 import io.multy.util.Constants;
@@ -159,7 +160,7 @@ public class AddressActionsDialogFragment extends BottomSheetDialogFragment
                 final Cursor contactCursor = getContext().getContentResolver()
                         .query(contactUri, null, null, null, null); //todo add projection
                 if (contactCursor != null && contactCursor.moveToFirst()) {
-                    String formattedAddress = NativeDataHelper.Blockchain.valueOf(currencyId).name().concat(": ").concat(address);
+                    String formattedAddress = ContactUtils.getFormattedAddressString(currencyId, address);
                     if (ContactUtils.isMultyLinkCreated(getContext(), contactCursor)) {
                         String rawId = ContactUtils.getMultyContactRawId(getContext(), contactCursor);
                         if (rawId != null) {
@@ -172,6 +173,7 @@ public class AddressActionsDialogFragment extends BottomSheetDialogFragment
                                         listener.onComplete();
                                     }
                                 });
+                                Analytics.getInstance(getContext()).logContactAddressAdded();
                             }
                         } else {
                             Log.e(getClass().getSimpleName(), "The \"Multy link\" created, but we were not found contact in account!");
@@ -190,6 +192,8 @@ public class AddressActionsDialogFragment extends BottomSheetDialogFragment
                                      }
                                 }));
                             }
+                            Analytics.getInstance(getContext()).logContactAdded();
+                            Analytics.getInstance(getContext()).logContactAddressAdded();
                         } else {
                             long multyRowId = ContactUtils.addContact(getContext(), contactCursor, String.valueOf(parentRowId),
                                     null,null, null, null);
@@ -197,6 +201,7 @@ public class AddressActionsDialogFragment extends BottomSheetDialogFragment
                                 ContactUtils.createLocalContact(multyRowId, parentRowId, contactCursor, () -> {});
                             }
                             Toast.makeText(getContext(), R.string.address_bind, Toast.LENGTH_SHORT).show();
+                            Analytics.getInstance(getContext()).logContactAdded();
                         }
                     }
                     contactCursor.close();
@@ -248,7 +253,7 @@ public class AddressActionsDialogFragment extends BottomSheetDialogFragment
         this.currencyId = getArguments().getInt(EXTRA_CURRENCY_ID);
         this.networkId = getArguments().getInt(EXTRA_NETWORK_ID);
         this.resImgId = getArguments().getInt(EXTRA_RESOURCE_IMG_ID);
-        if (!getArguments().getBoolean(EXTRA_SHOW_CONTACT)) {
+        if (RealmManager.getSettingsDao().isAddressInContact(address) || !getArguments().getBoolean(EXTRA_SHOW_CONTACT)) {
             buttonContact.setVisibility(View.GONE);
         }
         textAddress.setText(address);
@@ -330,6 +335,7 @@ public class AddressActionsDialogFragment extends BottomSheetDialogFragment
         Intent pickIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
         if (getActivity() != null && pickIntent.resolveActivity(getActivity().getPackageManager()) != null) {
             startActivityForResult(pickIntent, PICK_CONTACT_CODE);
+            Analytics.getInstance(getContext()).logContactPhoneBook();
         }
     }
 
