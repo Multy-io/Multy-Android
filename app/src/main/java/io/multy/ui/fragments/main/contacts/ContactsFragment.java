@@ -130,9 +130,9 @@ public class ContactsFragment extends BaseFragment implements ContactAdapter.OnC
                         long multyRowId = ContactUtils.addContact(getContext(), contactCursor, String.valueOf(parentRowId),
                                 null, null, null, null);
                         if (multyRowId != -1) {
-                            ContactUtils.createLocalContact(multyRowId, parentRowId, contactCursor, () -> {
-                                contactAdapter.notifyData();
-                                checkNotificationVisibility();});
+                            ContactUtils.createLocalContact(multyRowId, parentRowId, contactCursor);
+                            contactAdapter.notifyData();
+                            checkNotificationVisibility();
                         }
                     }
                     contactCursor.close();

@@ -185,12 +185,10 @@ public class AddressActionsDialogFragment extends BottomSheetDialogFragment
                             long multyRowId = ContactUtils.addContact(getContext(), contactCursor, String.valueOf(parentRowId),
                                     formattedAddress, currencyId, networkId, address);
                             if (multyRowId != -1) {
-                                ContactUtils.createLocalContact(multyRowId, parentRowId, contactCursor, () ->
-                                        ContactUtils.addAddressToLocalContact(multyRowId, address, currencyId, networkId, resImgId, () -> {
-                                     if (listener != null) {
-                                         listener.onComplete();
-                                     }
-                                }));
+                                ContactUtils.createLocalContact(multyRowId, parentRowId, contactCursor, address, currencyId, networkId, resImgId);
+                                if (listener != null) {
+                                    listener.onComplete();
+                                }
                             }
                             Analytics.getInstance(getContext()).logContactAdded();
                             Analytics.getInstance(getContext()).logContactAddressAdded();
@@ -198,7 +196,7 @@ public class AddressActionsDialogFragment extends BottomSheetDialogFragment
                             long multyRowId = ContactUtils.addContact(getContext(), contactCursor, String.valueOf(parentRowId),
                                     null,null, null, null);
                             if (multyRowId != -1) {
-                                ContactUtils.createLocalContact(multyRowId, parentRowId, contactCursor, () -> {});
+                                ContactUtils.createLocalContact(multyRowId, parentRowId, contactCursor);
                             }
                             Toast.makeText(getContext(), R.string.address_bind, Toast.LENGTH_SHORT).show();
                             Analytics.getInstance(getContext()).logContactAdded();
