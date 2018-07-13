@@ -56,6 +56,14 @@ public class AssetRequestActivity extends BaseActivity {
     }
 
     @Override
+    protected void onStart() {
+        if (viewModel.getWalletLive().getValue() != null && !viewModel.getWalletLive().getValue().isValid()) {
+            viewModel.getWallet(getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, -1));
+        }
+        super.onStart();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
