@@ -294,9 +294,7 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
             } else {
                 //CASE FOR FIAT SELECTED
                 if (switcher.isChecked()) {
-                    double totalSum = Double.parseDouble(sum);
-                    totalSum += transactionPriceEth;
-                    sum = CryptoFormatUtils.ethToUsd(totalSum);
+                    sum = String.valueOf(Double.parseDouble(sum) + Double.parseDouble(CryptoFormatUtils.ethToUsd(transactionPriceEth)));
                 }
             }
         }
