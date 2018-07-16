@@ -167,6 +167,18 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
         }
     }
 
+    public String getPendingFiatBalanceLable(CurrenciesRate currenciesRate) {
+        //TODO support different fiat currencies here
+        switch (NativeDataHelper.Blockchain.valueOf(currencyId)) {
+            case BTC:
+                return String.valueOf(NumberFormatter.getFiatInstance().format(getBtcDoubleValue() * currenciesRate.getBtcToUsd()) + getFiatString()); //convert from satoshi
+            case ETH:
+                return String.valueOf(NumberFormatter.getFiatInstance().format(getEthPendingValue().multiply(new BigDecimal(currenciesRate.getEthToUsd()))) + getFiatString()); //convert from wei
+            default:
+                return "unsupported";
+        }
+    }
+
     /**
      * Convert currency (BTC, ETH...) to fiat amount
      *
@@ -332,6 +344,10 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
 
     public BigDecimal getEthAvailableValue() {
         return availableBalance.equals("0") ? new BigDecimal(0) : (getAvailableBalanceNumeric().divide(EthWallet.DIVISOR));
+    }
+
+    public BigDecimal getEthPendingValue() {
+        return new BigDecimal(getEthWallet().getPendingBalance());
     }
 
     public int getCurrencyId() {
