@@ -20,7 +20,6 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,16 +36,13 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.api.MultyApi;
-import io.multy.model.entities.Output;
 import io.multy.model.entities.wallet.Wallet;
-import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.events.TransactionUpdateEvent;
 import io.multy.model.responses.SingleWalletResponse;
 import io.multy.storage.AssetsDao;
@@ -293,9 +289,11 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     private void showAddressAction() {
         Wallet wallet = viewModel.getWalletLive().getValue();
         AddressActionsDialogFragment.getInstance(wallet.getActiveAddress().getAddress(), wallet.getCurrencyId(),
-                wallet.getNetworkId(), wallet.getIconResourceId(), false, () ->
-                        recyclerView.getAdapter().notifyDataSetChanged())
-                .show(getChildFragmentManager(), AddressActionsDialogFragment.TAG);
+                wallet.getNetworkId(), wallet.getIconResourceId(), false, () -> {
+                        if (recyclerView.getAdapter() != null) {
+                            recyclerView.getAdapter().notifyDataSetChanged();
+                        }
+        }).show(getChildFragmentManager(), AddressActionsDialogFragment.TAG);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

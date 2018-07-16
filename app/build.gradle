@@ -45,6 +45,8 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             manifestPlaceholders = [crashlyticsEnabled: true, analyticsDeactivated: false]
+            resValue "string", "account_name", "Multy.io"
+            resValue "string", "account_type", "io.multy"
         }
         externalNativeBuild {
             cmake {
@@ -53,6 +55,8 @@ android {
         }
         debug {
             applicationIdSuffix ".debug"
+            resValue "string", "account_name", "Multy.io.debug"
+            resValue "string", "account_type", "io.multy.debug"
         }
     }
     flavorDimensions "default"

@@ -8,7 +8,6 @@ package io.multy.storage;
 
 import android.util.Log;
 
-import java.util.Collection;
 import java.util.List;
 
 import io.multy.api.socket.CurrenciesRate;
@@ -150,10 +149,8 @@ public class SettingsDao {
                 .equalTo(DonateFeatureEntity.DONATION_ADDRESS, address).findFirst();
     }
 
-    public void saveContacts(Collection<Contact> contacts, Realm.Transaction.OnSuccess onSuccess) {
-        realm.executeTransactionAsync(realm -> {
-            realm.insertOrUpdate(contacts);
-        }, onSuccess,  Throwable::printStackTrace);
+    public void saveContact(Contact contact) {
+        realm.executeTransaction(realm -> realm.insertOrUpdate(contact));
     }
 
     public RealmResults<Contact> getContacts() {
@@ -166,6 +163,15 @@ public class SettingsDao {
 
     public boolean isAddressInContact(String address) {
         return realm.where(ContactAddress.class).equalTo(ContactAddress.ADDRESS, address).findFirst() != null;
+    }
+
+    public @Nullable Contact getContactOrNull(String address) {
+        ContactAddress contactAddress = realm.where(ContactAddress.class).equalTo(ContactAddress.ADDRESS, address).findFirst();
+        if (contactAddress == null) {
+            return null;
+        } else {
+            return realm.where(Contact.class).equalTo(Contact.ID, contactAddress.getContactId()).findFirst();
+        }
     }
 
     public @Nullable String getContactNameOrNull (String address) {

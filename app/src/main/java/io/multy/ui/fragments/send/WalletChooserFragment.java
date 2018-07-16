@@ -6,6 +6,9 @@
 
 package io.multy.ui.fragments.send;
 
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleObserver;
+import android.arch.lifecycle.OnLifecycleEvent;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -33,6 +36,7 @@ import io.multy.util.CryptoFormatUtils;
 import io.multy.util.NativeDataHelper;
 import io.multy.util.analytics.Analytics;
 import io.multy.viewmodels.AssetSendViewModel;
+import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -130,6 +134,27 @@ public class WalletChooserFragment extends BaseFragment implements MyWalletsAdap
     }
 
     private void setupAdapter() {
+        RealmResults<Wallet> wallets = getActualWallets();
+        MyWalletsAdapter adapter = new MyWalletsAdapter(this, wallets);
+        recyclerView.setAdapter(adapter);
+        RealmChangeListener<RealmResults<Wallet>> listener = adapter::setData;
+        final LifecycleObserver observer = new LifecycleObserver() {
+            @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+            public void onResume() {
+                wallets.addChangeListener(listener);
+            }
+
+            @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+            public void onPause() {
+                if (wallets != null && wallets.isValid()) {
+                    wallets.removeAllChangeListeners();
+                }
+            }
+        };
+        getLifecycle().addObserver(observer);
+    }
+
+    private RealmResults<Wallet> getActualWallets() {
         RealmResults<Wallet> wallets;
         if (blockchainId == NO_VALUE || networkId == NO_VALUE) {
             wallets = RealmManager.getAssetsDao().getWallets();
@@ -138,7 +163,7 @@ public class WalletChooserFragment extends BaseFragment implements MyWalletsAdap
         } else {
             wallets = RealmManager.getAssetsDao().getWallets(blockchainId, networkId);
         }
-        recyclerView.setAdapter(new MyWalletsAdapter(this, wallets));
+        return wallets;
     }
 
     private void launchTransactionFee(Wallet wallet) {

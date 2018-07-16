@@ -20,13 +20,14 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import io.multy.R;
 import io.multy.model.entities.Contact;
+import io.multy.model.entities.ContactAddress;
 import io.multy.storage.RealmManager;
 import io.realm.Realm;
+import io.realm.RealmList;
 
 /**
  * Created by anschutz1927@gmail.com on 21.06.18.
@@ -43,19 +44,25 @@ public class ContactUtils {
         return uri.buildUpon().appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true").build();
     }
 
-    public static void createLocalContact(long multyRowId, long parentRowId, Cursor contactCursor, Realm.Transaction.OnSuccess onSuccess) {
-        Collection<Contact> contacts = new ArrayList<>();
-        do {
-            Contact contact = new Contact(
-                    multyRowId,
-                    parentRowId,
+    public static void createLocalContact(long multyRowId, long parentRowId, Cursor contactCursor) {
+        if (contactCursor.moveToFirst()) {
+            Contact contact = new Contact(multyRowId, parentRowId,
                     contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)),
-                    contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.Contacts.PHOTO_URI))
-            );
-            contacts.add(contact);
-        } while(contactCursor.moveToNext());
-        RealmManager.getSettingsDao().saveContacts(contacts, onSuccess);
-        contactCursor.moveToFirst();
+                    contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.Contacts.PHOTO_URI)));
+            RealmManager.getSettingsDao().saveContact(contact);
+        }
+    }
+
+    public static void createLocalContact(long multyRowId, long parentRowId, Cursor contactCursor,
+                                          String address, int currencyId, int networkId, int currencyImgId) {
+        Contact contact = new Contact(multyRowId, parentRowId,
+                contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)),
+                contactCursor.getString(contactCursor.getColumnIndex(ContactsContract.Contacts.PHOTO_URI)));
+        ContactAddress selectedAddress = new ContactAddress(address, multyRowId, currencyId, networkId, currencyImgId);
+        RealmList<ContactAddress> addresses = new RealmList<>();
+        addresses.add(selectedAddress);
+        contact.setAddresses(addresses);
+        RealmManager.getSettingsDao().saveContact(contact);
     }
 
     public static void addAddressToLocalContact(long multyRowId, String address, int currencyId, int networkId,

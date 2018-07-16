@@ -65,7 +65,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Holder>
     }
 
     public void notifyData() {
-        if (contacts != null) {
+        if (contacts != null && contacts.isValid()) {
             contacts.removeAllChangeListeners();
         }
         contacts = RealmManager.getSettingsDao().getContacts();

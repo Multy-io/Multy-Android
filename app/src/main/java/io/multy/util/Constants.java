@@ -113,8 +113,8 @@ public final class Constants {
     public static final int DONATE_ADDING_EXCHANGE = 10301;
     public static final int DONATE_ADDING_WIRELESS_SCAN = 10302;
 
-    public static final String ACCOUNT_NAME = "Multy.io";
-    public static final String ACCOUNT_TYPE = "io.multy";
+    public static final String ACCOUNT_NAME = Multy.getContext().getString(R.string.account_name);//"Multy.io";
+    public static final String ACCOUNT_TYPE = Multy.getContext().getString(R.string.account_type);//"io.multy";
     public static final String CONTACT_MIMETYPE = "vnd.android.cursor.item/vnd.io.multy.contacts.profile";
 
     public static final int MIN_SATOSHI = 546;
