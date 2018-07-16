@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import butterknife.BindView;
@@ -21,6 +22,8 @@ import io.multy.R;
 import io.multy.api.socket.CurrenciesRate;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.storage.RealmManager;
+import io.multy.util.NativeDataHelper;
+import io.multy.util.NumberFormatter;
 
 public class MyWalletsAdapter extends RecyclerView.Adapter<MyWalletsAdapter.Holder> {
 
@@ -47,17 +50,15 @@ public class MyWalletsAdapter extends RecyclerView.Adapter<MyWalletsAdapter.Hold
         holder.name.setText(wallet.getWalletName());
         holder.imagePending.setVisibility(wallet.isPending() ? View.VISIBLE : View.GONE);
 
-        try {
+        if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.ETH.getValue() && wallet.isPending()) {
+            holder.amount.setText(wallet.getEthWallet().getPendingBalanceLabel());
+            holder.amountFiat.setText(wallet.getEthWallet().getFiatPendingBalanceLabel() + wallet.getFiatString());
+        } else {
             holder.amount.setText(wallet.getBalanceLabel());
-        } catch (Exception e) {
-            e.printStackTrace();
+            holder.amountFiat.setText(wallet.getFiatBalanceLabel(rates));
         }
 
-        try {
-            holder.amountFiat.setText(wallet.getFiatBalanceLabel(rates));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
         holder.imageChain.setImageResource(wallet.getIconResourceId());
         holder.itemView.setOnClickListener(view -> listener.onWalletClick(wallet));
         holder.resync.setVisibility(wallet.isSyncing() ? View.VISIBLE : View.GONE);

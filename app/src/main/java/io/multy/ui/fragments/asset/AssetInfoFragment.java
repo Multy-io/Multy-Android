@@ -184,10 +184,10 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
             containerPending.expand();
             if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()) {
                 textPendingBalance.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(wallet.getPendingBalance().longValue())));
-                textPendingBalanceFiat.setText(String.format("%s%s", wallet.getFiatString(), CryptoFormatUtils.satoshiToUsd(wallet.getPendingBalance().longValue())));
+                textPendingBalanceFiat.setText(wallet.getFiatString() + CryptoFormatUtils.satoshiToUsd(wallet.getPendingBalance().longValue()));
             } else {
-                textBalance.setText(wallet.getEthWallet().getPendingBalanceLabel());
-                textBalanceFiat.setText(wallet.getEthWallet().getFiatPendingBalanceLabel());
+                textPendingBalance.setText(wallet.getEthWallet().getPendingBalanceLabel());
+                textPendingBalanceFiat.setText(wallet.getEthWallet().getFiatPendingBalanceLabel());
             }
         } else {
             textBalance.setText(wallet.getBalanceLabel());
