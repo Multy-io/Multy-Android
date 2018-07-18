@@ -62,7 +62,6 @@
         android:layout_marginStart="8dp"
         android:foreground="?android:attr/selectableItemBackground"
         android:minWidth="100dp"
-        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@id/pager_wallets"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">

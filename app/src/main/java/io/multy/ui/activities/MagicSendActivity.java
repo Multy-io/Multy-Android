@@ -135,6 +135,8 @@ public class MagicSendActivity extends BaseActivity {
         if (walletPagerAdapter != null) {
             Analytics.getInstance(this).logEvent(AnalyticsConstants.KF_WALLET_COUNT, AnalyticsConstants.KF_WALLET_COUNT, String.valueOf(walletPagerAdapter.getCount()));
         }
+
+        containerSend.post(() -> startY = containerSend.getY());
     }
 
     @Override
@@ -459,8 +461,8 @@ public class MagicSendActivity extends BaseActivity {
         final float sendY = containerSend.getHeight() / 2;
         containerSend.animate().translationYBy(sendY).setDuration(100).alpha(0).setInterpolator(new DecelerateInterpolator()).withEndAction(() -> {
             containerSend.setVisibility(View.INVISIBLE);
-            containerSend.setY(startY);
-//            containerSend.animate().translationY(sendY).setDuration(0).alpha(0).start();
+//            containerSend.setY(startY);
+            containerSend.animate().translationY(sendY).setDuration(0).alpha(0).start();
         }).start();
 
         textHint.setVisibility(View.VISIBLE);
