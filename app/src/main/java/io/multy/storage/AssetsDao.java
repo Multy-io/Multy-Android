@@ -9,7 +9,6 @@ package io.multy.storage;
 import java.util.List;
 import java.util.Objects;
 
-import io.multy.model.entities.Output;
 import io.multy.model.entities.wallet.BtcWallet;
 import io.multy.model.entities.wallet.EthWallet;
 import io.multy.model.entities.wallet.RecentAddress;
@@ -18,6 +17,7 @@ import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.util.NativeDataHelper;
 import io.reactivex.annotations.NonNull;
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
@@ -42,17 +42,14 @@ public class AssetsDao {
                 Wallet toDelete = getWalletById(wallet.getId());
                 if (toDelete != null) {
                     //todo there must being removing of all addresse, btcwallets and ethwallets
-                    toDelete.deleteFromRealm(); //TODO review this
                     //realm is not deleting inner object. do it manually
                     if (toDelete.getAddresses() != null) {
                         for (WalletAddress walletAddress : toDelete.getAddresses()) {
                             if (walletAddress.getOutputs() != null) {
-                                for (Output output : walletAddress.getOutputs()) {
-                                    output.deleteFromRealm();
-                                }
+                                walletAddress.getOutputs().deleteAllFromRealm();
                             }
-                            walletAddress.deleteFromRealm();
                         }
+                        ((RealmList<WalletAddress>) toDelete.getAddresses()).deleteAllFromRealm();
 
                         if (toDelete.getBtcWallet() != null) {
                             toDelete.getBtcWallet().deleteFromRealm();
