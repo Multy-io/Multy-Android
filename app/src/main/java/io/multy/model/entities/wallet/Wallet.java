@@ -20,7 +20,9 @@ import javax.annotation.Nullable;
 
 import io.multy.R;
 import io.multy.api.socket.CurrenciesRate;
+import io.multy.model.entities.Output;
 import io.multy.storage.RealmManager;
+import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
 import io.multy.util.NativeDataHelper;
 import io.multy.util.NumberFormatter;
@@ -94,6 +96,25 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
         return new ArrayList<>();
     }
 
+    public boolean isIncoming() {
+        if (currencyId == NativeDataHelper.Blockchain.BTC.getValue()) {
+            List<WalletAddress> addresses = getAddresses();
+            boolean hasOutComing = false;
+
+            for (WalletAddress address : addresses) {
+                for (Output output : address.getOutputs()) {
+                    hasOutComing = output.getStatus() == Constants.TX_MEMPOOL_OUTCOMING || output.getStatus() == Constants.TX_CONFIRMED_OUTCOMING;
+                }
+            }
+
+            return isPending() && !hasOutComing;
+        } else {
+            EthWallet ethWallet = getEthWallet();
+            final boolean isIncoming = new BigInteger(ethWallet.getPendingBalance()).compareTo(new BigInteger(ethWallet.getBalance())) > 0;
+            return isPending() && isIncoming;
+        }
+    }
+
     /**
      * @return String "10 BTC"
      */
@@ -104,7 +125,7 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
                 return NumberFormatter.getInstance().format(getBtcDoubleValue()) + " BTC";
             case ETH:
 //                return NumberFormatter.getInstance().format(getEthValue()) + " ETH";
-            return checkEthValue(getEthValue()) + " ETH";
+                return checkEthValue(getEthValue()) + " ETH";
             default:
                 return "unsupported";
         }

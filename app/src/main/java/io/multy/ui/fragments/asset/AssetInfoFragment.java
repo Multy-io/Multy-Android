@@ -178,16 +178,23 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         if (wallet.isPending()) {
 //            textBalance.setText(wallet.getAvailableBalanceLabel());
 //            textBalanceFiat.setText(wallet.getAvailableFiatBalanceLabel());
-            textBalance.setText(String.format("%d %s", 0, wallet.getCurrencyName()));
-            textBalanceFiat.setText(String.format("%d %s", 0, wallet.getFiatString()));
+
+            if (wallet.isIncoming()) {
+                textBalance.setText(wallet.getAvailableBalanceLabel());
+                textBalanceFiat.setText(wallet.getAvailableFiatBalanceLabel());
+            } else {
+                textBalance.setText(String.format("%d %s", 0, wallet.getCurrencyName()));
+                textBalanceFiat.setText(String.format("%d %s", 0, wallet.getFiatString()));
+            }
 
             containerPending.expand();
             if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()) {
-                textPendingBalance.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(wallet.getPendingBalance().longValue())));
-                textPendingBalanceFiat.setText(wallet.getFiatString() + CryptoFormatUtils.satoshiToUsd(wallet.getPendingBalance().longValue()));
+                textPendingBalance.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(wallet.getBalanceNumeric().longValue())));
+                textPendingBalanceFiat.setText(wallet.getFiatString() + CryptoFormatUtils.satoshiToUsd(wallet.getBalanceNumeric().longValue()));
             } else {
                 textPendingBalance.setText(wallet.getEthWallet().getPendingBalanceLabel());
                 textPendingBalanceFiat.setText(wallet.getEthWallet().getFiatPendingBalanceLabel());
+                textPendingBalanceFiat.append(wallet.getFiatString());
             }
         } else {
             textBalance.setText(wallet.getBalanceLabel());
@@ -290,10 +297,10 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         Wallet wallet = viewModel.getWalletLive().getValue();
         AddressActionsDialogFragment.getInstance(wallet.getActiveAddress().getAddress(), wallet.getCurrencyId(),
                 wallet.getNetworkId(), wallet.getIconResourceId(), false, () -> {
-                        if (recyclerView.getAdapter() != null) {
-                            recyclerView.getAdapter().notifyDataSetChanged();
-                        }
-        }).show(getChildFragmentManager(), AddressActionsDialogFragment.TAG);
+                    if (recyclerView.getAdapter() != null) {
+                        recyclerView.getAdapter().notifyDataSetChanged();
+                    }
+                }).show(getChildFragmentManager(), AddressActionsDialogFragment.TAG);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
