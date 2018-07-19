@@ -51,9 +51,7 @@ public class MultyFirebaseMessagingService extends FirebaseMessagingService {
             if (Foreground.Companion.isBackground()) {
                 try {
                     final int currencyId = Integer.parseInt(remoteMessage.getData().get(KEY_CURRENCY_ID));
-                    //todo hotfix for eth pushes; remove later
-                    final int networkId = currencyId == NativeDataHelper.Blockchain.ETH.getValue() ?
-                            4 : Integer.parseInt(remoteMessage.getData().get(KEY_NETWORK_ID));
+                    final int networkId = Integer.parseInt(remoteMessage.getData().get(KEY_NETWORK_ID));
                     final int walletIndex = Integer.parseInt(remoteMessage.getData().get(KEY_WALLET_INDEX));
                     MultyApi.INSTANCE.getWalletVerbose(walletIndex, currencyId, networkId).enqueue(new Callback<SingleWalletResponse>() {
                         @Override
