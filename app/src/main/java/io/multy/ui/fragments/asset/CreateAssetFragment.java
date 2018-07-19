@@ -61,7 +61,7 @@ public class CreateAssetFragment extends BaseFragment {
     private int chainNet = NativeDataHelper.NetworkId.MAIN_NET.getValue();
     private int chainId = NativeDataHelper.Blockchain.BTC.getValue();
 
-    public static CreateAssetFragment newInstance() {
+    public static CreateAssetFragment getInstance() {
         return new CreateAssetFragment();
     }
 
