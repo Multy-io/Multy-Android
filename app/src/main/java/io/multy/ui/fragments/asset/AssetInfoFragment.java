@@ -176,16 +176,13 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         Wallet wallet = viewModel.getWalletLive().getValue();
 
         if (wallet.isPending()) {
-//            textBalance.setText(wallet.getAvailableBalanceLabel());
-//            textBalanceFiat.setText(wallet.getAvailableFiatBalanceLabel());
-
-            if (wallet.isIncoming()) {
+//            if (wallet.isIncoming()) {
                 textBalance.setText(wallet.getAvailableBalanceLabel());
                 textBalanceFiat.setText(wallet.getAvailableFiatBalanceLabel());
-            } else {
-                textBalance.setText(String.format("%d %s", 0, wallet.getCurrencyName()));
-                textBalanceFiat.setText(String.format("%d %s", 0, wallet.getFiatString()));
-            }
+//            } else {
+//                textBalance.setText(String.format("%d %s", 0, wallet.getCurrencyName()));
+//                textBalanceFiat.setText(String.format("%d %s", 0, wallet.getFiatString()));
+//            }
 
             containerPending.expand();
             if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()) {

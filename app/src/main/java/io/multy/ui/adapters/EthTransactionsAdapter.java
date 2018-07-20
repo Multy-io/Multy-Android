@@ -41,6 +41,7 @@ import static io.multy.util.Constants.TX_CONFIRMED_INCOMING;
 import static io.multy.util.Constants.TX_IN_BLOCK_INCOMING;
 import static io.multy.util.Constants.TX_MEMPOOL_INCOMING;
 import static io.multy.util.Constants.TX_MEMPOOL_OUTCOMING;
+import static io.multy.util.Constants.TX_REJECTED;
 
 public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -99,7 +100,7 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         TransactionHistory entity = transactionHistoryList.get(position);
         if (entity.getTxStatus() == TX_MEMPOOL_INCOMING || entity.getTxStatus() == TX_MEMPOOL_OUTCOMING) {
             return TYPE_BLOCKED;
-        } else if (entity.getTxStatus() < 0) {
+        } else if (entity.getTxStatus() == TX_REJECTED) {
             return TYPE_REJECTED;
         } else {
             return TYPE_CONFIRMED;

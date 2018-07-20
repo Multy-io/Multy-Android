@@ -85,6 +85,7 @@ public final class Constants {
     public final static String USD = "USD";
     public final static String EUR = "EUR";
 
+    public static final int TX_REJECTED = 0;
     public static final int TX_MEMPOOL_INCOMING = 1;
     public static final int TX_MEMPOOL_OUTCOMING = 3;
     public static final int TX_IN_BLOCK_INCOMING = 2;
