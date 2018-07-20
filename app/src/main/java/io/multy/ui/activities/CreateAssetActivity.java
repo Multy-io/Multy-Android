@@ -26,7 +26,7 @@ public class CreateAssetActivity extends BaseActivity {
 
         Fragment fragment = getSupportFragmentManager().findFragmentByTag(CreateAssetFragment.TAG);
         if (fragment == null) {
-            fragment = CreateAssetFragment.newInstance();
+            fragment = CreateAssetFragment.getInstance();
         }
         fragment.setArguments(getIntent().getExtras());
         getSupportFragmentManager().beginTransaction()

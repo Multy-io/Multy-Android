@@ -176,16 +176,13 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         Wallet wallet = viewModel.getWalletLive().getValue();
 
         if (wallet.isPending()) {
-//            textBalance.setText(wallet.getAvailableBalanceLabel());
-//            textBalanceFiat.setText(wallet.getAvailableFiatBalanceLabel());
-
-            if (wallet.isIncoming()) {
-                textBalance.setText(wallet.getAvailableBalanceLabel());
-                textBalanceFiat.setText(wallet.getAvailableFiatBalanceLabel());
-            } else {
-                textBalance.setText(String.format("%d %s", 0, wallet.getCurrencyName()));
-                textBalanceFiat.setText(String.format("%d %s", 0, wallet.getFiatString()));
-            }
+//            if (wallet.isIncoming()) {
+            textBalance.setText(wallet.getAvailableBalanceLabel());
+            textBalanceFiat.setText(wallet.getAvailableFiatBalanceLabel());
+//            } else {
+//                textBalance.setText(String.format("%d %s", 0, wallet.getCurrencyName()));
+//                textBalanceFiat.setText(String.format("%d %s", 0, wallet.getFiatString()));
+//            }
 
             containerPending.expand();
             if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()) {
@@ -197,8 +194,16 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
                 textPendingBalanceFiat.append(wallet.getFiatString());
             }
         } else {
-            textBalance.setText(wallet.getBalanceLabel());
-            textBalanceFiat.setText(wallet.getFiatBalanceLabel());
+            String balance = wallet.getCurrencyId() == NativeDataHelper.Blockchain.ETH.getValue() && !wallet.getEthWallet().getPendingBalance().equals("0") ? wallet.getEthWallet().getPendingBalanceLabel() : wallet.getBalanceLabel();
+            String fiatBalance = wallet.getCurrencyId() == NativeDataHelper.Blockchain.ETH.getValue() && !wallet.getEthWallet().getPendingBalance().equals("0") ? wallet.getEthWallet().getFiatPendingBalanceLabel() : wallet.getFiatBalanceLabel();
+
+            textBalance.setText(balance);
+            textBalanceFiat.setText(fiatBalance);
+
+            if (fiatBalance.contains(wallet.getFiatString())) {
+                textBalanceFiat.append(wallet.getFiatString());
+            }
+
             containerPending.collapse();
         }
     }

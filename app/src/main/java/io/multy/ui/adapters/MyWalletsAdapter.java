@@ -58,7 +58,6 @@ public class MyWalletsAdapter extends RecyclerView.Adapter<MyWalletsAdapter.Hold
             holder.amountFiat.setText(wallet.getFiatBalanceLabel(rates));
         }
 
-
         holder.imageChain.setImageResource(wallet.getIconResourceId());
         holder.itemView.setOnClickListener(view -> listener.onWalletClick(wallet));
         holder.resync.setVisibility(wallet.isSyncing() ? View.VISIBLE : View.GONE);
