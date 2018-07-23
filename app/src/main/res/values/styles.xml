@@ -23,6 +23,10 @@
         <item name="android:windowBackground">@color/blue_transparent</item>
     </style>
 
+    <style name="ActionsBottomSheetDialogDark" parent="@android:style/Theme.Dialog">
+        <item name="android:windowBackground">@color/blue_dark_transparent</item>
+    </style>
+
     <style name="DonateThisDialog">
         <item name="android:windowBackground">@color/blue_transparent</item>
     </style>

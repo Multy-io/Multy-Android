@@ -24,6 +24,7 @@ import io.multy.model.entities.TransactionRequestEntity;
 import io.multy.model.entities.UserId;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.requests.AddWalletAddressRequest;
+import io.multy.model.requests.CreateMultisigRequest;
 import io.multy.model.requests.HdTransactionRequestEntity;
 import io.multy.model.requests.UpdateWalletNameRequest;
 import io.multy.model.responses.AuthResponse;
@@ -106,6 +107,11 @@ public enum MultyApi implements MultyApiInterface {
         @Override
         public Call<ResponseBody> addWallet(Context context, Wallet wallet) {
             return api.addWallet(wallet);
+        }
+
+        @Override
+        public Call<ResponseBody> addWallet(Context context, CreateMultisigRequest request) {
+            return api.addWallet(request);
         }
 
         @Override

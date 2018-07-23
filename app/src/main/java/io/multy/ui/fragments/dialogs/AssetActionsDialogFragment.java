@@ -84,6 +84,20 @@ public class AssetActionsDialogFragment extends BottomSheetDialogFragment implem
         }
     }
 
+    @OnClick(R.id.button_create_multisig)
+    public void onClickCreateMultisig(View view) {
+        view.setEnabled(false);
+        view.postDelayed(() -> view.setEnabled(true), 500);
+        startActivity(new Intent(view.getContext(), CreateAssetActivity.class).putExtra(CreateAssetActivity.EXTRA_MULTISIG, true));
+    }
+
+    @OnClick(R.id.button_join_multisig)
+    public void onJoinMultisig(View view) {
+        view.setEnabled(false);
+        view.postDelayed(() -> view.setEnabled(true), 500);
+        //todo run join screen
+    }
+
     @OnClick(R.id.button_import)
     public void onClickImport(View v) {
         v.setEnabled(false);

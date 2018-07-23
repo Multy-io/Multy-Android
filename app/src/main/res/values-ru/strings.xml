@@ -239,4 +239,14 @@
     <string name="shure_delete_contact">Удалить контакт?</string>
     <string name="add_to_contact">Добавить к контакту</string>
     <string name="address_not_match">Адрес не подходит для выбранного блокчейна</string>
+    <string name="create_multisig_wallet">Создать MultiSig</string>
+    <string name="signs_members">Количество подтверждений для отправки и участников кошелька</string>
+    <string name="linked_wallet">Привязанный кошелек</string>
+    <string name="multisig_wallet_notification">Ваш привязанный кошелек будет использоваться для оплаты транзакций multisig кошелька. Вы не сможете его изменить после создания multisig кошелька.</string>
+    <string name="select_your_wallet">Выберите кошелек</string>
+    <string name="of">из</string>
+    <string name="signs_to_send">Подтверждений для отправки</string>
+    <string name="wallet_members">Участники кошелька</string>
+    <string name="create_multisig">Создать MultiSig</string>
+    <string name="join_multisig">Присоединиться к MultiSig</string>
 </resources>

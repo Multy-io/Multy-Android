@@ -316,4 +316,14 @@
     <string name="address_not_match">The address does not match the selected blockchain</string>
     <string name="user_joined">Users joined</string>
     <string name="invitation_code">Invitation Code</string>
+    <string name="create_multisig_wallet">Create MultiSig Wallet</string>
+    <string name="signs_members">Signs to send and wallet members</string>
+    <string name="linked_wallet">Linked wallet</string>
+    <string name="multisig_wallet_notification">Your linked wallet will be used to pay for multisig wallet transactions. You cant’t change it after creating multisig wallet.</string>
+    <string name="select_your_wallet">Select your wallet</string>
+    <string name="of">of</string>
+    <string name="signs_to_send">Signs to send</string>
+    <string name="wallet_members">Wallet members</string>
+    <string name="create_multisig">Create MultiSig</string>
+    <string name="join_multisig">Join MultiSig</string>
 </resources>

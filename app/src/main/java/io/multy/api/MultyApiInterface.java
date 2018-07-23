@@ -11,6 +11,7 @@ import android.content.Context;
 
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.requests.AddWalletAddressRequest;
+import io.multy.model.requests.CreateMultisigRequest;
 import io.multy.model.requests.HdTransactionRequestEntity;
 import io.multy.model.requests.UpdateWalletNameRequest;
 import io.multy.model.responses.AuthResponse;
@@ -30,6 +31,8 @@ public interface MultyApiInterface {
     Call<AuthResponse> auth(String userId);
 
     Call<ResponseBody> addWallet(Context context, Wallet wallet);
+
+    Call<ResponseBody> addWallet(Context context, CreateMultisigRequest request);
 
     void getTransactionInfo(String transactionId);
 

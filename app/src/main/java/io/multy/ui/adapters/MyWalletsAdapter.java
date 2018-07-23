@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import butterknife.BindView;
@@ -23,7 +22,6 @@ import io.multy.api.socket.CurrenciesRate;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.storage.RealmManager;
 import io.multy.util.NativeDataHelper;
-import io.multy.util.NumberFormatter;
 
 public class MyWalletsAdapter extends RecyclerView.Adapter<MyWalletsAdapter.Holder> {
 
@@ -65,7 +63,7 @@ public class MyWalletsAdapter extends RecyclerView.Adapter<MyWalletsAdapter.Hold
 
     @Override
     public int getItemCount() {
-        return data.size();
+        return data == null ? 0 : data.size();
     }
 
     public void updateRates(CurrenciesRate rates) {

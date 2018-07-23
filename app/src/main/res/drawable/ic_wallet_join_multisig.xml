@@ -1,0 +1,19 @@
+<!--
+  ~ Copyright 2018 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<vector android:height="24dp" android:viewportHeight="24"
+    android:viewportWidth="25" android:width="24dp"
+    xmlns:aapt="http://schemas.android.com/aapt" xmlns:android="http://schemas.android.com/apk/res/android">
+    <path android:fillType="nonZero" android:pathData="M11.458,24c0,-1.657 1.4,-3 3.125,-3 1.726,0 3.125,1.343 3.125,3h-6.25zM22.135,19.719h1.97a0.75,0.75 0,0 1,0.75 0.75v0.062a0.75,0.75 0,0 1,-0.75 0.75h-1.97v1.969a0.75,0.75 0,0 1,-0.75 0.75h-0.062a0.75,0.75 0,0 1,-0.75 -0.75v-1.969h-1.969a0.75,0.75 0,0 1,-0.75 -0.75v-0.062a0.75,0.75 0,0 1,0.75 -0.75h1.969L20.573,17.75a0.75,0.75 0,0 1,0.75 -0.75h0.062a0.75,0.75 0,0 1,0.75 0.75v1.969zM19.643,16.213a2.195,2.195 0,0 0,-0.633 1.537v0.5h-0.52a2.46,2.46 0,0 0,-0.34 0.023c-0.348,-1.584 -1.813,-2.773 -3.567,-2.773 -1.963,0 -3.564,1.49 -3.643,3.357L2.68,18.857C1.199,18.857 0,17.706 0,16.286L0,2.572C0,1.162 1.21,0 2.679,0L16.07,0a0.901,0.901 0,0 1,0.784 0.425,0.828 0.828,0 0,1 0,0.864 0.901,0.901 0,0 1,-0.784 0.425L2.68,1.714c-0.505,0 -0.893,0.373 -0.893,0.858 0,0.484 0.388,0.857 0.893,0.857h15.178c0.987,0 1.786,0.767 1.786,1.714v11.07zM14.546,21c-1.15,0 -2.083,-0.895 -2.083,-2s0.933,-2 2.083,-2c1.151,0 2.084,0.895 2.084,2s-0.933,2 -2.084,2z">
+        <aapt:attr name="android:fillColor">
+            <gradient android:endX="29.1318" android:endY="-0.003275708"
+                android:startX="-3.0437431" android:startY="22.3925" android:type="linear">
+                <item android:color="#FF00B2FF" android:offset="0"/>
+                <item android:color="#FF007AFF" android:offset="1"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+</vector>
