@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -24,6 +25,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.samwolfand.oneprefs.Prefs;
+
+import org.json.JSONObject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -225,10 +228,18 @@ public class CreateAssetFragment extends BaseFragment {
         Wallet walletRealmObject = walletViewModel.createWallet(editTextWalletName.getText().toString(), chainId, chainNet);
         MultyApi.INSTANCE.addWallet(getActivity(), walletRealmObject).enqueue(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 if (response.isSuccessful()) {
-                    //todo improve when Jack will change api with 'dateofcreation' param in response
-                    loadCreatedWallet(chainId, chainNet);
+                    try {
+                        String body = response.body().string();
+                        long dateOfCreation = new JSONObject(body).getLong("time");
+                        walletRealmObject.setDateOfCreation(dateOfCreation);
+                        RealmManager.getAssetsDao().saveWallet(walletRealmObject);
+                        showWalletInfoActivity(walletRealmObject);
+                    } catch (Throwable t) {
+                        t.printStackTrace();
+                        loadCreatedWallet(chainId, chainNet);
+                    }
                 } else {
                     walletViewModel.errorMessage.setValue(getString(R.string.something_went_wrong));
                     walletViewModel.isLoading.setValue(false);
