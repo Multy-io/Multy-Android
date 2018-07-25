@@ -84,6 +84,8 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activities.CreateAssetActivity"
+            android:resizeableActivity="true"
+            android:windowSoftInputMode="adjustResize|stateAlwaysVisible"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activities.AmountChooserActivity"

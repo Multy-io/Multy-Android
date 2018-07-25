@@ -249,4 +249,6 @@
     <string name="wallet_members">Участники кошелька</string>
     <string name="create_multisig">Создать MultiSig</string>
     <string name="join_multisig">Присоединиться к MultiSig</string>
+    <string name="point_your_camera">Поместите в камеру идентификационный QR-код или вставьте ваш код приглашения</string>
+    <string name="join_wallet">Присоединить кошелек</string>
 </resources>

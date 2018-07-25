@@ -60,6 +60,7 @@
     <color name="blue_transparent">#b3007aff</color>
     <color name="blue_lightest">#e6ecf3</color>
     <color name="background_black_transparent">#ca20060b</color>
+    <color name="background_dark_transparent">#b2000000</color>
     <color name="blue_sky">#00b7ff</color>
     <color name="blue_sky_dark">#008dff</color>
     <color name="divider_grey">#dfe0e6</color>
