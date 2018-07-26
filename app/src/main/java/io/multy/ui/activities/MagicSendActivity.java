@@ -61,6 +61,7 @@ import io.multy.model.entities.FastReceiver;
 import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.requests.HdTransactionRequestEntity;
+import io.multy.model.responses.FeeRateResponse;
 import io.multy.storage.RealmManager;
 import io.multy.ui.adapters.MyWalletPagerAdapter;
 import io.multy.ui.adapters.ReceiversPagerAdapter;
@@ -191,7 +192,7 @@ public class MagicSendActivity extends BaseActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
-            case REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS: {
+            case REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS:
                 Map<String, Integer> perms = new HashMap<>();
                 perms.put(Manifest.permission.ACCESS_FINE_LOCATION, PackageManager.PERMISSION_GRANTED);
 
@@ -206,8 +207,12 @@ public class MagicSendActivity extends BaseActivity {
                     Analytics.getInstance(this).logEvent(AnalyticsConstants.KF_PERMISSIONS_GRANTED, Manifest.permission.ACCESS_FINE_LOCATION, String.valueOf(false));
                     finish();
                 }
-            }
-            break;
+                break;
+            case Constants.CAMERA_REQUEST_CODE:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    startActivityForResult(new Intent(this, ScanActivity.class), Constants.CAMERA_REQUEST_CODE);
+                }
+                break;
             default:
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
@@ -470,8 +475,8 @@ public class MagicSendActivity extends BaseActivity {
         handler.postDelayed(updateReceiversAction, UPDATE_PERIOD / 5);
     }
 
-    private boolean send() throws JniException, JSONException {
-        final Wallet wallet = RealmManager.getAssetsDao().getWalletById(walletPagerAdapter.getSelectedWalletId(pagerWallets.getCurrentItem()));
+    private boolean send(Wallet wallet, String gasPrice) throws JniException {
+
         final byte[] seed = RealmManager.getSettingsDao().getSeed().getSeed();
         FastReceiver receiver = receiversPagerAdapter.getReceiver(pagerRequests.getCurrentItem());
         String changeAddress = "";
@@ -490,8 +495,8 @@ public class MagicSendActivity extends BaseActivity {
                 break;
             case ETH:
                 transaction = NativeDataHelper.makeTransactionETH(seed, wallet.getIndex(), 0, wallet.getCurrencyId(),
-                        wallet.getNetworkId(), String.valueOf(wallet.getActiveAddress().getAmount()), receiver.getAmount(),
-                        receiver.getAddress(), "21000", "1000000000", wallet.getEthWallet().getNonce());
+                        wallet.getNetworkId(), wallet.getActiveAddress().getAmountString(), receiver.getAmount(),
+                        receiver.getAddress(), Constants.GAS_LIMIT_DEFAULT, gasPrice, wallet.getEthWallet().getNonce());
                 isHd = false;
                 break;
             default:
@@ -575,13 +580,23 @@ public class MagicSendActivity extends BaseActivity {
                     walletPagerAdapter.showElements(pagerWallets.getCurrentItem());
                     enableScroll();
 
-                    try {
-                        send();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        showError(e);
-                        return;
-                    }
+                    final Wallet wallet = RealmManager.getAssetsDao().getWalletById(walletPagerAdapter.getSelectedWalletId(pagerWallets.getCurrentItem()));
+                    MultyApi.INSTANCE.getFeeRates(wallet.getCurrencyId(), wallet.getNetworkId()).enqueue(new Callback<FeeRateResponse>() {
+                        @Override
+                        public void onResponse(Call<FeeRateResponse> call, Response<FeeRateResponse> response) {
+                            try {
+                                send(wallet, String.valueOf((response.body()).getSpeeds().getFast()));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                showError(e);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<FeeRateResponse> call, Throwable t) {
+
+                        }
+                    });
 
                     receiversPagerAdapter.showSuccess(pagerRequests.getCurrentItem());
                 }).setDuration(500).alpha(0).setInterpolator(new AnticipateOvershootInterpolator()).start();

@@ -46,7 +46,7 @@ public class MyWalletsAdapter extends RecyclerView.Adapter<MyWalletsAdapter.Hold
         Wallet wallet = data.get(position);
 
         holder.name.setText(wallet.getWalletName());
-        holder.imagePending.setVisibility(wallet.isPending() ? View.VISIBLE : View.GONE);
+        boolean pending = wallet.isPending();
 
         if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.ETH.getValue() && wallet.isPending()) {
             holder.amount.setText(wallet.getEthWallet().getPendingBalanceLabel());
@@ -59,6 +59,7 @@ public class MyWalletsAdapter extends RecyclerView.Adapter<MyWalletsAdapter.Hold
         holder.imageChain.setImageResource(wallet.getIconResourceId());
         holder.itemView.setOnClickListener(view -> listener.onWalletClick(wallet));
         holder.resync.setVisibility(wallet.isSyncing() ? View.VISIBLE : View.GONE);
+        holder.imagePending.setVisibility(pending ? View.VISIBLE : View.GONE);
     }
 
     @Override

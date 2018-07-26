@@ -176,13 +176,16 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         Wallet wallet = viewModel.getWalletLive().getValue();
 
         if (wallet.isPending()) {
-//            if (wallet.isIncoming()) {
-            textBalance.setText(wallet.getAvailableBalanceLabel());
-            textBalanceFiat.setText(wallet.getAvailableFiatBalanceLabel());
-//            } else {
-//                textBalance.setText(String.format("%d %s", 0, wallet.getCurrencyName()));
-//                textBalanceFiat.setText(String.format("%d %s", 0, wallet.getFiatString()));
-//            }
+//            textBalance.setText(wallet.getAvailableBalanceLabel());
+//            textBalanceFiat.setText(wallet.getAvailableFiatBalanceLabel());
+
+            if (wallet.isIncoming()) {
+                textBalance.setText(wallet.getAvailableBalanceLabel());
+                textBalanceFiat.setText(wallet.getAvailableFiatBalanceLabel());
+            } else {
+                textBalance.setText(String.format("%d %s", 0, wallet.getCurrencyName()));
+                textBalanceFiat.setText(String.format("%d %s", 0, wallet.getFiatString()));
+            }
 
             containerPending.expand();
             if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()) {
@@ -194,15 +197,8 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
                 textPendingBalanceFiat.append(wallet.getFiatString());
             }
         } else {
-            String balance = wallet.getCurrencyId() == NativeDataHelper.Blockchain.ETH.getValue() && !wallet.getEthWallet().getPendingBalance().equals("0") ? wallet.getEthWallet().getPendingBalanceLabel() : wallet.getBalanceLabel();
-            String fiatBalance = wallet.getCurrencyId() == NativeDataHelper.Blockchain.ETH.getValue() && !wallet.getEthWallet().getPendingBalance().equals("0") ? wallet.getEthWallet().getFiatPendingBalanceLabel() : wallet.getFiatBalanceLabel();
-
-            textBalance.setText(balance);
-            textBalanceFiat.setText(fiatBalance);
-
-            if (fiatBalance.contains(wallet.getFiatString())) {
-                textBalanceFiat.append(wallet.getFiatString());
-            }
+            textBalance.setText(wallet.getBalanceLabel());
+            textBalanceFiat.setText(wallet.getFiatBalanceLabel());
 
             containerPending.collapse();
         }
@@ -357,11 +353,15 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     @OnClick(R.id.button_send)
     void onClickSend() {
         Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_SEND, viewModel.getChainId());
-        if (viewModel.getWalletLive().getValue() != null &&
-                viewModel.getWalletLive().getValue().getAvailableBalanceNumeric().compareTo(BigDecimal.ZERO) <= 0) {
+        if (viewModel.getWalletLive().getValue() != null && viewModel.getWalletLive().getValue().getAvailableBalanceNumeric().compareTo(BigDecimal.ZERO) <= 0) {
             Toast.makeText(getActivity(), R.string.no_balance, Toast.LENGTH_SHORT).show();
             return;
         }
+
+        if (viewModel.getWalletLive().getValue().isPending()) {
+            return;
+        }
+
         startActivity(new Intent(getActivity(), AssetSendActivity.class)
                 .addCategory(Constants.EXTRA_SENDER_ADDRESS)
                 .putExtra(Constants.EXTRA_WALLET_ID, getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0)));
