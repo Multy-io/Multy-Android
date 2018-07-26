@@ -317,4 +317,5 @@
     <string name="user_joined">Users joined</string>
     <string name="invitation_code">Invitation Code</string>
     <string name="invalid_entered_sum">Entered Invalid Sum</string>
+    <string name="no_available_donation">There are no available funds for donation.</string>
 </resources>
