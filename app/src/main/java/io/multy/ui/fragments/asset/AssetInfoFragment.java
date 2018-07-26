@@ -200,7 +200,7 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
             textBalance.setText(balance);
             textBalanceFiat.setText(fiatBalance);
 
-            if (fiatBalance.contains(wallet.getFiatString())) {
+            if (!fiatBalance.contains(wallet.getFiatString())) {
                 textBalanceFiat.append(wallet.getFiatString());
             }
 

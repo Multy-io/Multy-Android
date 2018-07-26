@@ -202,7 +202,7 @@ public class AssetSendViewModel extends BaseViewModel {
                     getReceiverAddress().getValue(), changeAddress, donationAddress, isPayForCommission);
             transaction.setValue(byteArrayToHex(transactionHex));
         } catch (JniException e) {
-            errorMessage.setValue("Entered sum is invalid.");
+            errorMessage.setValue(Multy.getContext().getString(R.string.invalid_entered_sum));
             e.printStackTrace();
         }
     }
@@ -217,7 +217,7 @@ public class AssetSendViewModel extends BaseViewModel {
                     getWallet().getActiveAddress().getAmountString(), signAmount/*CryptoFormatUtils.ethToWei(String.valueOf(amount))*/, getReceiverAddress().getValue(), "21000", String.valueOf(fee.getValue().getAmount()), getWallet().getEthWallet().getNonce());
             transaction.setValue(byteArrayToHex(tx));
         } catch (JniException e) {
-            errorMessage.setValue("Entered sum is invalid.");
+            errorMessage.setValue(Multy.getContext().getString(R.string.invalid_entered_sum));
             e.printStackTrace();
         }
     }
