@@ -240,4 +240,5 @@
     <string name="add_to_contact">Добавить к контакту</string>
     <string name="address_not_match">Адрес не подходит для выбранного блокчейна</string>
     <string name="invalid_entered_sum">Введена неверная сумма</string>
+    <string name="no_available_donation">Нет доступных средств для пожертвования.</string>
 </resources>
