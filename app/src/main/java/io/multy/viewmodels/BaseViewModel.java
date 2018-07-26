@@ -28,7 +28,7 @@ public class BaseViewModel extends ViewModel {
     @NonNull
     private final CompositeDisposable disposables = new CompositeDisposable();
 
-    final void addDisposable(@NonNull Disposable disposable, @NonNull Disposable... disposables) {
+    public final void addDisposable(@NonNull Disposable disposable, @NonNull Disposable... disposables) {
         this.disposables.add(disposable);
 
         for (Disposable d : disposables) {

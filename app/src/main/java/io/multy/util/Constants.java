@@ -119,6 +119,8 @@ public final class Constants {
     public static final int MIN_SATOSHI = 546;
     public static final String GAS_LIMIT_DEFAULT = "21000";
 
+    public static final int MULTISIG_MEMBERS_COUNT = 50;
+
     public static final String[] rootFiles = {
             "init.magisk.rc",
             "magisk",

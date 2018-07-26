@@ -240,6 +240,16 @@
     <string name="shure_delete_contact">Видалити контакт?</string>
     <string name="add_to_contact">Призначити контакту</string>
     <string name="address_not_match">Адресу не підходить для обраного блокчейна</string>
+    <string name="create_multisig_wallet">Створити MultiSig</string>
+    <string name="signs_members">Кількість підтверджень для відправки і учасників гаманця</string>
+    <string name="linked_wallet">Прив\'язаний гаманець</string>
+    <string name="multisig_wallet_notification">Ваш прив\'язаний гаманець буде використовуватися для оплати транзакцій multisig гаманця. Ви не зможете його змінити після створення multisig гаманця.</string>
+    <string name="select_your_wallet">Виберіть гаманець</string>
+    <string name="of">з</string>
+    <string name="signs_to_send">Підтверджень для відправки</string>
+    <string name="wallet_members">Учасники гаманця</string>
+    <string name="create_multisig">Створити MultiSig</string>
+    <string name="join_multisig">Приєднатися до MultiSig</string>
     <string name="invalid_entered_sum">Введена невірна сума</string>
     <string name="no_available_donation">Немає доступних засобів для пожертвування.</string>
 </resources>

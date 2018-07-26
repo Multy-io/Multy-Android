@@ -11,9 +11,12 @@ import android.support.v4.app.Fragment;
 
 import io.multy.R;
 import io.multy.ui.fragments.asset.CreateAssetFragment;
+import io.multy.ui.fragments.asset.CreateMultisigBlankFragment;
 import io.multy.util.analytics.Analytics;
 
 public class CreateAssetActivity extends BaseActivity {
+
+    public static final String EXTRA_MULTISIG = "EXTRA_MULTISIG";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,9 +27,15 @@ public class CreateAssetActivity extends BaseActivity {
             getSupportActionBar().hide();
         }
 
-        Fragment fragment = getSupportFragmentManager().findFragmentByTag(CreateAssetFragment.TAG);
+        boolean isMultisig = getIntent().getBooleanExtra(EXTRA_MULTISIG, false);
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(isMultisig ?
+                CreateMultisigBlankFragment.TAG : CreateAssetFragment.TAG);
         if (fragment == null) {
-            fragment = CreateAssetFragment.getInstance();
+            if (isMultisig) {
+                fragment = CreateMultisigBlankFragment.getInstance();
+            } else {
+                fragment = CreateAssetFragment.getInstance();
+            }
         }
         fragment.setArguments(getIntent().getExtras());
         getSupportFragmentManager().beginTransaction()

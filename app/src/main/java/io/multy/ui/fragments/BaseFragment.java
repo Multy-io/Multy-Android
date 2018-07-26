@@ -85,17 +85,7 @@ public class BaseFragment extends Fragment implements ConnectionReceiver.Connect
             baseViewModel.isLoading.observe(this, aBoolean -> {
                 if (aBoolean != null) {
                     if (aBoolean) {
-                        if (progressDialog == null) {
-                            progressDialog = new Dialog(getActivity());
-                            progressDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                            progressDialog.setContentView(R.layout.dialog_spinner);
-                            progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                            progressDialog.setCancelable(false);
-                            progressDialog.setCanceledOnTouchOutside(false);
-                            progressDialog.show();
-                        } else {
-                            progressDialog.show();
-                        }
+                        showProgressDialog();
                     } else {
                         dismissProgressDialog();
                     }
@@ -105,6 +95,20 @@ public class BaseFragment extends Fragment implements ConnectionReceiver.Connect
             baseViewModel.criticalMessage.observe(this, s -> {
                 //TODO show critical message and maybe exit?
             });
+        }
+    }
+
+    public void showProgressDialog() {
+        if (progressDialog == null) {
+            progressDialog = new Dialog(getActivity());
+            progressDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            progressDialog.setContentView(R.layout.dialog_spinner);
+            progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+            progressDialog.setCancelable(false);
+            progressDialog.setCanceledOnTouchOutside(false);
+            progressDialog.show();
+        } else {
+            progressDialog.show();
         }
     }
 

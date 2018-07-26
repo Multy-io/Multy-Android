@@ -11,6 +11,7 @@ import io.multy.model.entities.AuthEntity;
 import io.multy.model.entities.TransactionRequestEntity;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.requests.AddWalletAddressRequest;
+import io.multy.model.requests.CreateMultisigRequest;
 import io.multy.model.requests.HdTransactionRequestEntity;
 import io.multy.model.requests.UpdateWalletNameRequest;
 import io.multy.model.responses.AddressBalanceResponse;
@@ -38,6 +39,9 @@ public interface ApiServiceInterface {
 
     @POST("api/v1/wallet")
     Call<ResponseBody> addWallet(@Body Wallet wallet);
+
+    @POST("api/v1/wallet")
+    Call<ResponseBody> addWallet(@Body CreateMultisigRequest request);
 
     @POST("api/v1/gettransactioninfo/{id}")
     Call<ResponseBody> getTransactionInfo(@Path("id") String transactionId);
