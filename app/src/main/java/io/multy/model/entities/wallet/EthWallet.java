@@ -89,7 +89,7 @@ public class EthWallet extends RealmObject {
     }
 
     public static double getTransactionPrice(long gasPrice) {
-        return CryptoFormatUtils.weiToEth(String.valueOf(Constants.GAS_LIMIT_VALUE * gasPrice));
+        return CryptoFormatUtils.weiToEth(String.valueOf(Long.valueOf(Constants.GAS_LIMIT_DEFAULT) * gasPrice));
     }
 
     public BigInteger getPendingBalanceNumeric() {
