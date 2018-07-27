@@ -88,7 +88,7 @@ public class Multy extends Application {
             Base64.decode(key, Base64.NO_WRAP);
             return new RealmConfiguration.Builder()
                     .encryptionKey(Base64.decode(key, Base64.NO_WRAP))
-                    .schemaVersion(5)
+                    .schemaVersion(6)
                     .migration(new MultyRealmMigration())
                     .build();
         } catch (Exception e) {

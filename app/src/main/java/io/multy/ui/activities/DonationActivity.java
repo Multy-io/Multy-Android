@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.samwolfand.oneprefs.Prefs;
 
+import io.multy.Multy;
 import io.multy.R;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.storage.RealmManager;
@@ -51,6 +52,6 @@ public class DonationActivity extends BaseActivity {
             }
         }
 
-        Toast.makeText(context, "There are no available funds for donation.", Toast.LENGTH_LONG).show();
+        Toast.makeText(context, Multy.getContext().getString(R.string.no_available_donation), Toast.LENGTH_LONG).show();
     }
 }

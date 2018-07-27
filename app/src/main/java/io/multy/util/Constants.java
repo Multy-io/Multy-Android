@@ -17,8 +17,6 @@ public final class Constants {
             + " " + android.os.Build.MODEL + " (" + android.os.Build.PRODUCT + ")"
             + " " + Build.VERSION.RELEASE
             + " " + Build.VERSION_CODES.class.getFields()[android.os.Build.VERSION.SDK_INT].getName();
-    public static final int GAS_LIMIT_VALUE = 21000;
-
     public static final String BASE_URL = Multy.getContext().getString(R.string.base_url);
 
     public static final int DONATION_MIN_VALUE = 10000;
@@ -119,6 +117,7 @@ public final class Constants {
     public static final String CONTACT_MIMETYPE = "vnd.android.cursor.item/vnd.io.multy.contacts.profile";
 
     public static final int MIN_SATOSHI = 546;
+    public static final String GAS_LIMIT_DEFAULT = "21000";
 
     public static final int MULTISIG_MEMBERS_COUNT = 50;
     public static final int INVITE_CODE_LENGTH = 45;

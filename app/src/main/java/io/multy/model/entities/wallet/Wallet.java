@@ -52,6 +52,11 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
     @SerializedName("issyncing")
     private boolean syncing = false;
 
+    @SerializedName("in")
+    private int in;
+    @SerializedName("out")
+    private int out;
+
     private int fiatId; //id of chosen fiat currency for this walelt
 
     private String balance = "0"; //satoshi for btc, wei for eth
@@ -487,6 +492,14 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
 
     public long getId() {
         return dateOfCreation;
+    }
+
+    public int getIncomingTxCount() {
+        return in;
+    }
+
+    public int getOutcomingTxCount() {
+        return out;
     }
 
     public static String getAddressAmount(WalletAddress address, int currencyId) {
