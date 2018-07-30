@@ -93,8 +93,18 @@ public class BlueSocketManager {
             });
 
             socket
-                    .on(Socket.EVENT_CONNECT_ERROR, args -> ((Exception) args[0]).printStackTrace())
-                    .on(Socket.EVENT_CONNECT_TIMEOUT, args -> log("connection timeout"))
+                    .on(Socket.EVENT_CONNECT_ERROR, new Emitter.Listener() {
+                        @Override
+                        public void call(Object... args) {
+                            Timber.e("Error connecting to socket: " + args[0].toString());
+                        }
+                    })
+                    .on(Socket.EVENT_CONNECT_TIMEOUT, new Emitter.Listener() {
+                        @Override
+                        public void call(Object... args) {
+                            BlueSocketManager.this.log("connection timeout");
+                        }
+                    })
 //                    .on(Socket.EVENT_CONNECT, args -> log("Connected"))
                     .on(EVENT_RECEIVER_ON, new Emitter.Listener() {
                         @Override

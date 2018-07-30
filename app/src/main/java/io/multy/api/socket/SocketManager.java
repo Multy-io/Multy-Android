@@ -21,6 +21,7 @@ import io.multy.util.Constants;
 import io.socket.client.IO;
 import io.socket.client.Manager;
 import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
 import io.socket.engineio.client.Transport;
 import io.socket.engineio.client.transports.WebSocket;
 import okhttp3.OkHttpClient;
@@ -38,7 +39,7 @@ public class SocketManager {
     private static final String EVENT_RECEIVE = "TransactionUpdate";
     @Deprecated
     private static final String EVENT_RECEIVE_DEPRECATED = "btcTransactionUpdate";
-//    private static final String EVENT_EXCHANGE_RESPONSE = "exchangePoloniex";
+    //    private static final String EVENT_EXCHANGE_RESPONSE = "exchangePoloniex";
     private static final String EVENT_EXCHANGE_RESPONSE = "exchangeGdax";
 
     private Socket socket;
@@ -92,14 +93,14 @@ public class SocketManager {
                 });
             });
 
-            socket.on(Socket.EVENT_CONNECT_ERROR, args -> ((Exception) args[0]).printStackTrace())
-                    .on(Socket.EVENT_CONNECT_TIMEOUT, args -> log("connection timeout"))
-                    .on(Socket.EVENT_CONNECT, args -> log("Connected"))
+            socket.on(Socket.EVENT_CONNECT_ERROR, args -> Timber.e("Error connecting to socket: " + args[0].toString()))
+                    .on(Socket.EVENT_CONNECT_TIMEOUT, args -> Timber.e("connection timeout"))
+                    .on(Socket.EVENT_CONNECT, args -> Timber.i("Connected"))
                     .on(EVENT_EXCHANGE_RESPONSE, args -> {
                         Timber.i("received rate " + String.valueOf(args[0]));
                         rates.postValue(gson.fromJson(String.valueOf(args[0]), CurrenciesRate.class));
                     })
-                    .on(Socket.EVENT_DISCONNECT, args -> log("Disconnected"))
+                    .on(Socket.EVENT_DISCONNECT, args -> Timber.i("Disconnected"))
                     .on(EVENT_RECEIVE, args -> {
                         try {
                             Timber.i("UPDATE " + String.valueOf(args[0]));
@@ -108,21 +109,17 @@ public class SocketManager {
                             e.printStackTrace();
                         }
                     }).on(EVENT_RECEIVE_DEPRECATED, args -> {
-                        try {
-                            Timber.i("UPDATE " + String.valueOf(args[0]));
-                            transactionUpdateEntity.postValue(gson.fromJson(String.valueOf(args[0]), TransactionUpdateResponse.class).getEntity());
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    });
+                try {
+                    Timber.i("UPDATE " + String.valueOf(args[0]));
+                    transactionUpdateEntity.postValue(gson.fromJson(String.valueOf(args[0]), TransactionUpdateResponse.class).getEntity());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
             socket.connect();
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-    }
-
-    private void log(String message) {
-        Timber.i(TAG, message);
     }
 
     public void disconnect() {
