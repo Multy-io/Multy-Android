@@ -7,6 +7,7 @@
 package io.multy.ui.fragments.asset;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -32,6 +33,7 @@ import io.multy.model.entities.DonateFeatureEntity;
 import io.multy.model.entities.TransactionHistory;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.entities.wallet.WalletAddress;
+import io.multy.ui.activities.AssetActivity;
 import io.multy.ui.activities.BaseActivity;
 import io.multy.ui.adapters.TransactionAddressAdapter;
 import io.multy.ui.fragments.BaseFragment;
@@ -185,14 +187,19 @@ public class TransactionInfoFragment extends BaseFragment {
     private void loadTransactionHistory(final int currencyId, final int networkId, final int walletIndex) {
         this.networkId = networkId;
         viewModel.getTransactionsHistory(currencyId, networkId, walletIndex).observe(this, transactionHistories -> {
-            if (transactionHistories == null || transactionHistories.size() == 0) {
+            if (transactionHistories == null || transactionHistories.size() == 0 || getActivity() == null) {
                 return;
             } else if (transaction != null) {
                 setData();
                 return;
             }
             if (selectedPosition == NO_POSITION) {
-                initTransactionFromHash(transactionHistories);
+                if (!initTransactionFromHash(transactionHistories)) {
+                    getActivity().finish();
+                    startActivity(new Intent(getActivity(), AssetActivity.class)
+                            .putExtra(Constants.EXTRA_WALLET_ID, viewModel.getWalletLive().getValue().getId()));
+                    return;
+                }
             } else {
                 transaction = transactionHistories.get(selectedPosition);
             }
@@ -200,15 +207,16 @@ public class TransactionInfoFragment extends BaseFragment {
         });
     }
 
-    private void initTransactionFromHash(List<TransactionHistory> transactionHistories) {
+    private boolean initTransactionFromHash(List<TransactionHistory> transactionHistories) {
         for (TransactionHistory transaction : transactionHistories) {
             if (transaction.getTxId().equals(txid)) {
                 this.transaction = transaction;
                 progress.setVisibility(View.GONE);
                 groupDataViews.setVisibility(View.VISIBLE);
-                break;
+                return true;
             }
         }
+        return false;
     }
 
     private long getOutComingAmount(TransactionHistory transactionHistory, List<String> walletAddresses, double exchangeRate) {
