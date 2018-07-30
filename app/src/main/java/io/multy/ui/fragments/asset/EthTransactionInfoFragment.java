@@ -7,6 +7,7 @@
 package io.multy.ui.fragments.asset;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -28,6 +29,7 @@ import butterknife.OnClick;
 import io.multy.R;
 import io.multy.model.entities.TransactionHistory;
 import io.multy.model.entities.wallet.Wallet;
+import io.multy.ui.activities.AssetActivity;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.WebFragment;
 import io.multy.ui.fragments.dialogs.AddressActionsDialogFragment;
@@ -170,22 +172,28 @@ public class EthTransactionInfoFragment extends BaseFragment {
             return;
         }
         if (selectedPosition == TransactionInfoFragment.NO_POSITION) {
-            initTransactionFromHash(transactionHistories);
+            if (!initTransactionFromHash(transactionHistories)) {
+                getActivity().finish();
+                startActivity(new Intent(getActivity(), AssetActivity.class)
+                        .putExtra(Constants.EXTRA_WALLET_ID, viewModel.getWalletLive().getValue().getId()));
+                return;
+            }
         } else {
             transaction = transactionHistories.get(selectedPosition);
         }
         setData();
     }
 
-    private void initTransactionFromHash(List<TransactionHistory> transactionHistories) {
+    private boolean initTransactionFromHash(List<TransactionHistory> transactionHistories) {
         for (TransactionHistory transaction : transactionHistories) {
             if (transaction.getTxHash().equals(txHash)) {
                 this.transaction = transaction;
                 progress.setVisibility(View.GONE);
                 groupDataViews.setVisibility(View.VISIBLE);
-                break;
+                return true;
             }
         }
+        return false;
     }
 
     private void setData() {

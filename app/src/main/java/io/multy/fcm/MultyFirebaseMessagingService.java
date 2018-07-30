@@ -20,11 +20,12 @@ import com.samwolfand.oneprefs.Prefs;
 
 import net.khirr.library.foreground.Foreground;
 
+import io.multy.Multy;
 import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.responses.SingleWalletResponse;
-import io.multy.storage.RealmManager;
+import io.multy.storage.AssetsDao;
 import io.multy.ui.activities.AssetActivity;
 import io.multy.ui.activities.MainActivity;
 import io.multy.util.Constants;
@@ -32,6 +33,7 @@ import io.multy.util.CryptoFormatUtils;
 import io.multy.util.NativeDataHelper;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
+import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -56,25 +58,31 @@ public class MultyFirebaseMessagingService extends FirebaseMessagingService {
                     MultyApi.INSTANCE.getWalletVerbose(walletIndex, currencyId, networkId).enqueue(new Callback<SingleWalletResponse>() {
                         @Override
                         public void onResponse(Call<SingleWalletResponse> call, Response<SingleWalletResponse> response) {
-                            if (response.isSuccessful() && response.body().getWallets() != null) {
-                                RealmManager.getAssetsDao().saveWallet(response.body().getWallets().get(0));
-                                String amount = "";
-                                switch (NativeDataHelper.Blockchain.valueOf(currencyId)) {
-                                    case BTC:
-                                        amount = CryptoFormatUtils.satoshiToBtcLabel(Long.parseLong(remoteMessage.getData().get(KEY_AMOUNT)));
-                                        break;
-                                    case ETH:
-                                        amount = CryptoFormatUtils.weiToEthLabel(remoteMessage.getData().get(KEY_AMOUNT));
-                                        break;
+                            Realm realm = Realm.getInstance(Multy.getRealmConfiguration());
+                            try {
+                                if (response.isSuccessful() && response.body().getWallets() != null) {
+                                    AssetsDao dao = new AssetsDao(realm);
+                                    dao.saveWallet(response.body().getWallets().get(0));
+                                    String amount = "";
+                                    switch (NativeDataHelper.Blockchain.valueOf(currencyId)) {
+                                        case BTC:
+                                            amount = CryptoFormatUtils.satoshiToBtcLabel(Long.parseLong(remoteMessage.getData().get(KEY_AMOUNT)));
+                                            break;
+                                        case ETH:
+                                            amount = CryptoFormatUtils.weiToEthLabel(remoteMessage.getData().get(KEY_AMOUNT));
+                                            break;
+                                    }
+                                    final String notification = String.format(getString(R.string.push_new_transaction_notification), amount);
+                                    Wallet wallet = dao.getWallet(currencyId, networkId, walletIndex);
+                                    final String txHash = remoteMessage.getData().get(KEY_TX_HASH);
+                                    sendNotification(notification, wallet.getId(), txHash);
+                                } else {
+                                    Log.e(TAG, "get wallet verbose error. walletId = " + String.valueOf(walletIndex) +
+                                            ", currencyId = " + String.valueOf(currencyId) +
+                                            ", networkId = " + String.valueOf(networkId));
                                 }
-                                final String notification = String.format(getString(R.string.push_new_transaction_notification), amount);
-                                Wallet wallet = RealmManager.getAssetsDao().getWallet(currencyId, networkId, walletIndex);
-                                final String txHash = remoteMessage.getData().get(KEY_TX_HASH);
-                                sendNotification(notification, wallet.getId(), txHash);
-                            } else {
-                                Log.e(TAG, "get wallet verbose error. walletId = " + String.valueOf(walletIndex) +
-                                        ", currencyId = " + String.valueOf(currencyId) +
-                                        ", networkId = " + String.valueOf(networkId));
+                            } finally {
+                                realm.close();
                             }
                         }
 
