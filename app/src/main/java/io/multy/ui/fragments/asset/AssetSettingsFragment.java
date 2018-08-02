@@ -7,21 +7,32 @@
 package io.multy.ui.fragments.asset;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
+import android.support.v4.content.ContextCompat;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.github.douglasjunior.androidSimpleTooltip.ArrowDrawable;
+import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip;
 import io.multy.R;
 import io.multy.ui.activities.AssetActivity;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.dialogs.DeleteAssetDialogFragment;
+import io.multy.util.NativeDataHelper;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.WalletViewModel;
@@ -32,6 +43,10 @@ public class AssetSettingsFragment extends BaseFragment {
 
     @BindView(R.id.edit_name)
     EditText inputName;
+    @BindView(R.id.container_params)
+    ViewStub stubParams;
+    @Nullable
+    private WalletParams walletParams;
 
     private WalletViewModel viewModel;
 
@@ -54,13 +69,20 @@ public class AssetSettingsFragment extends BaseFragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_asset_settings, container, false);
         ButterKnife.bind(this, v);
         viewModel.getWalletLive().observe(this, walletRealmObject -> {
             if (walletRealmObject != null && walletRealmObject.getWalletName() != null) {
                 inputName.setText(walletRealmObject.getWalletName());
+                if (walletRealmObject.getCurrencyId() == NativeDataHelper.Blockchain.EOS.getValue() && stubParams.getParent() != null) {  //for multisig need to set
+                    stubParams.setLayoutResource(R.layout.view_wallet_parameters);                      //multisig wallet params
+                    walletParams = new WalletParams(this.stubParams.inflate());                         //view layout id and create
+                    walletParams.textRam.setText("150"); //todo change notifications
+                    walletParams.textCpu.setText("36");
+                    walletParams.textNet.setText("224");
+                }
             }
         });
         Analytics.getInstance(getActivity()).logWalletSettingsLaunch(viewModel.getChainId());
@@ -181,5 +203,72 @@ public class AssetSettingsFragment extends BaseFragment {
                     Analytics.getInstance(getActivity()).logWalletSettings(AnalyticsConstants.WALLET_SETTINGS_DELETE_YES, viewModel.getChainId());
                     deleteWallet();
                 }).show(getChildFragmentManager(), DeleteAssetDialogFragment.TAG);
+    }
+
+    class WalletParams {
+
+        @BindView(R.id.text_ram)
+        TextView textRam;
+        @BindView(R.id.text_cpu)
+        TextView textCpu;
+        @BindView(R.id.text_net)
+        TextView textNet;
+
+        private SimpleTooltip.Builder simpleTooltipBuilder;
+
+        WalletParams(View view) {
+            ButterKnife.bind(this, view);
+        }
+
+        private void showPopup(View view, @StringRes int messageId) {
+            float maxViewWidth = view.getX() - TypedValue
+                    .applyDimension(TypedValue.COMPLEX_UNIT_DIP, 24, getResources().getDisplayMetrics());
+            getTooltipInstance().anchorView(view)
+                    .text(messageId)
+                    .maxWidth(maxViewWidth)
+                    .build().show();
+        }
+
+        private SimpleTooltip.Builder getTooltipInstance() {
+            if (simpleTooltipBuilder == null) {
+                Context context = textCpu.getContext();
+                simpleTooltipBuilder = new SimpleTooltip.Builder(getContext())
+                        .padding(0f)
+                        .arrowColor(ContextCompat.getColor(context, R.color.blue_transparent))
+                        .arrowDirection(ArrowDrawable.AUTO)
+                        .arrowHeight(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 12, getResources().getDisplayMetrics()))
+                        .arrowWidth(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources().getDisplayMetrics()))
+                        .contentView(getLayoutInflater().inflate(R.layout.popup_notification, null), R.id.text_notification)
+                        .gravity(Gravity.START)
+                        .animated(false)
+                        .transparentOverlay(true)
+                        .dismissOnInsideTouch(false)
+                        .dismissOnOutsideTouch(true)
+                        .focusable(true)
+                        .textColor(ContextCompat.getColor(context, R.color.white));
+            }
+            return simpleTooltipBuilder;
+        }
+
+        @OnClick(R.id.notification_ram)
+        void onClickHelpRam(View view) {
+            view.setEnabled(false);
+            view.postDelayed(() -> view.setEnabled(true), 500);
+            showPopup(view, R.string.ram_notification);
+        }
+
+        @OnClick(R.id.notification_cpu)
+        void onClickHelpCpu(View view) {
+            view.setEnabled(false);
+            view.postDelayed(() -> view.setEnabled(true), 500);
+            showPopup(view, R.string.cpu_notification);
+        }
+
+        @OnClick(R.id.notification_net)
+        void onClickHelpNet(View view) {
+            view.setEnabled(false);
+            view.postDelayed(() -> view.setEnabled(true), 500);
+            showPopup(view, R.string.net_notification);
+        }
     }
 }

@@ -266,7 +266,6 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
             }
 
             setTransactionsState();
-            viewModel.isLoading.postValue(false);
         });
     }
 

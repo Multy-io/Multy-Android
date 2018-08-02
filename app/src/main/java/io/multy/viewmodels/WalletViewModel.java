@@ -178,11 +178,13 @@ public class WalletViewModel extends BaseViewModel {
                 if (response.isSuccessful() && response.body() != null) {
                     transactions.setValue(response.body().getHistories());
                 }
+                isLoading.postValue(false);
             }
 
             @Override
             public void onFailure(Call<TransactionHistoryResponse> call, Throwable throwable) {
                 throwable.printStackTrace();
+                isLoading.setValue(false);
             }
         });
         return transactions;

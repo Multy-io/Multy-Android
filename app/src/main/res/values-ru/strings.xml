@@ -251,4 +251,8 @@
     <string name="join_multisig">Присоединиться к MultiSig</string>
     <string name="invalid_entered_sum">Введена неверная сумма</string>
     <string name="no_available_donation">Нет доступных средств для пожертвования.</string>
+    <string name="wallet_parameters">Wallet parameters</string>
+    <string name="ram_notification">The RAM is required to store account information such as keys, balance and contract state. Users cannot ask the entire Blockchain if they need any data – it would take too long. So, it is stored in RAM and be accessed from the memory. Every single piece of data is replicated in the RAM of every node. This is the reason why keeping data in RAM is expensive</string>
+    <string name="cpu_notification">The system needs to interpret/comprehend different log/signals pointing towards different actions. The calculation done to regain the actual state of message log is taken care by CPU and is known as Computational debt.  Much like bandwidth, computational capacity is allocated on a fractional reserve basis because they are transient (unused capacity cannot be saved for future use). CPU have an unstacking period of 3 days.</string>
+    <string name="net_notification">Storage works in a similar way as RAM. The content like blog/graphics/videos could be stored in Storage. The blockchain does\'t store the content it just stores the log/hash pointing towards the content.  Storage similar to RAM is a reserved capacity which could not be delegated or leased to others.</string>
 </resources>
