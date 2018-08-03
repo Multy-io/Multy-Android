@@ -156,6 +156,12 @@ public class TransactionHistory {
         private double btcUsd;
         @SerializedName("eth_usd")
         private double ethUsd;
+        @SerializedName("eos_usd")
+        private double eosUsd;
+
+        public double getEosUsd() {
+            return eosUsd;
+        }
 
         public double getBtcUsd() {
             return btcUsd;

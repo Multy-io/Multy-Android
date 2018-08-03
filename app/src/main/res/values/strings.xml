@@ -328,6 +328,11 @@
     <string name="join_multisig">Join MultiSig</string>
     <string name="invalid_entered_sum">Entered Invalid Sum</string>
     <string name="no_available_donation">There are no available funds for donation.</string>
+    <string name="enter_private_key">Enter your private key</string>
+    <string name="found_accounts">We found next accounts</string>
+    <string name="create_wallets">Create Wallets</string>
+    <string name="wrong_private_key">Wrong private key</string>
+    <string name="import_eos_hint">Now we are going to import these accounts into Multy and create corresponding wallets for you. That means your private key will be stored in our secure database. In the nearest future you will be able to replace that key with one Multy-key.</string>
     <string name="wallet_parameters">Wallet parameters</string>
     <string name="ram">RAM</string>
     <string name="cpu">CPU</string>

@@ -17,13 +17,34 @@ public class CurrenciesRate extends RealmObject {
     private int id = 0;
     @SerializedName("btc_usd")
     private double btcToUsd = 1;
-    @SerializedName("BTCtoEUR")
+    @SerializedName("btc_eur")
     private double btcToEur = 1;
 
     @SerializedName("eth_usd")
     private double ethToUsd = 1;
     @SerializedName("eth_eur")
     private double ethToEur = 1;
+
+    @SerializedName("eos_usd")
+    private double eosToUsd = 1;
+    @SerializedName("eos_eur")
+    private double eosToEur = 1;
+
+    public double getEosToUsd() {
+        return eosToUsd;
+    }
+
+    public void setEosToUsd(double eosToUsd) {
+        this.eosToUsd = eosToUsd;
+    }
+
+    public double getEosToEur() {
+        return eosToEur;
+    }
+
+    public void setEosToEur(double eosToEur) {
+        this.eosToEur = eosToEur;
+    }
 
     public double getBtcToUsd() {
         return btcToUsd;

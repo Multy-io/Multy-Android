@@ -59,7 +59,7 @@ public class AssetSendFragment extends BaseFragment implements RecentAddressesAd
     private AssetSendViewModel viewModel;
     private Unbinder unbinder;
 
-    public static AssetSendFragment newInstance(){
+    public static AssetSendFragment newInstance() {
         return new AssetSendFragment();
     }
 
@@ -147,7 +147,7 @@ public class AssetSendFragment extends BaseFragment implements RecentAddressesAd
                         checkAddressForValidation(charSequence.toString(),
                                 viewModel.getWallet().getCurrencyId(), viewModel.getWallet().getNetworkId()) :
                         checkAddressForValidation(charSequence.toString());
-                if (TextUtils.isEmpty(charSequence) || !isValidAddress){
+                if (TextUtils.isEmpty(charSequence) || !isValidAddress) {
                     buttonNext.setBackgroundResource(R.color.disabled);
                     buttonNext.setEnabled(false);
                 } else {
@@ -186,7 +186,8 @@ public class AssetSendFragment extends BaseFragment implements RecentAddressesAd
             AssetSendFragment.this.blockchainId = blockchainId;
             AssetSendFragment.this.networkId = networkId;
             return true;
-        } catch (Throwable ignore) { }
+        } catch (Throwable ignore) {
+        }
         return false;
     }
 
@@ -197,7 +198,7 @@ public class AssetSendFragment extends BaseFragment implements RecentAddressesAd
     }
 
     @OnClick(R.id.button_address)
-    void onClickAddressBook(){
+    void onClickAddressBook() {
         Analytics.getInstance(getActivity()).logSendTo(AnalyticsConstants.SEND_TO_ADDRESS_BOOK);
 //        if (getActivity() != null) {
 //            DonateDialog.getInstance(Constants.DONATE_ADDING_CONTACTS)
@@ -214,19 +215,19 @@ public class AssetSendFragment extends BaseFragment implements RecentAddressesAd
     }
 
     @OnClick(R.id.button_scan_wireless)
-    void onClickWirelessScan(){
+    void onClickWirelessScan() {
         Analytics.getInstance(getActivity()).logSendTo(AnalyticsConstants.SEND_TO_WIRELESS);
         startActivity(new Intent(getActivity(), MagicSendActivity.class));
     }
 
     @OnClick(R.id.button_scan_qr)
-    void onClickScanQr(){
+    void onClickScanQr() {
         Analytics.getInstance(getActivity()).logSendTo(AnalyticsConstants.SEND_TO_QR);
         ((AssetSendActivity) getActivity()).showScanScreen();
     }
 
     @OnClick(R.id.button_next)
-    void onClickNext(){
+    void onClickNext() {
         viewModel.setReceiverAddress(inputAddress.getText().toString());
         viewModel.thoseAddress.setValue(inputAddress.getText().toString());
 //        ((AssetSendActivity) getActivity()).setFragment(R.string.send_from, R.id.container, WalletChooserFragment.newInstance(blockchainId, networkId));
@@ -236,6 +237,8 @@ public class AssetSendFragment extends BaseFragment implements RecentAddressesAd
                 ((AssetSendActivity) getActivity()).setFragment(R.string.transaction_fee, R.id.container, TransactionFeeFragment.newInstance());
             } else if (viewModel.getWallet().getCurrencyId() == NativeDataHelper.Blockchain.ETH.getValue()) {
                 ((AssetSendActivity) getActivity()).setFragment(R.string.transaction_fee, R.id.container, EthTransactionFeeFragment.newInstance());
+            } else if (viewModel.getWallet().getCurrencyId() == NativeDataHelper.Blockchain.EOS.getValue()) {
+                ((AssetSendActivity) getActivity()).setFragment(R.string.transaction_fee, R.id.container, AmountChooserFragment.newInstance());
             }
         }
     }

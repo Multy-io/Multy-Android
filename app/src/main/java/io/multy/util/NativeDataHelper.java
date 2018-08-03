@@ -30,7 +30,8 @@ public class NativeDataHelper {
         //        BTC(0x80000000),
 //        ETH(0x8000003c);
         BTC(0),
-        ETH(60);
+        ETH(60),
+        EOS(194);
 
         private final int value;
 
@@ -112,5 +113,8 @@ public class NativeDataHelper {
     public static native byte[] makeTransactionETH(byte[] seed, int walletIndex, int addressIndex, int chainId, int networkId, String balance, String amount, String destionationAddress, String gasLimit, String gasPrice, String nonce) throws JniException;
 
     public static native String getLibraryVersion() throws JniException;
+
+//    final String key = NativeDataHelper.getPublicKey(194, 0, "5KHUWnDCA7SxbCoEbLdhFZjqsqMFq3K7wXAEYoRp3P6AKQdX7BY");
+    public static native String getPublicKey(int blockChain, int netType, String key);
 
 }

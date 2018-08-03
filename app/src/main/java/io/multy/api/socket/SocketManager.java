@@ -40,7 +40,7 @@ public class SocketManager {
     @Deprecated
     private static final String EVENT_RECEIVE_DEPRECATED = "btcTransactionUpdate";
     //    private static final String EVENT_EXCHANGE_RESPONSE = "exchangePoloniex";
-    private static final String EVENT_EXCHANGE_RESPONSE = "exchangeGdax";
+    private static final String EVENT_EXCHANGE_RESPONSE = "exchangeBitfinex";
 
     private Socket socket;
     private Gson gson;

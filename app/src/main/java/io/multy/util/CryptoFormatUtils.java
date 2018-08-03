@@ -158,6 +158,14 @@ public class CryptoFormatUtils {
         return FORMAT_USD.format(eth * price);
     }
 
+    public static String eosToUsd(double eos, double price) {
+        if (eos == 0) {
+            return "0.0";
+        }
+
+        return FORMAT_USD.format(eos * price);
+    }
+
     public static String ethToUsd(double eth) {
         String result = "$0.0";
 

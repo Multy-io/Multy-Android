@@ -6,6 +6,8 @@
 
 package io.multy.util;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -20,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.multy.model.entities.wallet.BtcWallet;
+import io.multy.model.entities.wallet.EosWallet;
 import io.multy.model.entities.wallet.EthWallet;
 import io.multy.model.entities.wallet.Wallet;
 
@@ -51,6 +54,13 @@ public class WalletDeserializer implements JsonDeserializer<List<Wallet>> {
                         wallet.setAvailableBalance(String.valueOf(btcWallet.calculateAvailableBalance()));
                         wallet.setBalance(String.valueOf(btcWallet.calculateBalance()));
                         wallet.setBtcWallet(btcWallet);
+                        break;
+                    case EOS:
+                        EosWallet eosWallet = gson.fromJson(jsonItemString, EosWallet.class);
+                        String balance = eosWallet.getBalance();
+                        wallet.setAvailableBalance(balance);
+                        wallet.setBalance(balance);
+                        wallet.setEosWallet(eosWallet);
                         break;
                 }
                 wallets.add(wallet);

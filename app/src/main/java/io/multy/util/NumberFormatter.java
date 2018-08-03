@@ -33,4 +33,11 @@ public class NumberFormatter {
         return decimalFormat;
     }
 
+    public static DecimalFormat getEosInstance() {
+        DecimalFormat decimalFormat = new DecimalFormat("##.####", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+        decimalFormat.setMaximumFractionDigits(9);
+        decimalFormat.setMinimumFractionDigits(0);
+        decimalFormat.setGroupingUsed(false);
+        return decimalFormat;
+    }
 }

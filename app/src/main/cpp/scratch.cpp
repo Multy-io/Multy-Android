@@ -261,7 +261,8 @@ Java_io_multy_util_NativeDataHelper_getMyPrivateKey(JNIEnv *env, jclass type_, j
     HANDLE_ERROR(make_master_key(&seed, reset_sp(rootKey)));
 
     HDAccountPtr hdAccount;
-    HANDLE_ERROR(make_hd_account(rootKey.get(), BlockchainType{(Blockchain) blockchain, (size_t) netType},
+    HANDLE_ERROR(make_hd_account(rootKey.get(),
+                                 BlockchainType{(Blockchain) blockchain, (size_t) netType},
                                  BITCOIN_ADDRESS_P2PKH,
                                  walletIndex,
                                  reset_sp(hdAccount)));
@@ -593,6 +594,30 @@ Java_io_multy_util_NativeDataHelper_isValidAddress(JNIEnv *env, jclass type_, js
     return;
 }
 
+JNIEXPORT jstring JNICALL
+Java_io_multy_util_NativeDataHelper_getPublicKey(JNIEnv *env, jclass type_,
+                                                 jint jChainId, jint jNetType, jstring key) {
+
+    using namespace multy_core::internal;
+    const jstring defaultResult{};
+    const char *keyStr = env->GetStringUTFChars(key, nullptr);
+
+    AccountPtr account;
+
+    HANDLE_ERROR(make_account(
+            BlockchainType{(Blockchain) jChainId, (size_t) jNetType}, ACCOUNT_TYPE_DEFAULT,
+            env->GetStringUTFChars(key, nullptr), reset_sp(account)));
+
+    KeyPtr keyPtr;
+    HANDLE_ERROR(account_get_key(account.get(), KEY_TYPE_PUBLIC, reset_sp(keyPtr)));
+
+    ConstCharPtr pubKeyStr;
+    HANDLE_ERROR(key_to_string(keyPtr.get(), reset_sp(pubKeyStr)));
+
+
+    return env->NewStringUTF(pubKeyStr.get());
+}
+
 JNIEXPORT jbyteArray JNICALL
 Java_io_multy_util_NativeDataHelper_makeTransactionETH(JNIEnv *env, jclass type, jbyteArray jSeed,
                                                        jint jWalletIndex,
@@ -666,7 +691,8 @@ Java_io_multy_util_NativeDataHelper_makeTransactionETH(JNIEnv *env, jclass type,
 
 //            BinaryDataPtr address;
 //            HANDLE_ERROR(make_binary_data_from_hex(destinationAddressStr, reset_sp(address)));
-            HANDLE_ERROR(properties_set_string_value(destination, "address", destinationAddressStr));
+            HANDLE_ERROR(
+                    properties_set_string_value(destination, "address", destinationAddressStr));
         }
 
         {
@@ -705,6 +731,75 @@ Java_io_multy_util_NativeDataHelper_makeTransactionETH(JNIEnv *env, jclass type,
     return jbyteArray();
 }
 
+JNIEXPORT jstring JNICALL
+Java_io_multy_util_NativeDataHelper_sendEOS(JNIEnv *env, jclass type_,
+                                            jint jChainId, jint jNetType, jstring key,
+                                            jint blockNumber, jstring refBlockPrefix,
+                                            jstring time, jstring balance, jstring senderAddress,
+                                            jstring sendAmount, jstring receiverAddress) {
+
+    using namespace multy_core::internal;
+    const jbyteArray defaultResult{};
+
+    const char *blockPrefixStr = env->GetStringUTFChars(refBlockPrefix, nullptr);
+    const char *timeStr = env->GetStringUTFChars(time, nullptr);
+    const char *balanceStr = env->GetStringUTFChars(balance, nullptr);
+    const char *senderAddressStr = env->GetStringUTFChars(senderAddress, nullptr);
+    const char *sendAmountStr = env->GetStringUTFChars(sendAmount, nullptr);
+    const char *receiverAddressStr = env->GetStringUTFChars(receiverAddress, nullptr);
+
+    AccountPtr account;
+
+
+    HANDLE_ERROR(make_account(
+            BlockchainType{(Blockchain) jChainId, (size_t) jNetType}, ACCOUNT_TYPE_DEFAULT,
+            env->GetStringUTFChars(key, nullptr), reset_sp(account)));
+
+    TransactionPtr transaction;
+    HANDLE_ERROR(make_transaction(account.get(), reset_sp(transaction)));
+
+    {
+        Properties *properties = nullptr;
+        const int32_t block_num = static_cast<int32_t>(blockNumber);
+
+        BigIntPtr ref_block_prefix;
+        HANDLE_ERROR(make_big_int(blockPrefixStr, reset_sp(ref_block_prefix)));
+
+        HANDLE_ERROR(properties_set_int32_value(properties, "block_num", block_num));
+        HANDLE_ERROR(properties_set_big_int_value(properties, "ref_block_prefix",
+                                                  ref_block_prefix.get()));
+        HANDLE_ERROR(properties_set_string_value(properties, "expiration", timeStr));
+    }
+
+    {
+        Properties *source = nullptr;
+        HANDLE_ERROR(transaction_add_source(transaction.get(), &source));
+
+
+        BigIntPtr balance;
+        HANDLE_ERROR(make_big_int(balanceStr, reset_sp(balance)));
+
+        HANDLE_ERROR(properties_set_big_int_value(source, "amount", balance.get()));
+        HANDLE_ERROR(properties_set_string_value(source, "address", senderAddressStr));
+    }
+
+    {
+        Properties *destination = nullptr;
+        HANDLE_ERROR(transaction_add_destination(transaction.get(), &destination));
+
+        BigIntPtr amount;
+        HANDLE_ERROR(make_big_int(sendAmountStr, reset_sp(amount)));
+        HANDLE_ERROR(properties_set_big_int_value(destination, "amount", amount.get()));
+        HANDLE_ERROR(properties_set_string_value(destination, "address", receiverAddressStr));
+    }
+
+    ConstCharPtr signatures;
+    HANDLE_ERROR(transaction_serialize_encoded(transaction.get(), reset_sp(signatures)));
+
+
+    return env->NewStringUTF(signatures.get());;
+}
+
 #ifdef __cplusplus
 } // extern "C"
 #endif
@@ -740,3 +835,88 @@ Java_io_multy_util_NativeDataHelper_digestSha3256(JNIEnv *env, jclass type, jbyt
                             reinterpret_cast<const jbyte *>(output.data));
     return resultArray;
 }
+
+//func createPublicInfo(binaryData: inout BinaryData, blockchainType: BlockchainType, privateKey: String) -> Result<Dictionary<String, String>, String> {
+//    let binaryDataPointer = UnsafeMutablePointer(mutating: &binaryData)
+//    let privateKeyPointer = privateKey.UTF8CStringPointer
+//    var walletDict = Dictionary<String, String>()
+//
+//    //HD Account
+//    let newAccountPointer: UnsafeMutablePointer<OpaquePointer?> = allocateUnsafeMutableObject()
+//
+//    //New address
+//    let newAddressPointer: UnsafeMutablePointer<OpaquePointer?> = allocateUnsafeMutableObject()
+//    let newAddressStringPointer: UnsafeMutablePointer<UnsafePointer<Int8>?> = allocateUnsafeMutableObject()
+//
+//    //Private
+//    let addressPrivateKeyPointer: UnsafeMutablePointer<OpaquePointer?> = allocateUnsafeMutableObject()
+//    let privateKeyStringPointer: UnsafeMutablePointer<UnsafePointer<Int8>?> = allocateUnsafeMutableObject()
+//
+//    //Public
+//    let addressPublicKeyPointer: UnsafeMutablePointer<OpaquePointer?> = allocateUnsafeMutableObject()
+//    let publicKeyStringPointer: UnsafeMutablePointer<UnsafePointer<Int8>?> = allocateUnsafeMutableObject()
+//
+//    //placed here since we have multiple returns
+//    defer {
+//            free_account(newAccountPointer.pointee)
+//
+//            free_key(addressPrivateKeyPointer.pointee)
+//            free_string(privateKeyStringPointer.pointee)
+//
+//            free_key(addressPublicKeyPointer.pointee)
+//            free_string(publicKeyStringPointer.pointee)
+//
+//            newAccountPointer.deallocate()
+//
+//            newAddressPointer.deallocate()
+//            newAddressStringPointer.deallocate()
+//
+//            addressPrivateKeyPointer.deallocate()
+//            privateKeyStringPointer.deallocate()
+//
+//            addressPublicKeyPointer.deallocate()
+//            publicKeyStringPointer.deallocate()
+//    }
+//
+//    let ma = make_account(blockchainType, ACCOUNT_TYPE_DEFAULT.rawValue, privateKeyPointer, newAccountPointer)
+//
+//    if ma != nil {
+//                let error = errorString(from: ma, mask: "make_account")
+//
+//                return Result.failure(error!)
+//        }
+//
+//
+//    let gakPRIV = account_get_key(newAccountPointer.pointee, KEY_TYPE_PRIVATE, addressPrivateKeyPointer)
+//    _ = errorString(from: gakPRIV, mask: "account_get_key:KEY_TYPE_PRIVATE")
+//    let gakPUBL = account_get_key(newAccountPointer.pointee, KEY_TYPE_PUBLIC, addressPublicKeyPointer)
+//    _ = errorString(from: gakPUBL, mask: "account_get_key:KEY_TYPE_PUBLIC")
+//
+//    let ktsPRIV = key_to_string(addressPrivateKeyPointer.pointee, privateKeyStringPointer)
+//    _ = errorString(from: ktsPRIV, mask: "key_to_string:KEY_TYPE_PRIVATE")
+//    let ktsPUBL = key_to_string(addressPublicKeyPointer.pointee, publicKeyStringPointer)
+//    _ = errorString(from: ktsPUBL, mask: "key_to_string:KEY_TYPE_PUBLIC")
+//
+//    var privateKeyString : String?
+//                           var publicKeyString : String?
+//
+//    if ktsPRIV != nil {
+//                let error = errorString(from: ktsPRIV, mask: "key_to_string:KEY_TYPE_PRIVATE")
+//
+//                return Result.failure(error!)
+//        } else {
+//        privateKeyString = String(cString: privateKeyStringPointer.pointee!)
+//        walletDict["privateKey"] = privateKeyString
+//    }
+//
+//    if ktsPUBL != nil {
+//                let error = errorString(from: ktsPUBL, mask: "key_to_string:KEY_TYPE_PUBLIC")
+//
+//                return Result.failure(error!)
+//        } else {
+//        publicKeyString = String(cString: publicKeyStringPointer.pointee!)
+//        walletDict["publicKey"] = publicKeyString
+//    }
+//
+//    return Result.success(walletDict)
+//}

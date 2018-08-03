@@ -14,8 +14,10 @@ import io.multy.model.requests.AddWalletAddressRequest;
 import io.multy.model.requests.CreateMultisigRequest;
 import io.multy.model.requests.HdTransactionRequestEntity;
 import io.multy.model.requests.UpdateWalletNameRequest;
+import io.multy.model.responses.AccountsResponse;
 import io.multy.model.responses.AddressBalanceResponse;
 import io.multy.model.responses.AuthResponse;
+import io.multy.model.responses.ChainInfoResponse;
 import io.multy.model.responses.FeeRateResponse;
 import io.multy.model.responses.ServerConfigResponse;
 import io.multy.model.responses.SingleWalletResponse;
@@ -29,6 +31,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
@@ -39,6 +42,9 @@ public interface ApiServiceInterface {
 
     @POST("api/v1/wallet")
     Call<ResponseBody> addWallet(@Body Wallet wallet);
+
+    @POST("api/v1/wallet")
+    Observable<ResponseBody> addWalletReactive(@Body Wallet wallet);
 
     @POST("api/v1/wallet")
     Call<ResponseBody> addWallet(@Body CreateMultisigRequest request);
@@ -84,4 +90,11 @@ public interface ApiServiceInterface {
 
     @GET("api/v1/wallets/verbose")
     Call<TestWalletResponse> testWalletVerbose();
+
+    @GET("api/v1/account/{currencyid}/{networkid}/key/{public_key}")
+    Call<AccountsResponse> getAccounts(@Path("currencyid") int currencyId, @Path("networkid") int networkId, @Path("public_key") String publicKey);
+
+    @GET("/api/v1/chain/{currencyid}/{networkid}/info")
+    Call<ChainInfoResponse> getChainInfo(@Path("currencyid") int currencyId, @Path("networkid") int networkId);
+
 }
