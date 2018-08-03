@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2018 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container_params"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:visibility="visible">
+
+
+    <TextView
+        android:id="@+id/title_params"
+        style="@style/SettingSubtitle"
+        android:layout_marginTop="16dp"
+        android:letterSpacing="-0.02"
+        android:text="@string/wallet_parameters"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/divider_top"
+        style="@style/Divider"
+        android:layout_marginTop="16dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title_params" />
+
+    <View
+        android:id="@+id/button_ram"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider_top"
+        style="@style/WalletSettingsParamsButton" />
+
+    <TextView
+        android:id="@+id/title_ram"
+        android:text="@string/ram"
+        app:layout_constraintBottom_toTopOf="@id/text_ram"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/button_ram"
+        app:layout_constraintVertical_chainStyle="packed"
+        style="@style/WalletSettingParamsTitle" />
+
+    <TextView
+        android:id="@+id/text_ram"
+        style="@style/WalletSettingsParamsText"
+        app:layout_constraintBottom_toBottomOf="@id/button_ram"
+        app:layout_constraintLeft_toLeftOf="@id/button_ram"
+        app:layout_constraintRight_toRightOf="@id/button_ram"
+        app:layout_constraintTop_toBottomOf="@id/title_ram"
+        tools:text="150" />
+
+    <ImageView
+        android:id="@+id/notification_ram"
+        android:background="@drawable/selector_white_round"
+        app:srcCompat="@drawable/ic_help_icon"
+        app:layout_constraintTop_toTopOf="@id/button_ram"
+        app:layout_constraintRight_toRightOf="@id/button_ram"
+        app:layout_constraintBottom_toBottomOf="@id/button_ram"
+        style="@style/WalletSettingsParamsImage" />
+
+    <View
+        android:id="@+id/divider_ram"
+        style="@style/Divider"
+        android:layout_marginLeft="16dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/button_ram" />
+
+    <View
+        android:id="@+id/button_cpu"
+        style="@style/WalletSettingsParamsButton"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider_ram" />
+
+    <TextView
+        android:id="@+id/title_cpu"
+        style="@style/WalletSettingParamsTitle"
+        android:text="@string/cpu"
+        app:layout_constraintLeft_toLeftOf="@id/button_cpu"
+        app:layout_constraintRight_toRightOf="@id/button_cpu"
+        app:layout_constraintBottom_toTopOf="@id/text_cpu"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintTop_toTopOf="@id/button_cpu"/>
+
+    <TextView
+        android:id="@+id/text_cpu"
+        app:layout_constraintLeft_toLeftOf="@id/button_cpu"
+        app:layout_constraintRight_toRightOf="@id/button_cpu"
+        app:layout_constraintBottom_toBottomOf="@id/button_cpu"
+        app:layout_constraintTop_toBottomOf="@id/title_cpu"
+        tools:text="36"
+        style="@style/WalletSettingsParamsText" />
+
+    <ImageView
+        android:id="@+id/notification_cpu"
+        app:srcCompat="@drawable/ic_help_icon"
+        android:background="@drawable/selector_white_round"
+        app:layout_constraintTop_toTopOf="@id/button_cpu"
+        app:layout_constraintRight_toRightOf="@id/button_cpu"
+        app:layout_constraintBottom_toBottomOf="@id/button_cpu"
+        style="@style/WalletSettingsParamsImage" />
+
+    <View
+        android:id="@+id/divider_cpu"
+        style="@style/Divider"
+        android:layout_marginLeft="16dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/button_cpu" />
+
+    <View
+        style="@style/WalletSettingsParamsButton"
+        android:id="@+id/button_net"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider_cpu" />
+
+    <TextView
+        android:id="@+id/title_net"
+        android:text="@string/net"
+        app:layout_constraintLeft_toLeftOf="@id/button_net"
+        app:layout_constraintRight_toRightOf="@id/button_net"
+        app:layout_constraintTop_toTopOf="@id/button_net"
+        app:layout_constraintBottom_toTopOf="@id/text_net"
+        app:layout_constraintVertical_chainStyle="packed"
+        style="@style/WalletSettingParamsTitle" />
+
+    <TextView
+        android:id="@+id/text_net"
+        tools:text="224"
+        app:layout_constraintTop_toBottomOf="@id/title_net"
+        app:layout_constraintLeft_toLeftOf="@id/button_net"
+        app:layout_constraintRight_toRightOf="@id/button_net"
+        app:layout_constraintBottom_toBottomOf="@id/button_net"
+        style="@style/WalletSettingsParamsText" />
+
+    <ImageView
+        android:id="@+id/notification_net"
+        app:srcCompat="@drawable/ic_help_icon"
+        android:background="@drawable/selector_white_round"
+        app:layout_constraintTop_toTopOf="@id/button_net"
+        app:layout_constraintRight_toRightOf="@id/button_net"
+        app:layout_constraintBottom_toBottomOf="@id/button_net"
+        style="@style/WalletSettingsParamsImage" />
+
+    <View
+        android:id="@+id/divider_bottom"
+        style="@style/Divider"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+</android.support.constraint.ConstraintLayout>
