@@ -87,6 +87,10 @@ public class WalletChooserDialogFragment extends DialogFragment {
             dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         }
+        if (recyclerView.getAdapter() != null && recyclerView.getAdapter() instanceof MyWalletsAdapter &&
+                !((MyWalletsAdapter) recyclerView.getAdapter()).isValidData()) {
+            setupAdapter();
+        }
     }
 
     @NonNull

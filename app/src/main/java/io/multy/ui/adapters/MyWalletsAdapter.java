@@ -22,6 +22,7 @@ import io.multy.api.socket.CurrenciesRate;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.storage.RealmManager;
 import io.multy.util.NativeDataHelper;
+import io.realm.RealmResults;
 
 public class MyWalletsAdapter extends RecyclerView.Adapter<MyWalletsAdapter.Holder> {
 
@@ -70,6 +71,10 @@ public class MyWalletsAdapter extends RecyclerView.Adapter<MyWalletsAdapter.Hold
     public void updateRates(CurrenciesRate rates) {
         this.rates = rates;
         notifyDataSetChanged();
+    }
+
+    public boolean isValidData() {
+        return data == null || !(data instanceof RealmResults) || ((RealmResults) data).isValid();
     }
 
     public void setData(List<Wallet> data) {

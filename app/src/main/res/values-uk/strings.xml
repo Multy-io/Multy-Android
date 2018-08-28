@@ -250,6 +250,8 @@
     <string name="wallet_members">Учасники гаманця</string>
     <string name="create_multisig">Створити MultiSig</string>
     <string name="join_multisig">Приєднатися до MultiSig</string>
+    <string name="point_your_camera">Помістіть в камеру ідентифікаційний QR-код або вставте ваш код запрошення</string>
+    <string name="join_wallet">Приєднати гаманець</string>
     <string name="invalid_entered_sum">Введена невірна сума</string>
     <string name="no_available_donation">Немає доступних засобів для пожертвування.</string>
     <string name="wallet_parameters">Wallet parameters</string>

@@ -326,6 +326,8 @@
     <string name="wallet_members">Wallet members</string>
     <string name="create_multisig">Create MultiSig</string>
     <string name="join_multisig">Join MultiSig</string>
+    <string name="point_your_camera">Point your camera at multisig wallet identification QR-code or insert your invitation code</string>
+    <string name="join_wallet">Join wallet</string>
     <string name="invalid_entered_sum">Entered Invalid Sum</string>
     <string name="no_available_donation">There are no available funds for donation.</string>
     <string name="enter_private_key">Enter your private key</string>

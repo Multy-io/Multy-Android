@@ -122,6 +122,7 @@ public final class Constants {
     public static final String GAS_LIMIT_DEFAULT = "21000";
 
     public static final int MULTISIG_MEMBERS_COUNT = 50;
+    public static final int INVITE_CODE_LENGTH = 45;
 
     public static final String[] rootFiles = {
             "init.magisk.rc",
