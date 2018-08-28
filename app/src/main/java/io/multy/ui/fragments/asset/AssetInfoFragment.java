@@ -52,6 +52,7 @@ import io.multy.ui.activities.AssetRequestActivity;
 import io.multy.ui.activities.AssetSendActivity;
 import io.multy.ui.activities.SeedActivity;
 import io.multy.ui.adapters.AssetTransactionsAdapter;
+import io.multy.ui.adapters.EosTransactionsAdapter;
 import io.multy.ui.adapters.EthTransactionsAdapter;
 import io.multy.ui.fragments.AddressesFragment;
 import io.multy.ui.fragments.BaseFragment;
@@ -256,6 +257,8 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
                     recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
                     if (currencyId == NativeDataHelper.Blockchain.BTC.getValue()) {
                         recyclerView.setAdapter(new AssetTransactionsAdapter(transactions, walletId));
+                    } else if (currencyId == NativeDataHelper.Blockchain.EOS.getValue()) {
+//                        recyclerView.setAdapter(new EosTransactionsAdapter(transactions, walletId));
                     } else {
                         recyclerView.setAdapter(new EthTransactionsAdapter(transactions, walletId));
 

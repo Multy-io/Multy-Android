@@ -66,6 +66,8 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
     private EthWallet ethWallet;
     @Nullable
     private BtcWallet btcWallet;
+    @Nullable
+    private EosWallet eosWallet;
 
     private BigInteger convertBalance(BigInteger divisor) {
         BigInteger value = new BigInteger(balance);
@@ -85,6 +87,9 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
             case ETH:
                 addresses = getEthWallet().getAddresses();
                 break;
+            case EOS:
+                addresses = getEosWallet().getAddresses();
+                break;
         }
 
         return addresses.get(addresses.size() - 1);
@@ -96,6 +101,8 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
                 return getBtcWallet().getAddresses();
             case ETH:
                 return getEthWallet().getAddresses();
+            case EOS:
+                return getEosWallet().getAddresses();
         }
 
         return new ArrayList<>();
@@ -129,8 +136,9 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
             case BTC:
                 return NumberFormatter.getInstance().format(getBtcDoubleValue()) + " BTC";
             case ETH:
-//                return NumberFormatter.getInstance().format(getEthValue()) + " ETH";
                 return checkEthValue(getEthValue()) + " ETH";
+            case EOS:
+                return NumberFormatter.getEosInstance().format(getEosValue()) + " EOS";
             default:
                 return "unsupported";
         }
@@ -144,8 +152,9 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
             case BTC:
                 return NumberFormatter.getInstance().format(getBtcDoubleValue());
             case ETH:
-//                return NumberFormatter.getInstance().format(getEthValue());
                 return checkEthValue(getEthValue());
+            case EOS:
+                return NumberFormatter.getEosInstance().format(getEosValue());
             default:
                 return "unsupported";
         }
@@ -157,6 +166,8 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
                 return NumberFormatter.getInstance().format(getBtcAvailableDoubleValue()) + " BTC";
             case ETH:
                 return checkEthValue(getEthAvailableValue()) + " ETH";
+            case EOS:
+                return NumberFormatter.getEosInstance().format(getEosValue()) + " EOS";
             default:
                 return "unsupported";
         }
@@ -174,8 +185,8 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
     public String getFiatBalanceLabel() {
         try {
             return getFiatBalanceLabel(RealmManager.getSettingsDao().getCurrenciesRate());
-        } catch (Throwable t) {
-            t.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
             RealmManager.open(); //this slows main screen when get updates of currency rate by sockets if call everytime
             return getFiatBalanceLabel(RealmManager.getSettingsDao().getCurrenciesRate());
         }
@@ -185,9 +196,11 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
         //TODO support different fiat currencies here
         switch (NativeDataHelper.Blockchain.valueOf(currencyId)) {
             case BTC:
-                return String.valueOf(NumberFormatter.getFiatInstance().format(getBtcDoubleValue() * currenciesRate.getBtcToUsd()) + getFiatString()); //convert from satoshi
+                return NumberFormatter.getFiatInstance().format(getBtcDoubleValue() * currenciesRate.getBtcToUsd()) + getFiatString();
             case ETH:
-                return String.valueOf(NumberFormatter.getFiatInstance().format(getEthValue().multiply(new BigDecimal(currenciesRate.getEthToUsd()))) + getFiatString()); //convert from wei
+                return NumberFormatter.getFiatInstance().format(getEthValue().multiply(new BigDecimal(currenciesRate.getEthToUsd()))) + getFiatString();
+            case EOS:
+                return NumberFormatter.getFiatInstance().format(getEosValue().multiply(new BigDecimal(currenciesRate.getEosToUsd()))) + getFiatString();
             default:
                 return "unsupported";
         }
@@ -197,9 +210,9 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
         //TODO support different fiat currencies here
         switch (NativeDataHelper.Blockchain.valueOf(currencyId)) {
             case BTC:
-                return String.valueOf(NumberFormatter.getFiatInstance().format(getBtcDoubleValue() * currenciesRate.getBtcToUsd()) + getFiatString()); //convert from satoshi
+                return NumberFormatter.getFiatInstance().format(getBtcDoubleValue() * currenciesRate.getBtcToUsd()) + getFiatString(); //convert from satoshi
             case ETH:
-                return String.valueOf(NumberFormatter.getFiatInstance().format(getEthPendingValue().multiply(new BigDecimal(currenciesRate.getEthToUsd()))) + getFiatString()); //convert from wei
+                return NumberFormatter.getFiatInstance().format(getEthPendingValue().multiply(new BigDecimal(currenciesRate.getEthToUsd()))) + getFiatString(); //convert from wei
             default:
                 return "unsupported";
         }
@@ -287,9 +300,27 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
                 return networkId == NativeDataHelper.NetworkId.MAIN_NET.getValue() ? R.drawable.ic_btc : R.drawable.ic_chain_btc_test;
             case ETH:
                 return networkId == NativeDataHelper.NetworkId.ETH_MAIN_NET.getValue() ? R.drawable.ic_eth_medium_icon : R.drawable.ic_chain_eth_test;
+            case EOS:
+                return networkId == NativeDataHelper.NetworkId.TEST_NET.getValue() ? R.drawable.ic_eos : R.drawable.ic_eos;
             default:
                 return 0;
         }
+    }
+
+    public static String getAddressAmount(WalletAddress address, int currencyId) {
+        String result = null;
+        switch (NativeDataHelper.Blockchain.valueOf(currencyId)) {
+            case BTC:
+                result = CryptoFormatUtils.satoshiToBtcLabel(address.getAmount());
+                break;
+            case ETH:
+                result = CryptoFormatUtils.weiToEthLabel(address.getAmountString());
+                break;
+            case EOS:
+                result = address.getAmountString();
+                break;
+        }
+        return result;
     }
 
     /**
@@ -301,12 +332,13 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
 
     public String getAvailableFiatBalanceLabel() {
         CurrenciesRate currenciesRate = RealmManager.getSettingsDao().getCurrenciesRate();
-        //TODO support different fiat currencies here
         switch (NativeDataHelper.Blockchain.valueOf(currencyId)) {
             case BTC:
-                return String.valueOf(NumberFormatter.getFiatInstance().format(getBtcAvailableDoubleValue() * currenciesRate.getBtcToUsd()) + getFiatString()); //convert from satoshi
+                return NumberFormatter.getFiatInstance().format(getBtcAvailableDoubleValue() * currenciesRate.getBtcToUsd()) + getFiatString();
             case ETH:
-                return String.valueOf(NumberFormatter.getFiatInstance().format(getEthAvailableValue().multiply(new BigDecimal(currenciesRate.getEthToUsd()))) + getFiatString()); //convert from gwei
+                return NumberFormatter.getFiatInstance().format(getEthAvailableValue().multiply(new BigDecimal(currenciesRate.getEthToUsd()))) + getFiatString();
+            case EOS:
+                return NumberFormatter.getFiatInstance().format(getEosValue().multiply(new BigDecimal(currenciesRate.getEosToUsd()))) + getFiatString();
             default:
                 return "unsupported";
         }
@@ -319,6 +351,8 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
                 return CurrencyCode.BTC.name();
             case ETH:
                 return CurrencyCode.ETH.name();
+            case EOS:
+                return CurrencyCode.EOS.name();
         }
         return "";
     }
@@ -340,6 +374,8 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
                 return getAvailableBalanceNumeric().longValue() > 150;
             case ETH:
                 return getAvailableBalanceNumeric().longValue() > 0;
+            case EOS:
+                return getEosValue().doubleValue() > 0;
         }
         return false;
     }
@@ -374,6 +410,10 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
 
     public BigDecimal getEthPendingValue() {
         return new BigDecimal(getEthWallet().getPendingBalance());
+    }
+
+    public BigDecimal getEosValue() {
+        return new BigDecimal(getEosWallet().getBalance());
     }
 
     public int getCurrencyId() {
@@ -502,16 +542,12 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
         return out;
     }
 
-    public static String getAddressAmount(WalletAddress address, int currencyId) {
-        String result = null;
-        switch (NativeDataHelper.Blockchain.valueOf(currencyId)) {
-            case BTC:
-                result = CryptoFormatUtils.satoshiToBtcLabel(address.getAmount());
-                break;
-            case ETH:
-                result = CryptoFormatUtils.weiToEthLabel(address.getAmountString());
-                break;
-        }
-        return result;
+    @Nullable
+    public EosWallet getEosWallet() {
+        return eosWallet;
+    }
+
+    public void setEosWallet(@Nullable EosWallet eosWallet) {
+        this.eosWallet = eosWallet;
     }
 }

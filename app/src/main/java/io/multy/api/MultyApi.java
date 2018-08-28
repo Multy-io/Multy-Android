@@ -27,7 +27,9 @@ import io.multy.model.requests.AddWalletAddressRequest;
 import io.multy.model.requests.CreateMultisigRequest;
 import io.multy.model.requests.HdTransactionRequestEntity;
 import io.multy.model.requests.UpdateWalletNameRequest;
+import io.multy.model.responses.AccountsResponse;
 import io.multy.model.responses.AuthResponse;
+import io.multy.model.responses.ChainInfoResponse;
 import io.multy.model.responses.FeeRateResponse;
 import io.multy.model.responses.ServerConfigResponse;
 import io.multy.model.responses.SingleWalletResponse;
@@ -110,6 +112,11 @@ public enum MultyApi implements MultyApiInterface {
         }
 
         @Override
+        public Observable<ResponseBody> addWalletReactive(Wallet wallet) {
+            return api.addWalletReactive(wallet);
+        }
+
+        @Override
         public Call<ResponseBody> addWallet(Context context, CreateMultisigRequest request) {
             return api.addWallet(request);
         }
@@ -177,6 +184,16 @@ public enum MultyApi implements MultyApiInterface {
         @Override
         public Call<TestWalletResponse> testWalletVerbose() {
             return api.testWalletVerbose();
+        }
+
+        @Override
+        public Call<AccountsResponse> getAccounts(int currencyId, int networkId, String publicKey) {
+            return api.getAccounts(currencyId, networkId, publicKey);
+        }
+
+        @Override
+        public Call<ChainInfoResponse> getChainInfo(int currencyId, int networkId) {
+            return api.getChainInfo(currencyId, networkId);
         }
     }
 }

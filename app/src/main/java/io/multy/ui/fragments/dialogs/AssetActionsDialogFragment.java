@@ -22,6 +22,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.ui.activities.CreateAssetActivity;
+import io.multy.ui.activities.ImportWalletActivity;
 import io.multy.util.Constants;
 
 /**
@@ -70,7 +71,7 @@ public class AssetActionsDialogFragment extends BottomSheetDialogFragment implem
         }
     }
 
-    public void setListener (Listener listener) {
+    public void setListener(Listener listener) {
         this.listener = listener;
     }
 
@@ -103,7 +104,9 @@ public class AssetActionsDialogFragment extends BottomSheetDialogFragment implem
         v.setEnabled(false);
         v.postDelayed(() -> v.setEnabled(true), 500);
         if (getActivity() != null) {
-            DonateDialog.getInstance(Constants.DONATE_ADDING_IMPORT_WALLET).show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
+            startActivity(new Intent(getActivity(), ImportWalletActivity.class));
+            dismiss();
+//            DonateDialog.getInstance(Constants.DONATE_ADDING_IMPORT_WALLET).show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
         }
     }
 

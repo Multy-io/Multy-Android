@@ -41,6 +41,7 @@ public final class Constants {
     public static final String PREF_EXCHANGE_PRICE = "pref_exchange_price";
     public static final String PREF_WALLET_TOP_INDEX_BTC = "pref_wallet_top_index_btc";
     public static final String PREF_WALLET_TOP_INDEX_ETH = "pref_wallet_top_index_eth";
+    public static final String PREF_WALLET_TOP_INDEX_EOS = "pref_wallet_top_index_eos";
     public static final String PREF_IS_FINGERPRINT_ENABLED = "PREF_IS_FINGERPRINT_ENABLED";
     public static final String PIN_COUNTER = "PIN_COUNTER";
     public static final String ANDROID_PACKAGE = "android.webkit.";
@@ -75,6 +76,7 @@ public final class Constants {
     public static final String EXTRA_RESTORE = "EXTRA_RESTORE";
     public static final String EXTRA_DONATION_CODE = "EXTRA_DONATION_CODE";
     public static final String EXTRA_TX_HASH = "EXTRA_TX_HASH";
+    public static final String EXTRA_ACCOUNTS = "extra_accounts";
 
     public static final String DEEP_LINK_QR_CODE = "QR_CODE";
 

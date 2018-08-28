@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2018 Idealnaya rabota LLC
   ~ Licensed under Multy.io license.
   ~ See LICENSE for details
@@ -7,9 +6,9 @@
 
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:layout_height="wrap_content">
 
     <View
         android:id="@+id/background"
@@ -42,10 +41,10 @@
         android:drawablePadding="32dp"
         android:drawableStart="@drawable/ic_wallet_create_new_bigger"
         android:gravity="center_vertical"
+        android:lineSpacingExtra="8sp"
         android:paddingStart="16dp"
         android:text="@string/create_new"
         android:textColor="@color/black_light"
-        android:lineSpacingExtra="8sp"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@id/button_create_multisig"
@@ -55,47 +54,46 @@
 
     <TextView
         android:id="@+id/button_create_multisig"
-        android:text="@string/create_multisig"
-        android:paddingStart="16dp"
-        android:gravity="center_vertical"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
         android:drawablePadding="32dp"
-        android:textColor="@color/black_light"
-        android:visibility="gone"
         android:drawableStart="@drawable/ic_wallet_create_new_multisig"
+        android:gravity="center_vertical"
         android:lineSpacingExtra="8sp"
+        android:paddingStart="16dp"
+        android:text="@string/create_multisig"
+        android:textColor="@color/black_light"
         android:textSize="16sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/button_create"
         app:layout_constraintBottom_toTopOf="@id/button_join_multisig"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_width="0dp"
-        android:layout_height="48dp" />
+        app:layout_constraintTop_toBottomOf="@id/button_create" />
 
     <TextView
         android:id="@+id/button_join_multisig"
         android:layout_width="0dp"
-        android:gravity="center_vertical"
-        android:paddingStart="16dp"
+        android:layout_height="48dp"
         android:drawablePadding="32dp"
-        android:visibility="gone"
-        android:textColor="@color/black_light"
         android:drawableStart="@drawable/ic_wallet_join_multisig"
+        android:gravity="center_vertical"
         android:lineSpacingExtra="8sp"
+        android:paddingStart="16dp"
+        android:text="@string/join_multisig"
+        android:textColor="@color/black_light"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:text="@string/join_multisig"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/button_create_multisig"
         app:layout_constraintBottom_toTopOf="@id/button_import"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_height="48dp" />
+        app:layout_constraintTop_toBottomOf="@id/button_create_multisig" />
 
     <View
         android:id="@+id/button_import"
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:background="?attr/selectableItemBackground"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/button_cancel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -105,6 +103,7 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginStart="16dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/button_import"
         app:layout_constraintStart_toStartOf="@id/button_import"
         app:layout_constraintTop_toTopOf="@id/button_import"
@@ -115,12 +114,13 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
+        android:layout_marginTop="6dp"
+        android:lineSpacingExtra="8sp"
         android:text="@string/import_wallet"
         android:textColor="@color/black_light"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:lineSpacingExtra="8sp"
-        android:layout_marginTop="6dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/text_in_progress"
         app:layout_constraintEnd_toStartOf="@id/image_donate"
         app:layout_constraintStart_toEndOf="@id/image_import"
@@ -130,25 +130,16 @@
         android:id="@+id/text_in_progress"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:letterSpacing="0.01"
         android:text="@string/work_in_progress"
         android:textColor="@color/red_warn"
         android:textSize="10sp"
-        android:letterSpacing="0.01"
-        android:layout_marginBottom="8dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/button_import"
         app:layout_constraintEnd_toStartOf="@id/image_donate"
         app:layout_constraintStart_toStartOf="@id/text_import"
         app:layout_constraintTop_toBottomOf="@id/text_import" />
-
-    <ImageView
-        android:id="@+id/image_donate"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintBottom_toBottomOf="@id/button_import"
-        app:layout_constraintEnd_toEndOf="@id/button_import"
-        app:layout_constraintTop_toTopOf="@id/button_import"
-        app:srcCompat="@drawable/ic_donation_icon" />
 
     <TextView
         android:id="@+id/button_cancel"
@@ -161,12 +152,12 @@
         android:drawableStart="@drawable/ic_cancel_blue"
         android:focusable="true"
         android:gravity="center_vertical"
+        android:lineSpacingExtra="8sp"
         android:paddingStart="16dp"
         android:text="@string/cancel"
         android:textColor="@color/black_light"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:lineSpacingExtra="8sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

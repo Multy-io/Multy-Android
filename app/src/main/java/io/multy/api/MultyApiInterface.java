@@ -14,7 +14,9 @@ import io.multy.model.requests.AddWalletAddressRequest;
 import io.multy.model.requests.CreateMultisigRequest;
 import io.multy.model.requests.HdTransactionRequestEntity;
 import io.multy.model.requests.UpdateWalletNameRequest;
+import io.multy.model.responses.AccountsResponse;
 import io.multy.model.responses.AuthResponse;
+import io.multy.model.responses.ChainInfoResponse;
 import io.multy.model.responses.FeeRateResponse;
 import io.multy.model.responses.ServerConfigResponse;
 import io.multy.model.responses.SingleWalletResponse;
@@ -25,12 +27,15 @@ import io.multy.model.responses.WalletsResponse;
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.http.Path;
 
 public interface MultyApiInterface {
 
     Call<AuthResponse> auth(String userId);
 
     Call<ResponseBody> addWallet(Context context, Wallet wallet);
+
+    Observable<ResponseBody> addWalletReactive(Wallet wallet);
 
     Call<ResponseBody> addWallet(Context context, CreateMultisigRequest request);
 
@@ -60,4 +65,7 @@ public interface MultyApiInterface {
 
     Call<TestWalletResponse> testWalletVerbose();
 
+    Call<AccountsResponse> getAccounts(int currencyId, int networkId, String publicKey);
+
+    Call<ChainInfoResponse> getChainInfo(int currencyId, int networkId);
 }

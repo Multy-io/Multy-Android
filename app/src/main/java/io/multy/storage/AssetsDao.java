@@ -6,6 +6,8 @@
 
 package io.multy.storage;
 
+import android.util.Log;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -84,6 +86,18 @@ public class AssetsDao {
             savedWallet.setBtcWallet(wallet.getBtcWallet().asRealmObject(realm));
             savedWallet.setBalance(String.valueOf(savedWallet.getBtcWallet().calculateBalance()));
             savedWallet.setAvailableBalance(String.valueOf(savedWallet.getBtcWallet().calculateAvailableBalance()));
+
+        } else if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.EOS.getValue()) {
+            savedWallet.setEosWallet(wallet.getEosWallet().asRealmObject(realm));
+            String eosBalance = savedWallet.getEosWallet().getBalance();
+            if (!eosBalance.equals("0")) {
+                eosBalance = savedWallet.getEosWallet().getDividedBalance(balance);
+            }
+            savedWallet.getEosWallet().setBalance(eosBalance);
+            savedWallet.getEosWallet().setPendingBalance(eosBalance);
+            savedWallet.setBalance(eosBalance);
+            savedWallet.setAvailableBalance(eosBalance);
+
         } else {
             savedWallet.setEthWallet(Objects.requireNonNull(wallet.getEthWallet()).asRealmObject(realm));
             final String ethBalance = savedWallet.getEthWallet().getBalance();

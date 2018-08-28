@@ -29,6 +29,8 @@ android {
                 arguments DMULTY_ANDROID_PATH_TO_JNI_WRAPPER
                 arguments "-DANDROID_STL=c++_shared"
                 arguments "-DMULTY_WITH_TESTS=ON"
+                arguments "-DMULTY_WITH_ALL_BLOCKCHAINS=ON"
+                arguments "-DMULTY_WITH_EOS=ON"
             }
         }
         setProperty("archivesBaseName", "${applicationId}_${versionName}_${releaseTime()}")
