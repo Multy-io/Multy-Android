@@ -305,12 +305,15 @@ public class WalletViewModel extends BaseViewModel {
             Realm realm = Realm.getInstance(Multy.getRealmConfiguration());
             FirstLaunchHelper.setCredentials(null);
             for (NativeDataHelper.Blockchain blockchain : NativeDataHelper.Blockchain.values()) {
-                Wallet createdWallet = createWallet(String.format(Multy.getContext().getString(R.string.my_first_wallet_name), blockchain.name()),
-                        blockchain.getValue(), blockchain.getValue() == NativeDataHelper.Blockchain.ETH.getValue() ?
-                                NativeDataHelper.NetworkId.ETH_MAIN_NET.getValue() : NativeDataHelper.NetworkId.MAIN_NET.getValue());
-                Response<ResponseBody> response = MultyApi.INSTANCE.addWallet(Multy.getContext(), createdWallet).execute();
-                if (response.isSuccessful() && !result) {
-                    result = true;
+                //TODO Enable EOS wallet creating
+                if (!blockchain.equals(NativeDataHelper.Blockchain.EOS)) {
+                    Wallet createdWallet = createWallet(String.format(Multy.getContext().getString(R.string.my_first_wallet_name), blockchain.name()),
+                            blockchain.getValue(), blockchain.getValue() == NativeDataHelper.Blockchain.ETH.getValue() ?
+                                    NativeDataHelper.NetworkId.ETH_MAIN_NET.getValue() : NativeDataHelper.NetworkId.MAIN_NET.getValue());
+                    Response<ResponseBody> response = MultyApi.INSTANCE.addWallet(Multy.getContext(), createdWallet).execute();
+                    if (response.isSuccessful() && !result) {
+                        result = true;
+                    }
                 }
             }
             realm.close();
