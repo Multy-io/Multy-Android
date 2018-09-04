@@ -12,6 +12,7 @@
     <color name="gray">#FF516874</color>
     <color name="gray_dark">#363636</color>
     <color name="gray_light">#EFEFF4</color>
+    <color name="gray_light_dark">#BEC8D2</color>
     <color name="gray_divider">#7887a1c5</color>
     <color name="blue_divider">#cfd9e8</color>
     <color name="blue_divider_agreement">#d1dbe9</color>

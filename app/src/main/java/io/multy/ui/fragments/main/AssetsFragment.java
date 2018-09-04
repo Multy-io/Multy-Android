@@ -37,6 +37,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.api.MultyApi;
+import io.multy.model.entities.wallet.MultisigWallet;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.events.TransactionUpdateEvent;
 import io.multy.model.responses.WalletsResponse;
@@ -44,6 +45,7 @@ import io.multy.storage.AssetsDao;
 import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetActivity;
 import io.multy.ui.activities.BaseActivity;
+import io.multy.ui.activities.CreateMultiSigActivity;
 import io.multy.ui.activities.MainActivity;
 import io.multy.ui.activities.SeedActivity;
 import io.multy.ui.adapters.MyWalletsAdapter;
@@ -152,9 +154,17 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
     @Override
     public void onWalletClick(Wallet wallet) {
         Analytics.getInstance(getActivity()).logMainWalletOpen(viewModel.getChainId());
-        Intent intent = new Intent(getActivity(), AssetActivity.class);
-        intent.putExtra(Constants.EXTRA_WALLET_ID, wallet.getId());
-        startActivity(intent);
+
+        if (wallet.isMultisig() && wallet.getMultisigWallet().getDeployStatus() == MultisigWallet.Status.CREATED) {
+            //pre deploy period = waiting for members screen, pre choose
+            Intent intent = new Intent(getActivity(), CreateMultiSigActivity.class);
+            intent.putExtra(Constants.EXTRA_WALLET_ID, wallet.getId());
+            startActivity(intent);
+        } else {
+            Intent intent = new Intent(getActivity(), AssetActivity.class);
+            intent.putExtra(Constants.EXTRA_WALLET_ID, wallet.getId());
+            startActivity(intent);
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -280,34 +290,6 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
 //        walletsAdapter.setData(viewModel.getWalletsFromDB());
     }
 
-    private void showAddWalletActions() {
-        WalletActionsDialog.Callback callback = new WalletActionsDialog.Callback() {
-            @Override
-            public void onCardAddClick() {
-                onWalletAddClick();
-            }
-
-            @Override
-            public void onCardImportClick() {
-            }
-        };
-
-        WalletActionsDialog dialog = (WalletActionsDialog) getChildFragmentManager().findFragmentByTag(WalletActionsDialog.TAG);
-        if (dialog == null) {
-            dialog = WalletActionsDialog.newInstance(callback);
-        }
-        dialog.show(getChildFragmentManager(), WalletActionsDialog.TAG);
-    }
-
-    private void onWalletAddClick() {
-//        startActivityForResult(new Intent(getActivity(), CreateAssetActivity.class)
-//                /*.addCategory(Constants.EXTRA_RESTORE)*/, Constants.REQUEST_CODE_CREATE);
-        if (getActivity() != null && getActivity() instanceof MainActivity) {
-            refreshLayout.setRefreshing(true);
-            ((MainActivity) getActivity()).createFirstWallets();
-        }
-    }
-
     @OnClick(R.id.button_add)
     void onClickAdd(View v) {
         if (getActivity() != null) {
@@ -321,9 +303,11 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
 
     @OnClick(R.id.button_create)
     void onClickCreate() {
-//        showAddWalletActions();
         Analytics.getInstance(getActivity()).logFirstLaunchCreateWallet();
-        onWalletAddClick();
+        if (getActivity() != null && getActivity() instanceof MainActivity) {
+            refreshLayout.setRefreshing(true);
+            ((MainActivity) getActivity()).createFirstWallets();
+        }
     }
 
     @OnClick(R.id.button_restore)

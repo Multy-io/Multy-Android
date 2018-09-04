@@ -70,6 +70,7 @@ public final class Constants {
     public static final int CAMERA_REQUEST_CODE = 328;
     public static final String EXTRA_QR_CONTENTS = "EXTRA_QR_CONTENTS";
     public static final String EXTRA_WALLET_ID = "EXTRA_WALLET_ID";
+    public static final String EXTRA_RELATED_WALLET_ID = "EXTRA_RELATED_WALLET_ID";
     public static final String EXTRA_SENDER_ADDRESS = "EXTRA_SENDER_ADDRESS";
     public static final String EXTRA_ADDRESS = "EXTRA_ADDRESS";
     public static final String EXTRA_AMOUNT = "EXTRA_AMOUNT";
@@ -77,6 +78,9 @@ public final class Constants {
     public static final String EXTRA_DONATION_CODE = "EXTRA_DONATION_CODE";
     public static final String EXTRA_TX_HASH = "EXTRA_TX_HASH";
     public static final String EXTRA_ACCOUNTS = "extra_accounts";
+    public static final String EXTRA_INVITE_CODE = "EXTRA_INVITE_CODE";
+    public static final String EXTRA_SCAN = "EXTRA_SCAN";
+    public static final String EXTRA_CREATE = "EXTRA_CREATE";
 
     public static final String DEEP_LINK_QR_CODE = "QR_CODE";
 

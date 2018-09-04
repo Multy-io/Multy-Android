@@ -26,6 +26,7 @@ public class RecentAddressesAdapter extends RecyclerView.Adapter<RecentAddresses
 
     public interface OnRecentAddressClickListener {
         void onClickRecentAddress(String address);
+
         boolean onLongClickRecentAddress(String address, int currencyId, int networkId, int resImgId);
     }
 
@@ -44,8 +45,18 @@ public class RecentAddressesAdapter extends RecyclerView.Adapter<RecentAddresses
 
     @Override
     public void onBindViewHolder(RecentAddressHolder holder, int position) {
-        final int resImgId = data.get(position).getNetworkId() == NativeDataHelper.NetworkId.MAIN_NET.getValue() ?
-                R.drawable.ic_btc_huge : R.drawable.ic_chain_btc_test;
+        int resImgId;
+
+        if (data.get(position).getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()) {
+            resImgId = data.get(position).getNetworkId() == NativeDataHelper.NetworkId.MAIN_NET.getValue() ?
+                    R.drawable.ic_btc_huge : R.drawable.ic_chain_btc_test;
+        } else if (data.get(position).getCurrencyId() == NativeDataHelper.Blockchain.ETH.getValue()) {
+            resImgId = data.get(position).getNetworkId() == NativeDataHelper.NetworkId.ETH_MAIN_NET.getValue() ?
+                    R.drawable.ic_chain_eth_test : R.drawable.ic_eth_medium_icon;
+        } else {
+            resImgId = R.drawable.ic_eos;
+        }
+
         holder.textAddress.setText(data.get(position).getAddress());
         holder.itemView.setOnClickListener(v -> listener.onClickRecentAddress(data.get(position).getAddress()));
         holder.itemView.setOnLongClickListener(v -> listener.onLongClickRecentAddress(

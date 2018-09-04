@@ -7,6 +7,7 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
@@ -51,7 +52,7 @@
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
                         app:max="4"
-                        app:progress="3"
+                        app:progress="0"
                         app:progressBarColor="@color/white"
                         app:progressBarThickness="2dp"
                         app:progressThumb="false"
@@ -163,11 +164,11 @@
             android:id="@+id/text_action"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@string/invitation_code"
             android:textColor="@color/white"
             android:textSize="18sp"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            tools:text="@string/invitation_code" />
+            app:layout_constraintRight_toRightOf="parent" />
 
         <ImageView
             android:id="@+id/image_action"

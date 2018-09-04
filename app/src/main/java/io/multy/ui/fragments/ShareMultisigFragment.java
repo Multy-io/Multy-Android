@@ -60,7 +60,7 @@ public class ShareMultisigFragment extends BaseFragment {
     @BindView(R.id.group_key)
     Group groupKey;
 
-    public static ShareMultisigFragment getInstance(String invitationCode) {
+    public static ShareMultisigFragment newInstance(String invitationCode) {
         ShareMultisigFragment fragment = new ShareMultisigFragment();
         Bundle args = new Bundle();
         args.putString(INVITATION_CODE, invitationCode);
