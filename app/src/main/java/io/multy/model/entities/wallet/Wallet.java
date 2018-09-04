@@ -8,6 +8,7 @@ package io.multy.model.entities.wallet;
 
 
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -381,7 +382,7 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
     }
 
     public BigDecimal getBalanceNumeric() {
-        return balance == null ? new BigDecimal("0") : new BigDecimal(balance);
+        return TextUtils.isEmpty(balance) ? new BigDecimal("0") : new BigDecimal(balance);
     }
 
     public BigInteger getPendingBalance() {

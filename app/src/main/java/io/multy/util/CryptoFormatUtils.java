@@ -8,7 +8,6 @@ package io.multy.util;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
@@ -167,7 +166,7 @@ public class CryptoFormatUtils {
     }
 
     public static String ethToUsd(double eth) {
-        String result = "$0.0";
+        String result = "0.0";
 
         final CurrenciesRate currenciesRate = RealmManager.getSettingsDao().getCurrenciesRate();
         if (currenciesRate != null && eth != 0) {

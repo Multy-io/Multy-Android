@@ -17,6 +17,7 @@ import java.util.List;
 
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.ui.fragments.FastWalletFragment;
+import io.realm.RealmResults;
 
 public class MyWalletPagerAdapter extends FragmentStatePagerAdapter {
 
@@ -40,7 +41,7 @@ public class MyWalletPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return data.size();
+        return data == null || (data instanceof RealmResults && !((RealmResults) data).isValid()) ? 0 : data.size();
     }
 
     @Override

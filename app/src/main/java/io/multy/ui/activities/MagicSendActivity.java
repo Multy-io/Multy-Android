@@ -28,7 +28,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -41,7 +40,6 @@ import com.airbnb.lottie.LottieAnimationView;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.math.BigInteger;
@@ -150,7 +148,7 @@ public class MagicSendActivity extends BaseActivity {
 
     @Override
     protected void onPause() {
-        if (bleScanCallback != null) {
+        if (bleScanCallback != null && BluetoothAdapter.getDefaultAdapter().isEnabled()) {
             BluetoothAdapter.getDefaultAdapter().getBluetoothLeScanner().stopScan(bleScanCallback);
         }
         super.onPause();
@@ -619,11 +617,14 @@ public class MagicSendActivity extends BaseActivity {
         if (bleScanCallback == null) {
             bleScanCallback = createScanCallback();
         }
-        startBLeScanner();
     }
 
     private void startBLeScanner() {
-        BluetoothAdapter.getDefaultAdapter().getBluetoothLeScanner().startScan(bleScanCallback);
+        if (BluetoothAdapter.getDefaultAdapter().isEnabled()) {
+            BluetoothAdapter.getDefaultAdapter().getBluetoothLeScanner().startScan(bleScanCallback);
+        } else {
+            initPermissions();
+        }
     }
 
     private ScanCallback createScanCallback() {

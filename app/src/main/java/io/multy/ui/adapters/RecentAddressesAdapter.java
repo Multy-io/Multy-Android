@@ -65,9 +65,17 @@ public class RecentAddressesAdapter extends RecyclerView.Adapter<RecentAddresses
 
     @Override
     public int getItemCount() {
-        return data.size();
+        return data == null || !data.isValid() ? 0 : data.size();
     }
 
+    public void setAddresses(RealmResults<RecentAddress> addresses) {
+        this.data = addresses;
+        notifyDataSetChanged();
+    }
+
+    public boolean isValidData() {
+        return data == null || data.isValid();
+    }
 
     class RecentAddressHolder extends RecyclerView.ViewHolder {
 

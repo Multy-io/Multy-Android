@@ -22,7 +22,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -35,6 +34,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.storage.RealmManager;
+import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
 import io.multy.ui.fragments.main.AssetsFragment;
 import io.multy.ui.fragments.main.FastOperationsFragment;
 import io.multy.ui.fragments.main.FeedFragment;
@@ -43,7 +43,6 @@ import io.multy.ui.fragments.main.contacts.ContactInfoFragment;
 import io.multy.ui.fragments.main.contacts.ContactsFragment;
 import io.multy.util.Constants;
 import io.multy.util.ContactUtils;
-import io.multy.util.NativeDataHelper;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.WalletViewModel;
@@ -357,8 +356,15 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
     public void createFirstWallets() {
         WalletViewModel viewModel = ViewModelProviders.of(this).get(WalletViewModel.class);
         viewModel.createFirstWallets(() -> {
+            if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED, false)) {
+                subscribeToPushNotifications();
+            } else {
+                SimpleDialogFragment.newInstanceNegative(R.string.error, R.string.something_went_wrong, v -> {
+                    //todo should we clear database here for don't get realm exception when we will want open it?
+//                    startActivity(new Intent(this, SplashActivity.class).putExtra(SplashActivity.RESET_FLAG, true));
+                }).show(getSupportFragmentManager(), "");
+            }
             updateAssets();
-            subscribeToPushNotifications();
         });
     }
 

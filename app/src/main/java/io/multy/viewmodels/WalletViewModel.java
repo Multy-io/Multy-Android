@@ -167,6 +167,8 @@ public class WalletViewModel extends BaseViewModel {
             isLoading.postValue(false);
             errorMessage.postValue(e.getLocalizedMessage());
             errorMessage.call();
+        } finally {
+            RealmManager.close();
         }
         return walletRealmObject;
     }
@@ -328,7 +330,8 @@ public class WalletViewModel extends BaseViewModel {
                     onComplete.run();
                 }, throwable -> {
                     throwable.printStackTrace();
-                    errorMessage.postValue(Multy.getContext().getString(R.string.something_went_wrong));
+                    errorMessage.setValue(Multy.getContext().getString(R.string.something_went_wrong));
+                    Prefs.putBoolean(Constants.PREF_APP_INITIALIZED, false);
                     onComplete.run();
                 });
         addDisposable(disposable);

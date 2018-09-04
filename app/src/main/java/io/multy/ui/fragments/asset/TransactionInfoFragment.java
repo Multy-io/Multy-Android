@@ -170,41 +170,43 @@ public class TransactionInfoFragment extends BaseFragment {
 
     private void loadData() {
         viewModel.getWalletLive().observe(this, wallet -> {
-            if (wallet != null) {
-                imageCoinLogo.setImageResource(wallet.getNetworkId() == NativeDataHelper.NetworkId.MAIN_NET.getValue() ?
-                        R.drawable.ic_btc_huge : R.drawable.ic_chain_btc_test);
+            if (wallet != null && wallet.isValid()) {
+                imageCoinLogo.setImageResource(wallet.getIconResourceId());
                 toolbarWalletName.setText(wallet.getWalletName());
                 for (WalletAddress address : wallet.getBtcWallet().getAddresses()) {
                     if (!walletAddresses.contains(address.getAddress())) {
                         walletAddresses.add(address.getAddress());
                     }
                 }
-                loadTransactionHistory(wallet.getCurrencyId(), wallet.getNetworkId(), wallet.getIndex());
+                this.networkId = wallet.getNetworkId();
+                (selectedPosition == TransactionInfoFragment.NO_POSITION ?
+                        viewModel.getTransactionsHistory(wallet.getCurrencyId(), wallet.getNetworkId(), wallet.getIndex()) :
+                        viewModel.transactions).observe(this, this::onTransactions);
+            } else if (getActivity() != null) {
+                getActivity().onBackPressed();
             }
         });
     }
 
-    private void loadTransactionHistory(final int currencyId, final int networkId, final int walletIndex) {
-        this.networkId = networkId;
-        viewModel.getTransactionsHistory(currencyId, networkId, walletIndex).observe(this, transactionHistories -> {
-            if (transactionHistories == null || transactionHistories.size() == 0 || getActivity() == null) {
-                return;
-            } else if (transaction != null) {
-                setData();
-                return;
-            }
+    private void onTransactions(List<TransactionHistory> transactionHistories) {
+        if (transactionHistories != null && transactionHistories.size() != 0 && getActivity() != null) {
             if (selectedPosition == NO_POSITION) {
                 if (!initTransactionFromHash(transactionHistories)) {
                     getActivity().finish();
                     startActivity(new Intent(getActivity(), AssetActivity.class)
                             .putExtra(Constants.EXTRA_WALLET_ID, viewModel.getWalletLive().getValue().getId()));
-                    return;
+                } else {
+                    setData();
                 }
+            } else if (transactionHistories.get(selectedPosition) == null) {
+                getActivity().onBackPressed();
             } else {
                 transaction = transactionHistories.get(selectedPosition);
+                setData();
             }
-            setData();
-        });
+        } else if (getActivity() != null) {
+            getActivity().onBackPressed();
+        }
     }
 
     private boolean initTransactionFromHash(List<TransactionHistory> transactionHistories) {

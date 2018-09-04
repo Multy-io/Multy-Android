@@ -54,10 +54,9 @@ public class AssetSendFragment extends BaseFragment implements RecentAddressesAd
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
 
-    private int blockchainId;
-    private int networkId;
     private AssetSendViewModel viewModel;
     private Unbinder unbinder;
+    private RecentAddressesAdapter adapter;
 
     public static AssetSendFragment newInstance() {
         return new AssetSendFragment();
@@ -75,30 +74,29 @@ public class AssetSendFragment extends BaseFragment implements RecentAddressesAd
             inputAddress.setSelection(inputAddress.length());
         });
         setupInputAddress();
+        initRecycler();
         initRecentAddresses();
         logLaunch();
         return view;
     }
 
-    private void initRecentAddresses() {
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setHasFixedSize(true);
-        RealmResults<RecentAddress> recentAddresses;
-        if (getActivity() != null && getActivity().getIntent().hasCategory(Constants.EXTRA_SENDER_ADDRESS)
-                && viewModel.getWallet() != null) {
-            recentAddresses = RealmManager.getAssetsDao()
-                    .getRecentAddresses(viewModel.getWallet().getCurrencyId(), viewModel.getWallet().getNetworkId());
-        } else {
-            recentAddresses = RealmManager.getAssetsDao().getRecentAddresses();
+    @Override
+    public void onResume() {
+        if (!viewModel.getWallet().isValid()) {
+            viewModel.setWallet(RealmManager.getAssetsDao().getWalletById(getActivity().getIntent()
+                    .getLongExtra(Constants.EXTRA_WALLET_ID, -1)));
         }
-        recyclerView.setAdapter(new RecentAddressesAdapter(recentAddresses, this));
+        if (adapter != null && !adapter.isValidData()) {
+            initRecentAddresses();
+        }
+        super.onResume();
     }
 
     @Override
     public void onDestroyView() {
         hideKeyboard(getActivity());
-        super.onDestroyView();
         unbinder.unbind();
+        super.onDestroyView();
     }
 
     @Override
@@ -126,6 +124,25 @@ public class AssetSendFragment extends BaseFragment implements RecentAddressesAd
         })
                 .show(getChildFragmentManager(), AddressActionsDialogFragment.TAG);
         return true;
+    }
+
+    private void initRecycler() {
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setHasFixedSize(true);
+        adapter = new RecentAddressesAdapter(null, this);
+        recyclerView.setAdapter(adapter);
+    }
+
+    private void initRecentAddresses() {
+        RealmResults<RecentAddress> recentAddresses;
+        if (getActivity() != null && getActivity().getIntent().hasCategory(Constants.EXTRA_SENDER_ADDRESS)
+                && viewModel.getWallet() != null) {
+            recentAddresses = RealmManager.getAssetsDao()
+                    .getRecentAddresses(viewModel.getWallet().getCurrencyId(), viewModel.getWallet().getNetworkId());
+        } else {
+            recentAddresses = RealmManager.getAssetsDao().getRecentAddresses();
+        }
+        adapter.setAddresses(recentAddresses);
     }
 
     private void setAddressAndNext(String address) {
@@ -183,8 +200,6 @@ public class AssetSendFragment extends BaseFragment implements RecentAddressesAd
     private boolean checkAddressForValidation(String address, int blockchainId, int networkId) {
         try {
             NativeDataHelper.isValidAddress(address, blockchainId, networkId);
-            AssetSendFragment.this.blockchainId = blockchainId;
-            AssetSendFragment.this.networkId = networkId;
             return true;
         } catch (Throwable ignore) {
         }

@@ -57,18 +57,18 @@
     <TextView
         android:id="@+id/text_amount"
         style="@style/BlackMediumText"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="24dp"
-        android:layout_marginStart="8dp"
         android:fontFamily="@font/montserrat"
+        android:lineSpacingExtra="8sp"
         android:maxLines="1"
         android:textAlignment="textEnd"
-        android:textColor="#363636"
+        android:textColor="@color/text_main_dark"
         android:textSize="14sp"
-        android:lineSpacingExtra="8sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/container_addresses"
+        app:layout_constrainedWidth="true"
         tools:text="0.052509 BTC" />
 
     <TextView

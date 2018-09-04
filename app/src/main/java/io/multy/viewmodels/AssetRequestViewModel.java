@@ -53,6 +53,9 @@ public class AssetRequestViewModel extends BaseViewModel {
     }
 
     public Wallet getWallet() {
+        if (wallet == null && walletLive.getValue() != null) {
+            wallet = walletLive.getValue();
+        }
         return wallet;
     }
 
