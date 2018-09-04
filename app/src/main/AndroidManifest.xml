@@ -28,9 +28,9 @@
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher_app"
         android:label="@string/app_name"
-        android:supportsRtl="false"
         android:resizeableActivity="false"
         android:roundIcon="@mipmap/ic_launcher_app_round"
+        android:supportsRtl="false"
         android:theme="@style/AppTheme"
         tools:ignore="UnusedAttribute"
         tools:replace="android:allowBackup, android:supportsRtl">
@@ -86,8 +86,8 @@
         <activity
             android:name=".ui.activities.CreateAssetActivity"
             android:resizeableActivity="true"
-            android:windowSoftInputMode="adjustResize|stateAlwaysVisible"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateAlwaysVisible" />
         <activity
             android:name=".ui.activities.AmountChooserActivity"
             android:label="@string/receive_amount"
@@ -135,6 +135,9 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activities.FoundWalletsActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activities.CreateMultiSigActivity"
             android:screenOrientation="portrait" />
 
         <!-- Branch install referrer tracking -->

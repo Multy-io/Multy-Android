@@ -7,14 +7,12 @@
 package io.multy.ui.fragments.asset;
 
 import android.app.Activity;
-import android.arch.lifecycle.MutableLiveData;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Base64;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,8 +21,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.samwolfand.oneprefs.Prefs;
+
+import org.json.JSONObject;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -32,11 +33,13 @@ import java.util.concurrent.TimeUnit;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.multy.Multy;
 import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.requests.CreateMultisigRequest;
 import io.multy.storage.RealmManager;
+import io.multy.ui.activities.CreateMultiSigActivity;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.dialogs.ChooseMembersDialog;
 import io.multy.ui.fragments.dialogs.WalletChooserDialogFragment;
@@ -49,9 +52,14 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import timber.log.Timber;
 
 /**
  * Created by anschutz1927@gmail.com on 19.07.18.
+ */
+
+/**
+ * TODO implement pattern with viewmodel. Make it clean
  */
 public class CreateMultisigBlankFragment extends BaseFragment {
 
@@ -72,20 +80,15 @@ public class CreateMultisigBlankFragment extends BaseFragment {
     @BindView(R.id.text_create)
     View buttonCreate;
 
-    private MutableLiveData<Boolean> isValidData = new MutableLiveData<>();
-    private MutableLiveData<Integer> membersCount = new MutableLiveData<>();
-    private MutableLiveData<Integer> confirmsCount = new MutableLiveData<>();
-    private MutableLiveData<Wallet> wallet = new MutableLiveData<>();
+    private boolean isDataValid;
+    private int membersCount = 0;
+    private int confirmationsCount = 0;
+    private Wallet wallet;
+
     private Disposable disposable;
 
     public static CreateMultisigBlankFragment getInstance() {
         return new CreateMultisigBlankFragment();
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        isValidData.setValue(false);
     }
 
     @Nullable
@@ -93,17 +96,16 @@ public class CreateMultisigBlankFragment extends BaseFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_create_multisig_blank, container, false);
         ButterKnife.bind(this, view);
-        initialize();
+        showInfo();
+        setDataValid(false);
         return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (wallet.getValue() != null && !wallet.getValue().isValid() && getActivity() != null) {
-            Wallet wallet = RealmManager.getAssetsDao().getWalletById(getActivity().getIntent()
-                    .getLongExtra(Constants.EXTRA_WALLET_ID, 0));
-            this.wallet.setValue(wallet);
+        if (wallet == null || !wallet.isValid() && getActivity() != null) {
+            wallet = RealmManager.getAssetsDao().getWalletById(getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0));
         }
     }
 
@@ -119,48 +121,38 @@ public class CreateMultisigBlankFragment extends BaseFragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK && data != null) {
             if (requestCode == ChooseMembersDialog.REQUEST_MEMBERS) {
-                setConfirmsAndMembers(data.getIntExtra(ChooseMembersDialog.EXTRA_CONFIRMS, 0),
-                        data.getIntExtra(ChooseMembersDialog.EXTRA_MEMBERS, 0));
+                confirmationsCount = data.getIntExtra(ChooseMembersDialog.EXTRA_CONFIRMS, 0);
+                membersCount = data.getIntExtra(ChooseMembersDialog.EXTRA_MEMBERS, 0);
+                updateCounts();
             } else if (requestCode == WalletChooserDialogFragment.REQUEST_WALLET_ID && getActivity() != null) {
                 getActivity().getIntent().putExtra(Constants.EXTRA_WALLET_ID, data.getLongExtra(Constants.EXTRA_WALLET_ID, 0));
-                Wallet wallet = RealmManager.getAssetsDao().getWalletById(data.getLongExtra(Constants.EXTRA_WALLET_ID, 0));
-                this.wallet.setValue(wallet);
+                wallet = RealmManager.getAssetsDao().getWalletById(data.getLongExtra(Constants.EXTRA_WALLET_ID, 0));
+                showWalletInfo();
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void initialize() {
-        setConfirmsAndMembersCount(0, 0);
-        onWallet(null);
+    private void showInfo() {
+        updateCounts();
+        showWalletInfo();
         inputName.postDelayed(() -> inputName.requestFocus(), 300);
-        membersCount.observe(this, members -> setConfirmsAndMembersCount(getConfirmsCount(), getMembersCount()));
-        textChain.setText("Ethereum ∙ ETH");
-        wallet.observe(this, this::onWallet);
-        isValidData.observe(this, isValid -> buttonCreate.setBackgroundColor(isValid == null || !isValid ?
-                        Color.parseColor("#BEC8D2") : Color.parseColor("#FF459FF9")));
+        textChain.setText(R.string.ethereum_eth);
         subscribeInput();
     }
 
-    private void setConfirmsAndMembers(int confirmsCount, int membersCount) {
-        this.confirmsCount.setValue(confirmsCount);
-        this.membersCount.setValue(membersCount);
+    private void setDataValid(boolean isValid) {
+        isDataValid = isValid;
+        buttonCreate.setBackgroundColor(!isValid ?
+                getContext().getResources().getColor(R.color.gray_light_dark) : getContext().getResources().getColor(R.color.colorPrimary));
     }
 
-    private int getConfirmsCount() {
-        return confirmsCount.getValue() == null ? 0 : confirmsCount.getValue();
-    }
-
-    private int getMembersCount() {
-        return membersCount.getValue() == null ? 0 : membersCount.getValue();
-    }
-
-    private void setConfirmsAndMembersCount(int confirms, int members) {
-        textSignsMembers.setText(String.format(getString(R.string.count_of), confirms, members));
+    private void updateCounts() {
+        textSignsMembers.setText(String.format(getString(R.string.count_of), confirmationsCount, membersCount));
         validateData();
     }
 
-    private void onWallet(Wallet wallet) {
+    private void showWalletInfo() {
         if (wallet != null) {
             imageCurrency.setVisibility(View.VISIBLE);
             imageCurrency.setImageResource(wallet.getIconResourceId());
@@ -183,17 +175,18 @@ public class CreateMultisigBlankFragment extends BaseFragment {
                     if (name.length() > 0) {
                         return true;
                     }
-                    isValidData.setValue(false);
+                    setDataValid(false);
                     return false;
                 }).debounce(300, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(CharSequence::toString).subscribe(name -> validateData());
     }
 
-    private @Nullable String getInviteCode() {
+    @Nullable
+    private String getInviteCode() {
         StringBuilder inviteCode = new StringBuilder(UUID.randomUUID().toString()).append(Constants.DEVICE_NAME);
         try {
-            byte[] result = NativeDataHelper.digestSha3256(inviteCode.toString().getBytes());
+            byte[] result = NativeDataHelper.digestSha3256(inviteCode.toString().trim().getBytes());
             return Base64.encodeToString(result, Base64.DEFAULT);
         } catch (JniException e) {
             e.printStackTrace();
@@ -202,14 +195,14 @@ public class CreateMultisigBlankFragment extends BaseFragment {
     }
 
     private void validateData() {
-        if (inputName.getText().length() > 0 && getMembersCount() > 0 && getConfirmsCount() > 0 && wallet.getValue() != null) {
-            isValidData.setValue(true);
-        } else {
-            isValidData.setValue(false);
-        }
+        setDataValid(inputName.getText().length() > 0 && membersCount > 0 && confirmationsCount > 0 && wallet != null);
     }
 
-    private void handleClick(View view) {
+    private void aVoid() {
+
+    }
+
+    private void scheduleButtonDisable(View view) {
         view.setEnabled(false);
         view.postDelayed(() -> view.setEnabled(true), 500);
     }
@@ -222,11 +215,11 @@ public class CreateMultisigBlankFragment extends BaseFragment {
 
     @OnClick(R.id.button_signs_members)
     void onClickMembers(View view) {
-        handleClick(view);
+        scheduleButtonDisable(view);
         if (getFragmentManager() != null) {
             ChooseMembersDialog membersDialog = (ChooseMembersDialog) getFragmentManager().findFragmentByTag(ChooseMembersDialog.TAG);
             if (membersDialog == null) {
-                membersDialog = ChooseMembersDialog.getInstance(getConfirmsCount(), getMembersCount());
+                membersDialog = ChooseMembersDialog.getInstance(confirmationsCount, membersCount);
             }
             membersDialog.setTargetFragment(this, ChooseMembersDialog.REQUEST_MEMBERS);
             membersDialog.show(getFragmentManager(), ChooseMembersDialog.TAG);
@@ -235,12 +228,12 @@ public class CreateMultisigBlankFragment extends BaseFragment {
 
     @OnClick(R.id.button_chain)
     void onClickChain(View view) {
-        handleClick(view);
+        scheduleButtonDisable(view);
     }
 
     @OnClick(R.id.button_wallet)
     void onClickWallet(View view) {
-        handleClick(view);
+        scheduleButtonDisable(view);
         if (getFragmentManager() != null) {
             WalletChooserDialogFragment dialog = WalletChooserDialogFragment.getInstance(NativeDataHelper.Blockchain.ETH.getValue());
             dialog.setTargetFragment(this, WalletChooserDialogFragment.REQUEST_WALLET_ID);
@@ -248,32 +241,46 @@ public class CreateMultisigBlankFragment extends BaseFragment {
         }
     }
 
-    @SuppressWarnings("ConstantConditions")
     @OnClick(R.id.text_create)
     void onClickCreate(View view) {
-        handleClick(view);
-        if (isValidData.getValue() != null && isValidData.getValue()) {
-            isValidData.setValue(false);
+        scheduleButtonDisable(view);
+        if (isDataValid) {
+            setDataValid(false);
             showProgressDialog();
-            String inviteCode = getInviteCode();
-            int networkId = wallet.getValue().getNetworkId();
+            final String inviteCode = getInviteCode();
+            final int networkId = wallet.getNetworkId();
             final int topIndex = Prefs.getInt(Constants.PREF_WALLET_TOP_INDEX_ETH + networkId, 0);
+            //TODO builder.pattern please
             CreateMultisigRequest request = new CreateMultisigRequest();
             request.setCurrencyId(NativeDataHelper.Blockchain.ETH.getValue());
-            request.setNetworkId(wallet.getValue().getNetworkId());
-            request.setAddress(wallet.getValue().getActiveAddress().getAddress());
-            request.setAddressIndex(wallet.getValue().getAddresses().size() - 1);
+            request.setNetworkId(networkId);
+            request.setAddress(wallet.getActiveAddress().getAddress());
+            request.setAddressIndex(wallet.getAddresses().size() - 1);
             request.setWalletIndex(topIndex);
             request.setWalletName(inputName.getText().toString());
-            request.setMultisig(new CreateMultisigRequest.Multisig(getConfirmsCount(), getMembersCount(), inviteCode));
+            request.setMultisig(new CreateMultisigRequest.Multisig(confirmationsCount, membersCount, inviteCode));
+
             MultyApi.INSTANCE.addWallet(view.getContext(), request).enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                     if (response.isSuccessful()) {
-                        //todo start ms activity
-//                        startActivity(new Intent(getContext(), CreateMultiSigActivity.class));
+                        Timber.i("create multisig success");
+                        getActivity().finish();
+
+                        try {
+                            String body = response.body().string();
+                            long dateOfCreation = new JSONObject(body).getLong("time");
+//                            RealmManager.getAssetsDao().saveWallet(walletRealmObject);
+//                            we cant save wallet now since response is wrong structured
+                            startActivity(new Intent(getContext(), CreateMultiSigActivity.class)
+                                    .putExtra(Constants.EXTRA_WALLET_ID, dateOfCreation)
+                                    .putExtra(Constants.EXTRA_RELATED_WALLET_ID, wallet.getId())
+                                    .putExtra(Constants.EXTRA_INVITE_CODE, inviteCode));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     } else {
-                        Log.e(getClass().getSimpleName(), "creation failed");
+                        Timber.e("create multisig fail");
                         validateData();
                     }
                     dismissProgressDialog();

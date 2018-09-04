@@ -43,12 +43,12 @@ public class CreateAssetActivity extends BaseActivity {
                     fragmentTag = CreateMultisigBlankFragment.TAG;
                     break;
                 case EXTRA_MULTISIG_JOIN:
-                    fragment = ScanInvitationCodeFragment.getInstance();
+//                    fragment = ScanInvitationCodeFragment.getInstance();
                     fragmentTag = ScanInvitationCodeFragment.TAG;
                     break;
-                    default:
-                        fragment = CreateAssetFragment.getInstance();
-                        fragmentTag = CreateAssetFragment.TAG;
+                default:
+                    fragment = CreateAssetFragment.getInstance();
+                    fragmentTag = CreateAssetFragment.TAG;
             }
         } else {
             fragmentTag = fragment.getTag();

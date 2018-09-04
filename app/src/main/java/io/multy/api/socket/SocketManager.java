@@ -39,8 +39,8 @@ public class SocketManager {
     private static final String EVENT_RECEIVE = "TransactionUpdate";
     @Deprecated
     private static final String EVENT_RECEIVE_DEPRECATED = "btcTransactionUpdate";
-    //    private static final String EVENT_EXCHANGE_RESPONSE = "exchangePoloniex";
-    private static final String EVENT_EXCHANGE_RESPONSE = "exchangeBitfinex";
+    private static final String EVENT_EXCHANGE_RESPONSE = "exchangePoloniex";
+//    private static final String EVENT_EXCHANGE_RESPONSE = "exchangeBitfinex";
 
     private Socket socket;
     private Gson gson;
@@ -62,13 +62,13 @@ public class SocketManager {
 
     public void connect(MutableLiveData<CurrenciesRate> rates, MutableLiveData<TransactionUpdateEntity> transactionUpdateEntity) {
         try {
-            OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                    .hostnameVerifier((hostname, session) -> true)
+//            OkHttpClient okHttpClient = new OkHttpClient.Builder()
+//                    .hostnameVerifier((hostname, session) -> true)
 //                    .sslSocketFactory(mySSLContext.getSocketFactory(), myX509TrustManager)
-                    .build();
+//                    .build();
 
-            IO.setDefaultOkHttpWebSocketFactory(okHttpClient);
-            IO.setDefaultOkHttpCallFactory(okHttpClient);
+//            IO.setDefaultOkHttpWebSocketFactory(okHttpClient);
+//            IO.setDefaultOkHttpCallFactory(okHttpClient);
 
             IO.Options options = new IO.Options();
             options.forceNew = true;
@@ -76,8 +76,8 @@ public class SocketManager {
             options.transports = new String[]{WebSocket.NAME};
             options.path = "/socket.io";
             options.secure = false;
-            options.callFactory = okHttpClient;
-            options.webSocketFactory = okHttpClient;
+//            options.callFactory = okHttpClient;
+//            options.webSocketFactory = okHttpClient;
 
             final String userId = RealmManager.getSettingsDao().getUserId().getUserId();
 

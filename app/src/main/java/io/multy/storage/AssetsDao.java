@@ -43,7 +43,7 @@ public class AssetsDao {
 
                 Wallet toDelete = getWalletById(wallet.getId());
                 if (toDelete != null) {
-                    //todo there must being removing of all addresse, btcwallets and ethwallets
+                    //todo there must being removing of all wallets and !inner objects
                     //realm is not deleting inner object. do it manually
                     if (toDelete.getAddresses() != null) {
                         for (WalletAddress walletAddress : toDelete.getAddresses()) {
@@ -58,6 +58,12 @@ public class AssetsDao {
                         }
                         if (toDelete.getEthWallet() != null) {
                             toDelete.getEthWallet().deleteFromRealm();
+                        }
+                        if (toDelete.getMultisigWallet() != null) {
+                            if (toDelete.getMultisigWallet().getOwners() != null) {
+                                toDelete.getMultisigWallet().getOwners().deleteAllFromRealm();
+                            }
+                            toDelete.getMultisigWallet().deleteFromRealm();
                         }
                     }
                     toDelete.deleteFromRealm();
@@ -82,6 +88,7 @@ public class AssetsDao {
         savedWallet.setNetworkId(wallet.getNetworkId());
         savedWallet.setCurrencyId(wallet.getCurrencyId());
         savedWallet.setPending(wallet.isPending());
+
         if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()) {
             savedWallet.setBtcWallet(wallet.getBtcWallet().asRealmObject(realm));
             savedWallet.setBalance(String.valueOf(savedWallet.getBtcWallet().calculateBalance()));
@@ -99,6 +106,10 @@ public class AssetsDao {
             savedWallet.setAvailableBalance(eosBalance);
 
         } else {
+            if (wallet.getMultisigWallet() != null) {
+                savedWallet.setMultisigWallet(Objects.requireNonNull(wallet.getMultisigWallet()).asRealmObject(realm));
+            }
+
             savedWallet.setEthWallet(Objects.requireNonNull(wallet.getEthWallet()).asRealmObject(realm));
             final String ethBalance = savedWallet.getEthWallet().getBalance();
             final String ethPendingBalance = savedWallet.getEthWallet().getPendingBalance();
@@ -116,7 +127,10 @@ public class AssetsDao {
     }
 
     public RealmResults<Wallet> getAvailableWallets() {
-        return realm.where(Wallet.class).notEqualTo("availableBalance", "0").sort("lastActionTime", Sort.ASCENDING).findAll();
+        return realm.where(Wallet.class)
+                .notEqualTo("availableBalance", "0")
+                .sort("lastActionTime", Sort.ASCENDING)
+                .findAll();
     }
 
     public RealmResults<Wallet> getAvailableWallets(int currencyId, int networkId) {

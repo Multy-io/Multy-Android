@@ -22,6 +22,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.ui.activities.CreateAssetActivity;
+import io.multy.ui.activities.CreateMultiSigActivity;
 import io.multy.ui.activities.ImportWalletActivity;
 import io.multy.util.Constants;
 
@@ -97,8 +98,7 @@ public class AssetActionsDialogFragment extends BottomSheetDialogFragment implem
     public void onJoinMultisig(View view) {
         view.setEnabled(false);
         dismiss();
-        startActivity(new Intent(view.getContext(), CreateAssetActivity.class)
-                .putExtra(CreateAssetActivity.EXTRA_MULTISIG, CreateAssetActivity.EXTRA_MULTISIG_JOIN));
+        startActivity(new Intent(view.getContext(), CreateMultiSigActivity.class).putExtra(Constants.EXTRA_SCAN, true));
     }
 
     @OnClick(R.id.button_import)

@@ -16,6 +16,7 @@ import com.google.gson.JsonParseException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import java.util.List;
 import io.multy.model.entities.wallet.BtcWallet;
 import io.multy.model.entities.wallet.EosWallet;
 import io.multy.model.entities.wallet.EthWallet;
+import io.multy.model.entities.wallet.MultisigWallet;
 import io.multy.model.entities.wallet.Wallet;
 
 public class WalletDeserializer implements JsonDeserializer<List<Wallet>> {
@@ -35,28 +37,39 @@ public class WalletDeserializer implements JsonDeserializer<List<Wallet>> {
         try {
             JSONArray jsonArray = new JSONArray(json.toString());
             int currencyId;
-            String jsonItemString;
+            JSONObject jsonItemString;
 
             for (int i = 0; i < jsonArray.length(); i++) {
-                jsonItemString = jsonArray.getJSONObject(i).toString();
-                Wallet wallet = gson.fromJson(jsonItemString, Wallet.class);
+                jsonItemString = jsonArray.getJSONObject(i);
+                Wallet wallet = gson.fromJson(jsonItemString.toString(), Wallet.class);
                 currencyId = wallet.getCurrencyId();
 
                 switch (NativeDataHelper.Blockchain.valueOf(currencyId)) {
                     case ETH:
-                        EthWallet ethWallet = gson.fromJson(jsonItemString, EthWallet.class);
+                        EthWallet ethWallet = gson.fromJson(jsonItemString.toString(), EthWallet.class);
+                        final boolean isMultisig = wallet.getMultisigWallet() != null;
+
+                        if (isMultisig) {
+                            MultisigWallet multisigWallet = gson.fromJson(jsonArray.getJSONObject(i).get("multisig").toString(), MultisigWallet.class);
+
+                            wallet.setMultisigWallet(multisigWallet);
+                            wallet.setBalance(multisigWallet.getBalance());
+                            wallet.setAvailableBalance(multisigWallet.getBalance());
+                            wallet.setMultisigWallet(multisigWallet);
+                        }
+
                         wallet.setBalance(ethWallet.getBalance());
                         wallet.setAvailableBalance(ethWallet.getBalance());
                         wallet.setEthWallet(ethWallet);
                         break;
                     case BTC:
-                        BtcWallet btcWallet = gson.fromJson(jsonItemString, BtcWallet.class);
+                        BtcWallet btcWallet = gson.fromJson(jsonItemString.toString(), BtcWallet.class);
                         wallet.setAvailableBalance(String.valueOf(btcWallet.calculateAvailableBalance()));
                         wallet.setBalance(String.valueOf(btcWallet.calculateBalance()));
                         wallet.setBtcWallet(btcWallet);
                         break;
                     case EOS:
-                        EosWallet eosWallet = gson.fromJson(jsonItemString, EosWallet.class);
+                        EosWallet eosWallet = gson.fromJson(jsonItemString.toString(), EosWallet.class);
                         String balance = eosWallet.getBalance();
                         wallet.setAvailableBalance(balance);
                         wallet.setBalance(balance);

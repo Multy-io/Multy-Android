@@ -69,6 +69,9 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
     private BtcWallet btcWallet;
     @Nullable
     private EosWallet eosWallet;
+    @Nullable
+    @SerializedName("multisig")
+    private MultisigWallet multisigWallet;
 
     private BigInteger convertBalance(BigInteger divisor) {
         BigInteger value = new BigInteger(balance);
@@ -544,11 +547,24 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
     }
 
     @Nullable
+    public MultisigWallet getMultisigWallet() {
+        return multisigWallet;
+    }
+
+    public void setMultisigWallet(@Nullable MultisigWallet multisigWallet) {
+        this.multisigWallet = multisigWallet;
+    }
+
+    @Nullable
     public EosWallet getEosWallet() {
         return eosWallet;
     }
 
     public void setEosWallet(@Nullable EosWallet eosWallet) {
         this.eosWallet = eosWallet;
+    }
+
+    public boolean isMultisig() {
+        return getEthWallet() != null && getMultisigWallet() != null;
     }
 }
