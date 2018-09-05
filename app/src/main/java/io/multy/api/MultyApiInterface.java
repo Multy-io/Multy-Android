@@ -9,6 +9,7 @@ package io.multy.api;
 
 import android.content.Context;
 
+import io.multy.model.entities.Estimation;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.requests.AddWalletAddressRequest;
 import io.multy.model.requests.CreateMultisigRequest;
@@ -27,7 +28,6 @@ import io.multy.model.responses.WalletsResponse;
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
-import retrofit2.http.Path;
 
 public interface MultyApiInterface {
 
@@ -57,9 +57,13 @@ public interface MultyApiInterface {
 
     Call<TransactionHistoryResponse> getTransactionHistory(int currencyId, int networkId, int walletIndex);
 
+    Call<ResponseBody> getMsTransactionHistory(String inviteCode, int currencyId, int networkId);
+
     Call<ServerConfigResponse> getServerConfig();
 
     Call<FeeRateResponse> getFeeRates(int currencyId, int networkId);
+
+    Call<Estimation> getEstimations(String msWalletAddress); 
 
     Call<ResponseBody> sendHdTransaction(HdTransactionRequestEntity transactionRequestEntity);
 
