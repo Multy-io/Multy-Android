@@ -57,7 +57,7 @@ public interface MultyApiInterface {
 
     Call<TransactionHistoryResponse> getTransactionHistory(int currencyId, int networkId, int walletIndex);
 
-    Call<ResponseBody> getMsTransactionHistory(String inviteCode, int currencyId, int networkId);
+    Call<ResponseBody> getMultisigTransactionHistory(String inviteCode, int currencyId, int networkId);
 
     Call<ServerConfigResponse> getServerConfig();
 

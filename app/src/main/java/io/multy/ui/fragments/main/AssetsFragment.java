@@ -156,10 +156,13 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
     public void onWalletClick(Wallet wallet) {
         if (wallet.isValid()) {
             Analytics.getInstance(getActivity()).logMainWalletOpen(viewModel.getChainId());
-            if (wallet.isMultisig() && wallet.getMultisigWallet().getDeployStatus() == MultisigWallet.Status.CREATED) {
+            if (wallet.isMultisig() &&
+                    (wallet.getMultisigWallet().getDeployStatus() == MultisigWallet.Status.CREATED || wallet.getMultisigWallet().getDeployStatus() == MultisigWallet.Status.READY)) {
                 //pre deploy period = waiting for members screen, pre choose
                 Intent intent = new Intent(getActivity(), CreateMultiSigActivity.class);
                 intent.putExtra(Constants.EXTRA_WALLET_ID, wallet.getId());
+                intent.putExtra(Constants.EXTRA_INVITE_CODE, wallet.getMultisigWallet().getInviteCode());
+                intent.putExtra(Constants.EXTRA_CREATE, true);
                 startActivity(intent);
             } else {
                 Intent intent = new Intent(getActivity(), AssetActivity.class);

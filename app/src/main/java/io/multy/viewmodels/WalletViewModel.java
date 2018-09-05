@@ -111,6 +111,7 @@ public class WalletViewModel extends BaseViewModel {
         ServerConfigResponse serverConfig = EventBus.getDefault().removeStickyEvent(ServerConfigResponse.class);
         if (serverConfig != null) {
             RealmManager.getSettingsDao().saveDonation(serverConfig.getDonates());
+            RealmManager.getSettingsDao().saveMultisigFactory(serverConfig.getMultisigFactory());
         }
     }
 

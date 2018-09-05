@@ -114,7 +114,10 @@ public class NativeDataHelper {
 
     public static native String getLibraryVersion() throws JniException;
 
-//    final String key = NativeDataHelper.getPublicKey(194, 0, "5KHUWnDCA7SxbCoEbLdhFZjqsqMFq3K7wXAEYoRp3P6AKQdX7BY");
+    //    final String key = NativeDataHelper.getPublicKey(194, 0, "5KHUWnDCA7SxbCoEbLdhFZjqsqMFq3K7wXAEYoRp3P6AKQdX7BY");
     public static native String getPublicKey(int blockChain, int netType, String key);
+
+    public static native byte[] createEthMultisigWallet(byte[] seed, int walletIndex, int addressIndex, int chainId, int netType, String balance,
+                                                        String gasLimit, String gasPrice, String nonce, String factoryAddress, String ownerAddress, int confirmation, String price);
 
 }

@@ -119,9 +119,9 @@ public class WalletChooserDialogFragment extends DialogFragment {
 
     public void setupAdapter() {
         recyclerView.setAdapter(new MyWalletsAdapter(wallet -> {
-            if (getTargetFragment() == null) {
+            if (listener != null) {
                 listener.onWalletClick(wallet);
-            } else {
+            } else if (getTargetFragment() != null) {
                 getTargetFragment().onActivityResult(REQUEST_WALLET_ID, Activity.RESULT_OK,
                         new Intent().putExtra(Constants.EXTRA_WALLET_ID, wallet.getId()));
             }

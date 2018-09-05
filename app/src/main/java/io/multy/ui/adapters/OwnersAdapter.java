@@ -6,11 +6,13 @@
 
 package io.multy.ui.adapters;
 
+import android.media.Image;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -29,19 +31,20 @@ public class OwnersAdapter extends RecyclerView.Adapter<OwnersAdapter.ViewHolder
     private static final int TYPE_WAITING = 101;
     private static final int TYPE_OWNER = 102;
 
-    private RealmList<Owner> data;
+    private ArrayList<Owner> data = new ArrayList<>();
+    private View.OnLongClickListener listener;
 
-    public OwnersAdapter(RealmList<Owner> data) {
-        this.data = data;
+    public OwnersAdapter(View.OnLongClickListener listener) {
+        this.listener = listener;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == TYPE_OWNER) {
-            return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.view_transaction_item_blocked, parent, false));
+            return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_owner, parent, false));
         } else {
-            return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.view_transaction_item_blocked, parent, false));
+            return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_owner_waiting, parent, false));
         }
     }
 
@@ -51,19 +54,21 @@ public class OwnersAdapter extends RecyclerView.Adapter<OwnersAdapter.ViewHolder
             final Owner owner = data.get(position);
             holder.image.setAvatar(owner.getAddress());
             holder.textAddress.setText(owner.getAddress());
+            holder.root.setTag(data.get(position).getAddress());
+            holder.root.setOnLongClickListener(listener);
 //            holder.textName.setText(owner.getName());
         }
 
     }
 
-    public void setOwners(RealmList<Owner> data) {
+    public void setOwners(ArrayList<Owner> data) {
         this.data = data;
         notifyDataSetChanged();
     }
 
     @Override
     public int getItemViewType(int position) {
-        return position > data.size() - 1 ? TYPE_WAITING : TYPE_OWNER;
+        return data.get(position) == null ? TYPE_WAITING : TYPE_OWNER;
     }
 
     @Override
@@ -79,11 +84,14 @@ public class OwnersAdapter extends RecyclerView.Adapter<OwnersAdapter.ViewHolder
         TextView textName;
         @BindView(R.id.text_address)
         TextView textAddress;
-
+        @BindView(R.id.root)
+        View root;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
+            if (itemView.findViewById(R.id.image) instanceof Hash2PicView) {
+                ButterKnife.bind(this, itemView);
+            }
         }
     }
 }

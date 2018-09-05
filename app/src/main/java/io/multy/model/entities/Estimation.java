@@ -14,53 +14,53 @@ import com.google.gson.annotations.SerializedName;
 public class Estimation {
 
     @SerializedName("confirmTransaction")
-    private long confirmTransaction;
+    private String confirmTransaction;
     @SerializedName("deployMultisig")
-    private long deployMultisig;
+    private String deployMultisig;
     @SerializedName("priceOfCreation")
-    private long priceOfCreation;
+    private String priceOfCreation;
     @SerializedName("revokeConfirmation")
-    private long revokeConfirmation;
+    private String revokeConfirmation;
     @SerializedName("submitTransaction")
-    private long submitTransaction;
+    private String submitTransaction;
 
-    public long getConfirmTransaction() {
+    public String getConfirmTransaction() {
         return confirmTransaction;
     }
 
-    public void setConfirmTransaction(long confirmTransaction) {
+    public void setConfirmTransaction(String confirmTransaction) {
         this.confirmTransaction = confirmTransaction;
     }
 
-    public long getDeployMultisig() {
+    public String getDeployMultisig() {
         return deployMultisig;
     }
 
-    public void setDeployMultisig(long deployMultisig) {
+    public void setDeployMultisig(String deployMultisig) {
         this.deployMultisig = deployMultisig;
     }
 
-    public long getPriceOfCreation() {
+    public String getPriceOfCreation() {
         return priceOfCreation;
     }
 
-    public void setPriceOfCreation(long priceOfCreation) {
+    public void setPriceOfCreation(String priceOfCreation) {
         this.priceOfCreation = priceOfCreation;
     }
 
-    public long getRevokeConfirmation() {
+    public String getRevokeConfirmation() {
         return revokeConfirmation;
     }
 
-    public void setRevokeConfirmation(long revokeConfirmation) {
+    public void setRevokeConfirmation(String revokeConfirmation) {
         this.revokeConfirmation = revokeConfirmation;
     }
 
-    public long getSubmitTransaction() {
+    public String getSubmitTransaction() {
         return submitTransaction;
     }
 
-    public void setSubmitTransaction(long submitTransaction) {
+    public void setSubmitTransaction(String submitTransaction) {
         this.submitTransaction = submitTransaction;
     }
 }

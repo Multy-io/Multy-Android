@@ -186,8 +186,11 @@ public class CreateMultisigBlankFragment extends BaseFragment {
     private String getInviteCode() {
         StringBuilder inviteCode = new StringBuilder(UUID.randomUUID().toString()).append(Constants.DEVICE_NAME);
         try {
-            byte[] result = NativeDataHelper.digestSha3256(inviteCode.toString().trim().getBytes());
-            return Base64.encodeToString(result, Base64.DEFAULT);
+            final byte[] codeBytes = NativeDataHelper.digestSha3256(inviteCode.toString().trim().getBytes());
+            String result = Base64.encodeToString(codeBytes, Base64.NO_WRAP);
+            result = result + result;
+            result = result.substring(0, Constants.INVITE_CODE_LENGTH);
+            return result;
         } catch (JniException e) {
             e.printStackTrace();
         }
@@ -196,10 +199,6 @@ public class CreateMultisigBlankFragment extends BaseFragment {
 
     private void validateData() {
         setDataValid(inputName.getText().length() > 0 && membersCount > 0 && confirmationsCount > 0 && wallet != null);
-    }
-
-    private void aVoid() {
-
     }
 
     private void scheduleButtonDisable(View view) {
@@ -274,6 +273,7 @@ public class CreateMultisigBlankFragment extends BaseFragment {
 //                            we cant save wallet now since response is wrong structured
                             startActivity(new Intent(getContext(), CreateMultiSigActivity.class)
                                     .putExtra(Constants.EXTRA_WALLET_ID, dateOfCreation)
+                                    .putExtra(Constants.EXTRA_CREATE, true)
                                     .putExtra(Constants.EXTRA_RELATED_WALLET_ID, wallet.getId())
                                     .putExtra(Constants.EXTRA_INVITE_CODE, inviteCode));
                         } catch (Exception e) {
