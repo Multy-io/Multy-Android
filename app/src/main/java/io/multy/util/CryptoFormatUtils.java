@@ -6,9 +6,10 @@
 
 package io.multy.util;
 
+import android.text.TextUtils;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
@@ -143,7 +144,8 @@ public class CryptoFormatUtils {
     }
 
     public static String weiToEthLabel(String wei) {
-        return wei.equals("0") ? "0 ETH" : FORMAT_ETH.format(new BigDecimal(wei).divide(EthWallet.DIVISOR).doubleValue()) + " ETH";
+         return TextUtils.isEmpty(wei) || wei.equals("0") ?
+                 "0 ETH" : FORMAT_ETH.format(new BigDecimal(wei).divide(EthWallet.DIVISOR).doubleValue()) + " ETH";
     }
 
     public static String ethToWei(String eth) {

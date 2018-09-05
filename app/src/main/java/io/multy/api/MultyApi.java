@@ -20,6 +20,7 @@ import javax.annotation.Nullable;
 
 import io.multy.Multy;
 import io.multy.model.entities.AuthEntity;
+import io.multy.model.entities.Estimation;
 import io.multy.model.entities.TransactionRequestEntity;
 import io.multy.model.entities.UserId;
 import io.multy.model.entities.wallet.Wallet;
@@ -165,6 +166,10 @@ public enum MultyApi implements MultyApiInterface {
             return api.getTransactionHistory(currencyId, networkId, walletIndex);
         }
 
+        public Call<ResponseBody> getMsTransactionHistory(String inviteCode, int currencyId, int networkId) {
+            return api.getMsTransactionHistory(inviteCode, currencyId, networkId);
+        }
+
         @Override
         public Call<ServerConfigResponse> getServerConfig() {
             return api.getServerConfig();
@@ -174,6 +179,11 @@ public enum MultyApi implements MultyApiInterface {
         @Override
         public Call<FeeRateResponse> getFeeRates(int currencyId, int networkId) {
             return api.getFeeRates(currencyId, networkId);
+        }
+
+        @Override
+        public Call<Estimation> getEstimations(String msWalletAddress) {
+            return api.getEstimations(msWalletAddress);
         }
 
         @Override
