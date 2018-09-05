@@ -470,4 +470,14 @@
         <item name="android:layout_height">24dp</item>
     </style>
 
+    <style name="MsInformationText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">22dp</item>
+        <item name="android:layout_marginRight">12dp</item>
+        <item name="android:drawablePadding">4dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/text_main_dark</item>
+        <item name="android:textSize">11sp</item>
+    </style>
+
 </resources>

@@ -8,6 +8,7 @@ package io.multy.api;
 
 
 import io.multy.model.entities.AuthEntity;
+import io.multy.model.entities.Estimation;
 import io.multy.model.entities.TransactionRequestEntity;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.requests.AddWalletAddressRequest;
@@ -31,7 +32,6 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
-import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
@@ -54,6 +54,9 @@ public interface ApiServiceInterface {
 
     @GET("api/v1/transaction/feerate/{currencyId}/{networkId}")
     Call<FeeRateResponse> getFeeRates(@Path("currencyId") int currencyId, @Path("networkId") int networkId);
+
+    @GET("/api/v1/multisig/estimate/{address}")
+    Call<Estimation> getEstimations(@Path("address") String msWalletAddress);
 
     @GET("api/v1/getwalletaddresses/{walletId}")
     Observable<UserAssetsResponse> getWalletAddresses(@Path("walletId") int walletId);
@@ -84,6 +87,9 @@ public interface ApiServiceInterface {
 
     @GET("api/v1/wallets/transactions/{currencyid}/{networkid}/{walletIndex}")
     Call<TransactionHistoryResponse> getTransactionHistory(@Path("currencyid") int currencyId, @Path("networkid") int networkId, @Path("walletIndex") int walletIndex);
+
+    @GET("api/v1/wallet/{inviteCode}/verbose/{currencyId}/{networkId}")
+    Call<ResponseBody> getMsTransactionHistory(@Path("inviteCode") String inviteCode, @Path("currencyId") int currencyId, @Path("networkId") int networkId);
 
     @GET("/server/config")
     Call<ServerConfigResponse> getServerConfig();
