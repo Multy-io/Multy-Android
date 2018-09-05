@@ -17,6 +17,7 @@ import io.multy.model.entities.ContactAddress;
 import io.multy.model.entities.DeviceId;
 import io.multy.model.entities.DonateFeatureEntity;
 import io.multy.model.entities.Mnemonic;
+import io.multy.model.entities.MultisigFactory;
 import io.multy.model.entities.RootKey;
 import io.multy.model.entities.Token;
 import io.multy.model.entities.UserId;
@@ -50,6 +51,14 @@ public class SettingsDao {
 
     public Token getToken() {
         return realm.where(Token.class).findFirst();
+    }
+
+    public void saveMultisigFactory(MultisigFactory multisigFactory) {
+        realm.executeTransaction(realm -> realm.insertOrUpdate(multisigFactory));
+    }
+
+    public MultisigFactory getMultisigFactory() {
+        return realm != null ? realm.where(MultisigFactory.class).findFirst() : null;
     }
 
     public void saveUserId(UserId userId) {
@@ -120,7 +129,8 @@ public class SettingsDao {
                 return currenciesRate.getBtcToUsd();
             case ETH:
                 return currenciesRate.getEthToUsd();
-                default: return 0;
+            default:
+                return 0;
         }
     }
 
@@ -165,7 +175,8 @@ public class SettingsDao {
         return realm.where(ContactAddress.class).equalTo(ContactAddress.ADDRESS, address).findFirst() != null;
     }
 
-    public @Nullable Contact getContactOrNull(String address) {
+    public @Nullable
+    Contact getContactOrNull(String address) {
         ContactAddress contactAddress = realm.where(ContactAddress.class).equalTo(ContactAddress.ADDRESS, address).findFirst();
         if (contactAddress == null) {
             return null;
@@ -174,7 +185,8 @@ public class SettingsDao {
         }
     }
 
-    public @Nullable String getContactNameOrNull (String address) {
+    public @Nullable
+    String getContactNameOrNull(String address) {
         ContactAddress contactAddress = realm.where(ContactAddress.class).equalTo(ContactAddress.ADDRESS, address).findFirst();
         if (contactAddress == null) {
             return null;
@@ -235,7 +247,7 @@ public class SettingsDao {
 
     public void removeAddressFromContact(String address, Realm.Transaction.OnSuccess onSuccess) {
         realm.executeTransactionAsync(realm ->
-                realm.where(ContactAddress.class).equalTo(ContactAddress.ADDRESS, address).findAll().deleteAllFromRealm(),
+                        realm.where(ContactAddress.class).equalTo(ContactAddress.ADDRESS, address).findAll().deleteAllFromRealm(),
                 onSuccess, Throwable::printStackTrace);
     }
 }

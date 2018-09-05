@@ -56,7 +56,7 @@ public interface ApiServiceInterface {
     Call<FeeRateResponse> getFeeRates(@Path("currencyId") int currencyId, @Path("networkId") int networkId);
 
     @GET("/api/v1/multisig/estimate/{address}")
-    Call<Estimation> getEstimations(@Path("address") String msWalletAddress);
+    Call<Estimation> getEstimations(@Path("address") String multisigWalletAddress);
 
     @GET("api/v1/getwalletaddresses/{walletId}")
     Observable<UserAssetsResponse> getWalletAddresses(@Path("walletId") int walletId);
@@ -89,7 +89,7 @@ public interface ApiServiceInterface {
     Call<TransactionHistoryResponse> getTransactionHistory(@Path("currencyid") int currencyId, @Path("networkid") int networkId, @Path("walletIndex") int walletIndex);
 
     @GET("api/v1/wallet/{inviteCode}/verbose/{currencyId}/{networkId}")
-    Call<ResponseBody> getMsTransactionHistory(@Path("inviteCode") String inviteCode, @Path("currencyId") int currencyId, @Path("networkId") int networkId);
+    Call<ResponseBody> getMultisigTransactionHistory(@Path("inviteCode") String inviteCode, @Path("currencyId") int currencyId, @Path("networkId") int networkId);
 
     @GET("/server/config")
     Call<ServerConfigResponse> getServerConfig();

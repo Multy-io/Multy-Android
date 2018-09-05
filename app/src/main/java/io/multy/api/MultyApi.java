@@ -166,8 +166,8 @@ public enum MultyApi implements MultyApiInterface {
             return api.getTransactionHistory(currencyId, networkId, walletIndex);
         }
 
-        public Call<ResponseBody> getMsTransactionHistory(String inviteCode, int currencyId, int networkId) {
-            return api.getMsTransactionHistory(inviteCode, currencyId, networkId);
+        public Call<ResponseBody> getMultisigTransactionHistory(String inviteCode, int currencyId, int networkId) {
+            return api.getMultisigTransactionHistory(inviteCode, currencyId, networkId);
         }
 
         @Override
@@ -182,8 +182,8 @@ public enum MultyApi implements MultyApiInterface {
         }
 
         @Override
-        public Call<Estimation> getEstimations(String msWalletAddress) {
-            return api.getEstimations(msWalletAddress);
+        public Call<Estimation> getEstimations(String multisigWalletAddress) {
+            return api.getEstimations(multisigWalletAddress);
         }
 
         @Override

@@ -253,6 +253,7 @@ public class ScanInvitationCodeFragment extends BaseFragment {
                                 dialog.dismiss();
                                 activity.updateInfo();
                                 activity.getSupportFragmentManager().beginTransaction().remove(ScanInvitationCodeFragment.this).commit();
+                                activity.join();
                             });
                             dialog.show(getFragmentManager(), WalletChooserDialogFragment.TAG);
                         }

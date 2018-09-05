@@ -275,6 +275,7 @@ public class SeedValidationFragment extends BaseSeedFragment {
                         if (serverConfig != null) {
                             settingsDao.saveDonation(serverConfig.getDonates());
                         }
+                        settingsDao.saveMultisigFactory(serverConfig.getMultisigFactory());
                         RealmManager.close();
 
                         Prefs.putString(Constants.PREF_AUTH, response.body().getToken());
