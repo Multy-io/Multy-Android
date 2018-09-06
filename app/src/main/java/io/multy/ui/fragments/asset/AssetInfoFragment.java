@@ -36,12 +36,14 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.api.MultyApi;
+import io.multy.model.entities.TransactionHistory;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.events.TransactionUpdateEvent;
 import io.multy.model.responses.SingleWalletResponse;
@@ -52,7 +54,6 @@ import io.multy.ui.activities.AssetRequestActivity;
 import io.multy.ui.activities.AssetSendActivity;
 import io.multy.ui.activities.SeedActivity;
 import io.multy.ui.adapters.AssetTransactionsAdapter;
-import io.multy.ui.adapters.EosTransactionsAdapter;
 import io.multy.ui.adapters.EthTransactionsAdapter;
 import io.multy.ui.fragments.AddressesFragment;
 import io.multy.ui.fragments.BaseFragment;
@@ -247,29 +248,39 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
 
     private void requestTransactions(final int currencyId, final int networkId, final int walletIndex) {
         viewModel.isLoading.postValue(true);
-        viewModel.getTransactionsHistory(currencyId, networkId, walletIndex).observe(this, transactions -> {
-            if (transactions != null && !transactions.isEmpty()) {
-                try {
-                    final long walletId = viewModel.wallet.getValue().isValid() ?
-                            viewModel.wallet.getValue().getId() :
-                            viewModel.getWallet(getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0)).getId();
+        if (viewModel.getWalletLive().getValue().isMultisig()) {
+            viewModel.getMultisigTransactionsHistory(viewModel.getWalletLive().getValue().getCurrencyId(),
+                    viewModel.getWalletLive().getValue().getNetworkId(),
+                    viewModel.getWalletLive().getValue().getActiveAddress().getAddress())
+                    .observe(this, transactions -> onTransactions(transactions, currencyId));
+        } else {
+            viewModel.getTransactionsHistory(currencyId, networkId, walletIndex)
+                    .observe(this, transactions -> onTransactions(transactions, currencyId));
+        }
+    }
 
-                    recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-                    if (currencyId == NativeDataHelper.Blockchain.BTC.getValue()) {
-                        recyclerView.setAdapter(new AssetTransactionsAdapter(transactions, walletId));
-                    } else if (currencyId == NativeDataHelper.Blockchain.EOS.getValue()) {
+    private void onTransactions(ArrayList<TransactionHistory> transactions, int currencyId) {
+        if (transactions != null && !transactions.isEmpty()) {
+            try {
+                final long walletId = viewModel.wallet.getValue().isValid() ?
+                        viewModel.wallet.getValue().getId() :
+                        viewModel.getWallet(getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0)).getId();
+
+                recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                if (currencyId == NativeDataHelper.Blockchain.BTC.getValue()) {
+                    recyclerView.setAdapter(new AssetTransactionsAdapter(transactions, walletId));
+                } else if (currencyId == NativeDataHelper.Blockchain.EOS.getValue()) {
 //                        recyclerView.setAdapter(new EosTransactionsAdapter(transactions, walletId));
-                    } else {
-                        recyclerView.setAdapter(new EthTransactionsAdapter(transactions, walletId));
+                } else {
+                    recyclerView.setAdapter(new EthTransactionsAdapter(transactions, walletId));
 
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+        }
 
-            setTransactionsState();
-        });
+        setTransactionsState();
     }
 
     private void setTransactionsState() {

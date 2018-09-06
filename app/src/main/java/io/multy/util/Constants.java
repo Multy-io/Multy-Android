@@ -128,6 +128,11 @@ public final class Constants {
     public static final int MULTISIG_MEMBERS_COUNT = 50;
     public static final int INVITE_CODE_LENGTH = 45;
 
+    public static final int MULTISIG_OWNER_STATUS_WAITING = 0;
+    public static final int MULTISIG_OWNER_STATUS_SEEN = 1;
+    public static final int MULTISIG_OWNER_STATUS_CONFIRMED = 2;
+    public static final int MULTISIG_OWNER_STATUS_DECLINED = 3;
+
     public static final String[] rootFiles = {
             "init.magisk.rc",
             "magisk",

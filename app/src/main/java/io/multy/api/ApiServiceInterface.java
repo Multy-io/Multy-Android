@@ -88,8 +88,8 @@ public interface ApiServiceInterface {
     @GET("api/v1/wallets/transactions/{currencyid}/{networkid}/{walletIndex}")
     Call<TransactionHistoryResponse> getTransactionHistory(@Path("currencyid") int currencyId, @Path("networkid") int networkId, @Path("walletIndex") int walletIndex);
 
-    @GET("api/v1/wallet/{inviteCode}/verbose/{currencyId}/{networkId}")
-    Call<ResponseBody> getMultisigTransactionHistory(@Path("inviteCode") String inviteCode, @Path("currencyId") int currencyId, @Path("networkId") int networkId);
+    @GET("api/v1/wallets/transactions/{currencyId}/{networkId}/{address}")
+    Call<TransactionHistoryResponse> getMultisigTransactionHistory(@Path("currencyId") int currencyId, @Path("networkId") int networkId, @Path("address") String address);
 
     @GET("/server/config")
     Call<ServerConfigResponse> getServerConfig();

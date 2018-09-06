@@ -6,8 +6,6 @@
 
 package io.multy.storage;
 
-import android.util.Log;
-
 import java.util.List;
 import java.util.Objects;
 
@@ -160,6 +158,16 @@ public class AssetsDao {
                 .equalTo("networkId", networkId).equalTo("index", walletIndex).findFirst();
     }
 
+    public Wallet getMultisigLinkedWallet(int blockChainId, int networkId, int walletIndex) {
+        return realm.where(Wallet.class).equalTo("currencyId", blockChainId)
+                .equalTo("networkId", networkId).equalTo("index", walletIndex).isNull("multisigWallet").findFirst();
+    }
+
+    public Wallet getMultisigWallet(int blockChainId, int networkId, int walletIndex) {
+        return realm.where(Wallet.class).equalTo("currencyId", blockChainId)
+                .equalTo("networkId", networkId).equalTo("index", walletIndex).isNotNull("multisigWallet").findFirst();
+    }
+
     public void saveBtcAddress(long id, WalletAddress address) {
         realm.executeTransaction(realm -> {
             Wallet wallet = getWalletById(id);
@@ -198,6 +206,10 @@ public class AssetsDao {
             Wallet wallet = getWalletById(id);
             wallet.deleteFromRealm();
         });
+    }
+
+    public RealmResults<WalletAddress> getWalletAddress(String address) {
+        return realm.where(WalletAddress.class).equalTo("address", address).findAll();
     }
 
     public void saveRecentAddress(RecentAddress recentAddress) {
