@@ -137,6 +137,7 @@
                 <android.support.design.widget.TextInputEditText
                     android:id="@+id/edit_name"
                     style="@style/InputEdit"
+                    android:enabled="false"
                     android:inputType="textCapSentences"
                     android:lineSpacingExtra="6sp"
                     android:maxLength="25"
