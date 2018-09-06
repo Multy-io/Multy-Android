@@ -350,5 +350,15 @@
     <string name="invite_code_not_recognized">Can\'t join multisig wallet: no free slots available</string>
     <string name="about_signs">You can’t change the number of signs needed for sending money after creating multisig vallet.</string>
     <string name="delete_user">Delete user?</string>
+    <string name="confirmations_of">%d of %d confirmations</string>
+    <string name="waiting_your_confirmation">Waiting for your confirmation…</string>
+    <string name="waiting_other_confirmations">Waiting other confirmations…</string>
+    <string name="slide_to_confirm">Slide to Confirm</string>
+    <string name="waiting_confirmations">Waiting for confirmations…</string>
+    <string name="confirmed">Confirmed</string>
+    <string name="viewed">Viewed</string>
+    <string name="waiting_confirmation">Waiting for confirmation…</string>
+    <string name="slide_to_decline">Slide to Decline</string>
+    <string name="declined">Declined</string>
     <string name="permissions_are_not_granted">Permissions are not granted!</string>
 </resources>

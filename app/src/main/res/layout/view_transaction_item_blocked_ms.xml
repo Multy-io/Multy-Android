@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2018 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraint_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true"
+    android:background="?attr/selectableItemBackground">
+
+    <ImageView
+        android:id="@+id/image_operation"
+        android:layout_width="50dp"
+        android:layout_height="26dp"
+        android:layout_marginTop="18dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@drawable/ic_arrow_waiting" />
+
+    <TextView
+        android:id="@+id/text_address"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:ellipsize="middle"
+        android:lineSpacingExtra="8sp"
+        android:singleLine="true"
+        android:textColor="@color/text_main_dark"
+        app:layout_constraintLeft_toRightOf="@id/image_operation"
+        app:layout_constraintRight_toLeftOf="@id/text_amount"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="ASDSDSdsdadasdSFSfsfafdfsdadadadsasdadasdasdada" />
+
+    <TextView
+        android:id="@+id/text_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="12dp"
+        android:lineSpacingExtra="8sp"
+        android:textColor="@color/text_main_dark"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="0.052509 BTC" />
+
+    <TextView
+        android:id="@+id/text_date"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:textColor="@color/blue_light"
+        android:textSize="12sp"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        app:layout_constraintLeft_toRightOf="@id/image_operation"
+        app:layout_constraintRight_toLeftOf="@id/text_fiat"
+        app:layout_constraintTop_toBottomOf="@id/text_address"
+        tools:text="18:30 Waiting other confirmations…" />
+
+    <TextView
+        android:id="@+id/text_fiat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="2dp"
+        android:textColor="@color/blue_light"
+        android:textSize="12sp"
+        app:layout_constraintLeft_toRightOf="@id/text_date"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_amount"
+        tools:text="200.34 USD" />
+
+    <TextView
+        android:id="@+id/text_comment"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:textColor="@color/blue_light"
+        android:textSize="12sp"
+        android:visibility="gone"
+        app:layout_constraintLeft_toRightOf="@id/image_operation"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_date"
+        tools:text="Waiting for your confirmation…"
+        tools:visibility="visible" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/background"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="14dp"
+        android:background="@drawable/shape_blue_light_rounded"
+        android:paddingBottom="12dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="12dp"
+        app:layout_constraintLeft_toRightOf="@id/image_operation"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_comment">
+
+        <TextView
+            android:id="@+id/text_confirmations"
+            style="@style/MsInformationText"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@id/background"
+            app:layout_constraintLeft_toLeftOf="@id/background"
+            app:layout_constraintTop_toTopOf="@id/background"
+            tools:text="0 of 3 confirmations" />
+
+        <TextView
+            android:id="@+id/text_confirm_count"
+            style="@style/MsInformationText"
+            android:drawableLeft="@drawable/ic_votes_confirmed"
+            android:text="@string/zero"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/text_reject_count"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/text_reject_count"
+            style="@style/MsInformationText"
+            android:drawableLeft="@drawable/ic_votes_declined"
+            android:text="@string/zero"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/text_view_count"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/text_view_count"
+            style="@style/MsInformationText"
+            android:layout_marginRight="0dp"
+            android:drawableLeft="@drawable/ic_votes_viewed"
+            android:text="@string/zero"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <View
+        android:id="@+id/divider_bottom"
+        style="@style/Divider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="18dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/image_operation"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/background" />
+
+</android.support.constraint.ConstraintLayout>

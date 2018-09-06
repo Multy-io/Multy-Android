@@ -30,12 +30,14 @@ import io.multy.api.MultyApi;
 import io.multy.api.socket.CurrenciesRate;
 import io.multy.api.socket.SocketManager;
 import io.multy.api.socket.TransactionUpdateEntity;
+import io.multy.model.entities.Estimation;
 import io.multy.model.entities.TransactionHistory;
 import io.multy.model.entities.wallet.BtcWallet;
 import io.multy.model.entities.wallet.EthWallet;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.requests.UpdateWalletNameRequest;
+import io.multy.model.responses.FeeRateResponse;
 import io.multy.model.responses.ServerConfigResponse;
 import io.multy.model.responses.TransactionHistoryResponse;
 import io.multy.storage.RealmManager;
@@ -50,8 +52,11 @@ import io.multy.util.analytics.AnalyticsConstants;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.FlowableOnSubscribe;
+import io.reactivex.Observable;
+import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -187,6 +192,26 @@ public class WalletViewModel extends BaseViewModel {
             @Override
             public void onFailure(Call<TransactionHistoryResponse> call, Throwable throwable) {
                 throwable.printStackTrace();
+                isLoading.setValue(false);
+            }
+        });
+        return transactions;
+    }
+
+    public MutableLiveData<ArrayList<TransactionHistory>> getMultisigTransactionsHistory(int currencyId, int networkId, String address) {
+        MultyApi.INSTANCE.getMultisigTransactionHistory(currencyId, networkId, address)
+                .enqueue(new Callback<TransactionHistoryResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<TransactionHistoryResponse> call, @NonNull Response<TransactionHistoryResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    transactions.setValue(response.body().getHistories());
+                }
+                isLoading.postValue(false);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<TransactionHistoryResponse> call, @NonNull Throwable t) {
+                t.printStackTrace();
                 isLoading.setValue(false);
             }
         });
@@ -335,6 +360,32 @@ public class WalletViewModel extends BaseViewModel {
                     Prefs.putBoolean(Constants.PREF_APP_INITIALIZED, false);
                     onComplete.run();
                 });
+        addDisposable(disposable);
+    }
+
+    public void requestEstimation(String multisigWalletAddress, Consumer<String> onNext, Consumer<Throwable> onError) {
+        isLoading.setValue(true);
+        Disposable disposable = Observable.create((ObservableOnSubscribe<String>) e -> {
+            Response<Estimation> response = MultyApi.INSTANCE.getEstimations(multisigWalletAddress).execute();
+            e.onNext(response.body().getConfirmTransaction());
+            e.onComplete();
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnError(t -> isLoading.setValue(false))
+                .subscribe(onNext, onError, () -> isLoading.setValue(false));
+        addDisposable(disposable);
+    }
+
+    public void requestFeeRates(int currencyId, int networkId, Consumer<String> onNext, Consumer<Throwable> onError) {
+        isLoading.setValue(true);
+        Disposable disposable = Observable.create((ObservableOnSubscribe<String>) e -> {
+            Response<FeeRateResponse> response = MultyApi.INSTANCE.getFeeRates(currencyId, networkId).execute();
+            e.onNext(String.valueOf(response.body().getSpeeds().getMedium()));
+            e.onComplete();
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnError(t -> isLoading.setValue(false))
+                .subscribe(onNext, onError, () -> isLoading.setValue(false));
         addDisposable(disposable);
     }
 }

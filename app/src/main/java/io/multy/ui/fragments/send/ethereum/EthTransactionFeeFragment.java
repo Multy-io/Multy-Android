@@ -71,6 +71,8 @@ public class EthTransactionFeeFragment extends BaseFragment
     Group groupDonationBtc;
     @BindView(R.id.group_donation_views)
     Group groupDonation;
+    @BindView(R.id.button_next)
+    View buttonNext;
     private AssetSendViewModel viewModel;
 
     @Override
@@ -85,8 +87,17 @@ public class EthTransactionFeeFragment extends BaseFragment
         ButterKnife.bind(this, view);
         viewModel = ViewModelProviders.of(getActivity()).get(AssetSendViewModel.class);
         setBaseViewModel(viewModel);
+        buttonNext.setEnabled(false);
         textFeeOriginal.setText(Constants.ETH);
-        viewModel.speeds.observe(this, speeds -> setAdapter());
+        viewModel.speeds.observe(this, speeds -> {
+            setAdapter();
+            if (viewModel.getWallet().isMultisig()) {
+                viewModel.requestEstimates(viewModel.getWallet().getActiveAddress().getAddress());
+            } else {
+                buttonNext.setEnabled(true);
+            }
+        });
+        viewModel.estimation.observe(this, estimation -> buttonNext.setEnabled(estimation != null));
         viewModel.requestFeeRates(viewModel.getWallet().getCurrencyId(), viewModel.getWallet().getNetworkId());
         Analytics.getInstance(getActivity()).logTransactionFeeLaunch(viewModel.getChainId());
         groupDonation.setVisibility(View.GONE);

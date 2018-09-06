@@ -261,5 +261,15 @@
     <string name="share_multisig_wallet">Share MultiSig wallet</string>
     <string name="your_wallet_identification_code">Your wallet identification code</string>
     <string name="invite_code_not_recognized">Не удается подключиться к multisig wallet: нет свободных слотов</string>
+    <string name="confirmations_of">%d of %d confirmations</string>
+    <string name="waiting_your_confirmation">Waiting for your confirmation…</string>
+    <string name="waiting_other_confirmations">Waiting other confirmations…</string>
+    <string name="slide_to_confirm">Slide to Confirm</string>
+    <string name="waiting_confirmations">Waiting for confirmations…</string>
+    <string name="confirmed">Confirmed</string>
+    <string name="viewed">Viewed</string>
+    <string name="waiting_confirmation">Waiting for confirmation…</string>
+    <string name="slide_to_decline">Slide to Decline</string>
+    <string name="declined">Declined</string>
     <string name="permissions_are_not_granted">Дозволи не надаються!</string>
 </resources>
