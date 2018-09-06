@@ -45,6 +45,7 @@ import io.multy.model.requests.HdTransactionRequestEntity;
 import io.multy.model.responses.WalletsResponse;
 import io.multy.storage.RealmManager;
 import io.multy.ui.adapters.OwnersAdapter;
+import io.multy.ui.fragments.MultisigSettingsFragment;
 import io.multy.ui.fragments.ScanInvitationCodeFragment;
 import io.multy.ui.fragments.ShareMultisigFragment;
 import io.multy.ui.fragments.dialogs.CompleteDialogFragment;
@@ -143,6 +144,16 @@ public class CreateMultiSigActivity extends BaseActivity {
         }
 
         initList();
+        initCreator();
+    }
+
+    private void initCreator() {
+        for (Owner owner : wallet.getMultisigWallet().getOwners()) {
+            if (owner.isCreator() && owner.getUserId().equals(userId)) {
+                isCreator = true;
+                break;
+            }
+        }
     }
 
     private void findConnectedWallet() {
@@ -262,16 +273,6 @@ public class CreateMultiSigActivity extends BaseActivity {
         return socket;
     }
 
-    private void showOwners(List<Owner> owners) {
-        for (Owner owner : wallet.getMultisigWallet().getOwners()) {
-            if (owner.isCreator() && owner.getUserId().equals(userId)) {
-                isCreator = true;
-                break;
-            }
-        }
-
-
-    }
 
 //    long id = getIntent().getExtras().getLong(Constants.EXTRA_WALLET_ID);
 //    Wallet wallet = RealmManager.getAssetsDao().getWalletById(id);
@@ -306,26 +307,88 @@ public class CreateMultiSigActivity extends BaseActivity {
 //    }
 
     private void deleteUser() {
-
-    }
-
-    private void validateCode() {
         MultisigEvent.Payload payload = new MultisigEvent.Payload();
-        payload.userId = userId;
+        payload.address = connectedWallet.getActiveAddress().getAddress();
         payload.inviteCode = inviteCode;
+        payload.walletIndex = connectedWallet.getIndex();
+        payload.currencyId = connectedWallet.getCurrencyId();
+        payload.networkId = connectedWallet.getNetworkId();
+        payload.userId = userId;
+
+        final MultisigEvent event = new MultisigEvent(SOCKET_JOIN, System.currentTimeMillis(), payload);
 
         try {
-            socket.emit("kek", new JSONObject(new Gson().toJson(new MultisigEvent(SOCKET_VALIDATE, System.currentTimeMillis(), payload))), (Ack) args -> {
-                Timber.i("Validate code " + inviteCode);
-                Timber.d("Validate code: " + args[0].toString());
+            socket.emit(endpointSend, new JSONObject(new Gson().toJson(event)), (Ack) args -> {
+                Timber.i("JOIN ack");
+                Timber.v("JOIN: " + args[0].toString());
             });
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    private void leave() {
+    /**
+     * only for owners
+     */
+    public void leaveWallet() {
+        MultisigEvent.Payload payload = new MultisigEvent.Payload();
+        payload.address = connectedWallet.getActiveAddress().getAddress();
+        payload.inviteCode = inviteCode;
+        payload.walletIndex = connectedWallet.getIndex();
+        payload.currencyId = connectedWallet.getCurrencyId();
+        payload.networkId = connectedWallet.getNetworkId();
+        payload.userId = userId;
 
+        final MultisigEvent event = new MultisigEvent(SOCKET_LEAVE, System.currentTimeMillis(), payload);
+
+        try {
+            final JSONObject jsonObject = new JSONObject(new Gson().toJson(event));
+            Timber.i("LEAVE - " + jsonObject.toString());
+            socket.emit(endpointSend, jsonObject, (Ack) args -> {
+                Timber.v("LEAVE: " + args[0].toString());
+                finish();
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * if creator completely deletes wallet
+     * else removes user from owners
+     */
+    public void removeWallet() {
+        if (isCreator) {
+            deleteWallet();
+        } else {
+            leaveWallet();
+        }
+    }
+
+    /**
+     * only for creator, completely delete wallet
+     */
+    private void deleteWallet() {
+        MultisigEvent.Payload payload = new MultisigEvent.Payload();
+        payload.address = connectedWallet.getActiveAddress().getAddress();
+        payload.inviteCode = inviteCode;
+        payload.walletIndex = connectedWallet.getIndex();
+        payload.currencyId = connectedWallet.getCurrencyId();
+        payload.networkId = connectedWallet.getNetworkId();
+        payload.userId = userId;
+
+        final MultisigEvent event = new MultisigEvent(SOCKET_DELETE, System.currentTimeMillis(), payload);
+
+        try {
+            final JSONObject jsonObject = new JSONObject(new Gson().toJson(event));
+            Timber.i("DELETE - " + jsonObject.toString());
+            socket.emit(endpointSend, jsonObject, (Ack) args -> {
+                Timber.v("DELETE: " + args[0].toString());
+                finish();
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public void join() {
@@ -431,7 +494,10 @@ public class CreateMultiSigActivity extends BaseActivity {
 
     @OnClick(R.id.button_settings)
     public void onClickSettings() {
-
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.root, MultisigSettingsFragment.newInstance(wallet, connectedWallet))
+                .commit();
     }
 
     @Override

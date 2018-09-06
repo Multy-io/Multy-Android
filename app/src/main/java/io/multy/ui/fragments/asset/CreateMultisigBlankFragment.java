@@ -235,6 +235,7 @@ public class CreateMultisigBlankFragment extends BaseFragment {
         scheduleButtonDisable(view);
         if (getFragmentManager() != null) {
             WalletChooserDialogFragment dialog = WalletChooserDialogFragment.getInstance(NativeDataHelper.Blockchain.ETH.getValue());
+            dialog.exceptMultisig(true);
             dialog.setTargetFragment(this, WalletChooserDialogFragment.REQUEST_WALLET_ID);
             dialog.show(getFragmentManager(), WalletChooserDialogFragment.TAG);
         }

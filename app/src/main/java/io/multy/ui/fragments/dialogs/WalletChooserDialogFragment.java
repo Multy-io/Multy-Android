@@ -44,6 +44,7 @@ public class WalletChooserDialogFragment extends DialogFragment {
     private static final String ARG_NETWORK_ID = "ARG_NETWORK_ID";
 
     private boolean isMainNet = false;
+    private boolean exceptMultisig = false;
 
     public static WalletChooserDialogFragment getInstance() {
         return new WalletChooserDialogFragment();
@@ -76,6 +77,10 @@ public class WalletChooserDialogFragment extends DialogFragment {
 
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
+
+    public void exceptMultisig(boolean value) {
+        this.exceptMultisig = value;
+    }
 
     private MyWalletsAdapter.OnWalletClickListener listener;
 
@@ -155,7 +160,19 @@ public class WalletChooserDialogFragment extends DialogFragment {
                         .getWallets(getArguments().getInt(ARG_CURRENCY_ID), getArguments().getInt(ARG_NETWORK_ID));
             }
         }
-        return wallets;
+
+        if (exceptMultisig) {
+            List<Wallet> result = new ArrayList<>();
+            for (Wallet wallet : wallets) {
+                if (wallet.getMultisigWallet() == null) {
+                    result.add(wallet);
+                }
+            }
+
+            return result;
+        } else {
+            return wallets;
+        }
     }
 
     @OnClick(R.id.button_back)
