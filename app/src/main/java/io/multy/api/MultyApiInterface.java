@@ -57,13 +57,13 @@ public interface MultyApiInterface {
 
     Call<TransactionHistoryResponse> getTransactionHistory(int currencyId, int networkId, int walletIndex);
 
-    Call<ResponseBody> getMultisigTransactionHistory(String inviteCode, int currencyId, int networkId);
+    Call<TransactionHistoryResponse> getMultisigTransactionHistory(int currencyId, int networkId, String address);
 
     Call<ServerConfigResponse> getServerConfig();
 
     Call<FeeRateResponse> getFeeRates(int currencyId, int networkId);
 
-    Call<Estimation> getEstimations(String msWalletAddress); 
+    Call<Estimation> getEstimations(String msWalletAddress);
 
     Call<ResponseBody> sendHdTransaction(HdTransactionRequestEntity transactionRequestEntity);
 

@@ -44,6 +44,10 @@ public class TransactionHistory {
     private String from;
     @SerializedName("to")
     private String to;
+    @SerializedName("isinternal")
+    private boolean isInternal;
+    @SerializedName("multisig")
+    private MultisigInfo multisigInfo;
 
     @SerializedName("stockexchangerate")
     ArrayList<StockExchangeRate> stockExchangeRates;
@@ -120,12 +124,20 @@ public class TransactionHistory {
         return stockExchangeRates;
     }
 
+    public MultisigInfo getMultisigInfo() {
+        return multisigInfo;
+    }
+
     public String getFrom() {
         return from;
     }
 
     public String getTo() {
         return to;
+    }
+
+    public boolean isInternal() {
+        return isInternal;
     }
 
     public class StockExchangeRate {

@@ -8,11 +8,13 @@ package io.multy.viewmodels;
 
 import android.arch.lifecycle.MutableLiveData;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 
 import io.multy.Multy;
 import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.api.socket.CurrenciesRate;
+import io.multy.model.entities.Estimation;
 import io.multy.model.entities.Fee;
 import io.multy.model.entities.wallet.EthWallet;
 import io.multy.model.entities.wallet.Wallet;
@@ -31,6 +33,7 @@ public class AssetSendViewModel extends BaseViewModel {
 
     public MutableLiveData<Wallet> wallet = new MutableLiveData<>();
     public MutableLiveData<FeeRateResponse.Speeds> speeds = new MutableLiveData<>();
+    public MutableLiveData<Estimation> estimation = new MutableLiveData<>();
     public MutableLiveData<Fee> fee = new MutableLiveData<>();
     private MutableLiveData<String> receiverAddress = new MutableLiveData<>();
     public MutableLiveData<String> thoseAddress = new MutableLiveData<>();
@@ -128,7 +131,7 @@ public class AssetSendViewModel extends BaseViewModel {
         isLoading.postValue(true);
         MultyApi.INSTANCE.getFeeRates(currencyId, networkId).enqueue(new Callback<FeeRateResponse>() {
             @Override
-            public void onResponse(Call<FeeRateResponse> call, Response<FeeRateResponse> response) {
+            public void onResponse(@NonNull Call<FeeRateResponse> call, @NonNull Response<FeeRateResponse> response) {
                 isLoading.postValue(false);
                 if (response.isSuccessful()) {
                     speeds.postValue(response.body().getSpeeds());
@@ -138,10 +141,31 @@ public class AssetSendViewModel extends BaseViewModel {
             }
 
             @Override
-            public void onFailure(Call<FeeRateResponse> call, Throwable t) {
+            public void onFailure(@NonNull Call<FeeRateResponse> call, @NonNull Throwable t) {
                 isLoading.postValue(false);
                 errorMessage.postValue(t.getMessage());
                 t.printStackTrace();
+            }
+        });
+    }
+
+    public void requestEstimates(String multisigWalletAddress) {
+        isLoading.setValue(true);
+        MultyApi.INSTANCE.getEstimations(multisigWalletAddress).enqueue(new Callback<Estimation>() {
+            @Override
+            public void onResponse(@NonNull Call<Estimation> call, @NonNull Response<Estimation> response) {
+                isLoading.setValue(false);
+                if (response.isSuccessful()) {
+                    estimation.setValue(response.body());
+                } else {
+                    errorMessage.setValue(Multy.getContext().getString(R.string.error_loading_rates));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Estimation> call, @NonNull Throwable t) {
+                isLoading.setValue(false);
+                errorMessage.setValue(t.getLocalizedMessage());
             }
         });
     }
@@ -209,12 +233,24 @@ public class AssetSendViewModel extends BaseViewModel {
 
     public void signTransactionEth() {
         try {
-            String signAmount = CryptoFormatUtils.ethToWei(String.valueOf(isPayForCommission ?
-                    amount : (amount - EthWallet.getTransactionPrice(getFee().getAmount()))));
+            String signAmount;
+            if (getWallet().isMultisig()) {
+                signAmount = CryptoFormatUtils.ethToWei(String.valueOf(isPayForCommission ?
+                        amount : (amount - EthWallet.getTransactionMultisigPrice(getFee().getAmount(), Long.parseLong(estimation.getValue().getSubmitTransaction())))));
+            } else {
+                signAmount = CryptoFormatUtils.ethToWei(String.valueOf(isPayForCommission ?
+                        amount : (amount - EthWallet.getTransactionPrice(getFee().getAmount()))));
+            }
 //            Log.i("wise", getWallet().getId() + " " + getWallet().getNetworkId() + " " + amount + " " + getFee().getAmount() + " " + getDonationSatoshi() + " " + isPayForCommission);
-
-            byte[] tx = NativeDataHelper.makeTransactionETH(RealmManager.getSettingsDao().getSeed().getSeed(), getWallet().getIndex(), 0, wallet.getValue().getCurrencyId(), wallet.getValue().getNetworkId(),
-                    getWallet().getActiveAddress().getAmountString(), signAmount/*CryptoFormatUtils.ethToWei(String.valueOf(amount))*/, getReceiverAddress().getValue(), Constants.GAS_LIMIT_DEFAULT, String.valueOf(fee.getValue().getAmount()), getWallet().getEthWallet().getNonce());
+            byte[] tx;
+            if (wallet.getValue().isMultisig()) {
+                Wallet linkedWallet = RealmManager.getAssetsDao().getMultisigLinkedWallet(getWallet().getCurrencyId(), getWallet().getNetworkId(), getWallet().getIndex());
+                tx = NativeDataHelper.makeTransactionMultisigETH(RealmManager.getSettingsDao().getSeed().getSeed(), getWallet().getIndex(), 0, getWallet().getCurrencyId(), getWallet().getNetworkId(),
+                        linkedWallet.getActiveAddress().getAmountString(), getWallet().getActiveAddress().getAddress(), signAmount, getReceiverAddress().getValue(), String.valueOf(estimation.getValue().getSubmitTransaction()), String.valueOf(fee.getValue().getAmount()), linkedWallet.getEthWallet().getNonce());
+            } else {
+                tx = NativeDataHelper.makeTransactionETH(RealmManager.getSettingsDao().getSeed().getSeed(), getWallet().getIndex(), 0, wallet.getValue().getCurrencyId(), wallet.getValue().getNetworkId(),
+                        getWallet().getActiveAddress().getAmountString(), signAmount/*CryptoFormatUtils.ethToWei(String.valueOf(amount))*/, getReceiverAddress().getValue(), Constants.GAS_LIMIT_DEFAULT, String.valueOf(fee.getValue().getAmount()), getWallet().getEthWallet().getNonce());
+            }
             transaction.setValue(byteArrayToHex(tx));
         } catch (JniException e) {
             errorMessage.setValue(Multy.getContext().getString(R.string.invalid_entered_sum));

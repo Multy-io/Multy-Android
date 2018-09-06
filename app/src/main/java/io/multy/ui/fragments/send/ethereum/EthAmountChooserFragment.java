@@ -130,7 +130,16 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
     }
 
     private void initTransactionPrice() {
-        transactionPriceEth = EthWallet.getTransactionPrice(viewModel.getFee().getAmount());
+        if (viewModel.getWallet().getMultisigWallet() != null) {
+            if (viewModel.estimation.getValue() == null) {
+                viewModel.requestEstimates(viewModel.getWallet().getActiveAddress().getAddress());
+            } else {
+                transactionPriceEth = EthWallet.getTransactionMultisigPrice(viewModel.getFee().getAmount(),
+                        Long.parseLong(viewModel.estimation.getValue().getSubmitTransaction()));
+            }
+        } else {
+            transactionPriceEth = EthWallet.getTransactionPrice(viewModel.getFee().getAmount());
+        }
     }
 
     @Override
@@ -540,18 +549,23 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
     }
 
     private void setupSwitcher() {
-        switcher.setOnCheckedChangeListener((compoundButton, isChecked) -> {
-            viewModel.setPayForCommission(isChecked);
-            checkCommas();
-            initSpendable();
-            showTotalSum(isAmountSwapped ? inputCurrency.getText().toString() : inputOriginal.getText().toString());
-            if (isChecked) {
-                Analytics.getInstance(getActivity()).logSendChooseAmount(AnalyticsConstants.SEND_AMOUNT_COMMISSION_ENABLED, viewModel.getChainId());
-            } else {
-                Analytics.getInstance(getActivity()).logSendChooseAmount(AnalyticsConstants.SEND_AMOUNT_COMMISSION_DISABLED, viewModel.getChainId());
-            }
-        });
-        switcher.setChecked(viewModel.isPayForCommission());
+        if (viewModel.getWallet().isMultisig()) {
+            switcher.setEnabled(false);
+            switcher.setChecked(true);
+        } else {
+            switcher.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+                viewModel.setPayForCommission(isChecked);
+                checkCommas();
+                initSpendable();
+                showTotalSum(isAmountSwapped ? inputCurrency.getText().toString() : inputOriginal.getText().toString());
+                if (isChecked) {
+                    Analytics.getInstance(getActivity()).logSendChooseAmount(AnalyticsConstants.SEND_AMOUNT_COMMISSION_ENABLED, viewModel.getChainId());
+                } else {
+                    Analytics.getInstance(getActivity()).logSendChooseAmount(AnalyticsConstants.SEND_AMOUNT_COMMISSION_DISABLED, viewModel.getChainId());
+                }
+            });
+            switcher.setChecked(viewModel.isPayForCommission());
+        }
     }
 
     @OnClick(R.id.button_clear_original)

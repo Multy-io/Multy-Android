@@ -112,6 +112,43 @@ public class NativeDataHelper {
 
     public static native byte[] makeTransactionETH(byte[] seed, int walletIndex, int addressIndex, int chainId, int networkId, String balance, String amount, String destionationAddress, String gasLimit, String gasPrice, String nonce) throws JniException;
 
+    /**
+     *
+     * @param seed
+     * @param walletIndex linked wallet
+     * @param addressIndex linked wallet
+     * @param chainId linked wallet
+     * @param networkId linked wallet
+     * @param linkedBalance linked wallet
+     * @param multisigWalletAddress
+     * @param amount spendable by user
+     * @param destionationAddress selected by user
+     * @param gasLimit estiomation "submit"
+     * @param gasPrice selected by user
+     * @param nonce linked wallet nonce
+     * @return
+     * @throws JniException
+     */
+    public static native byte[] makeTransactionMultisigETH(byte[] seed, int walletIndex, int addressIndex, int chainId, int networkId, String linkedBalance, String multisigWalletAddress, String amount, String destionationAddress, String gasLimit, String gasPrice, String nonce) throws JniException;
+
+    /**
+     *
+     * @param seed
+     * @param walletIndex linked wallet
+     * @param addressIndex linked wallet
+     * @param chainId linked wallet
+     * @param networkId linked wallet
+     * @param linkedBalance linked wallet
+     * @param multisigWalletAddress
+     * @param requestId from api as "index"
+     * @param gasLimit estimation "confirm"
+     * @param gasPrice get medium from fee rate request
+     * @param nonce linked wallet nonce
+     * @return
+     * @throws JniException
+     */
+    public static native byte[] confirmTransactionMultisigETH(byte[] seed, int walletIndex, int addressIndex, int chainId, int networkId, String linkedBalance, String multisigWalletAddress, String requestId, String gasLimit, String gasPrice, String nonce) throws JniException;
+
     public static native String getLibraryVersion() throws JniException;
 
     //    final String key = NativeDataHelper.getPublicKey(194, 0, "5KHUWnDCA7SxbCoEbLdhFZjqsqMFq3K7wXAEYoRp3P6AKQdX7BY");

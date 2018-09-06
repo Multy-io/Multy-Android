@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2018 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <io.multy.ui.Hash2PicView
+        android:id="@+id/image_photo"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@drawable/ic_3" />
+
+    <ImageView
+        android:id="@+id/image_checker"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        app:layout_constraintBottom_toBottomOf="@id/image_photo"
+        app:layout_constraintLeft_toRightOf="@id/image_photo"
+        app:layout_constraintRight_toRightOf="@id/image_photo"
+        app:layout_constraintTop_toTopOf="@id/image_photo"
+        app:layout_constraintVertical_bias="1.0"
+        tools:srcCompat="@drawable/ic_member_status_confirmed" />
+
+    <TextView
+        android:id="@+id/text_address"
+        app:layout_constraintLeft_toRightOf="@id/image_checker"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="16dp"
+        android:textSize="12sp"
+        android:textColor="@color/text_main_dark"
+        tools:text="3DA28WCp4Cu5LQiddJnDJJmKWvm…3DA28WCp4Cu5LQiddJnDJJmKWvm"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/text_status"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginBottom="16dp"
+        android:textColor="@color/green_light"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="@id/text_address"
+        app:layout_constraintTop_toBottomOf="@id/text_address"
+        tools:text="Confirmed" />
+
+    <TextView
+        android:id="@+id/text_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/text_main_dark"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@id/text_status"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintLeft_toRightOf="@id/text_status"
+        app:layout_constraintRight_toLeftOf="@id/text_date"
+        app:layout_constraintTop_toTopOf="@id/text_status"
+        app:layout_constraintWidth_default="wrap"
+        tools:text="Zigmund sadasd sda sdasasdasdaasdasd" />
+
+    <TextView
+        android:id="@+id/text_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:textColor="@color/blue_light"
+        app:layout_constraintBottom_toBottomOf="@id/text_name"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toRightOf="@id/text_name"
+        app:layout_constraintRight_toRightOf="@id/text_address"
+        app:layout_constraintTop_toTopOf="@id/text_name"
+        tools:text="18:30" />
+</android.support.constraint.ConstraintLayout>
