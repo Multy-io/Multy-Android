@@ -17,7 +17,6 @@ import android.support.constraint.Group;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -45,13 +44,11 @@ import io.multy.storage.RealmManager;
 import io.multy.ui.adapters.MultisigOwnersAdapter;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.dialogs.AddressActionsDialogFragment;
-import io.multy.ui.fragments.send.SendSummaryFragment;
 import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
 import io.multy.util.DateHelper;
 import io.multy.util.NativeDataHelper;
 import io.multy.viewmodels.WalletViewModel;
-import io.reactivex.functions.Consumer;
 
 import static io.multy.util.Constants.TX_MEMPOOL_INCOMING;
 import static io.multy.util.Constants.TX_MEMPOOL_OUTCOMING;
@@ -158,11 +155,6 @@ public class MultisigTransactionInfoFragment extends BaseFragment {
         recyclerOwners.setAdapter(adapter);
         viewModel.wallet.observe(this, this::onWallet);
         initAnimationSliders();
-        //todo remove test
-//        if (getArguments() != null && getArguments().getInt(TransactionInfoFragment.SELECTED_POSITION) == -1) {
-//            setVisibilityConfirmButtons(View.VISIBLE);
-//            animator.start();
-//        }
         return v;
     }
 
@@ -191,6 +183,7 @@ public class MultisigTransactionInfoFragment extends BaseFragment {
 
     private void setData(TransactionHistory transactionHistory) {
         this.transaction = transactionHistory;
+        checkOwnerViewStatus(transactionHistory.getMultisigInfo().getOwners());
         boolean isIncoming = transactionHistory.getTxStatus() == Constants.TX_MEMPOOL_INCOMING;
         textValue.setText(isIncoming ? "+ " : "- ");
         textAmount.setText(isIncoming ? "+ " : "- ");
@@ -201,16 +194,17 @@ public class MultisigTransactionInfoFragment extends BaseFragment {
             imageOperation.setImageResource(isIncoming ? R.drawable.ic_receive_big_new : R.drawable.ic_send_big);
             textConfirmations.setText(String.format(Locale.ENGLISH, "%d %s", transactionHistory.getConfirmations(),
                     getString(transactionHistory.getConfirmations() > 1 ?  R.string.confirmations : R.string.confirmation)));
-            if (!transactionHistory.isInternal()) {
-                groupViewButton.setVisibility(View.VISIBLE);
-            }
             setVisibilityConfirmButtons(View.GONE);
         } else {
             imageOperation.setImageResource(isIncoming ? R.drawable.ic_receive_big_icon_waiting : R.drawable.ic_send_big_icon_waiting);
-            enableAnimationSliders();
-            if (!isOwnerVoted(transactionHistory.getMultisigInfo().getOwners())) {
+            if (!isOwnerHasStatus(transactionHistory.getMultisigInfo().getOwners(),
+                    Constants.MULTISIG_OWNER_STATUS_CONFIRMED, Constants.MULTISIG_OWNER_STATUS_DECLINED)) {
                 setVisibilityConfirmButtons(View.VISIBLE);
+                enableAnimationSliders();
             }
+        }
+        if (!transactionHistory.isInternal()) {
+            groupViewButton.setVisibility(View.VISIBLE);
         }
         textValue.append(getCurrencyAmount(transactionHistory));
         textAmount.append(getFiatAmount(transactionHistory, getPreferredExchangeRate(transactionHistory.getStockExchangeRates())));
@@ -230,6 +224,27 @@ public class MultisigTransactionInfoFragment extends BaseFragment {
             }
         }
         return false;
+    }
+
+    private boolean isOwnerHasStatus(ArrayList<TransactionOwner> owners, int... statuses) {
+        Wallet linkedWallet = RealmManager.getAssetsDao().getMultisigLinkedWallet(currencyId, networkId, walletIndex);
+        for (TransactionOwner owner : owners) {
+            if (owner.getAddress().equals(linkedWallet.getActiveAddress().getAddress())) {
+                for (int status : statuses) {
+                    if (owner.getConfirmationStatus() == status) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+        return false;
+    }
+
+    private void checkOwnerViewStatus(ArrayList<TransactionOwner> owners) {
+        if (!isOwnerHasStatus(owners, Constants.MULTISIG_OWNER_STATUS_SEEN)) {
+            viewModel.sendViewTransaction(currencyId, networkId, walletIndex, transaction.getTxHash(), getLifecycle());
+        }
     }
 
     private String getTransactionDate(TransactionHistory transaction) {
@@ -354,25 +369,29 @@ public class MultisigTransactionInfoFragment extends BaseFragment {
     }
 
     private void onAcceptTransaction() {
-        Consumer<Throwable> onError = throwable -> {
-            viewModel.errorMessage.setValue(throwable.getLocalizedMessage());
-            throwable.printStackTrace();
-        };
         viewModel.requestEstimation(walletAddress, estimationConfirm -> {
             viewModel.requestFeeRates(currencyId, networkId, mediumGasPrice -> {
-                Wallet linkedWallet = RealmManager.getAssetsDao().getMultisigLinkedWallet(currencyId, networkId, walletIndex);
-                byte[] tx = NativeDataHelper.confirmTransactionMultisigETH(RealmManager.getSettingsDao().getSeed().getSeed(),
-                        walletIndex, 0, currencyId, networkId, linkedWallet.getActiveAddress().getAmountString(),
-                        walletAddress, transaction.getMultisigInfo().getIndex(),
-                        estimationConfirm, mediumGasPrice, linkedWallet.getEthWallet().getNonce());
-                Log.e(getClass().getSimpleName(), SendSummaryFragment.byteArrayToHex(tx));
-            }, onError);
-        }, onError);
+                viewModel.sendConfirmTransaction(currencyId, networkId, walletIndex, walletAddress,
+                        transaction.getMultisigInfo().getRequestId(), estimationConfirm, mediumGasPrice,
+                        isSuccess -> {
+                    if (isSuccess) {
+                        viewModel.getMultisigTransactionsHistory(currencyId, networkId, walletAddress);
+                    } else {
+                        setVisibilityConfirmButtons(View.VISIBLE);
+                        viewModel.errorMessage.setValue(getString(R.string.something_went_wrong));
+                    }
+                        }, this::onThrowable);
+            }, this::onThrowable);
+        }, this::onThrowable);
     }
 
     private void onDeclineTransaction() {
-        //todo make decline
-        Log.i("OnSwipe", "declined!");
+        viewModel.sendDeclineTransaction(currencyId, networkId, walletIndex, transaction.getTxHash(), getLifecycle());
+    }
+
+    private void onThrowable(Throwable throwable) {
+        viewModel.errorMessage.setValue(throwable.getLocalizedMessage());
+        throwable.printStackTrace();
     }
 
     @OnTouch(R.id.image_slider_accept)

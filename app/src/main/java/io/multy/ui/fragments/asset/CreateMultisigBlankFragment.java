@@ -8,7 +8,6 @@ package io.multy.ui.fragments.asset;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -21,7 +20,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.samwolfand.oneprefs.Prefs;
 
@@ -33,11 +31,11 @@ import java.util.concurrent.TimeUnit;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.multy.Multy;
 import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.requests.CreateMultisigRequest;
+import io.multy.model.responses.WalletsResponse;
 import io.multy.storage.RealmManager;
 import io.multy.ui.activities.CreateMultiSigActivity;
 import io.multy.ui.fragments.BaseFragment;
@@ -206,6 +204,29 @@ public class CreateMultisigBlankFragment extends BaseFragment {
         view.postDelayed(() -> view.setEnabled(true), 500);
     }
 
+    private void loadWalletsAndOpenMultisig(long dateOfCreation, String inviteCode) {
+        MultyApi.INSTANCE.getWalletsVerbose().enqueue(new Callback<WalletsResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<WalletsResponse> call, @NonNull Response<WalletsResponse> response) {
+                WalletsResponse body = response.body();
+                if (response.isSuccessful() && body != null) {
+                    RealmManager.getAssetsDao().saveWallets(body.getWallets());
+                    wallet = RealmManager.getAssetsDao().getWalletById(dateOfCreation);
+                    startActivity(new Intent(getContext(), CreateMultiSigActivity.class)
+                            .putExtra(Constants.EXTRA_WALLET_ID, dateOfCreation)
+                            .putExtra(Constants.EXTRA_CREATE, true)
+                            .putExtra(Constants.EXTRA_RELATED_WALLET_ID, wallet.getId())
+                            .putExtra(Constants.EXTRA_INVITE_CODE, inviteCode));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<WalletsResponse> call, @NonNull Throwable t) {
+                t.printStackTrace();
+            }
+        });
+    }
+
     @OnClick(R.id.name_container)
     void onClickName() {
         inputName.requestFocus();
@@ -266,17 +287,14 @@ public class CreateMultisigBlankFragment extends BaseFragment {
                     if (response.isSuccessful()) {
                         Timber.i("create multisig success");
                         getActivity().finish();
-
                         try {
-                            String body = response.body().string();
-                            long dateOfCreation = new JSONObject(body).getLong("time");
-//                            RealmManager.getAssetsDao().saveWallet(walletRealmObject);
-//                            we cant save wallet now since response is wrong structured
-                            startActivity(new Intent(getContext(), CreateMultiSigActivity.class)
-                                    .putExtra(Constants.EXTRA_WALLET_ID, dateOfCreation)
-                                    .putExtra(Constants.EXTRA_CREATE, true)
-                                    .putExtra(Constants.EXTRA_RELATED_WALLET_ID, wallet.getId())
-                                    .putExtra(Constants.EXTRA_INVITE_CODE, inviteCode));
+                            if (response.isSuccessful()) {
+                                String body = response.body().string();
+                                long dateOfCreation = new JSONObject(body).getLong("time");
+                                loadWalletsAndOpenMultisig(dateOfCreation, inviteCode);
+                            } else {
+                                throw new Exception(getString(R.string.something_went_wrong));
+                            }
                         } catch (Exception e) {
                             e.printStackTrace();
                         }

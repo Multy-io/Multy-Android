@@ -6,18 +6,18 @@
   -->
 
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="64dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
     <io.multy.ui.Hash2PicView
         android:id="@+id/image_photo"
         android:layout_width="34dp"
         android:layout_height="34dp"
+        android:layout_marginBottom="4dp"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="4dp"
-        android:layout_marginBottom="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -36,19 +36,19 @@
 
     <TextView
         android:id="@+id/text_address"
-        app:layout_constraintLeft_toRightOf="@id/image_checker"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:maxLines="1"
-        android:ellipsize="end"
-        android:layout_marginTop="16dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="16dp"
-        android:textSize="12sp"
+        android:layout_marginTop="16dp"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:textColor="@color/text_main_dark"
-        tools:text="3DA28WCp4Cu5LQiddJnDJJmKWvm…3DA28WCp4Cu5LQiddJnDJJmKWvm"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content" />
+        android:textSize="12sp"
+        app:layout_constraintLeft_toRightOf="@id/image_checker"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="3DA28WCp4Cu5LQiddJnDJJmKWvm…3DA28WCp4Cu5LQiddJnDJJmKWvm" />
 
     <TextView
         android:id="@+id/text_status"
