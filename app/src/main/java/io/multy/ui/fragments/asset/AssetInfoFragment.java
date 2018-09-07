@@ -249,7 +249,6 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     }
 
     private void requestTransactions(final int currencyId, final int networkId, final int walletIndex) {
-        viewModel.isLoading.postValue(true);
         if (viewModel.getWalletLive().getValue().isMultisig()) {
             viewModel.getMultisigTransactionsHistory(viewModel.getWalletLive().getValue().getCurrencyId(),
                     viewModel.getWalletLive().getValue().getNetworkId(),

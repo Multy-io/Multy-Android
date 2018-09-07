@@ -94,7 +94,7 @@ public class ShareMultisigFragment extends BaseFragment {
     }
 
     private void generateQr() {
-        generateQr(getArguments() != null ? getArguments().getString(INVITATION_CODE, "") : "",
+        generateQr(getArguments() != null ? "invite code: " + getArguments().getString(INVITATION_CODE, "") : "",
                 getResources().getColor(android.R.color.black), getResources().getColor(android.R.color.white),
                 bitmap -> {
             imageQr.setImageBitmap(bitmap);

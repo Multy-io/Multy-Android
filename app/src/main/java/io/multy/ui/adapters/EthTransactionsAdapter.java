@@ -205,7 +205,7 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         if (wallet != null && wallet.isValid()) {
             holder.amountLocked.setText(CryptoFormatUtils.weiToEthLabel(wallet.getBalance()));
             holder.fiatLocked.setText(String.format("%s%s",
-                    CryptoFormatUtils.weiToUsd(new BigInteger(wallet.getBalanceLabelTrimmed())), wallet.getFiatString()));
+                    CryptoFormatUtils.weiToUsd(new BigInteger(wallet.getBalance())), wallet.getFiatString()));
         }
         if (transactionHistory.getMultisigInfo() != null) {
             holder.groupMultisig.setVisibility(View.VISIBLE);

@@ -6,9 +6,7 @@
 
 package io.multy.ui.activities;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -17,11 +15,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.github.guilhe.circularprogressview.CircularProgressView;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,12 +28,10 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.multy.Multy;
 import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.api.socket.BlueSocketManager;
 import io.multy.model.entities.Estimation;
-import io.multy.model.entities.ExchangeRequestEntity;
 import io.multy.model.entities.wallet.MultisigEvent;
 import io.multy.model.entities.wallet.Owner;
 import io.multy.model.entities.wallet.Wallet;
@@ -49,12 +43,10 @@ import io.multy.ui.fragments.MultisigSettingsFragment;
 import io.multy.ui.fragments.ScanInvitationCodeFragment;
 import io.multy.ui.fragments.ShareMultisigFragment;
 import io.multy.ui.fragments.dialogs.CompleteDialogFragment;
-import io.multy.ui.fragments.main.AssetsFragment;
-import io.multy.ui.fragments.main.contacts.ContactInfoFragment;
 import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
+import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
-import io.realm.RealmList;
 import io.realm.RealmResults;
 import io.socket.client.Ack;
 import io.socket.client.Socket;
@@ -148,10 +140,12 @@ public class CreateMultiSigActivity extends BaseActivity {
     }
 
     private void initCreator() {
-        for (Owner owner : wallet.getMultisigWallet().getOwners()) {
-            if (owner.isCreator() && owner.getUserId().equals(userId)) {
-                isCreator = true;
-                break;
+        if (wallet != null && wallet.isMultisig()) {
+            for (Owner owner : wallet.getMultisigWallet().getOwners()) {
+                if (owner.isCreator() && owner.getUserId().equals(userId)) {
+                    isCreator = true;
+                    break;
+                }
             }
         }
     }
@@ -459,32 +453,36 @@ public class CreateMultiSigActivity extends BaseActivity {
             stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
             stringBuilder.append("]");
 
-            final byte[] transaction = NativeDataHelper.createEthMultisigWallet(seed, connectedWallet.getIndex(), connectedWallet.getActiveAddress().getIndex(), connectedWallet.getCurrencyId(), connectedWallet.getNetworkId(),
-                    connectedWallet.getActiveAddress().getAmountString(), "5000000", "3000000000", connectedWallet.getEthWallet().getNonce(), factoryAddress,
-                    stringBuilder.toString(), wallet.getMultisigWallet().getConfirmations(), priceOfCreation);
-            String hex = "0x" + byteArrayToHex(transaction);
+            try {
+                final byte[] transaction = NativeDataHelper.createEthMultisigWallet(seed, connectedWallet.getIndex(), connectedWallet.getActiveAddress().getIndex(), connectedWallet.getCurrencyId(), connectedWallet.getNetworkId(),
+                        connectedWallet.getActiveAddress().getAmountString(), "5000000", "3000000000", connectedWallet.getEthWallet().getNonce(), factoryAddress,
+                        stringBuilder.toString(), wallet.getMultisigWallet().getConfirmations(), priceOfCreation);
+                String hex = "0x" + byteArrayToHex(transaction);
 
-            final HdTransactionRequestEntity entity = new HdTransactionRequestEntity(wallet.getCurrencyId(), wallet.getNetworkId(),
-                    new HdTransactionRequestEntity.Payload("", wallet.getAddresses().size(),
-                            wallet.getIndex(), hex, false));
+                final HdTransactionRequestEntity entity = new HdTransactionRequestEntity(wallet.getCurrencyId(), wallet.getNetworkId(),
+                        new HdTransactionRequestEntity.Payload("", wallet.getAddresses().size(),
+                                wallet.getIndex(), hex, false));
 
-            Timber.i("hex=%s", hex);
-            MultyApi.INSTANCE.sendHdTransaction(entity).enqueue(new Callback<ResponseBody>() {
-                @Override
-                public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
-                    if (response.isSuccessful()) {
-                        CompleteDialogFragment.newInstance(wallet.getCurrencyId()).show(getSupportFragmentManager(), "");
-                    } else {
+                Timber.i("hex=%s", hex);
+                MultyApi.INSTANCE.sendHdTransaction(entity).enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                        if (response.isSuccessful()) {
+                            CompleteDialogFragment.newInstance(wallet.getCurrencyId()).show(getSupportFragmentManager(), "");
+                        } else {
 //                        showError(null);
+                        }
                     }
-                }
 
-                @Override
-                public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-                    t.printStackTrace();
+                    @Override
+                    public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                        t.printStackTrace();
 //                    showError((Exception) t);
-                }
-            });
+                    }
+                });
+            } catch (JniException e) {
+                e.printStackTrace();
+            }
         }
     }
 

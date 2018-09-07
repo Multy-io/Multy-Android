@@ -123,7 +123,7 @@ public final class Constants {
     public static final String CONTACT_MIMETYPE = "vnd.android.cursor.item/vnd.io.multy.contacts.profile";
 
     public static final int MIN_SATOSHI = 546;
-    public static final String GAS_LIMIT_DEFAULT = "21000";
+    public static final String GAS_LIMIT_DEFAULT = "40000";
 
     public static final int MULTISIG_MEMBERS_COUNT = 50;
     public static final int INVITE_CODE_LENGTH = 45;
@@ -132,6 +132,14 @@ public final class Constants {
     public static final int MULTISIG_OWNER_STATUS_SEEN = 1;
     public static final int MULTISIG_OWNER_STATUS_CONFIRMED = 2;
     public static final int MULTISIG_OWNER_STATUS_DECLINED = 3;
+
+    public static final int EVENT_TYPE_JOIN_MULTISIG = 1;
+    public static final int EVENT_TYPE_LEAVE_MULTISIG = 2;
+    public static final int EVENT_TYPE_DELETE_MULTISIG = 3;
+    public static final int EVENT_TYPE_KICK_MULTISIG = 4;
+    public static final int EVENT_TYPE_CHECK_MULTISIG = 5;
+    public static final int EVENT_TYPE_VIEW_MULTISIG = 6;
+    public static final int EVENT_TYPE_DECLINE_MULTISIG = 7;
 
     public static final String[] rootFiles = {
             "init.magisk.rc",

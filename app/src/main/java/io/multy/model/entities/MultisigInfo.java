@@ -27,8 +27,8 @@ public class MultisigInfo {
     private String methodInvoked;
     @SerializedName("return")
     private String return_;
-    @SerializedName("index")
-    private String index;
+    @SerializedName("requestid")
+    private String requestId;
 
     @SerializedName("owners")
     private ArrayList<TransactionOwner> owners;
@@ -61,7 +61,7 @@ public class MultisigInfo {
         return owners;
     }
 
-    public String getIndex() {
-        return index;
+    public String getRequestId() {
+        return requestId;
     }
 }
