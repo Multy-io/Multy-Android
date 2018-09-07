@@ -242,8 +242,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
+                android:gravity="center"
                 android:maxLines="1"
-                android:textAlignment="center"
                 android:textColor="@color/orange"
                 android:textSize="16sp"
                 android:textStyle="bold"
@@ -278,6 +278,7 @@
                 android:id="@+id/text_confirmations"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingBottom="12dp"
                 android:text="@string/confirmation"
                 android:textColor="@color/blue_light"
                 app:layout_constraintEnd_toEndOf="@+id/background_top"
@@ -290,7 +291,6 @@
                 style="@style/Divider"
                 android:layout_height="1dp"
                 android:layout_marginBottom="60dp"
-                android:layout_marginTop="@dimen/margin_12dp"
                 android:background="@color/grey_light"
                 app:layout_constraintBottom_toBottomOf="@+id/background_top"
                 app:layout_constraintEnd_toEndOf="@+id/background_top"
@@ -333,7 +333,7 @@
                 android:layout_height="wrap_content"
                 android:elevation="5dp"
                 android:visibility="gone"
-                app:constraint_referenced_ids="button_view,divider,text_confirmations"
+                app:constraint_referenced_ids="button_view,divider"
                 tools:visibility="visible" />
 
             <android.support.constraint.Group
@@ -341,7 +341,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:elevation="5dp"
-                app:constraint_referenced_ids="text_addresses_to,text_wallet_name,logo,arrow,text_addresses_from,text_money,text_amount,text_coin,text_value,image_operation,text_status" />
+                app:constraint_referenced_ids="text_addresses_to,text_confirmations,logo,arrow,text_addresses_from,text_money,text_amount,text_coin,text_value,image_operation,text_status" />
 
             <TextView
                 android:id="@+id/text_details"

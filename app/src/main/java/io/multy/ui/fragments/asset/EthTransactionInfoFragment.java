@@ -160,8 +160,7 @@ public class EthTransactionInfoFragment extends BaseFragment {
         imageCoinLogo.setImageResource(wallet.getIconResourceId());
         toolbarWalletName.setText(wallet.getWalletName());
         this.networkId = wallet.getNetworkId();
-        viewModel.getTransactionsHistory(wallet.getCurrencyId(), networkId, wallet.getIndex())
-                .observe(getActivity(), this::onTransactions);
+        viewModel.transactions.observe(getActivity(), this::onTransactions);
     }
 
     private void onTransactions(List<TransactionHistory> transactionHistories) {

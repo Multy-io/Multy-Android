@@ -57,6 +57,8 @@ public class MultisigEvent {
         public int networkId;
         @SerializedName("exists")
         public boolean exist;
+        @SerializedName("txid")
+        public String txId;
 
         //TODO builder.pattern please
         public Payload() {

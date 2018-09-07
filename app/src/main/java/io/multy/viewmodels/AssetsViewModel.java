@@ -13,6 +13,7 @@ import android.arch.lifecycle.OnLifecycleEvent;
 
 import com.samwolfand.oneprefs.Prefs;
 
+import java.net.URISyntaxException;
 import java.util.List;
 
 import io.multy.api.socket.CurrenciesRate;
@@ -33,7 +34,6 @@ public class AssetsViewModel extends BaseViewModel implements LifecycleObserver 
 
     public void init(Lifecycle lifecycle) {
         initRates();
-        socketManager = new SocketManager();
         lifecycle.addObserver(this);
     }
 
@@ -46,10 +46,15 @@ public class AssetsViewModel extends BaseViewModel implements LifecycleObserver 
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     void onCreate() {
-        if (socketManager == null) {
-            socketManager = new SocketManager();
+        try {
+            if (socketManager == null) {
+                socketManager = new SocketManager();
+            }
+            socketManager.listenRatesAndTransactions(rates, transactionUpdate);
+            socketManager.connect();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
         }
-        socketManager.connect(rates, transactionUpdate);
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)

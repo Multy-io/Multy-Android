@@ -8,7 +8,10 @@ package io.multy.viewmodels;
 
 import android.app.Activity;
 import android.app.PendingIntent;
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.OnLifecycleEvent;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -21,6 +24,7 @@ import com.samwolfand.oneprefs.Prefs;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,14 +38,18 @@ import io.multy.model.entities.Estimation;
 import io.multy.model.entities.TransactionHistory;
 import io.multy.model.entities.wallet.BtcWallet;
 import io.multy.model.entities.wallet.EthWallet;
+import io.multy.model.entities.wallet.MultisigEvent;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.entities.wallet.WalletAddress;
+import io.multy.model.requests.HdTransactionRequestEntity;
 import io.multy.model.requests.UpdateWalletNameRequest;
 import io.multy.model.responses.FeeRateResponse;
 import io.multy.model.responses.ServerConfigResponse;
 import io.multy.model.responses.TransactionHistoryResponse;
 import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.asset.AssetInfoFragment;
+import io.multy.ui.fragments.send.SendSummaryFragment;
+import io.multy.ui.fragments.send.ethereum.EthSendSummaryFragment;
 import io.multy.util.Constants;
 import io.multy.util.FirstLaunchHelper;
 import io.multy.util.JniException;
@@ -64,6 +72,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import timber.log.Timber;
 
 import static android.content.Intent.ACTION_SEND;
 
@@ -86,8 +95,13 @@ public class WalletViewModel extends BaseViewModel {
     }
 
     public void subscribeSocketsUpdate() {
-        socketManager = new SocketManager();
-        socketManager.connect(rates, transactionUpdate);
+        try {
+            socketManager = new SocketManager();
+            socketManager.listenRatesAndTransactions(rates, transactionUpdate);
+            socketManager.connect();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
 
     public void unsubscribeSocketsUpdate() {
@@ -178,6 +192,7 @@ public class WalletViewModel extends BaseViewModel {
     }
 
     public MutableLiveData<ArrayList<TransactionHistory>> getTransactionsHistory(final int currencyId, final int networkId, final int walletIndex) {
+        isLoading.postValue(true);
         MultyApi.INSTANCE.getTransactionHistory(currencyId, networkId, walletIndex).enqueue(new Callback<TransactionHistoryResponse>() {
             @Override
             public void onResponse(@NonNull Call<TransactionHistoryResponse> call, @NonNull Response<TransactionHistoryResponse> response) {
@@ -197,6 +212,7 @@ public class WalletViewModel extends BaseViewModel {
     }
 
     public MutableLiveData<ArrayList<TransactionHistory>> getMultisigTransactionsHistory(int currencyId, int networkId, String address) {
+        isLoading.setValue(true);
         MultyApi.INSTANCE.getMultisigTransactionHistory(currencyId, networkId, address)
                 .enqueue(new Callback<TransactionHistoryResponse>() {
             @Override
@@ -204,7 +220,7 @@ public class WalletViewModel extends BaseViewModel {
                 if (response.isSuccessful() && response.body() != null) {
                     transactions.setValue(response.body().getHistories());
                 }
-                isLoading.postValue(false);
+                isLoading.setValue(false);
             }
 
             @Override
@@ -384,5 +400,67 @@ public class WalletViewModel extends BaseViewModel {
                 .doOnError(t -> isLoading.setValue(false))
                 .subscribe(onNext, onError, () -> isLoading.setValue(false));
         addDisposable(disposable);
+    }
+
+    public void sendConfirmTransaction(int currencyId, int networkId, int walletIndex, String walletAddress,
+                                       String requestId, String estimationConfirm, String mediumGasPrice,
+                                       Consumer<Boolean> onNext, Consumer<Throwable> onError) throws JniException {
+        isLoading.setValue(true);
+        Wallet linkedWallet = RealmManager.getAssetsDao().getMultisigLinkedWallet(currencyId, networkId, walletIndex);
+        byte[] seed = RealmManager.getSettingsDao().getSeed().getSeed();
+        Disposable disposable = Observable.create((ObservableOnSubscribe<Boolean>) e -> {
+            byte[] tx = NativeDataHelper.confirmTransactionMultisigETH(seed, walletIndex, 0,
+                    currencyId, networkId, linkedWallet.getActiveAddress().getAmountString(), walletAddress,
+                    requestId, estimationConfirm, mediumGasPrice, linkedWallet.getEthWallet().getNonce());
+            Timber.i(getClass().getSimpleName(), SendSummaryFragment.byteArrayToHex(tx));
+            Response<ResponseBody> response = MultyApi.INSTANCE.sendHdTransaction(new HdTransactionRequestEntity(currencyId, networkId,
+                    new HdTransactionRequestEntity.Payload("", 0, walletIndex,
+                            "0x" + EthSendSummaryFragment.byteArrayToHex(tx), false))).execute();
+            e.onNext(response.isSuccessful());
+            e.onComplete();
+        }).doOnError(t -> isLoading.setValue(false))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(onNext, onError, () -> isLoading.setValue(false));
+        addDisposable(disposable);
+    }
+
+    public void sendDeclineTransaction(int currencyId, int networkId, int walletIndex, String txId, Lifecycle lifecycle) {
+        sendTransactionStatus(Constants.EVENT_TYPE_DECLINE_MULTISIG, currencyId, networkId, walletIndex, txId, lifecycle);
+    }
+
+    public void sendViewTransaction(int currencyId, int networkId, int walletIndex, String txId, Lifecycle lifecycle) {
+        sendTransactionStatus(Constants.EVENT_TYPE_VIEW_MULTISIG, currencyId, networkId, walletIndex, txId, lifecycle);
+    }
+
+    public void sendTransactionStatus(int eventStatus, int currencyId, int networkId, int walletIndex, String txId, Lifecycle lifecycle) {
+        try {
+            isLoading.setValue(true);
+            SocketManager socketManager = new SocketManager();
+            socketManager.connect();
+            MultisigEvent.Payload payload = new MultisigEvent.Payload();
+            payload.userId = RealmManager.getSettingsDao().getUserId().getUserId();
+            payload.address = RealmManager.getAssetsDao()
+                    .getMultisigLinkedWallet(currencyId, networkId, walletIndex).getActiveAddress().getAddress();
+            payload.walletIndex = walletIndex;
+            payload.currencyId = currencyId;
+            payload.networkId = networkId;
+            payload.txId = txId;
+            MultisigEvent event = new MultisigEvent(eventStatus, System.currentTimeMillis(), payload);
+            socketManager.sendMultisigTransactionOwnerAction(event, args -> {
+                Timber.i("EVENT_MESSAGE_SEND" + args[0]);
+                isLoading.postValue(false);
+                socketManager.disconnect();
+            });
+            lifecycle.addObserver(new LifecycleObserver() {
+                @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+                void onPause() {
+                    socketManager.disconnect();
+                }
+            });
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+            isLoading.setValue(false);
+        }
     }
 }

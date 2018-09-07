@@ -155,6 +155,6 @@ public class NativeDataHelper {
     public static native String getPublicKey(int blockChain, int netType, String key);
 
     public static native byte[] createEthMultisigWallet(byte[] seed, int walletIndex, int addressIndex, int chainId, int netType, String balance,
-                                                        String gasLimit, String gasPrice, String nonce, String factoryAddress, String ownerAddress, int confirmation, String price);
+                                                        String gasLimit, String gasPrice, String nonce, String factoryAddress, String ownerAddress, int confirmation, String price) throws JniException;
 
 }
