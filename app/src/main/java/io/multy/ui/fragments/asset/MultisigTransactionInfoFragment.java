@@ -215,27 +215,18 @@ public class MultisigTransactionInfoFragment extends BaseFragment {
         adapter.setOwners(transactionHistory.getMultisigInfo().getOwners());
     }
 
-    private boolean isOwnerVoted(ArrayList<TransactionOwner> owners) {
-        Wallet linkedWallet = RealmManager.getAssetsDao().getMultisigLinkedWallet(currencyId, networkId, walletIndex);
-        for (TransactionOwner owner : owners) {
-            if (owner.getAddress().equals(linkedWallet.getActiveAddress().getAddress())) {
-                return owner.getConfirmationStatus() == Constants.MULTISIG_OWNER_STATUS_CONFIRMED ||
-                        owner.getConfirmationStatus() == Constants.MULTISIG_OWNER_STATUS_DECLINED;
-            }
-        }
-        return false;
-    }
-
     private boolean isOwnerHasStatus(ArrayList<TransactionOwner> owners, int... statuses) {
-        Wallet linkedWallet = RealmManager.getAssetsDao().getMultisigLinkedWallet(currencyId, networkId, walletIndex);
-        for (TransactionOwner owner : owners) {
-            if (owner.getAddress().equals(linkedWallet.getActiveAddress().getAddress())) {
-                for (int status : statuses) {
-                    if (owner.getConfirmationStatus() == status) {
-                        return true;
+        if (viewModel.getWalletLive().getValue() != null && viewModel.getWalletLive().getValue().getMultisigWallet() != null) {
+            Wallet linkedWallet = RealmManager.getAssetsDao().getMultisigLinkedWallet(viewModel.getWalletLive().getValue().getMultisigWallet().getOwners());
+            for (TransactionOwner owner : owners) {
+                if (owner.getAddress().equals(linkedWallet.getActiveAddress().getAddress())) {
+                    for (int status : statuses) {
+                        if (owner.getConfirmationStatus() == status) {
+                            return true;
+                        }
                     }
+                    return false;
                 }
-                return false;
             }
         }
         return false;
@@ -371,15 +362,14 @@ public class MultisigTransactionInfoFragment extends BaseFragment {
     private void onAcceptTransaction() {
         viewModel.requestEstimation(walletAddress, estimationConfirm -> {
             viewModel.requestFeeRates(currencyId, networkId, mediumGasPrice -> {
-                viewModel.sendConfirmTransaction(currencyId, networkId, walletIndex, walletAddress,
-                        transaction.getMultisigInfo().getRequestId(), estimationConfirm, mediumGasPrice,
-                        isSuccess -> {
-                    if (isSuccess) {
-                        viewModel.getMultisigTransactionsHistory(currencyId, networkId, walletAddress);
-                    } else {
-                        setVisibilityConfirmButtons(View.VISIBLE);
-                        viewModel.errorMessage.setValue(getString(R.string.something_went_wrong));
-                    }
+                viewModel.sendConfirmTransaction(walletAddress, transaction.getMultisigInfo().getRequestId(),
+                        estimationConfirm, mediumGasPrice, isSuccess -> {
+                            if (isSuccess) {
+                                viewModel.getMultisigTransactionsHistory(currencyId, networkId, walletAddress);
+                            } else {
+                                setVisibilityConfirmButtons(View.VISIBLE);
+                                viewModel.errorMessage.setValue(getString(R.string.something_went_wrong));
+                            }
                         }, this::onThrowable);
             }, this::onThrowable);
         }, this::onThrowable);

@@ -20,9 +20,12 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.samwolfand.oneprefs.Prefs;
 
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -215,7 +218,7 @@ public class WalletViewModel extends BaseViewModel {
 
     public MutableLiveData<ArrayList<TransactionHistory>> getMultisigTransactionsHistory(int currencyId, int networkId, String address) {
         isLoading.setValue(true);
-        MultyApi.INSTANCE.getMultisigTransactionHistory(currencyId, networkId, address)
+        MultyApi.INSTANCE.getMultisigTransactionHistory(currencyId, networkId, address, Constants.ASSET_TYPE_ADDRESS_MULTISIG)
                 .enqueue(new Callback<TransactionHistoryResponse>() {
             @Override
             public void onResponse(@NonNull Call<TransactionHistoryResponse> call, @NonNull Response<TransactionHistoryResponse> response) {
@@ -405,16 +408,19 @@ public class WalletViewModel extends BaseViewModel {
         addDisposable(disposable);
     }
 
-    public void sendConfirmTransaction(int currencyId, int networkId, int walletIndex, String walletAddress,
-                                       String requestId, String estimationConfirm, String mediumGasPrice,
+    public void sendConfirmTransaction(String walletAddress, String requestId, String estimationConfirm, String mediumGasPrice,
                                        Consumer<Boolean> onNext, Consumer<Throwable> onError) throws JniException {
         isLoading.setValue(true);
-        Wallet linkedWallet = RealmManager.getAssetsDao().getMultisigLinkedWallet(currencyId, networkId, walletIndex);
-        byte[] seed = RealmManager.getSettingsDao().getSeed().getSeed();
+        Wallet linkedWallet = RealmManager.getAssetsDao().getMultisigLinkedWallet(wallet.getValue().getMultisigWallet().getOwners());
+        final int currencyId = linkedWallet.getCurrencyId();
+        final int networkId = linkedWallet.getNetworkId();
+        final int walletIndex = linkedWallet.getIndex();
+        final String amount =linkedWallet.getActiveAddress().getAmountString();
+        final String nonce = linkedWallet.getEthWallet().getNonce();
+        final byte[] seed = RealmManager.getSettingsDao().getSeed().getSeed();
         Disposable disposable = Observable.create((ObservableOnSubscribe<Boolean>) e -> {
             byte[] tx = NativeDataHelper.confirmTransactionMultisigETH(seed, walletIndex, 0,
-                    currencyId, networkId, linkedWallet.getActiveAddress().getAmountString(), walletAddress,
-                    requestId, estimationConfirm, mediumGasPrice, linkedWallet.getEthWallet().getNonce());
+                    currencyId, networkId, amount, walletAddress, requestId, estimationConfirm, mediumGasPrice, nonce);
             Timber.i(getClass().getSimpleName(), SendSummaryFragment.byteArrayToHex(tx));
             Response<ResponseBody> response = MultyApi.INSTANCE.sendHdTransaction(new HdTransactionRequestEntity(currencyId, networkId,
                     new HdTransactionRequestEntity.Payload("", 0, walletIndex,
@@ -444,17 +450,24 @@ public class WalletViewModel extends BaseViewModel {
             MultisigEvent.Payload payload = new MultisigEvent.Payload();
             payload.userId = RealmManager.getSettingsDao().getUserId().getUserId();
             payload.address = RealmManager.getAssetsDao()
-                    .getMultisigLinkedWallet(currencyId, networkId, walletIndex).getActiveAddress().getAddress();
+                    .getMultisigLinkedWallet(wallet.getValue().getMultisigWallet().getOwners()).getActiveAddress().getAddress();
             payload.walletIndex = walletIndex;
             payload.currencyId = currencyId;
             payload.networkId = networkId;
             payload.txId = txId;
             MultisigEvent event = new MultisigEvent(eventStatus, System.currentTimeMillis(), payload);
-            socketManager.sendMultisigTransactionOwnerAction(event, args -> {
-                Timber.i("EVENT_MESSAGE_SEND" + args[0]);
-                isLoading.postValue(false);
+            try {
+                JSONObject eventJson = new JSONObject(new Gson().toJson(event));
+                socketManager.sendMultisigTransactionOwnerAction(eventJson, args -> {
+                    Timber.i("EVENT_MESSAGE_SEND" + args[0]);
+                    isLoading.postValue(false);
+                    socketManager.disconnect();
+                });
+            } catch (JSONException e) {
+                e.printStackTrace();
                 socketManager.disconnect();
-            });
+                isLoading.setValue(false);
+            }
             lifecycle.addObserver(new LifecycleObserver() {
                 @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
                 void onPause() {

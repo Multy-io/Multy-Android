@@ -277,7 +277,7 @@ public class CreateMultisigBlankFragment extends BaseFragment {
             request.setNetworkId(networkId);
             request.setAddress(wallet.getActiveAddress().getAddress());
             request.setAddressIndex(wallet.getAddresses().size() - 1);
-            request.setWalletIndex(topIndex);
+            request.setWalletIndex(wallet.getIndex());
             request.setWalletName(inputName.getText().toString());
             request.setMultisig(new CreateMultisigRequest.Multisig(confirmationsCount, membersCount, inviteCode));
 

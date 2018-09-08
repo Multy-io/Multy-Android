@@ -91,8 +91,8 @@ public class WalletChooserFragment extends BaseFragment implements MyWalletsAdap
     @Override
     public void onWalletClick(Wallet wallet) {
         viewModel.isLoading.setValue(true);
-        MultyApi.INSTANCE.getWalletVerbose(wallet.getIndex(), wallet.getCurrencyId(), wallet.getNetworkId())
-                .enqueue(new Callback<SingleWalletResponse>() {
+        MultyApi.INSTANCE.getWalletVerbose(wallet.getIndex(), wallet.getCurrencyId(), wallet.getNetworkId(), wallet.isMultisig() ?
+                Constants.ASSET_TYPE_ADDRESS_MULTISIG : Constants.ASSET_TYPE_ADDRESS_MULTY).enqueue(new Callback<SingleWalletResponse>() {
             @Override
             public void onResponse(Call<SingleWalletResponse> call, Response<SingleWalletResponse> response) {
                 viewModel.isLoading.setValue(false);
