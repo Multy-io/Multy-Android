@@ -112,6 +112,9 @@ public class NativeDataHelper {
 
     public static native byte[] makeTransactionETH(byte[] seed, int walletIndex, int addressIndex, int chainId, int networkId, String balance, String amount, String destionationAddress, String gasLimit, String gasPrice, String nonce) throws JniException;
 
+    public static native byte[] makeTransactionEthPayload(byte[] seed, int walletIndex, int addressIndex, int chainId, int networkId, String balance, String amount, String destionationAddress, String gasLimit, String gasPrice, String nonce, String payload) throws JniException;
+
+
     /**
      *
      * @param seed
