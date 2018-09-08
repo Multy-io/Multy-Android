@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -78,6 +79,8 @@ public class CreateMultiSigActivity extends BaseActivity {
     TextView textOwners;
     @BindView(R.id.container_header)
     View header;
+    @BindView(R.id.button_action)
+    View buttonAction;
 
     private BlueSocketManager socketManager;
 
@@ -112,7 +115,7 @@ public class CreateMultiSigActivity extends BaseActivity {
         }
 
         userId = RealmManager.getSettingsDao().getUserId().getUserId();
-        endpointReceive = "message:receive:" + userId;
+        endpointReceive = "message:recieve:" + userId;
 
         socketManager.connect();
         socket = socketManager.getSocket();
@@ -131,10 +134,9 @@ public class CreateMultiSigActivity extends BaseActivity {
             inviteCode = getIntent().getStringExtra(Constants.EXTRA_INVITE_CODE);
             final long walletId = getIntent().getExtras().getLong(Constants.EXTRA_WALLET_ID);
             wallet = RealmManager.getAssetsDao().getWalletById(walletId);
-            findConnectedWallet();
             updateInfo();
         }
-
+        findConnectedWallet();
         initList();
         initCreator();
     }
@@ -153,22 +155,30 @@ public class CreateMultiSigActivity extends BaseActivity {
     private void findConnectedWallet() {
         if (wallet != null) {
             RealmResults<Wallet> wallets = RealmManager.getAssetsDao().getWallets(wallet.getCurrencyId(), wallet.getNetworkId());
-
-            //multisig parent wallet derivation paths are equal to connected eth wallet. so we need to find wallet
-            //with the same derivation paths but without multisig and owners entities
-            for (Wallet wallet : wallets) {
-                if (wallet.getMultisigWallet() == null) {
-                    this.connectedWallet = wallet;
-                    break;
+            for(Owner owner : wallet.getMultisigWallet().getOwners()) {
+                if (!TextUtils.isEmpty(owner.getUserId())) {
+                    for (Wallet wallet : wallets) {
+                        if (wallet.getMultisigWallet() == null &&
+                                wallet.getActiveAddress().getAddress().equals(owner.getAddress())) {
+                            this.connectedWallet = wallet;
+                            return;
+                        }
+                    }
+                    return;
                 }
             }
+            //multisig parent wallet derivation paths are equal to connected eth wallet. so we need to find wallet
+            //with the same derivation paths but without multisig and owners entities
         }
     }
 
     private void initList() {
         ownersAdapter = new OwnersAdapter(v -> {
-            showKickDialog((String) v.getTag());
-            return true;
+            if (isCreator) {
+                showKickDialog((String) v.getTag());
+                return true;
+            }
+            return false;
         });
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -176,11 +186,14 @@ public class CreateMultiSigActivity extends BaseActivity {
     }
 
     private void showKickDialog(String addressToKick) {
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.delete_user)
-                .setPositiveButton(R.string.yes, (dialog, which) -> kickUser(addressToKick))
-                .setNegativeButton(R.string.no, (dialog, which) -> dialog.cancel())
-                .show();
+        if (connectedWallet != null && connectedWallet.isValid() &&
+                !connectedWallet.getActiveAddress().getAddress().equals(addressToKick)) {
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.delete_user)
+                    .setPositiveButton(R.string.yes, (dialog, which) -> kickUser(addressToKick))
+                    .setNegativeButton(R.string.no, (dialog, which) -> dialog.cancel())
+                    .show();
+        }
     }
 
     private void fillViews() {
@@ -205,25 +218,28 @@ public class CreateMultiSigActivity extends BaseActivity {
         ownersAdapter.setOwners(owners);
         textOwners.setText(stringBuilder.toString());
 
-        if (wallet.getMultisigWallet().getOwners().size() == wallet.getMultisigWallet().getOwnersCount()) {
-            MultyApi.INSTANCE.getEstimations("price").enqueue(new Callback<Estimation>() {
-                @Override
-                public void onResponse(Call<Estimation> call, Response<Estimation> response) {
-                    final String deployWei = response.body().getPriceOfCreation();
-                    final String deployEth = CryptoFormatUtils.weiToEthLabel(deployWei);
-                    textAction.setText("START FOR " + deployEth);
-                    textAction.setTag(deployWei);
-                }
+        if (isCreator) {
+            buttonAction.setVisibility(View.VISIBLE);
+            if (wallet.getMultisigWallet().getOwners().size() == wallet.getMultisigWallet().getOwnersCount()) {
+                MultyApi.INSTANCE.getEstimations("price").enqueue(new Callback<Estimation>() {
+                    @Override
+                    public void onResponse(Call<Estimation> call, Response<Estimation> response) {
+                        final String deployWei = response.body().getPriceOfCreation();
+                        final String deployEth = CryptoFormatUtils.weiToEthLabel(deployWei);
+                        textAction.setText("START FOR " + deployEth);
+                        textAction.setTag(deployWei);
+                    }
 
-                @Override
-                public void onFailure(Call<Estimation> call, Throwable t) {
-                    t.printStackTrace();
-                }
-            });
-            imageAction.setVisibility(View.GONE);
-        } else {
-            imageAction.setVisibility(View.VISIBLE);
-            textAction.setText(R.string.invitation_code);
+                    @Override
+                    public void onFailure(Call<Estimation> call, Throwable t) {
+                        t.printStackTrace();
+                    }
+                });
+                imageAction.setVisibility(View.GONE);
+            } else {
+                imageAction.setVisibility(View.VISIBLE);
+                textAction.setText(R.string.invitation_code);
+            }
         }
     }
 
@@ -232,6 +248,7 @@ public class CreateMultiSigActivity extends BaseActivity {
             @Override
             public void onResponse(Call<WalletsResponse> call, Response<WalletsResponse> response) {
                 List<Wallet> wallets = response.body().getWallets();
+                wallet = null;
                 for (Wallet wallet : wallets) {
                     if (wallet.getMultisigWallet() != null && wallet.getMultisigWallet().getInviteCode().equals(inviteCode)) {
                         CreateMultiSigActivity.this.wallet = wallet;
@@ -241,6 +258,8 @@ public class CreateMultiSigActivity extends BaseActivity {
 
                 if (wallet != null) {
                     fillViews();
+                } else {
+                    onBackPressed();
                 }
             }
 
@@ -400,6 +419,7 @@ public class CreateMultiSigActivity extends BaseActivity {
             socket.emit(endpointSend, new JSONObject(new Gson().toJson(event)), (Ack) args -> {
                 Timber.i("JOIN ack");
                 Timber.v("JOIN: " + args[0].toString());
+                updateInfo();
             });
         } catch (JSONException e) {
             e.printStackTrace();
@@ -418,10 +438,10 @@ public class CreateMultiSigActivity extends BaseActivity {
 
         final MultisigEvent event = new MultisigEvent(SOCKET_KICK, System.currentTimeMillis(), payload);
 
+        final String eventJson = new Gson().toJson(event);
+        Timber.i("KICK - " + eventJson);
         try {
-            final JSONObject jsonObject = new JSONObject(new Gson().toJson(event));
-            Timber.i("KICK - " + jsonObject.toString());
-            socket.emit(endpointSend, jsonObject, (Ack) args -> {
+            socket.emit(endpointSend, new JSONObject(eventJson), (Ack) args -> {
                 updateInfo();
                 Timber.v("KICK: " + args[0].toString());
             });
@@ -502,5 +522,11 @@ public class CreateMultiSigActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         socket.disconnect();
+    }
+
+    @OnClick(R.id.button_back)
+    void onClickBack(View view) {
+        view.setEnabled(false);
+        onBackPressed();
     }
 }

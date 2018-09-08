@@ -244,8 +244,8 @@ public class AssetSendViewModel extends BaseViewModel {
 //            Log.i("wise", getWallet().getId() + " " + getWallet().getNetworkId() + " " + amount + " " + getFee().getAmount() + " " + getDonationSatoshi() + " " + isPayForCommission);
             byte[] tx;
             if (wallet.getValue().isMultisig()) {
-                Wallet linkedWallet = RealmManager.getAssetsDao().getMultisigLinkedWallet(getWallet().getCurrencyId(), getWallet().getNetworkId(), getWallet().getIndex());
-                tx = NativeDataHelper.makeTransactionMultisigETH(RealmManager.getSettingsDao().getSeed().getSeed(), getWallet().getIndex(), 0, getWallet().getCurrencyId(), getWallet().getNetworkId(),
+                Wallet linkedWallet = RealmManager.getAssetsDao().getMultisigLinkedWallet(wallet.getValue().getMultisigWallet().getOwners());
+                tx = NativeDataHelper.makeTransactionMultisigETH(RealmManager.getSettingsDao().getSeed().getSeed(), linkedWallet.getIndex(), 0, linkedWallet.getCurrencyId(), linkedWallet.getNetworkId(),
                         linkedWallet.getActiveAddress().getAmountString(), getWallet().getActiveAddress().getAddress(), signAmount, getReceiverAddress().getValue(), String.valueOf(estimation.getValue().getSubmitTransaction()), String.valueOf(fee.getValue().getAmount()), linkedWallet.getEthWallet().getNonce());
             } else {
                 tx = NativeDataHelper.makeTransactionETH(RealmManager.getSettingsDao().getSeed().getSeed(), getWallet().getIndex(), 0, wallet.getValue().getCurrencyId(), wallet.getValue().getNetworkId(),

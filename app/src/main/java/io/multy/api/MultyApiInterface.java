@@ -47,7 +47,7 @@ public interface MultyApiInterface {
 
     Call<ResponseBody> addWalletAddress(AddWalletAddressRequest addWalletAddressRequest);
 
-    Call<SingleWalletResponse> getWalletVerbose(int walletIndex, int currencyId, int networkId);
+    Call<SingleWalletResponse> getWalletVerbose(int walletIndex, int currencyId, int networkId, int assetType);
 
     Call<WalletsResponse> getWalletsVerbose();
 
@@ -57,7 +57,7 @@ public interface MultyApiInterface {
 
     Call<TransactionHistoryResponse> getTransactionHistory(int currencyId, int networkId, int walletIndex);
 
-    Call<TransactionHistoryResponse> getMultisigTransactionHistory(int currencyId, int networkId, String address);
+    Call<TransactionHistoryResponse> getMultisigTransactionHistory(int currencyId, int networkId, String address, int assetType);
 
     Call<ServerConfigResponse> getServerConfig();
 

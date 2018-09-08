@@ -47,7 +47,7 @@ public class MultisigEvent {
         public String address;
         @SerializedName("invitecode")
         public String inviteCode;
-        @SerializedName("adresstokik")
+        @SerializedName("addresstokick")
         public String addressToKick;
         @SerializedName("walletindex")
         public int walletIndex;

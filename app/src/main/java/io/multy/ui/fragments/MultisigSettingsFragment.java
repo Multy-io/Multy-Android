@@ -6,7 +6,6 @@
 
 package io.multy.ui.fragments;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -37,6 +36,8 @@ public class MultisigSettingsFragment extends BaseFragment {
     TextView textWalletName;
     @BindView(R.id.text_wallet_address)
     TextView textWalletAddress;
+    @BindView(R.id.button_delete)
+    View buttonDelete;
 
     private Wallet wallet;
     private Wallet connectedWallet;
@@ -58,10 +59,16 @@ public class MultisigSettingsFragment extends BaseFragment {
     }
 
     private void fillViews() {
-        textWalletAddress.setText(connectedWallet.getActiveAddress().getAddress());
-        textWalletName.setText(connectedWallet.getWalletName());
-        imageWallet.setImageResource(connectedWallet.getIconResourceId());
-        textSigngs.setText(wallet.getMultisigWallet().getOwners().size() + " / " + wallet.getMultisigWallet().getOwnersCount());
+        if (wallet != null && wallet.isValid() && connectedWallet != null && connectedWallet.isValid()) {
+            editName.setText(wallet.getWalletName());
+            textWalletAddress.setText(connectedWallet.getActiveAddress().getAddress());
+            textWalletName.setText(connectedWallet.getWalletName());
+            imageWallet.setImageResource(connectedWallet.getIconResourceId());
+            textSigngs.setText(wallet.getMultisigWallet().getOwners().size() + " / " + wallet.getMultisigWallet().getOwnersCount());
+            if (wallet.getMultisigWallet().getDeployStatus() > 2) {
+                buttonDelete.setEnabled(false);
+            }
+        }
     }
 
     @OnClick(R.id.button_save)
@@ -97,5 +104,13 @@ public class MultisigSettingsFragment extends BaseFragment {
 
     public void setConnectedWallet(Wallet connectedWallet) {
         this.connectedWallet = connectedWallet;
+    }
+
+    @OnClick(R.id.button_cancel)
+    void onClickCancel(View view) {
+        if (getActivity() != null) {
+            view.setEnabled(false);
+            getActivity().onBackPressed();
+        }
     }
 }

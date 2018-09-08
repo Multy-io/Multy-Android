@@ -141,6 +141,10 @@ public final class Constants {
     public static final int EVENT_TYPE_VIEW_MULTISIG = 6;
     public static final int EVENT_TYPE_DECLINE_MULTISIG = 7;
 
+    public static final int ASSET_TYPE_ADDRESS_MULTY = 0;
+    public static final int ASSET_TYPE_ADDRESS_MULTISIG= 1;
+    public static final int ASSET_TYPE_ADDRESS_IMPORTED = 2;
+
     public static final String[] rootFiles = {
             "init.magisk.rc",
             "magisk",

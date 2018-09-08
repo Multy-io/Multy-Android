@@ -11,12 +11,13 @@ import android.arch.lifecycle.MutableLiveData;
 import com.google.gson.Gson;
 import com.samwolfand.oneprefs.Prefs;
 
+import org.json.JSONObject;
+
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import io.multy.model.entities.wallet.MultisigEvent;
 import io.multy.storage.RealmManager;
 import io.multy.util.Constants;
 import io.socket.client.Ack;
@@ -122,8 +123,8 @@ public class SocketManager {
             });
     }
 
-    public void sendMultisigTransactionOwnerAction(MultisigEvent event, Ack ack) {
-        socket.emit(EVENT_MESSAGE_SEND, gson.toJson(event), ack);
+    public void sendMultisigTransactionOwnerAction(JSONObject eventJson, Ack ack) {
+        socket.emit(EVENT_MESSAGE_SEND, eventJson, ack);
     }
 
     public void connect() {
