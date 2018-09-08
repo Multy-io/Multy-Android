@@ -55,7 +55,8 @@ public class MultyFirebaseMessagingService extends FirebaseMessagingService {
                     final int currencyId = Integer.parseInt(remoteMessage.getData().get(KEY_CURRENCY_ID));
                     final int networkId = Integer.parseInt(remoteMessage.getData().get(KEY_NETWORK_ID));
                     final int walletIndex = Integer.parseInt(remoteMessage.getData().get(KEY_WALLET_INDEX));
-                    MultyApi.INSTANCE.getWalletVerbose(walletIndex, currencyId, networkId).enqueue(new Callback<SingleWalletResponse>() {
+                    MultyApi.INSTANCE.getWalletVerbose(walletIndex, currencyId, networkId, Constants.ASSET_TYPE_ADDRESS_MULTY)
+                            .enqueue(new Callback<SingleWalletResponse>() {
                         @Override
                         public void onResponse(Call<SingleWalletResponse> call, Response<SingleWalletResponse> response) {
                             Realm realm = Realm.getInstance(Multy.getRealmConfiguration());

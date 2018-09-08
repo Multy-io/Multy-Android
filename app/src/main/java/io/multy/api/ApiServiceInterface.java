@@ -73,8 +73,8 @@ public interface ApiServiceInterface {
     @POST("api/v1/address")
     Call<ResponseBody> addWalletAddress(@Body AddWalletAddressRequest addWalletAddressRequest);
 
-    @GET("api/v1/wallet/{walletIndex}/verbose/{currencyId}/{networkId}")
-    Call<SingleWalletResponse> getWalletVerboseByIndex(@Path("walletIndex") int walletIndex, @Path("currencyId") int currencyId, @Path("networkId") int networkId);
+    @GET("api/v1/wallet/{walletIndex}/verbose/{currencyId}/{networkId}/{assetType}")
+    Call<SingleWalletResponse> getWalletVerboseByIndex(@Path("walletIndex") int walletIndex, @Path("currencyId") int currencyId, @Path("networkId") int networkId, @Path("assetType") int assetType);
 
     @POST("api/v1/wallet/name")
     Call<ResponseBody> updateWalletName(@Body UpdateWalletNameRequest updateWalletName);
@@ -85,11 +85,11 @@ public interface ApiServiceInterface {
     @GET("api/v1/wallets/verbose")
     Call<WalletsResponse> getWalletsVerbose();
 
-    @GET("api/v1/wallets/transactions/{currencyid}/{networkid}/{walletIndex}")
+    @GET("api/v1/wallets/transactions/{currencyid}/{networkid}/{walletIndex}/0")
     Call<TransactionHistoryResponse> getTransactionHistory(@Path("currencyid") int currencyId, @Path("networkid") int networkId, @Path("walletIndex") int walletIndex);
 
-    @GET("api/v1/wallets/transactions/{currencyId}/{networkId}/{address}")
-    Call<TransactionHistoryResponse> getMultisigTransactionHistory(@Path("currencyId") int currencyId, @Path("networkId") int networkId, @Path("address") String address);
+    @GET("api/v1/wallets/transactions/{currencyId}/{networkId}/{address}/{assetType}")
+    Call<TransactionHistoryResponse> getMultisigTransactionHistory(@Path("currencyId") int currencyId, @Path("networkId") int networkId, @Path("address") String address, @Path("assetType") int assetType);
 
     @GET("/server/config")
     Call<ServerConfigResponse> getServerConfig();

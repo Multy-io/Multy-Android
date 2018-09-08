@@ -219,7 +219,8 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         final int networkId = viewModel.getWalletLive().getValue().getNetworkId();
         final long walletId = viewModel.getWalletLive().getValue().getId();
 
-        MultyApi.INSTANCE.getWalletVerbose(walletIndex, currencyId, networkId).enqueue(new Callback<SingleWalletResponse>() {
+        MultyApi.INSTANCE.getWalletVerbose(walletIndex, currencyId, networkId, viewModel.getWalletLive().getValue().isMultisig() ?
+                Constants.ASSET_TYPE_ADDRESS_MULTISIG : Constants.ASSET_TYPE_ADDRESS_MULTY).enqueue(new Callback<SingleWalletResponse>() {
             @Override
             public void onResponse(Call<SingleWalletResponse> call, Response<SingleWalletResponse> response) {
                 viewModel.isLoading.postValue(false);

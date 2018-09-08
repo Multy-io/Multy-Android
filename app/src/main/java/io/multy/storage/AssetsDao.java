@@ -6,11 +6,15 @@
 
 package io.multy.storage;
 
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
+
 import java.util.List;
 import java.util.Objects;
 
 import io.multy.model.entities.wallet.BtcWallet;
 import io.multy.model.entities.wallet.EthWallet;
+import io.multy.model.entities.wallet.Owner;
 import io.multy.model.entities.wallet.RecentAddress;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.entities.wallet.WalletAddress;
@@ -158,9 +162,19 @@ public class AssetsDao {
                 .equalTo("networkId", networkId).equalTo("index", walletIndex).findFirst();
     }
 
-    public Wallet getMultisigLinkedWallet(int blockChainId, int networkId, int walletIndex) {
-        return realm.where(Wallet.class).equalTo("currencyId", blockChainId)
-                .equalTo("networkId", networkId).equalTo("index", walletIndex).isNull("multisigWallet").findFirst();
+    @Nullable
+    public Wallet getMultisigLinkedWallet(List<Owner> owners) {
+        for(Owner owner : owners) {
+            if (!TextUtils.isEmpty(owner.getUserId())) {
+                return getMultisigLinkedWallet(owner.getAddress());
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    public Wallet getMultisigLinkedWallet(String linkedAddress) {
+        return realm.where(Wallet.class).isNull("multisigWallet").equalTo("ethWallet.addresses.address", linkedAddress).findFirst();
     }
 
     public Wallet getMultisigWallet(int blockChainId, int networkId, int walletIndex) {
