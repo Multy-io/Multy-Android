@@ -123,14 +123,17 @@ public class WalletChooserDialogFragment extends DialogFragment {
     }
 
     public void setupAdapter() {
-        recyclerView.setAdapter(new MyWalletsAdapter(wallet -> {
-            if (listener != null) {
-                listener.onWalletClick(wallet);
-            } else if (getTargetFragment() != null) {
-                getTargetFragment().onActivityResult(REQUEST_WALLET_ID, Activity.RESULT_OK,
-                        new Intent().putExtra(Constants.EXTRA_WALLET_ID, wallet.getId()));
+        recyclerView.setAdapter(new MyWalletsAdapter(new MyWalletsAdapter.OnWalletClickListener() {
+            @Override
+            public void onWalletClick(Wallet wallet) {
+                if (listener != null) {
+                    listener.onWalletClick(wallet);
+                } else if (WalletChooserDialogFragment.this.getTargetFragment() != null) {
+                    WalletChooserDialogFragment.this.getTargetFragment().onActivityResult(REQUEST_WALLET_ID, Activity.RESULT_OK,
+                            new Intent().putExtra(Constants.EXTRA_WALLET_ID, wallet.getId()));
+                }
+                WalletChooserDialogFragment.this.dismiss();
             }
-            WalletChooserDialogFragment.this.dismiss();
         }, getAvailableWallets()));
     }
 
@@ -145,7 +148,6 @@ public class WalletChooserDialogFragment extends DialogFragment {
                     if (isMainNet) {
                         if (walletRealmObject.getNetworkId() == NativeDataHelper.NetworkId.MAIN_NET.getValue()) {
                             wallets.add(walletRealmObject);
-
                         }
                     } else {
                         wallets.add(walletRealmObject);

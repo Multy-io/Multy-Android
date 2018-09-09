@@ -270,4 +270,5 @@
     <string name="waiting_confirmation">Waiting for confirmation…</string>
     <string name="slide_to_decline">Slide to Decline</string>
     <string name="declined">Declined</string>
+    <string name="browser">Браузер</string>
 </resources>

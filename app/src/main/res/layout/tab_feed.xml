@@ -22,6 +22,6 @@
     <TextView
         android:id="@+id/title"
         style="@style/TabInactiveText"
-        android:text="@string/activity" />
+        android:text="@string/browser" />
 
 </LinearLayout>

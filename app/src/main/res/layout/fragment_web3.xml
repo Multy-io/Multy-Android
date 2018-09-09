@@ -16,7 +16,7 @@
         android:imeOptions="actionGo"
         android:inputType="textNoSuggestions" />
 
-    <trust.web3.Web3View
+    <io.multy.ui.MyWeb3View
         android:id="@+id/web_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"

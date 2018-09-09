@@ -29,6 +29,7 @@ import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.requests.HdTransactionRequestEntity;
 import io.multy.storage.RealmManager;
+import io.multy.ui.MyWeb3View;
 import io.multy.ui.fragments.dialogs.WalletChooserDialogFragment;
 import io.multy.ui.fragments.send.SendSummaryFragment;
 import io.multy.util.Constants;
@@ -45,7 +46,7 @@ import trust.web3.Web3View;
 public class Web3Fragment extends BaseFragment {
 
     @BindView(R.id.web_view)
-    Web3View webView;
+    MyWeb3View webView;
     @BindView(R.id.input_address)
     EditText inputAddress;
     private Wallet selectedWallet;
@@ -106,21 +107,20 @@ public class Web3Fragment extends BaseFragment {
 //        https://plasma.bankex.com/
 //        "https://dapps.trustwalletapp.com/"
 //        webView.setChainId(4);
-//        webView.setRpcUrl("https://testnet.infura.io/llyrtzQ3YhkdESt2Fzrk");
+//        webView.setRpcUrl("https://mainnet.infura.io/llyrtzQ3YhkdESt2Fzrk");
         final String url = "https://dapps.trustwalletapp.com/";
         webView.loadUrl(url);
         inputAddress.setText(url);
-        webView.requestFocus();
         webView.setWalletAddress(new Address(address));
-        webView.setWebViewClient(new WebViewClient() {
-
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                inputAddress.setText(request.getUrl().toString());
-                return super.shouldOverrideUrlLoading(view, request);
-            }
-        });
-
+//        webView.setWebViewClient(new WebViewClient() {
+//
+//            @Override
+//            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+//                inputAddress.setText(request.getUrl().toString());
+//                return super.shouldOverrideUrlLoading(view, request);
+//            }
+//        });
+        webView.requestFocus();
         webView.setOnSignMessageListener(message -> {
             Toast.makeText(getActivity(), "Message: " + message.value, Toast.LENGTH_LONG).show();
             Timber.d("onSignMessage:" + message.value);
