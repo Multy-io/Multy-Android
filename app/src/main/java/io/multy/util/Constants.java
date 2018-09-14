@@ -96,6 +96,7 @@ public final class Constants {
     public static final int TX_IN_BLOCK_OUTCOMING = 4;
     public static final int TX_CONFIRMED_INCOMING = 5;
     public static final int TX_CONFIRMED_OUTCOMING = 6;
+    public static final int TX_INVOCATION_FAIL = 7;
 
     public static final int REQUEST_CODE_RESTORE = 22;
     public static final int REQUEST_CODE_CREATE = 22;
@@ -123,7 +124,7 @@ public final class Constants {
     public static final String CONTACT_MIMETYPE = "vnd.android.cursor.item/vnd.io.multy.contacts.profile";
 
     public static final int MIN_SATOSHI = 546;
-    public static final String GAS_LIMIT_DEFAULT = "40000";
+    public static final String GAS_LIMIT_DEFAULT = "21000";
 
     public static final int MULTISIG_MEMBERS_COUNT = 50;
     public static final int INVITE_CODE_LENGTH = 45;
@@ -132,6 +133,12 @@ public final class Constants {
     public static final int MULTISIG_OWNER_STATUS_SEEN = 1;
     public static final int MULTISIG_OWNER_STATUS_CONFIRMED = 2;
     public static final int MULTISIG_OWNER_STATUS_DECLINED = 3;
+
+    public static final int DEPLOY_STATUS_CREATED = 1;
+    public static final int DEPLOY_STATUS_READY = 2;
+    public static final int DEPLOY_STATUS_PENDING = 3;
+    public static final int DEPLOY_STATUS_REJECTED = 4;
+    public static final int DEPLOY_STATUS_DEPLOYED = 5;
 
     public static final int EVENT_TYPE_JOIN_MULTISIG = 1;
     public static final int EVENT_TYPE_LEAVE_MULTISIG = 2;

@@ -132,14 +132,20 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
     private void initTransactionPrice() {
         if (viewModel.getWallet().getMultisigWallet() != null) {
             if (viewModel.estimation.getValue() == null) {
-                viewModel.requestEstimates(viewModel.getWallet().getActiveAddress().getAddress());
+                viewModel.requestMultisigEstimates(viewModel.getWallet().getActiveAddress().getAddress());
             } else {
                 transactionPriceEth = EthWallet.getTransactionMultisigPrice(viewModel.getFee().getAmount(),
                         Long.parseLong(viewModel.estimation.getValue().getSubmitTransaction()));
             }
         } else {
             transactionPriceEth = EthWallet.getTransactionPrice(viewModel.getFee().getAmount());
+            viewModel.gasLimit.observe(this, customGasLimit -> {
+                if (!TextUtils.isEmpty(customGasLimit)) {
+                    transactionPriceEth = EthWallet.getTransactionPrice(viewModel.getFee().getAmount(), Long.parseLong(customGasLimit));
+                }
+            });
         }
+
     }
 
     @Override

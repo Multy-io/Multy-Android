@@ -128,6 +128,9 @@
         Remove this wallet from UI. Please note that we will be tracking wallet
         balance and notify you on incoming transactions.
     </string>
+    <string name="about_delete_ms_wallet">
+        You can\'t remove this wallet from UI after creating multisig vallet.
+    </string>
     <string name="us_dollars_usd">US Dollars ∙ USD</string>
     <string name="fast_operations">Fast Operations</string>
     <string name="nfc">NFC</string>
@@ -360,5 +363,7 @@
     <string name="waiting_confirmation">Waiting for confirmation…</string>
     <string name="slide_to_decline">Slide to Decline</string>
     <string name="declined">Declined</string>
+    <string name="wating_members">Waiting for all members…</string>
+    <string name="ready_to_start">Ready to Start…</string>
     <string name="permissions_are_not_granted">Permissions are not granted!</string>
 </resources>

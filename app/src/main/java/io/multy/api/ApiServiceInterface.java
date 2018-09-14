@@ -52,8 +52,17 @@ public interface ApiServiceInterface {
     @POST("api/v1/gettransactioninfo/{id}")
     Call<ResponseBody> getTransactionInfo(@Path("id") String transactionId);
 
+    /**
+     * Request for default fee rates
+     */
     @GET("api/v1/transaction/feerate/{currencyId}/{networkId}")
     Call<FeeRateResponse> getFeeRates(@Path("currencyId") int currencyId, @Path("networkId") int networkId);
+
+    /**
+     * Request for custom fee rates (current networks: Ethereum)
+     */
+    @GET("api/v1/transaction/feerate/{currencyId}/{networkId}/{address}")
+    Call<FeeRateResponse> getFeeRates(@Path("currencyId") int currencyId, @Path("networkId") int networkId, @Path("address") String address);
 
     @GET("/api/v1/multisig/estimate/{address}")
     Call<Estimation> getEstimations(@Path("address") String multisigWalletAddress);
@@ -75,6 +84,9 @@ public interface ApiServiceInterface {
 
     @GET("api/v1/wallet/{walletIndex}/verbose/{currencyId}/{networkId}/{assetType}")
     Call<SingleWalletResponse> getWalletVerboseByIndex(@Path("walletIndex") int walletIndex, @Path("currencyId") int currencyId, @Path("networkId") int networkId, @Path("assetType") int assetType);
+
+    @GET("api/v1/wallet/{inviteCode}/verbose/{currencyId}/{networkId}/{assetType}")
+    Call<SingleWalletResponse> getMultisigWalletVerboseByInvite(@Path(value = "inviteCode", encoded = true) String inviteCode, @Path("currencyId") int currencyId, @Path("networkId") int networkId, @Path("assetType") int assetType);
 
     @POST("api/v1/wallet/name")
     Call<ResponseBody> updateWalletName(@Body UpdateWalletNameRequest updateWalletName);
@@ -102,5 +114,4 @@ public interface ApiServiceInterface {
 
     @GET("/api/v1/chain/{currencyid}/{networkid}/info")
     Call<ChainInfoResponse> getChainInfo(@Path("currencyid") int currencyId, @Path("networkid") int networkId);
-
 }

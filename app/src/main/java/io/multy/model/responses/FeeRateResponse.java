@@ -16,11 +16,17 @@ import io.multy.model.entities.Fee;
 
 public class FeeRateResponse {
 
+    @SerializedName("gaslimit")
+    private String customGasLimit;
     @SerializedName("speeds")
     private Speeds speeds;
 
     public Speeds getSpeeds() {
         return speeds;
+    }
+
+    public String getCustomGasLimit() {
+        return customGasLimit;
     }
 
     public class Speeds {

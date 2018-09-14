@@ -76,6 +76,9 @@
         Видалити цей гаманець з інтерфейсу користувача. Зверніть увагу, що ми будемо відстежувати
         баланс гаманця і повідомляти вас про вхідні транзакції.
     </string>
+    <string name="about_delete_ms_wallet">
+        Не можна видалити цей гаманець з призначеного для користувача інтерфейсу після створення multisig гаманця.
+    </string>
     <string name="delete_confirm">Ви впевнені, що хочете видалити гаманець?</string>
     <string name="all_addresses">Всі адреси гаманця</string>
     <string name="pay_attention">Зверніть увагу!</string>
@@ -271,5 +274,7 @@
     <string name="waiting_confirmation">Waiting for confirmation…</string>
     <string name="slide_to_decline">Slide to Decline</string>
     <string name="declined">Declined</string>
+    <string name="wating_members">Waiting for all members…</string>
+    <string name="ready_to_start">Ready to Start…</string>
     <string name="permissions_are_not_granted">Дозволи не надаються!</string>
 </resources>

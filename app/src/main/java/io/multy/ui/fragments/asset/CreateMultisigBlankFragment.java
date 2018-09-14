@@ -185,10 +185,11 @@ public class CreateMultisigBlankFragment extends BaseFragment {
         StringBuilder inviteCode = new StringBuilder(UUID.randomUUID().toString()).append(Constants.DEVICE_NAME);
         try {
             final byte[] codeBytes = NativeDataHelper.digestSha3256(inviteCode.toString().trim().getBytes());
-            String result = Base64.encodeToString(codeBytes, Base64.NO_WRAP);
+            String result = Base64.encodeToString(codeBytes, Base64.DEFAULT)
+                    .replace("/", "").replace("\n", "");
             result = result + result;
             result = result.substring(0, Constants.INVITE_CODE_LENGTH);
-            return result;
+            return result.toLowerCase();
         } catch (JniException e) {
             e.printStackTrace();
         }

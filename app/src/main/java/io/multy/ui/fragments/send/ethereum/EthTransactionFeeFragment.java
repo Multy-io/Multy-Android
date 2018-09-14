@@ -92,13 +92,14 @@ public class EthTransactionFeeFragment extends BaseFragment
         viewModel.speeds.observe(this, speeds -> {
             setAdapter();
             if (viewModel.getWallet().isMultisig()) {
-                viewModel.requestEstimates(viewModel.getWallet().getActiveAddress().getAddress());
+                viewModel.requestMultisigEstimates(viewModel.getWallet().getActiveAddress().getAddress());
             } else {
                 buttonNext.setEnabled(true);
             }
         });
         viewModel.estimation.observe(this, estimation -> buttonNext.setEnabled(estimation != null));
-        viewModel.requestFeeRates(viewModel.getWallet().getCurrencyId(), viewModel.getWallet().getNetworkId());
+        viewModel.requestFeeRates(viewModel.getWallet().getCurrencyId(), viewModel.getWallet().getNetworkId(),
+                viewModel.getWallet().isMultisig() ? null : viewModel.getReceiverAddress().getValue());
         Analytics.getInstance(getActivity()).logTransactionFeeLaunch(viewModel.getChainId());
         groupDonation.setVisibility(View.GONE);
         groupDonationBtc.setVisibility(View.GONE);

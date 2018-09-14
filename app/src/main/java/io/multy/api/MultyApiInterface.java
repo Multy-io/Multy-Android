@@ -49,6 +49,8 @@ public interface MultyApiInterface {
 
     Call<SingleWalletResponse> getWalletVerbose(int walletIndex, int currencyId, int networkId, int assetType);
 
+    Call<SingleWalletResponse> getMultisigWalletVerbose(String inviteCode, int currencyId, int networkId, int assetType);
+
     Call<WalletsResponse> getWalletsVerbose();
 
     Call<ResponseBody> updateWalletName(UpdateWalletNameRequest updateWalletName);
@@ -62,6 +64,8 @@ public interface MultyApiInterface {
     Call<ServerConfigResponse> getServerConfig();
 
     Call<FeeRateResponse> getFeeRates(int currencyId, int networkId);
+
+    Call<FeeRateResponse> getFeeRates(int currencyId, int networkId, String address);
 
     Call<Estimation> getEstimations(String msWalletAddress);
 

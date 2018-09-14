@@ -24,6 +24,7 @@ import io.socket.client.Ack;
 import io.socket.client.IO;
 import io.socket.client.Manager;
 import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
 import io.socket.engineio.client.Transport;
 import io.socket.engineio.client.transports.WebSocket;
 import timber.log.Timber;
@@ -43,7 +44,14 @@ public class SocketManager {
     private static final String EVENT_EXCHANGE_RESPONSE = "exchangePoloniex";
 
     public static final String EVENT_MESSAGE_SEND = "message:send";
+    private static final String EVENT_MESSAGE_RECEIVE = "message:recieve:";
 //    private static final String EVENT_EXCHANGE_RESPONSE = "exchangeBitfinex";
+
+    public static final int SOCKET_JOIN = 1;
+    public static final int SOCKET_LEAVE = 2;
+    public static final int SOCKET_DELETE = 3; //only for creator delete wallet and leave room
+    public static final int SOCKET_KICK = 4; //only creator can kick guys
+    public static final int SOCKET_VALIDATE = 5;
 
     private Socket socket;
     private Gson gson;
@@ -123,6 +131,14 @@ public class SocketManager {
             });
     }
 
+    public void listenEvent(String event, Emitter.Listener listener) {
+        socket.on(event, listener);
+    }
+
+    public void sendEvent(String sendEvent, JSONObject eventJson, Ack ack) {
+        socket.emit(sendEvent, eventJson, ack);
+    }
+
     public void sendMultisigTransactionOwnerAction(JSONObject eventJson, Ack ack) {
         socket.emit(EVENT_MESSAGE_SEND, eventJson, ack);
     }
@@ -131,7 +147,15 @@ public class SocketManager {
         socket.connect();
     }
 
+    public boolean isConnected() {
+        return socket.connected();
+    }
+
     public void disconnect() {
         socket.disconnect();
+    }
+
+    public static String getEventReceive(String userId) {
+        return EVENT_MESSAGE_RECEIVE + userId;
     }
 }

@@ -148,6 +148,11 @@ public enum MultyApi implements MultyApiInterface {
         }
 
         @Override
+        public Call<SingleWalletResponse> getMultisigWalletVerbose(String inviteCode, int currencyId, int networkId, int assetType) {
+            return api.getMultisigWalletVerboseByInvite(inviteCode, currencyId, networkId, assetType);
+        }
+
+        @Override
         public Call<WalletsResponse> getWalletsVerbose() {
             return api.getWalletsVerbose();
         }
@@ -176,9 +181,20 @@ public enum MultyApi implements MultyApiInterface {
 
         }
 
+        /**
+         * Request for default fee rates
+         */
         @Override
         public Call<FeeRateResponse> getFeeRates(int currencyId, int networkId) {
             return api.getFeeRates(currencyId, networkId);
+        }
+
+        /**
+         * Request for custom fee rates (current networks: Ethereum)
+         */
+        @Override
+        public Call<FeeRateResponse> getFeeRates(int currencyId, int networkId, String address) {
+            return api.getFeeRates(currencyId, networkId, address);
         }
 
         @Override

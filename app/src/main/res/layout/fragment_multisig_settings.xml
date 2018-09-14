@@ -361,7 +361,7 @@
                 style="@style/NotificationSettings"
                 android:letterSpacing="-0.02"
                 android:lineSpacingExtra="5sp"
-                android:text="@string/about_delete_wallet"
+                android:text="@string/about_delete_ms_wallet"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

@@ -139,6 +139,9 @@ public class WalletChooserDialogFragment extends DialogFragment {
         if (getTargetFragment() == null) {
             wallets = new ArrayList<>();
             for (Wallet walletRealmObject : RealmManager.getAssetsDao().getWallets()) {
+                if (walletRealmObject.isMultisig()) {
+                    continue;
+                }
                 if (walletRealmObject.isPayable() &&
                         Long.valueOf(walletRealmObject.getAvailableBalance()) > 150 &&
                         walletRealmObject.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()) {
@@ -154,10 +157,10 @@ public class WalletChooserDialogFragment extends DialogFragment {
             }
         } else if (getArguments() != null) {
             if (getArguments().getInt(ARG_NETWORK_ID, -1) == -1) {
-                wallets = RealmManager.getAssetsDao().getWallets(getArguments().getInt(ARG_CURRENCY_ID));
+                wallets = RealmManager.getAssetsDao().getWallets(getArguments().getInt(ARG_CURRENCY_ID), false);
             } else {
                 wallets = RealmManager.getAssetsDao()
-                        .getWallets(getArguments().getInt(ARG_CURRENCY_ID), getArguments().getInt(ARG_NETWORK_ID));
+                        .getWallets(getArguments().getInt(ARG_CURRENCY_ID), getArguments().getInt(ARG_NETWORK_ID), false);
             }
         }
 

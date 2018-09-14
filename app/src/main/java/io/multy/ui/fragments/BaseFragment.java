@@ -8,6 +8,7 @@ package io.multy.ui.fragments;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.arch.lifecycle.Lifecycle;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.graphics.drawable.ColorDrawable;
@@ -83,7 +84,7 @@ public class BaseFragment extends Fragment implements ConnectionReceiver.Connect
             });
 
             baseViewModel.isLoading.observe(this, aBoolean -> {
-                if (aBoolean != null) {
+                if (getLifecycle().getCurrentState() == Lifecycle.State.RESUMED && aBoolean != null) {
                     if (aBoolean) {
                         showProgressDialog();
                     } else {

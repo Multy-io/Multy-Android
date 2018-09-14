@@ -76,6 +76,9 @@
         Удалить этот кошелек из пользовательского интерфейса. Обратите внимание, что мы будем отслеживать
         баланс кошелька и уведомлять вас о входящих транзакциях.
     </string>
+    <string name="about_delete_ms_wallet">
+        Нельзя удалить этот кошелек из пользовательского интерфейса после создания multisig кошелька.
+    </string>
     <string name="delete_confirm">Вы уверены, что хотите удалить кошелёк?</string>
     <string name="all_addresses">Все адреса кошелька</string>
     <string name="pay_attention">Обратите внимание!</string>
@@ -270,5 +273,7 @@
     <string name="waiting_confirmation">Waiting for confirmation…</string>
     <string name="slide_to_decline">Slide to Decline</string>
     <string name="declined">Declined</string>
+    <string name="wating_members">Waiting for all members…</string>
+    <string name="ready_to_start">Ready to Start…</string>
     <string name="permissions_are_not_granted">Разрешения не предоставляются!</string>
 </resources>

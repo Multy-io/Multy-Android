@@ -32,11 +32,14 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.net.URISyntaxException;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.api.MultyApi;
+import io.multy.api.socket.SocketManager;
 import io.multy.model.entities.wallet.MultisigWallet;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.events.TransactionUpdateEvent;
@@ -96,6 +99,7 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
     private AssetsViewModel viewModel;
     private MyWalletsAdapter walletsAdapter;
     private boolean isViewsScroll = false;
+    private SocketManager socketManager;
 
     public static AssetsFragment newInstance() {
         return new AssetsFragment();
@@ -125,6 +129,7 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
     public void onResume() {
         super.onResume();
         checkViewsVisibility();
+        checkMultisigWallets();
     }
 
     @Override
@@ -132,6 +137,10 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
         WalletActionsDialog dialog = (WalletActionsDialog) getChildFragmentManager().findFragmentByTag(WalletActionsDialog.TAG);
         if (dialog != null) {
             dialog.dismiss();
+        }
+        if (socketManager != null) {
+            socketManager.disconnect();
+            socketManager = null;
         }
         super.onPause();
     }
@@ -248,6 +257,28 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
             groupPortfolio.setVisibility(View.VISIBLE);
             groupMultyLogo.setVisibility(View.INVISIBLE);
             groupCreateDescription.setVisibility(View.GONE);
+        }
+    }
+
+    private void checkMultisigWallets() {
+        RealmResults<Wallet> wallets = RealmManager.getAssetsDao().getMultisigWallets();
+        if (wallets.size() > 0) {
+            subsribeSocketUpdates();
+        }
+    }
+
+    private void subsribeSocketUpdates() {
+        try {
+            if (socketManager == null) {
+                socketManager = new SocketManager();
+            }
+            final String eventReceive = SocketManager.getEventReceive(RealmManager.getSettingsDao().getUserId().getUserId());
+            socketManager.listenEvent(eventReceive, args -> {
+                updateWallets();
+            });
+            socketManager.connect();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
         }
     }
 

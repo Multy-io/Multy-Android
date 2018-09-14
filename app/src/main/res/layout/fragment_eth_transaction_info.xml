@@ -72,12 +72,14 @@
                 android:id="@+id/card_background"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:layout_marginBottom="2dp"
                 android:layout_marginEnd="@dimen/margin_16dp"
                 android:layout_marginStart="@dimen/margin_16dp"
+                android:layout_marginTop="2dp"
                 android:elevation="@dimen/dp0"
                 app:cardBackgroundColor="@color/white"
                 app:cardCornerRadius="12dp"
-                app:cardElevation="0dp"
+                app:cardElevation="1dp"
                 app:layout_constraintBottom_toBottomOf="@+id/button_view"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -96,13 +98,14 @@
 
             <ImageView
                 android:id="@+id/image_operation"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="66dp"
+                android:layout_height="66dp"
                 android:layout_marginTop="24dp"
                 app:layout_constraintEnd_toEndOf="@+id/card_background"
                 app:layout_constraintStart_toStartOf="@+id/card_background"
                 app:layout_constraintTop_toBottomOf="@+id/text_date"
-                app:srcCompat="@drawable/ic_receive_big" />
+                app:srcCompat="@drawable/ic_receive_big"
+                tools:srcCompat="@drawable/ic_receive_big_icon_waiting" />
 
             <TextView
                 android:id="@+id/text_value"
@@ -238,13 +241,13 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
+                android:gravity="center_horizontal"
                 android:maxLines="1"
                 android:textAlignment="center"
                 android:textColor="@color/orange"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:visibility="gone"
-                android:gravity="center_horizontal"
                 app:layout_constraintEnd_toEndOf="@+id/card_background"
                 app:layout_constraintStart_toStartOf="@+id/card_background"
                 app:layout_constraintTop_toBottomOf="@+id/arrow"
@@ -328,6 +331,7 @@
                 android:id="@+id/group_data_views"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:elevation="1dp"
                 app:constraint_referenced_ids="button_view, divider, text_confirmations,
                     text_addresses_to, logo, arrow, text_addresses_from, text_money,
                     text_amount, text_coin, text_value, image_operation, text_date" />

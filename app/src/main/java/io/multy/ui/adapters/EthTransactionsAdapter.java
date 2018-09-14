@@ -47,6 +47,7 @@ import static io.multy.util.Constants.MULTISIG_OWNER_STATUS_CONFIRMED;
 import static io.multy.util.Constants.MULTISIG_OWNER_STATUS_DECLINED;
 import static io.multy.util.Constants.MULTISIG_OWNER_STATUS_SEEN;
 import static io.multy.util.Constants.TX_CONFIRMED_INCOMING;
+import static io.multy.util.Constants.TX_INVOCATION_FAIL;
 import static io.multy.util.Constants.TX_IN_BLOCK_INCOMING;
 import static io.multy.util.Constants.TX_MEMPOOL_INCOMING;
 import static io.multy.util.Constants.TX_MEMPOOL_OUTCOMING;
@@ -120,7 +121,7 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             return TYPE_MULTISIG;
         } else if (entity.getTxStatus() == TX_MEMPOOL_INCOMING || entity.getTxStatus() == TX_MEMPOOL_OUTCOMING) {
             return TYPE_BLOCKED;
-        } else if (entity.getTxStatus() == TX_REJECTED) {
+        } else if (entity.getTxStatus() == TX_REJECTED || entity.getTxStatus() == TX_INVOCATION_FAIL) {
             return TYPE_REJECTED;
         } else {
             return TYPE_CONFIRMED;
@@ -131,7 +132,7 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         view.setOnClickListener((v) -> {
             Analytics.getInstance(v.getContext()).logWallet(AnalyticsConstants.WALLET_TRANSACTION, 1);
             Fragment fragment;
-            if (isMultisig) {
+            if (isMultisig && !isIncoming) {
                 fragment = MultisigTransactionInfoFragment.newInstance(position);
             } else {
                 Bundle transactionInfo = new Bundle();
@@ -148,10 +149,10 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         });
     }
 
-    private String getFiatAmount(TransactionHistory transactionHistory, double btcValue) {
+    private String getFiatAmount(TransactionHistory transactionHistory, double ethValue) {
         if (transactionHistory.getStockExchangeRates() != null && transactionHistory.getStockExchangeRates().size() > 0) {
             double rate = getPreferredExchangeRate(transactionHistory.getStockExchangeRates());
-            return CryptoFormatUtils.ethToUsd(btcValue, rate);
+            return CryptoFormatUtils.ethToUsd(ethValue, rate);
         }
         return "";
     }
@@ -207,7 +208,7 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             holder.fiatLocked.setText(String.format("%s%s",
                     CryptoFormatUtils.weiToUsd(new BigInteger(wallet.getBalance())), wallet.getFiatString()));
         }
-        if (transactionHistory.getMultisigInfo() != null) {
+        if (transactionHistory.getMultisigInfo() != null && !isIncoming) {
             holder.groupMultisig.setVisibility(View.VISIBLE);
             int confirms = calculateStatus(transactionHistory.getMultisigInfo().getOwners(), Constants.MULTISIG_OWNER_STATUS_CONFIRMED);
             holder.textConfirmations.setText(String.format(holder.itemView.getContext().getString(R.string.confirmations_of),
@@ -247,7 +248,9 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             holder.textDate.setTextColor(ContextCompat.getColor(holder.textDate.getContext(), R.color.black_light));
         }
         int confirms = calculateStatus(owners, MULTISIG_OWNER_STATUS_CONFIRMED);
-        holder.textConfirmations.setText(String.format(holder.itemView.getContext().getString(R.string.confirmations_of), confirms, owners.size()));
+        Wallet wallet = RealmManager.getAssetsDao().getWalletById(walletId);
+        holder.textConfirmations.setText(String.format(holder.itemView.getContext()
+                .getString(R.string.confirmations_of), confirms, wallet.getMultisigWallet().getConfirmations()));
         int counter = calculateStatus(owners, MULTISIG_OWNER_STATUS_CONFIRMED);
         holder.textConfirmCount.setVisibility(counter > 0 ? View.VISIBLE : View.GONE);
         holder.textConfirmCount.setText(String.valueOf(counter));
@@ -286,16 +289,16 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     private void bindRejected(RejectedHolder holder, int position) {
         TransactionHistory transactionHistory = transactionHistoryList.get(position);
         final int txStatus = Math.abs(transactionHistory.getTxStatus());
-        boolean isIncoming = txStatus == TX_IN_BLOCK_INCOMING ||
-                txStatus == TX_CONFIRMED_INCOMING ||
-                txStatus == TX_MEMPOOL_INCOMING;
-
+        Wallet wallet = RealmManager.getAssetsDao().getWalletById(walletId);
+        boolean isIncoming = transactionHistory.getTo().equals(wallet.getActiveAddress().getAddress());
         holder.imageDirection.setImageResource(isIncoming ? R.drawable.ic_receive_gray : R.drawable.ic_send_gray);
         holder.textRejectedDirection.setText(isIncoming ? R.string.rejected_receive : R.string.rejected_send);
-        holder.amount.setText(CryptoFormatUtils.FORMAT_ETH.format(CryptoFormatUtils.weiToEth(transactionHistory.getTxOutAmount())));
-        holder.fiat.setText(getFiatAmount(transactionHistory, new BigInteger(transactionHistory.getTxOutAmount()).doubleValue()));
+        holder.address.setText(isIncoming ? transactionHistory.getFrom() : transactionHistory.getTo());
+        double amount = CryptoFormatUtils.weiToEth(transactionHistory.getTxOutAmount());
+        holder.amount.setText(String.format("%s ETH", CryptoFormatUtils.FORMAT_ETH.format(amount)));
+        holder.fiat.setText(String.format("%s USD", getFiatAmount(transactionHistory, amount)));
 
-        setItemClickListener(holder.itemView, false, isIncoming, position);
+        setItemClickListener(holder.itemView, isIncoming, false, position);
     }
 
     private void bindConfirmed(Holder holder, int position) {

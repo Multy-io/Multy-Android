@@ -14,6 +14,7 @@ import java.util.Objects;
 
 import io.multy.model.entities.wallet.BtcWallet;
 import io.multy.model.entities.wallet.EthWallet;
+import io.multy.model.entities.wallet.MultisigWallet;
 import io.multy.model.entities.wallet.Owner;
 import io.multy.model.entities.wallet.RecentAddress;
 import io.multy.model.entities.wallet.Wallet;
@@ -73,7 +74,24 @@ public class AssetsDao {
 
                 saveSingleWallet(wallet);
             }
+            RealmResults<Wallet> realmWallets = getWallets();
+            if (wallets.size() != realmWallets.size()) {
+                for (Wallet realmWallet : realmWallets) {
+                    if (!isWalletExist(realmWallet, wallets)) {
+                        realmWallet.deleteFromRealm();
+                    }
+                }
+            }
         });
+    }
+
+    private boolean isWalletExist(Wallet wallet, List<Wallet> wallets) {
+        for (Wallet listWallet : wallets) {
+            if (wallet.getId() == listWallet.getId()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void saveSingleWallet(Wallet wallet) {
@@ -148,18 +166,21 @@ public class AssetsDao {
         return realm.where(Wallet.class).equalTo("currencyId", NativeDataHelper.Blockchain.BTC.getValue()).notEqualTo("availableBalance", "0").sort("lastActionTime", Sort.ASCENDING).findAll();
     }
 
-    public RealmResults<Wallet> getWallets(int blockChainId) {
-        return realm.where(Wallet.class).equalTo("currencyId", blockChainId).findAll();
+    public RealmResults<Wallet> getWallets(int blockChainId, boolean includeMultisig) {
+        RealmQuery<Wallet> query = realm.where(Wallet.class).equalTo("currencyId", blockChainId);
+        return includeMultisig ? query.findAll() : query.isNull("multisigWallet").findAll();
     }
 
-    public RealmResults<Wallet> getWallets(int blockChainId, int networkId) {
-        return realm.where(Wallet.class).equalTo("currencyId", blockChainId)
-                .equalTo("networkId", networkId).findAll();
+    public RealmResults<Wallet> getWallets(int blockChainId, int networkId, boolean includeMultisig) {
+        RealmQuery<Wallet> query = realm.where(Wallet.class).equalTo("currencyId", blockChainId)
+                .equalTo("networkId", networkId);
+        return includeMultisig ? query.findAll() : query.isNull("multisigWallet").findAll();
     }
 
     public Wallet getWallet(int blockChainId, int networkId, int walletIndex) {
         return realm.where(Wallet.class).equalTo("currencyId", blockChainId)
-                .equalTo("networkId", networkId).equalTo("index", walletIndex).findFirst();
+                .equalTo("networkId", networkId).equalTo("index", walletIndex)
+                .isNull("multisigWallet").findFirst();
     }
 
     @Nullable
@@ -179,7 +200,17 @@ public class AssetsDao {
 
     public Wallet getMultisigWallet(int blockChainId, int networkId, int walletIndex) {
         return realm.where(Wallet.class).equalTo("currencyId", blockChainId)
-                .equalTo("networkId", networkId).equalTo("index", walletIndex).isNotNull("multisigWallet").findFirst();
+                .equalTo("networkId", networkId).equalTo("index", walletIndex)
+                .isNotNull("multisigWallet").findFirst();
+    }
+
+    public Wallet getMultisigWallet(String inviteCode) {
+        return realm.where(Wallet.class).isNotNull("multisigWallet")
+                .equalTo("multisigWallet.inviteCode", inviteCode).findFirst();
+    }
+
+    public RealmResults<Wallet> getMultisigWallets() {
+        return realm.where(Wallet.class).isNotNull("multisigWallet").findAll();
     }
 
     public void saveBtcAddress(long id, WalletAddress address) {
@@ -200,6 +231,7 @@ public class AssetsDao {
             realm.where(BtcWallet.class).findAll().deleteAllFromRealm();
             realm.where(EthWallet.class).findAll().deleteAllFromRealm();
             realm.where(WalletAddress.class).findAll().deleteAllFromRealm();
+            realm.where(MultisigWallet.class).findAll().deleteAllFromRealm();
         });
     }
 

@@ -8,6 +8,7 @@ package io.multy.ui.fragments.asset;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -43,10 +44,12 @@ import io.multy.viewmodels.WalletViewModel;
 
 import static io.multy.util.Constants.TX_CONFIRMED_INCOMING;
 import static io.multy.util.Constants.TX_CONFIRMED_OUTCOMING;
+import static io.multy.util.Constants.TX_INVOCATION_FAIL;
 import static io.multy.util.Constants.TX_IN_BLOCK_INCOMING;
 import static io.multy.util.Constants.TX_IN_BLOCK_OUTCOMING;
 import static io.multy.util.Constants.TX_MEMPOOL_INCOMING;
 import static io.multy.util.Constants.TX_MEMPOOL_OUTCOMING;
+import static io.multy.util.Constants.TX_REJECTED;
 
 /**
  * Created by anschutz1927@gmail.com on 16.01.18.
@@ -91,6 +94,8 @@ public class EthTransactionInfoFragment extends BaseFragment {
     TextView textConfirmations;
     @BindView(R.id.button_view)
     TextView buttonView;
+    @BindView(R.id.back)
+    ImageView buttonBack;
     @BindView(R.id.progress)
     View progress;
     @BindView(R.id.group_data_views)
@@ -99,6 +104,10 @@ public class EthTransactionInfoFragment extends BaseFragment {
     int colorGreen;
     @BindColor(R.color.blue_sky)
     int colorBlue;
+    @BindColor(R.color.background_main)
+    int colorRejected;
+    @BindColor(R.color.black)
+    int colorBlack;
 
     private WalletViewModel viewModel;
     TransactionHistory transaction;
@@ -148,8 +157,6 @@ public class EthTransactionInfoFragment extends BaseFragment {
             progress.setVisibility(View.GONE);
             groupDataViews.setVisibility(View.VISIBLE);
         }
-        parent.setBackgroundColor(mode == MODE_RECEIVE ? colorGreen : colorBlue);
-        imageOperation.setImageResource(mode == MODE_RECEIVE ? R.drawable.ic_receive_big_new : R.drawable.ic_send_big);
         viewModel.getWalletLive().observe(getActivity(), this::onWallet);
     }
 
@@ -201,6 +208,15 @@ public class EthTransactionInfoFragment extends BaseFragment {
 
     private void setData() {
         final String symbol = mode == MODE_RECEIVE ? "+" : "-";
+        if (transaction.getTxStatus() == TX_INVOCATION_FAIL || transaction.getTxStatus() == TX_REJECTED) {
+            parent.setBackgroundColor(colorRejected);
+            buttonBack.setColorFilter(colorBlack, PorterDuff.Mode.SRC_ATOP);
+            toolbarWalletName.setTextColor(colorBlack);
+            imageOperation.setImageResource(mode == MODE_RECEIVE ? R.drawable.ic_receive_big_icon_waiting : R.drawable.ic_send_big_icon_waiting);
+        } else {
+            parent.setBackgroundColor(mode == MODE_RECEIVE ? colorGreen : colorBlue);
+            imageOperation.setImageResource(mode == MODE_RECEIVE ? R.drawable.ic_receive_big_new : R.drawable.ic_send_big);
+        }
         textValue.setText(symbol);
         textAmount.setText(symbol);
         double exchangeRate = getPreferredExchangeRate(transaction.getStockExchangeRates());

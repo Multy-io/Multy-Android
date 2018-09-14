@@ -152,6 +152,10 @@ public class CryptoFormatUtils {
         return (new BigDecimal(eth).multiply(EthWallet.DIVISOR)).toBigInteger().toString();
     }
 
+    public static BigInteger ethToWei(double eth) {
+        return (new BigDecimal(eth).multiply(EthWallet.DIVISOR)).toBigInteger();
+    }
+
     public static String ethToUsd(double eth, double price) {
         if (eth == 0) {
             return "0.0";

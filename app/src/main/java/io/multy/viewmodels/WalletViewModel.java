@@ -101,6 +101,13 @@ public class WalletViewModel extends BaseViewModel {
         try {
             socketManager = new SocketManager();
             socketManager.listenRatesAndTransactions(rates, transactionUpdate);
+            if (getWalletLive().getValue().isMultisig()) {
+                String eventReceive = SocketManager.getEventReceive(RealmManager.getSettingsDao().getUserId().getUserId());
+                socketManager.listenEvent(eventReceive, args -> {
+                    getMultisigTransactionsHistory(wallet.getValue().getCurrencyId(), wallet.getValue().getNetworkId(),
+                            wallet.getValue().getActiveAddress().getAddress());
+                });
+            }
             socketManager.connect();
         } catch (URISyntaxException e) {
             e.printStackTrace();
@@ -390,7 +397,7 @@ public class WalletViewModel extends BaseViewModel {
             e.onComplete();
         }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnError(t -> isLoading.setValue(false))
+                .doOnError(t -> isLoading.postValue(false))
                 .subscribe(onNext, onError, () -> isLoading.setValue(false));
         addDisposable(disposable);
     }
@@ -403,13 +410,13 @@ public class WalletViewModel extends BaseViewModel {
             e.onComplete();
         }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnError(t -> isLoading.setValue(false))
+                .doOnError(t -> isLoading.postValue(false))
                 .subscribe(onNext, onError, () -> isLoading.setValue(false));
         addDisposable(disposable);
     }
 
     public void sendConfirmTransaction(String walletAddress, String requestId, String estimationConfirm, String mediumGasPrice,
-                                       Consumer<Boolean> onNext, Consumer<Throwable> onError) throws JniException {
+                                       Consumer<Boolean> onNext, Consumer<Throwable> onError) {
         isLoading.setValue(true);
         Wallet linkedWallet = RealmManager.getAssetsDao().getMultisigLinkedWallet(wallet.getValue().getMultisigWallet().getOwners());
         final int currencyId = linkedWallet.getCurrencyId();
@@ -427,7 +434,7 @@ public class WalletViewModel extends BaseViewModel {
                             "0x" + EthSendSummaryFragment.byteArrayToHex(tx), false))).execute();
             e.onNext(response.isSuccessful());
             e.onComplete();
-        }).doOnError(t -> isLoading.setValue(false))
+        }).doOnError(t -> isLoading.postValue(false))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(onNext, onError, () -> isLoading.setValue(false));
