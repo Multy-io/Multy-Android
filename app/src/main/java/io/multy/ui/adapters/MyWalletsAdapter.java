@@ -65,7 +65,7 @@ public class MyWalletsAdapter extends RecyclerView.Adapter<MyWalletsAdapter.Hold
 
     @Override
     public int getItemCount() {
-        return data == null ? 0 : data.size();
+        return data == null || (data instanceof RealmResults && !((RealmResults)data).isValid()) ? 0 : data.size();
     }
 
     public void updateRates(CurrenciesRate rates) {

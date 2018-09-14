@@ -259,4 +259,5 @@
     <string name="net_notification">Storage works in a similar way as RAM. The content like blog/graphics/videos could be stored in Storage. The blockchain does\'t store the content it just stores the log/hash pointing towards the content.  Storage similar to RAM is a reserved capacity which could not be delegated or leased to others.</string>
     <string name="share_multisig_wallet">Share MultiSig wallet</string>
     <string name="your_wallet_identification_code">Your wallet identification code</string>
+    <string name="permissions_are_not_granted">Разрешения не предоставляются!</string>
 </resources>

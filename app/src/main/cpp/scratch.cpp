@@ -91,8 +91,12 @@ void throw_java_exception_str(JNIEnv *env, const char *message) {
     env->ThrowNew(c, message);
 }
 
-void throw_java_exception(JNIEnv *env, const Error &error) {
-    throw_java_exception_str(env, error.message);
+void throw_java_exception(JNIEnv *env, const Error &error, const char* context) {
+    std::string full_message = "Error: " + std::to_string(error.code) + " : \"" + error.message + "\""
+            + " @ " + error.location.file + ":" + std::to_string(error.location.line)
+            + "\n" + (error.backtrace ? error.backtrace : "!NO BACKTRACE!")
+            + "\nContext: " + context;
+    throw_java_exception_str(env, full_message.c_str());
 }
 
 #define HANDLE_ERROR(statement)                                                                     \
@@ -101,7 +105,7 @@ void throw_java_exception(JNIEnv *env, const Error &error) {
         if (error)                                                                                  \
         {                                                                                           \
             __android_log_print(ANDROID_LOG_INFO, "Multy-core error", "In file %s, \n in line: %d, jni : %d ", error->location.file , error->location.line, __LINE__ );    \
-            throw_java_exception(env, *error);                                                      \
+            throw_java_exception(env, *error, #statement);                                                      \
             return (0);                                                                         \
         }                                                                                           \
     } while(false)
@@ -586,7 +590,7 @@ Java_io_multy_util_NativeDataHelper_isValidAddress(JNIEnv *env, jclass type_, js
                              address));
     if (error) {
         env->ReleaseStringUTFChars(address_, address);
-        throw_java_exception(env, *error);
+        throw_java_exception(env, *error, "validate_address");
         return;
     }
 

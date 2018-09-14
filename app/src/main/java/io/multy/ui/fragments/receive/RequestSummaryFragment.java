@@ -17,6 +17,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.view.LayoutInflater;
@@ -108,7 +109,7 @@ public class RequestSummaryFragment extends BaseFragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_request_summary, container, false);
         ButterKnife.bind(this, view);
         viewModel.getAddress().observe(this, address -> {
@@ -167,7 +168,9 @@ public class RequestSummaryFragment extends BaseFragment {
         socketManager.getSocket().on(EVENT_TRANSACTION_UPDATE_BTC, new Emitter.Listener() {
             @Override
             public void call(Object... args) {
-                getActivity().runOnUiThread(() -> verifyTransaction(args[0].toString()));
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> verifyTransaction(args[0].toString()));
+                }
             }
         });
     }

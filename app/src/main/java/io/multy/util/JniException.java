@@ -6,9 +6,12 @@
 
 package io.multy.util;
 
+import com.crashlytics.android.Crashlytics;
+
 public class JniException extends Exception {
 
     public JniException(String message) {
         super(message);
+        Crashlytics.logException(new Throwable(message));
     }
 }

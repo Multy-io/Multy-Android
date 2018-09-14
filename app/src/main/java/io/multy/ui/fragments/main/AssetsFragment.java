@@ -101,10 +101,11 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_assets, container, false);
         ButterKnife.bind(this, view);
         viewModel = ViewModelProviders.of(getActivity()).get(AssetsViewModel.class);
+        setBaseViewModel(viewModel);
         initialize();
         if (!viewModel.isFirstStart()) {
             Analytics.getInstance(getActivity()).logMainLaunch();
@@ -151,10 +152,12 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
 
     @Override
     public void onWalletClick(Wallet wallet) {
-        Analytics.getInstance(getActivity()).logMainWalletOpen(viewModel.getChainId());
-        Intent intent = new Intent(getActivity(), AssetActivity.class);
-        intent.putExtra(Constants.EXTRA_WALLET_ID, wallet.getId());
-        startActivity(intent);
+        if (wallet.isValid()) {
+            Analytics.getInstance(getActivity()).logMainWalletOpen(viewModel.getChainId());
+            Intent intent = new Intent(getActivity(), AssetActivity.class);
+            intent.putExtra(Constants.EXTRA_WALLET_ID, wallet.getId());
+            startActivity(intent);
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

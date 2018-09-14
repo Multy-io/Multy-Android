@@ -64,8 +64,7 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
             long compareTime2 = history2.getBlockTime() < 1 ? history2.getMempoolTime() : history2.getBlockTime();
             return Long.compare(compareTime2, compareTime1);
         });
-        addresses = RealmManager.getAssetsDao().getWalletById(walletId).getBtcWallet().getAddresses();
-        donations = RealmManager.getSettingsDao().getDonationAddresses();
+        initAddresses();
     }
 
     public AssetTransactionsAdapter() {
@@ -110,6 +109,11 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
         } else {
             return TYPE_CONFIRMED;
         }
+    }
+
+    private void initAddresses() {
+        addresses = RealmManager.getAssetsDao().getWalletById(walletId).getBtcWallet().getAddresses();
+        donations = RealmManager.getSettingsDao().getDonationAddresses();
     }
 
     private void setItemClickListener(View view, boolean isIncoming, int position) {
@@ -171,7 +175,7 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
             WalletAddress userChangeAddress = null;
             WalletAddress addressTo = null;
             WalletAddress donationAddress = null;
-            List<String> walletAddresses = getWalletAddresses(addresses);
+            List<String> walletAddresses = getWalletAddresses();
 
             long outSatoshi = getOutComingAmount(transactionHistory, walletAddresses);
 
@@ -292,7 +296,7 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
             List<WalletAddress> outputs = transactionHistory.getOutputs();
             WalletAddress addressTo = null;
             WalletAddress donationAddress = null;
-            List<String> walletAddresses = getWalletAddresses(addresses);
+            List<String> walletAddresses = getWalletAddresses();
 
             long outSatoshi = getOutComingAmount(transactionHistory, walletAddresses);
 
@@ -318,7 +322,10 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
         setItemClickListener(holder.itemView, isIncoming, position);
     }
 
-    private List<String> getWalletAddresses(RealmList<WalletAddress> addresses) {
+    private List<String> getWalletAddresses() {
+        if (addresses != null && !addresses.isValid()) {
+            initAddresses();
+        }
         List<String> result = new ArrayList<>();
         for (WalletAddress address : addresses) {
             result.add(address.getAddress());

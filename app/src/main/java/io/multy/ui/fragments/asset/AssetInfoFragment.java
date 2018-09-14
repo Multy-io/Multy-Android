@@ -52,7 +52,6 @@ import io.multy.ui.activities.AssetRequestActivity;
 import io.multy.ui.activities.AssetSendActivity;
 import io.multy.ui.activities.SeedActivity;
 import io.multy.ui.adapters.AssetTransactionsAdapter;
-import io.multy.ui.adapters.EosTransactionsAdapter;
 import io.multy.ui.adapters.EthTransactionsAdapter;
 import io.multy.ui.fragments.AddressesFragment;
 import io.multy.ui.fragments.BaseFragment;
@@ -120,7 +119,7 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         ButterKnife.bind(this, convertView);
 
         viewModel = ViewModelProviders.of(getActivity()).get(WalletViewModel.class);
-        Wallet wallet = viewModel.getWallet(getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0));
+        Wallet wallet = viewModel.getWallet(getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, -1));
         setBaseViewModel(viewModel);
 
         subscribeWalletUpdates();
@@ -175,7 +174,9 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
 
     private void updateBalanceViews() {
         Wallet wallet = viewModel.getWalletLive().getValue();
-
+        if (wallet == null || !wallet.isValid()) {
+            return;
+        }
         if (wallet.isPending()) {
 //            textBalance.setText(wallet.getAvailableBalanceLabel());
 //            textBalanceFiat.setText(wallet.getAvailableFiatBalanceLabel());
@@ -225,7 +226,7 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
                 if (response.isSuccessful() && response.body().getWallets() != null && response.body().getWallets().size() > 0) {
                     AssetsDao assetsDao = RealmManager.getAssetsDao();
                     assetsDao.saveWallet(response.body().getWallets().get(0));
-                    viewModel.wallet.postValue(assetsDao.getWalletById(walletId));
+                    viewModel.wallet.setValue(assetsDao.getWalletById(walletId));
                 }
 
                 updateBalanceViews();
