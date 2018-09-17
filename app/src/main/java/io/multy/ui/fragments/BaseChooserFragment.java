@@ -9,6 +9,7 @@ package io.multy.ui.fragments;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.Group;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +33,8 @@ public class BaseChooserFragment extends BaseFragment {
     RecyclerView soonRecyclerView;
     @BindView(R.id.text_title)
     TextView textTitle;
+    @BindView(R.id.group_soon)
+    Group groupSoon;
 
     @Nullable
     @Override
@@ -50,6 +53,10 @@ public class BaseChooserFragment extends BaseFragment {
 
     protected RecyclerView getBlockSoonRecyclerView() {
         return soonRecyclerView;
+    }
+
+    protected void setSoonGroupVisibility(int visibility) {
+        groupSoon.setVisibility(visibility);
     }
 
     protected void setTitle(int stringTitleId) {

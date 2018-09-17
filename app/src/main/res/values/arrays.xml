@@ -23,6 +23,27 @@
         <!--<item> </item>-->
     </string-array>
 
+    <string-array name="available_multisig_chain_abbrev">
+        <!--<item>ETH</item>-->
+        <item>ETH Testnet</item>
+    </string-array>
+    <string-array name="available_multisig_chain_name">
+        <!--<item>Ethereum</item>-->
+        <item>Ethereum</item>
+    </string-array>
+    <array name="available_chain_multisig_image_ids">
+        <!--<item>@drawable/chain_eth</item>-->
+        <item>@drawable/ic_chain_eth_test</item>
+    </array>
+    <integer-array name="available_multisig_chain_net_types">
+        <!--<item>1</item>-->
+        <item>4</item>
+    </integer-array>
+    <integer-array name="available_multisig_chain_ids">
+        <!--<item>60</item>-->
+        <item>60</item>
+    </integer-array>
+
     <string-array name="available_chain_abbrev">
         <item>BTC</item>
         <item>BTC Testnet</item>
@@ -54,7 +75,6 @@
         <item>60</item>
     </integer-array>
     <string-array name="soon_chain_abbrev">
-        <item>ETH</item>
         <item>LBTC</item>
         <item>GOLOS</item>
         <item>STEEM</item>
@@ -66,7 +86,6 @@
         <item>ERC20</item>
     </string-array>
     <string-array name="soon_chain_name">
-        <item>Ethereum</item>
         <item>Lightning Bitcoin</item>
         <item>Golos</item>
         <item>Steem</item>
@@ -78,7 +97,6 @@
         <item>ERC20 Tokens</item>
     </string-array>
     <array name="soon_chain_image_ids">
-        <item>@drawable/chain_eth</item>
         <item>@drawable/chain_lbtc</item>
         <item>@drawable/chain_golos</item>
         <item>@drawable/chain_steem</item>
@@ -90,7 +108,6 @@
         <item>@drawable/chain_erc_20</item>
     </array>
     <array name="soon_chain_donate_addresses">
-        <item>10101</item>
         <item>10100</item>
         <item>10102</item>
         <item>10103</item>

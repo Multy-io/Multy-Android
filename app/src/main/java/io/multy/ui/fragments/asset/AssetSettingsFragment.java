@@ -194,6 +194,17 @@ public class AssetSettingsFragment extends BaseFragment {
         Analytics.getInstance(getActivity()).logWalletSettings(AnalyticsConstants.WALLET_SETTINGS_RENAME, viewModel.getChainId());
     }
 
+    @OnClick(R.id.button_resync)
+    void onClickResync(View view) {
+        view.setEnabled(false);
+        view.postDelayed(() -> view.setEnabled(true), 500);
+        viewModel.resyncWallet(() -> {
+            if (getActivity() != null) {
+                getActivity().finish();
+            }
+        });
+    }
+
     @OnClick(R.id.button_delete)
     void onClickDelete(View view) {
         Analytics.getInstance(getActivity()).logWalletSettings(AnalyticsConstants.WALLET_SETTINGS_DELETE, viewModel.getChainId());

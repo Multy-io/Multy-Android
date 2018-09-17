@@ -100,6 +100,10 @@ public class EthTransactionInfoFragment extends BaseFragment {
     View progress;
     @BindView(R.id.group_data_views)
     Group groupDataViews;
+    @BindView(R.id.group_fee)
+    Group groupFee;
+    @BindView(R.id.text_fee)
+    TextView textFee;
     @BindColor(R.color.green_light)
     int colorGreen;
     @BindColor(R.color.blue_sky)
@@ -220,6 +224,13 @@ public class EthTransactionInfoFragment extends BaseFragment {
         textValue.setText(symbol);
         textAmount.setText(symbol);
         double exchangeRate = getPreferredExchangeRate(transaction.getStockExchangeRates());
+        if (mode == MODE_SEND) {
+            groupFee.setVisibility(View.VISIBLE);
+            final double feeAmount =CryptoFormatUtils.weiToEth(String.valueOf(transaction.getGasLimit() * transaction.getGasPrice()));
+            final double feeFiat = feeAmount * exchangeRate;
+            String fee = CryptoFormatUtils.FORMAT_ETH.format(feeAmount) + " ETH / " + CryptoFormatUtils.FORMAT_USD.format(feeFiat) + " USD";
+            textFee.setText(fee);
+        }
         textValue.append(CryptoFormatUtils.FORMAT_ETH.format(CryptoFormatUtils.weiToEth(transaction.getTxOutAmount())));
         textAmount.append(CryptoFormatUtils.ethToUsd(CryptoFormatUtils.weiToEth(transaction.getTxOutAmount()), exchangeRate));
         textAdressesFrom.setText(transaction.getFrom());

@@ -208,8 +208,9 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
                 holder.containerLocked.setVisibility(View.GONE);
             }
 
-            amount = "" + CryptoFormatUtils.satoshiToBtc(outSatoshi);
-            amountFiat = getFiatAmount(transactionHistory, CryptoFormatUtils.satoshiToBtcDouble(outSatoshi));
+            amount = CryptoFormatUtils.satoshiToBtc(outSatoshi + transactionHistory.getTxFee());
+            amountFiat = getFiatAmount(transactionHistory,
+                    CryptoFormatUtils.satoshiToBtcDouble(outSatoshi + transactionHistory.getTxFee()));
             setAddress(addressTo.getAddress(), holder.containerAddresses);
         }
 
@@ -272,7 +273,8 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
 
         holder.imageDirection.setImageResource(isIncoming ? R.drawable.ic_receive_gray : R.drawable.ic_send_gray);
         holder.textRejectedDirection.setText(isIncoming ? R.string.rejected_receive : R.string.rejected_send);
-        holder.amount.setText(CryptoFormatUtils.satoshiToBtc(transactionHistory.getTxOutAmountLong()));
+        holder.amount.setText(CryptoFormatUtils.satoshiToBtc(isIncoming?
+                transactionHistory.getTxOutAmountLong() : transactionHistory.getTxOutAmountLong() + transactionHistory.getTxFee()));
         holder.fiat.setText(getFiatAmount(transactionHistory, CryptoFormatUtils.satoshiToBtcDouble(transactionHistory.getTxOutAmountLong())));
 
         setItemClickListener(holder.itemView, isIncoming, position);
@@ -315,8 +317,9 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
             }
 
             setAddress(addressTo.getAddress(), holder.containerAddresses);
-            holder.amount.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(outSatoshi)));
-            holder.fiat.setText(String.format("%s USD", getFiatAmount(transactionHistory, CryptoFormatUtils.satoshiToBtcDouble(outSatoshi))));
+            long fullAmount = outSatoshi + transactionHistory.getTxFee();
+            holder.amount.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(fullAmount)));
+            holder.fiat.setText(String.format("%s USD", getFiatAmount(transactionHistory, CryptoFormatUtils.satoshiToBtcDouble(fullAmount))));
         }
 
         setItemClickListener(holder.itemView, isIncoming, position);

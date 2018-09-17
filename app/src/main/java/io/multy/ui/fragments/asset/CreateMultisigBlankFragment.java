@@ -82,8 +82,10 @@ public class CreateMultisigBlankFragment extends BaseFragment {
     private int membersCount = 0;
     private int confirmationsCount = 0;
     private Wallet wallet;
-
     private Disposable disposable;
+    private int currencyId = NativeDataHelper.Blockchain.ETH.getValue();
+    private int networkId = NativeDataHelper.NetworkId.RINKEBY.getValue();
+    private String chainName = "Ethereum・ETH Testnet";
 
     public static CreateMultisigBlankFragment getInstance() {
         return new CreateMultisigBlankFragment();
@@ -126,6 +128,10 @@ public class CreateMultisigBlankFragment extends BaseFragment {
                 getActivity().getIntent().putExtra(Constants.EXTRA_WALLET_ID, data.getLongExtra(Constants.EXTRA_WALLET_ID, 0));
                 wallet = RealmManager.getAssetsDao().getWalletById(data.getLongExtra(Constants.EXTRA_WALLET_ID, 0));
                 showWalletInfo();
+            } else if (requestCode == Constants.REQUEST_CODE_SET_CHAIN) {
+                networkId = data.getIntExtra(Constants.CHAIN_NET, 0);
+                currencyId = data.getIntExtra(Constants.CHAIN_ID, 0);
+                chainName = data.getStringExtra(Constants.CHAIN_NAME);
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -135,7 +141,7 @@ public class CreateMultisigBlankFragment extends BaseFragment {
         updateCounts();
         showWalletInfo();
         inputName.postDelayed(() -> inputName.requestFocus(), 300);
-        textChain.setText(R.string.ethereum_eth);
+        textChain.setText(chainName);
         subscribeInput();
     }
 
@@ -250,13 +256,25 @@ public class CreateMultisigBlankFragment extends BaseFragment {
     @OnClick(R.id.button_chain)
     void onClickChain(View view) {
         scheduleButtonDisable(view);
+        if (getView() != null && getView().getParent() != null &&
+                getView().getParent() instanceof ViewGroup && getFragmentManager() != null) {
+            final int containerId = ((ViewGroup) getView().getParent()).getId();
+            ChainChooserFragment fragment = ChainChooserFragment
+                    .getInstance(true);
+            fragment.setTargetFragment(this, Constants.REQUEST_CODE_SET_CHAIN);
+            getFragmentManager().beginTransaction()
+                    .replace(containerId, fragment, ChainChooserFragment.TAG)
+                    .addToBackStack(ChainChooserFragment.TAG)
+                    .commit();
+        }
     }
 
     @OnClick(R.id.button_wallet)
     void onClickWallet(View view) {
         scheduleButtonDisable(view);
         if (getFragmentManager() != null) {
-            WalletChooserDialogFragment dialog = WalletChooserDialogFragment.getInstance(NativeDataHelper.Blockchain.ETH.getValue());
+            WalletChooserDialogFragment dialog = WalletChooserDialogFragment
+                    .getInstance(currencyId, networkId);
             dialog.exceptMultisig(true);
             dialog.setTargetFragment(this, WalletChooserDialogFragment.REQUEST_WALLET_ID);
             dialog.show(getFragmentManager(), WalletChooserDialogFragment.TAG);

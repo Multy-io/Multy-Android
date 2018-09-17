@@ -33,6 +33,7 @@ import io.multy.util.Constants;
 public class ChainChooserFragment extends BaseChooserFragment implements ChainAdapter.OnItemClickListener {
 
     public static final String TAG = ChainChooserFragment.class.getSimpleName();
+    private static final String EXTRA_IS_MULTISIG = "EXTRA_IS_MULTISIG";
 
     @BindArray(R.array.available_chain_image_ids)
     TypedArray availableChainImageIds;
@@ -52,12 +53,30 @@ public class ChainChooserFragment extends BaseChooserFragment implements ChainAd
     String[] disabledChainNames;
     @BindArray(R.array.soon_chain_donate_addresses)
     TypedArray disabledChainDonationCodes;
+    @BindArray(R.array.available_chain_multisig_image_ids)
+    TypedArray availableMultisigChainImageIds;
+    @BindArray(R.array.available_multisig_chain_abbrev)
+    String[] availableMultisigChainAbbrevs;
+    @BindArray(R.array.available_multisig_chain_name)
+    String[] availableMultisigChainNames;
+    @BindArray(R.array.available_multisig_chain_net_types)
+    int[] availableMultisigChainNets;
+    @BindArray(R.array.available_multisig_chain_ids)
+    int[] availableMultisigChainIds;
 
     private int chainNet;
     private String chainCurrency;
 
     public static ChainChooserFragment getInstance() {
         return new ChainChooserFragment();
+    }
+
+    public static ChainChooserFragment getInstance(boolean isMultisig) {
+        ChainChooserFragment fragment = getInstance();
+        Bundle args = new Bundle();
+        args.putBoolean(EXTRA_IS_MULTISIG, isMultisig);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Nullable
@@ -99,10 +118,16 @@ public class ChainChooserFragment extends BaseChooserFragment implements ChainAd
         getBlockAvailableRecyclerView().setAdapter(chainAvailableAdapter);
         getBlockSoonRecyclerView().setLayoutManager(new LinearLayoutManager(activity));
         getBlockSoonRecyclerView().setAdapter(chainSoonAdapter);
-        chainAvailableAdapter.setAvailableChainsData(chainNet, chainCurrency, availableChainImageIds,
-                availableChainAbbrevs, availableChainNames, availableChainNets, availableChainIds);
-        chainSoonAdapter.setSoonChainsData(disabledChainImageIds, disabledChainSoonAbbrevs,
-                disabledChainNames, disabledChainDonationCodes);
+        if (getArguments() != null && getArguments().getBoolean(EXTRA_IS_MULTISIG)) {
+            chainAvailableAdapter.setAvailableChainsData(chainNet, chainCurrency, availableMultisigChainImageIds,
+                    availableMultisigChainAbbrevs, availableMultisigChainNames, availableMultisigChainNets, availableMultisigChainIds);
+            setSoonGroupVisibility(View.GONE);
+        } else {
+            chainAvailableAdapter.setAvailableChainsData(chainNet, chainCurrency, availableChainImageIds,
+                    availableChainAbbrevs, availableChainNames, availableChainNets, availableChainIds);
+            chainSoonAdapter.setSoonChainsData(disabledChainImageIds, disabledChainSoonAbbrevs,
+                    disabledChainNames, disabledChainDonationCodes);
+        }
     }
 
     public void setSelectedChain(String chainCurrency, int chainNet) {

@@ -121,14 +121,26 @@ public class SocketManager {
                 transactionUpdateEntity.postValue(gson.fromJson(String.valueOf(args[0]), TransactionUpdateResponse.class).getEntity());
             } catch (Exception e) {
                 e.printStackTrace();
-            }}).on(EVENT_RECEIVE_DEPRECATED, args -> {
-                try {
-                    Timber.i("UPDATE " + String.valueOf(args[0]));
-                    transactionUpdateEntity.postValue(gson.fromJson(String.valueOf(args[0]), TransactionUpdateResponse.class).getEntity());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
+            }
+        }).on(EVENT_RECEIVE_DEPRECATED, args -> {
+            try {
+                Timber.i("UPDATE " + String.valueOf(args[0]));
+                transactionUpdateEntity.postValue(gson.fromJson(String.valueOf(args[0]), TransactionUpdateResponse.class).getEntity());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void listenTransactionUpdates(Runnable updateCallback) {
+        socket.on(EVENT_RECEIVE, args -> {
+            try {
+                Timber.i("UPDATE " + String.valueOf(args[0]));
+                updateCallback.run();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     public void listenEvent(String event, Emitter.Listener listener) {

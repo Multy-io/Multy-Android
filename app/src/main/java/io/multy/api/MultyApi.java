@@ -221,5 +221,10 @@ public enum MultyApi implements MultyApiInterface {
         public Call<ChainInfoResponse> getChainInfo(int currencyId, int networkId) {
             return api.getChainInfo(currencyId, networkId);
         }
+
+        @Override
+        public Call<ResponseBody> resyncWallet(int currencyId, int networkId, int walletIndex) {
+            return api.resyncWallet(currencyId, networkId, walletIndex);
+        }
     }
 }

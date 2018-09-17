@@ -12,6 +12,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import java.math.BigDecimal;
+
 import io.multy.Multy;
 import io.multy.R;
 import io.multy.api.MultyApi;
@@ -21,6 +23,7 @@ import io.multy.model.entities.Fee;
 import io.multy.model.entities.wallet.EthWallet;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.responses.FeeRateResponse;
+import io.multy.model.responses.WalletsResponse;
 import io.multy.storage.RealmManager;
 import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
@@ -256,6 +259,11 @@ public class AssetSendViewModel extends BaseViewModel {
             byte[] tx;
             if (wallet.getValue().isMultisig()) {
                 Wallet linkedWallet = RealmManager.getAssetsDao().getMultisigLinkedWallet(wallet.getValue().getMultisigWallet().getOwners());
+                double price = EthWallet.getTransactionMultisigPrice(getFee().getAmount(), Long.parseLong(estimation.getValue().getSubmitTransaction()));
+                if (linkedWallet.getAvailableBalanceNumeric().compareTo(new BigDecimal(CryptoFormatUtils.ethToWei(price))) < 0) {
+                    errorMessage.setValue(Multy.getContext().getString(R.string.not_enough_linked_balance));
+                    return;
+                }
                 tx = NativeDataHelper.makeTransactionMultisigETH(RealmManager.getSettingsDao().getSeed().getSeed(), linkedWallet.getIndex(), 0, linkedWallet.getCurrencyId(), linkedWallet.getNetworkId(),
                         linkedWallet.getActiveAddress().getAmountString(), getWallet().getActiveAddress().getAddress(), signAmount, getReceiverAddress().getValue(), estimation.getValue().getSubmitTransaction(), String.valueOf(fee.getValue().getAmount()), linkedWallet.getEthWallet().getNonce());
             } else {
@@ -289,5 +297,28 @@ public class AssetSendViewModel extends BaseViewModel {
 
     public int getChainId() {
         return 1;
+    }
+
+    public void updateWallets() {
+        isLoading.postValue(true);
+        MultyApi.INSTANCE.getWalletsVerbose().enqueue(new Callback<WalletsResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<WalletsResponse> call, @NonNull Response<WalletsResponse> response) {
+                isLoading.setValue(false);
+                WalletsResponse body = response.body();
+                if (response.isSuccessful() && body != null) {
+                    final long walletId = wallet.getValue().getId();
+                    RealmManager.getAssetsDao().saveWallets(body.getWallets());
+                    Wallet newWallet = RealmManager.getAssetsDao().getWalletById(walletId);
+                    setWallet(newWallet);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<WalletsResponse> call, @NonNull Throwable t) {
+                t.printStackTrace();
+                isLoading.setValue(false);
+            }
+        });
     }
 }

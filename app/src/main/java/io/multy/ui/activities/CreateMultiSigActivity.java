@@ -87,6 +87,12 @@ public class CreateMultiSigActivity extends BaseActivity {
     Drawable readyDrawable;
     @BindColor(R.color.green_lightest)
     int colorGreen;
+    @BindColor(R.color.colorPrimaryDark)
+    int colorBlue;
+    @BindColor(R.color.green_white)
+    int textColorReady;
+    @BindColor(R.color.blue_white)
+    int textColorWaiting;
 
     private OwnersAdapter ownersAdapter;
     private CreateMultisigViewModel viewModel;
@@ -174,6 +180,8 @@ public class CreateMultiSigActivity extends BaseActivity {
         textTitle.setText(multisigWallet.getWalletName());
         textCount.setText(String.format(Locale.ENGLISH, "%d / %d", multisigWallet.getMultisigWallet().getOwners().size(),
                 multisigWallet.getMultisigWallet().getOwnersCount()));
+        circularProgressView.setMax(multisigWallet.getMultisigWallet().getOwnersCount());
+        circularProgressView.setProgress(multisigWallet.getMultisigWallet().getOwners().size(), true);
 
         StringBuilder stringBuilder = new StringBuilder();
         ArrayList<Owner> owners = new ArrayList<>(multisigWallet.getMultisigWallet().getOwnersCount());
@@ -200,6 +208,7 @@ public class CreateMultiSigActivity extends BaseActivity {
         }
         if (multisigWallet.getMultisigWallet().getOwners().size() == multisigWallet.getMultisigWallet().getOwnersCount()) {
             textStatus.setText(R.string.ready_to_start);
+            textStatus.setTextColor(textColorReady);
             textStatus.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_ready_to_start, 0, 0, 0);
             toolbar.setBackground(new ColorDrawable(colorGreen));
             header.setBackgroundColor(colorGreen);
@@ -209,7 +218,7 @@ public class CreateMultiSigActivity extends BaseActivity {
                     public void onResponse(@NonNull Call<Estimation> call, @NonNull Response<Estimation> response) {
                         final String deployWei = response.body().getPriceOfCreation();
                         final String deployEth = CryptoFormatUtils.weiToEthLabel(deployWei);
-                        textAction.setText("START FOR " + deployEth);
+                        textAction.setText(getString(R.string.start_for) + deployEth);
                         textAction.setTag(deployWei);
                     }
 
@@ -222,7 +231,9 @@ public class CreateMultiSigActivity extends BaseActivity {
             }
         } else {
             textStatus.setText(R.string.wating_members);
+            textStatus.setTextColor(textColorWaiting);
             textStatus.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_pending_small_clock, 0, 0, 0);
+            toolbar.setBackgroundColor(colorBlue);
             header.setBackground(ContextCompat.getDrawable(this, R.drawable.background_gradient_blue));
             imageAction.setVisibility(View.VISIBLE);
         }

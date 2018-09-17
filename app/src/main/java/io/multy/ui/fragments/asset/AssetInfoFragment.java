@@ -131,7 +131,6 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         showWalletInfo(wallet);
         setAddressesVisibility(wallet.getCurrencyId());
         initSwipeRefresh();
-        requestTransactions(wallet.getCurrencyId(), wallet.getNetworkId(), wallet.getIndex());
         setButtonWarnVisibility();
 //        setTransactionsState();
 
@@ -338,6 +337,8 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     @Override
     public void onStart() {
         super.onStart();
+        Wallet wallet = viewModel.getWalletLive().getValue();
+        requestTransactions(wallet.getCurrencyId(), wallet.getNetworkId(), wallet.getIndex());
         EventBus.getDefault().register(this);
     }
 
@@ -379,12 +380,20 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     @OnClick(R.id.button_send)
     void onClickSend() {
         Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_SEND, viewModel.getChainId());
-        if (viewModel.getWalletLive().getValue() != null && viewModel.getWalletLive().getValue().getAvailableBalanceNumeric().compareTo(BigDecimal.ZERO) <= 0) {
+        Wallet wallet = viewModel.getWalletLive().getValue();
+        if (wallet != null && wallet.getAvailableBalanceNumeric().compareTo(BigDecimal.ZERO) <= 0) {
             Toast.makeText(getActivity(), R.string.no_balance, Toast.LENGTH_SHORT).show();
             return;
         }
-
-        if (viewModel.getWalletLive().getValue().isPending()) {
+        if (wallet.isMultisig()) {
+            Wallet linked = RealmManager.getAssetsDao().getMultisigLinkedWallet(wallet.getMultisigWallet().getOwners());
+            if (linked == null || linked.getAvailableBalanceNumeric()
+                    .compareTo(new BigDecimal(CryptoFormatUtils.ethToWei(String.valueOf("0.0001")))) <= 0) {
+                viewModel.errorMessage.setValue(getString(R.string.not_enough_linked_balance));
+                return;
+            }
+        }
+        if (wallet.isPending()) {
             return;
         }
 

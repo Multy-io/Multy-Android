@@ -27,6 +27,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.math.BigInteger;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
@@ -104,8 +105,7 @@ public class WalletViewModel extends BaseViewModel {
             if (getWalletLive().getValue().isMultisig()) {
                 String eventReceive = SocketManager.getEventReceive(RealmManager.getSettingsDao().getUserId().getUserId());
                 socketManager.listenEvent(eventReceive, args -> {
-                    getMultisigTransactionsHistory(wallet.getValue().getCurrencyId(), wallet.getValue().getNetworkId(),
-                            wallet.getValue().getActiveAddress().getAddress());
+                    transactionUpdate.postValue(new TransactionUpdateEntity());
                 });
             }
             socketManager.connect();
@@ -224,7 +224,7 @@ public class WalletViewModel extends BaseViewModel {
     }
 
     public MutableLiveData<ArrayList<TransactionHistory>> getMultisigTransactionsHistory(int currencyId, int networkId, String address) {
-        isLoading.setValue(true);
+        isLoading.postValue(true);
         MultyApi.INSTANCE.getMultisigTransactionHistory(currencyId, networkId, address, Constants.ASSET_TYPE_ADDRESS_MULTISIG)
                 .enqueue(new Callback<TransactionHistoryResponse>() {
             @Override
@@ -417,6 +417,12 @@ public class WalletViewModel extends BaseViewModel {
 
     public void sendConfirmTransaction(String walletAddress, String requestId, String estimationConfirm, String mediumGasPrice,
                                        Consumer<Boolean> onNext, Consumer<Throwable> onError) {
+        Wallet linked = RealmManager.getAssetsDao().getMultisigLinkedWallet(getWalletLive().getValue().getMultisigWallet().getOwners());
+        String price = String.valueOf(Long.parseLong(estimationConfirm) * Long.parseLong(mediumGasPrice));
+        if (new BigInteger(linked.getAvailableBalance()).compareTo(new BigInteger(price)) < 0) {
+            errorMessage.setValue(Multy.getContext().getString(R.string.not_enough_linked_balance));
+            return;
+        }
         isLoading.setValue(true);
         Wallet linkedWallet = RealmManager.getAssetsDao().getMultisigLinkedWallet(wallet.getValue().getMultisigWallet().getOwners());
         final int currencyId = linkedWallet.getCurrencyId();
@@ -458,6 +464,7 @@ public class WalletViewModel extends BaseViewModel {
             payload.userId = RealmManager.getSettingsDao().getUserId().getUserId();
             payload.address = RealmManager.getAssetsDao()
                     .getMultisigLinkedWallet(wallet.getValue().getMultisigWallet().getOwners()).getActiveAddress().getAddress();
+            payload.inviteCode = wallet.getValue().getMultisigWallet().getInviteCode();
             payload.walletIndex = walletIndex;
             payload.currencyId = currencyId;
             payload.networkId = networkId;
@@ -484,6 +491,33 @@ public class WalletViewModel extends BaseViewModel {
         } catch (URISyntaxException e) {
             e.printStackTrace();
             isLoading.setValue(false);
+        }
+    }
+
+    public void resyncWallet(Runnable successCallback) {
+        Wallet wallet = getWalletLive().getValue();
+        if (wallet != null && wallet.isValid()) {
+            isLoading.setValue(true);
+            MultyApi.INSTANCE.resyncWallet(wallet.getCurrencyId(), wallet.getNetworkId(), wallet.getIndex())
+                    .enqueue(new Callback<ResponseBody>() {
+                        @Override
+                        public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                            isLoading.setValue(false);
+                            if (response.isSuccessful()) {
+                                successCallback.run();
+                            } else {
+                                errorMessage.setValue(Multy.getContext().getString(R.string.something_went_wrong));
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                            errorMessage.setValue(Multy.getContext().getString(R.string.something_went_wrong));
+                            isLoading.setValue(false);
+                        }
+                    });
+        } else {
+            errorMessage.setValue("Wallet is need to refresh");
         }
     }
 }

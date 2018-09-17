@@ -27,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.math.BigInteger;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -36,6 +37,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTouch;
+import io.multy.Multy;
 import io.multy.R;
 import io.multy.api.socket.SocketManager;
 import io.multy.model.entities.TransactionHistory;
@@ -111,6 +113,10 @@ public class MultisigTransactionInfoFragment extends BaseFragment {
     TextView buttonConfirm;
     @BindView(R.id.group_data_views)
     Group groupDataViews;
+    @BindView(R.id.group_fee)
+    Group groupFee;
+    @BindView(R.id.text_fee)
+    TextView textFee;
     @BindView(R.id.group_view)
     Group groupViewButton;
     @BindColor(R.color.green_light)
@@ -219,6 +225,13 @@ public class MultisigTransactionInfoFragment extends BaseFragment {
         boolean isIncoming = transactionHistory.getTxStatus() == Constants.TX_MEMPOOL_INCOMING;
         textValue.setText(isIncoming ? "+ " : "- ");
         textAmount.setText(isIncoming ? "+ " : "- ");
+        if (!isIncoming) {
+            groupFee.setVisibility(View.VISIBLE);
+            final double feeAmount =CryptoFormatUtils.weiToEth(String.valueOf(transactionHistory.getGasLimit() * transactionHistory.getGasPrice()));
+            final double feeFiat = feeAmount * getPreferredExchangeRate(transactionHistory.getStockExchangeRates());
+            String fee = CryptoFormatUtils.FORMAT_ETH.format(feeAmount) + " ETH / " + CryptoFormatUtils.FORMAT_USD.format(feeFiat) + " USD";
+            textFee.setText(fee);
+        }
         textStatus.setText(transactionHistory.getMultisigInfo().isConfirmed() ?
                 getTransactionDate(transactionHistory) : getString(R.string.waiting_confirmations));
         setVisibilityConfirmButtons(View.GONE);
@@ -229,6 +242,7 @@ public class MultisigTransactionInfoFragment extends BaseFragment {
             textConfirmations.setText(String.format(Locale.ENGLISH, "%d %s", transactionHistory.getConfirmations(),
                     getString(transactionHistory.getConfirmations() > 1 ?  R.string.confirmations : R.string.confirmation)));
         } else {
+            textConfirmations.setText("");
             buttonView.setVisibility(View.GONE);
             imageOperation.setImageResource(isIncoming ? R.drawable.ic_receive_big_icon_waiting : R.drawable.ic_send_big_icon_waiting);
             if (!isOwnerHasStatus(transactionHistory.getMultisigInfo().getOwners(),
@@ -267,7 +281,8 @@ public class MultisigTransactionInfoFragment extends BaseFragment {
     }
 
     private void checkOwnerViewStatus(ArrayList<TransactionOwner> owners) {
-        if (!isOwnerHasStatus(owners, Constants.MULTISIG_OWNER_STATUS_SEEN)) {
+        if (!isOwnerHasStatus(owners, Constants.MULTISIG_OWNER_STATUS_SEEN,
+                Constants.MULTISIG_OWNER_STATUS_DECLINED, Constants.MULTISIG_OWNER_STATUS_CONFIRMED)) {
             viewModel.sendViewTransaction(currencyId, networkId, walletIndex, transaction.getTxHash(), getLifecycle());
         }
     }
@@ -393,7 +408,20 @@ public class MultisigTransactionInfoFragment extends BaseFragment {
         view.setTranslationX(0f);
     }
 
+    private boolean presender(int confirmations, ArrayList<TransactionOwner> owners) {
+        int confirmedCount = getConfirmCount(owners);
+        return confirmations - 1 <= confirmedCount;
+    }
+
     private void onAcceptTransaction() {
+        if (presender(viewModel.getWalletLive().getValue().getMultisigWallet().getConfirmations(),
+                transaction.getMultisigInfo().getOwners())) {
+            if (new BigInteger(transaction.getTxOutAmount())
+                    .compareTo(new BigInteger(viewModel.getWalletLive().getValue().getAvailableBalance())) > 0) {
+                viewModel.errorMessage.setValue(Multy.getContext().getString(R.string.no_balance));
+                return;
+            }
+        }
         viewModel.requestEstimation(walletAddress, estimationConfirm -> {
             viewModel.requestFeeRates(currencyId, networkId, mediumGasPrice -> {
                 viewModel.sendConfirmTransaction(walletAddress, transaction.getMultisigInfo().getRequestId(),

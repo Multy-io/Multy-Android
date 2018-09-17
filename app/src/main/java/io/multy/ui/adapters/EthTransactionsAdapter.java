@@ -45,7 +45,6 @@ import static io.multy.ui.fragments.asset.EthTransactionInfoFragment.MODE_RECEIV
 import static io.multy.ui.fragments.asset.EthTransactionInfoFragment.MODE_SEND;
 import static io.multy.util.Constants.MULTISIG_OWNER_STATUS_CONFIRMED;
 import static io.multy.util.Constants.MULTISIG_OWNER_STATUS_DECLINED;
-import static io.multy.util.Constants.MULTISIG_OWNER_STATUS_SEEN;
 import static io.multy.util.Constants.TX_CONFIRMED_INCOMING;
 import static io.multy.util.Constants.TX_INVOCATION_FAIL;
 import static io.multy.util.Constants.TX_IN_BLOCK_INCOMING;
@@ -178,6 +177,32 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         return counter;
     }
 
+    private boolean isOwnersVoted(ArrayList<TransactionOwner> owners) {
+        for (TransactionOwner owner : owners) {
+            if (owner.getConfirmationStatus() <= Constants.MULTISIG_OWNER_STATUS_SEEN) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private int getOwnersVoteStatus(int confirmations, ArrayList<TransactionOwner> owners) {
+        int submitCount = 0;
+        int rejectCount = 0;
+        for (TransactionOwner owner : owners) {
+            switch (owner.getConfirmationStatus()) {
+                case Constants.MULTISIG_OWNER_STATUS_CONFIRMED:
+                    submitCount++;
+                    break;
+                case Constants.MULTISIG_OWNER_STATUS_DECLINED:
+                    rejectCount++;
+            }
+        }
+        return submitCount == confirmations ?
+                Constants.MULTISIG_OWNER_STATUS_CONFIRMED : submitCount + rejectCount == owners.size() ?
+                Constants.MULTISIG_OWNER_STATUS_DECLINED : Constants.MULTISIG_OWNER_STATUS_WAITING;
+    }
+
     private boolean isVotedByMe(ArrayList<TransactionOwner> owners) {
         for (TransactionOwner owner : owners) {
             if (RealmManager.getAssetsDao().getWalletAddress(owner.getAddress()).size() > 0) {
@@ -188,15 +213,33 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         return false;
     }
 
+    private int calculateViewCount(ArrayList<TransactionOwner> owners) {
+        int result = 0;
+        for (TransactionOwner owner : owners) {
+            if (owner.getSeenTime() != 0) {
+                result++;
+            }
+        }
+        return result;
+    }
+
     private void bindBlocked(BlockedHolder holder, int position) {
         TransactionHistory transactionHistory = transactionHistoryList.get(position);
         final boolean isIncoming = transactionHistory.getTxStatus() == TX_MEMPOOL_INCOMING;
-        final String amount = CryptoFormatUtils.FORMAT_ETH.format(CryptoFormatUtils.weiToEth(transactionHistory.getTxOutAmount())); //TODO improve
-        final String amountFiat = getFiatAmount(transactionHistory, CryptoFormatUtils.weiToEth(transactionHistory.getTxOutAmount()));
+        final String amount;
+        final String amountFiat;
         final String address = isIncoming ? transactionHistory.getFrom() : transactionHistory.getTo();
+        if (isIncoming) {
+            amount = CryptoFormatUtils.FORMAT_ETH.format(CryptoFormatUtils.weiToEth(transactionHistory.getTxOutAmount()));
+            amountFiat = getFiatAmount(transactionHistory, CryptoFormatUtils.weiToEth(transactionHistory.getTxOutAmount()));
+        } else {
+            final String price = String.valueOf(transactionHistory.getGasLimit() * transactionHistory.getGasPrice());
+            final String fullAmount = new BigInteger(transactionHistory.getTxOutAmount()).add(new BigInteger(price)).toString();
+            amount = CryptoFormatUtils.FORMAT_ETH.format(CryptoFormatUtils.weiToEth(fullAmount));
+            amountFiat = getFiatAmount(transactionHistory, CryptoFormatUtils.weiToEth(fullAmount));
+        }
 
         holder.containerAddresses.removeAllViews();
-
         setAddress(address, holder.containerAddresses);
         holder.amount.setText(String.format("%s ETH", amount));
         holder.fiat.setText(String.format("%s USD", amountFiat));
@@ -222,23 +265,41 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
     private void bindMultisig(MultisigHolder holder, int position) {
         TransactionHistory entity = transactionHistoryList.get(position);
+        Wallet wallet = RealmManager.getAssetsDao().getWalletById(walletId);
         final boolean isIncoming = entity.getTxStatus() == TX_MEMPOOL_INCOMING;
-        final String amount = CryptoFormatUtils.FORMAT_ETH.format(CryptoFormatUtils.weiToEth(entity.getTxOutAmount()));
-        final String amountFiat = getFiatAmount(entity, CryptoFormatUtils.weiToEth(entity.getTxOutAmount()));
-        int operationImage = entity.getMultisigInfo().isConfirmed() ?
-                isIncoming ? R.drawable.ic_receive : R.drawable.ic_send :
-                entity.getMultisigInfo().isInvocationStatus() ?
-                        R.drawable.ic_arrow_declined : R.drawable.ic_arrow_waiting;
+        final String amount;
+        final String amountFiat;
+        if (isIncoming) {
+            amount = CryptoFormatUtils.FORMAT_ETH.format(CryptoFormatUtils.weiToEth(entity.getTxOutAmount()));
+            amountFiat = getFiatAmount(entity, CryptoFormatUtils.weiToEth(entity.getTxOutAmount()));
+        } else {
+            final String price = String.valueOf(entity.getGasLimit() * entity.getGasPrice());
+            final String fullAmount = new BigInteger(entity.getTxOutAmount()).add(new BigInteger(price)).toString();
+            amount = CryptoFormatUtils.FORMAT_ETH.format(CryptoFormatUtils.weiToEth(fullAmount));
+            amountFiat = getFiatAmount(entity, CryptoFormatUtils.weiToEth(fullAmount));
+        }
+        ArrayList<TransactionOwner> owners = entity.getMultisigInfo().getOwners();
+        final int ownersStatus = getOwnersVoteStatus(wallet.getMultisigWallet().getConfirmations(), owners);
+        int operationImage = entity.getMultisigInfo().isConfirmed() ? isIncoming ? R.drawable.ic_receive : R.drawable.ic_send :
+                ownersStatus == Constants.MULTISIG_OWNER_STATUS_DECLINED ? R.drawable.ic_arrow_declined : R.drawable.ic_arrow_waiting;
         holder.imageOperation.setImageResource(operationImage);
         holder.textAddress.setText(isIncoming ? entity.getFrom() : entity.getTo());
         holder.textAmount.setText(String.format("%s ETH", amount));
         holder.textFiat.setText(String.format("%s USD", amountFiat));
-        ArrayList<TransactionOwner> owners = entity.getMultisigInfo().getOwners();
         String dateText;
-        if (entity.getMultisigInfo().isInvocationStatus()) {
+        if (entity.getMultisigInfo().isConfirmed()) {
             dateText = DateHelper.DATE_FORMAT_HISTORY.format(entity.getBlockTime() * 1000);
             holder.textDate.setText(dateText);
-        } else if (isVotedByMe(owners)) {
+            holder.textDate.setTextColor(ContextCompat.getColor(holder.textDate.getContext(), R.color.blue_light));
+        } else if (ownersStatus == Constants.MULTISIG_OWNER_STATUS_CONFIRMED) {
+            dateText = holder.textDate.getContext().getString(R.string.pending_continue);
+            holder.textDate.setText(dateText);
+            holder.textDate.setTextColor(ContextCompat.getColor(holder.textDate.getContext(), R.color.blue_light));
+        } else if (ownersStatus == Constants.MULTISIG_OWNER_STATUS_DECLINED) {
+            dateText = holder.textDate.getContext().getString(R.string.rejected);
+            holder.textDate.setText(dateText);
+            holder.textDate.setTextColor(ContextCompat.getColor(holder.textDate.getContext(), R.color.blue_light));
+        } else if (!isVotedByMe(owners)) {
             dateText = holder.textDate.getContext().getString(R.string.waiting_your_confirmation);
             holder.textDate.setText(dateText);
             holder.textDate.setTextColor(ContextCompat.getColor(holder.textDate.getContext(), R.color.red_warn));
@@ -248,7 +309,6 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             holder.textDate.setTextColor(ContextCompat.getColor(holder.textDate.getContext(), R.color.black_light));
         }
         int confirms = calculateStatus(owners, MULTISIG_OWNER_STATUS_CONFIRMED);
-        Wallet wallet = RealmManager.getAssetsDao().getWalletById(walletId);
         holder.textConfirmations.setText(String.format(holder.itemView.getContext()
                 .getString(R.string.confirmations_of), confirms, wallet.getMultisigWallet().getConfirmations()));
         int counter = calculateStatus(owners, MULTISIG_OWNER_STATUS_CONFIRMED);
@@ -257,7 +317,7 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         counter = calculateStatus(owners, MULTISIG_OWNER_STATUS_DECLINED);
         holder.textRejectCount.setVisibility(counter > 0 ? View.VISIBLE : View.GONE);
         holder.textRejectCount.setText(String.valueOf(counter));
-        counter = calculateStatus(owners, MULTISIG_OWNER_STATUS_SEEN);
+        counter = calculateViewCount(owners);
         holder.textViewCount.setText(String.valueOf(counter));
         setItemClickListener(holder.itemView, isIncoming, true, position);
     }
@@ -291,10 +351,17 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         final int txStatus = Math.abs(transactionHistory.getTxStatus());
         Wallet wallet = RealmManager.getAssetsDao().getWalletById(walletId);
         boolean isIncoming = transactionHistory.getTo().equals(wallet.getActiveAddress().getAddress());
+        final double amount;
+        if (isIncoming) {
+            amount = CryptoFormatUtils.weiToEth(transactionHistory.getTxOutAmount());
+        } else {
+            final String price = String.valueOf(transactionHistory.getGasLimit() * transactionHistory.getGasPrice());
+            final String fullAmount = new BigInteger(transactionHistory.getTxOutAmount()).add(new BigInteger(price)).toString();
+            amount = CryptoFormatUtils.weiToEth(fullAmount);
+        }
         holder.imageDirection.setImageResource(isIncoming ? R.drawable.ic_receive_gray : R.drawable.ic_send_gray);
         holder.textRejectedDirection.setText(isIncoming ? R.string.rejected_receive : R.string.rejected_send);
         holder.address.setText(isIncoming ? transactionHistory.getFrom() : transactionHistory.getTo());
-        double amount = CryptoFormatUtils.weiToEth(transactionHistory.getTxOutAmount());
         holder.amount.setText(String.format("%s ETH", CryptoFormatUtils.FORMAT_ETH.format(amount)));
         holder.fiat.setText(String.format("%s USD", getFiatAmount(transactionHistory, amount)));
 
@@ -309,12 +376,18 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         holder.operationImage.setImageResource(isIncoming ? R.drawable.ic_receive : R.drawable.ic_send);
         holder.date.setText(DateHelper.DATE_FORMAT_HISTORY.format(transactionHistory.getBlockTime() * 1000));
         holder.containerAddresses.removeAllViews();
-
-
-        final String amount = CryptoFormatUtils.FORMAT_ETH.format(CryptoFormatUtils.weiToEth(transactionHistory.getTxOutAmount())); //TODO improve
-        final String amountFiat = getFiatAmount(transactionHistory, CryptoFormatUtils.weiToEth(transactionHistory.getTxOutAmount()));
+        final String amount;
+        final String amountFiat;
         final String address;
-
+        if (isIncoming) {
+            amount = CryptoFormatUtils.FORMAT_ETH.format(CryptoFormatUtils.weiToEth(transactionHistory.getTxOutAmount())); //TODO improve
+            amountFiat = getFiatAmount(transactionHistory, CryptoFormatUtils.weiToEth(transactionHistory.getTxOutAmount()));
+        } else {
+            final String price = String.valueOf(transactionHistory.getGasLimit() * transactionHistory.getGasPrice());
+            final String fullAmount = new BigInteger(transactionHistory.getTxOutAmount()).add(new BigInteger(price)).toString();
+            amount = CryptoFormatUtils.FORMAT_ETH.format(CryptoFormatUtils.weiToEth(fullAmount)); //TODO improve
+            amountFiat = getFiatAmount(transactionHistory, CryptoFormatUtils.weiToEth(fullAmount));
+        }
         holder.containerAddresses.removeAllViews();
 
         if (isIncoming) {

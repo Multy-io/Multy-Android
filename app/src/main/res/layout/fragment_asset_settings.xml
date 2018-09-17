@@ -271,12 +271,57 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/divider_key" />
 
+            <View
+                android:id="@+id/divider_notice_key"
+                style="@style/Divider"
+                android:layout_marginTop="17dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/notice_key" />
+
+            <TextView
+                android:id="@+id/button_resync"
+                android:layout_width="0dp"
+                android:layout_height="64dp"
+                android:background="@drawable/selector_white"
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="@font/montserrat"
+                android:gravity="center"
+                android:lineSpacingExtra="6sp"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:text="@string/recync_wallet"
+                android:textColor="@color/text_main_dark"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/divider_notice_key" />
+
+            <View
+                android:id="@+id/divider_resync"
+                style="@style/Divider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/button_resync" />
+
+            <TextView
+                android:id="@+id/notice_resync"
+                style="@style/NotificationSettings"
+                android:letterSpacing="-0.02"
+                android:lineSpacingExtra="5sp"
+                android:text="@string/about_resync"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/divider_resync" />
+
             <ViewStub
                 android:id="@+id/container_params"
                 android:layout_width="0dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/notice_key"
+                app:layout_constraintTop_toBottomOf="@id/notice_resync"
                 android:layout_height="wrap_content" />
 
             <View

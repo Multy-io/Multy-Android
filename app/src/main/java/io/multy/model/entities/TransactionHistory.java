@@ -48,6 +48,10 @@ public class TransactionHistory {
     private boolean isInternal;
     @SerializedName("multisig")
     private MultisigInfo multisigInfo;
+    @SerializedName("gasprice")
+    private long gasPrice;
+    @SerializedName("gaslimit")
+    private long gasLimit;
 
     @SerializedName("stockexchangerate")
     ArrayList<StockExchangeRate> stockExchangeRates;
@@ -138,6 +142,14 @@ public class TransactionHistory {
 
     public boolean isInternal() {
         return isInternal;
+    }
+
+    public long getGasPrice() {
+        return gasPrice;
+    }
+
+    public long getGasLimit() {
+        return gasLimit;
     }
 
     public class StockExchangeRate {

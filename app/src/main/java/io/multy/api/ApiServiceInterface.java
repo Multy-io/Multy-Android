@@ -114,4 +114,7 @@ public interface ApiServiceInterface {
 
     @GET("/api/v1/chain/{currencyid}/{networkid}/info")
     Call<ChainInfoResponse> getChainInfo(@Path("currencyid") int currencyId, @Path("networkid") int networkId);
+
+    @POST("/api/v1/resync/wallet/{currencyId}/{networkId}/{walletIndex}")
+    Call<ResponseBody> resyncWallet(@Path("currencyId") int currencyId, @Path("networkId") int networkId, @Path("walletIndex") int walletIndex);
 }

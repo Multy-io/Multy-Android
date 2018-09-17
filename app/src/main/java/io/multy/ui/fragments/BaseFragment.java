@@ -163,10 +163,12 @@ public class BaseFragment extends Fragment implements ConnectionReceiver.Connect
     }
 
     public void showKeyboard(Activity activity, View view) {
-        InputMethodManager inputMethodManager = (InputMethodManager)
-                activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (inputMethodManager != null) {
-            inputMethodManager.showSoftInput(view, 0);
+        if (activity != null) {
+            InputMethodManager inputMethodManager = (InputMethodManager)
+                    activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (inputMethodManager != null) {
+                inputMethodManager.showSoftInput(view, 0);
+            }
         }
     }
 }

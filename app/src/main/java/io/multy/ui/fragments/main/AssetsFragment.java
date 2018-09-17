@@ -129,7 +129,6 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
     public void onResume() {
         super.onResume();
         checkViewsVisibility();
-        checkMultisigWallets();
     }
 
     @Override
@@ -163,10 +162,11 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
 
     @Override
     public void onWalletClick(Wallet wallet) {
-        if (wallet.isValid()) {
+        if (wallet.isValid() && !wallet.isSyncing()) {
             Analytics.getInstance(getActivity()).logMainWalletOpen(viewModel.getChainId());
             if (wallet.isMultisig() &&
-                    (wallet.getMultisigWallet().getDeployStatus() == MultisigWallet.Status.CREATED || wallet.getMultisigWallet().getDeployStatus() == MultisigWallet.Status.READY)) {
+                    (wallet.getMultisigWallet().getDeployStatus() == MultisigWallet.Status.CREATED ||
+                            wallet.getMultisigWallet().getDeployStatus() == MultisigWallet.Status.READY)) {
                 //pre deploy period = waiting for members screen, pre choose
                 Intent intent = new Intent(getActivity(), CreateMultiSigActivity.class);
                 intent.putExtra(Constants.EXTRA_WALLET_ID, wallet.getId());
@@ -250,6 +250,7 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
         } else {
             initList();
             updateWallets();
+            checkMultisigWallets();
             recyclerView.setVisibility(View.VISIBLE);
             buttonWarn.setVisibility(Prefs.getBoolean(Constants.PREF_BACKUP_SEED) ? View.GONE : View.VISIBLE);
             groupWalletsList.setVisibility(View.VISIBLE);

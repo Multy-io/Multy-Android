@@ -4,8 +4,8 @@
   ~ See LICENSE for details
   -->
 
-<vector android:height="24dp" android:viewportHeight="10"
-    android:viewportWidth="10" android:width="24dp" xmlns:android="http://schemas.android.com/apk/res/android">
+<vector android:height="10dp" android:viewportHeight="10"
+    android:viewportWidth="10" android:width="10dp" xmlns:android="http://schemas.android.com/apk/res/android">
     <path android:fillColor="#97CEFF" android:fillType="nonZero" android:pathData="M5,9a4,4 0,1 0,0 -8,4 4,0 0,0 0,8zM5,10A5,5 0,1 1,5 0a5,5 0,0 1,0 10z"/>
     <path android:fillColor="#97CEFF" android:fillType="evenOdd" android:pathData="M5.5,4.5h1v1h-2v-3h1v2z"/>
 </vector>

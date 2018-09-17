@@ -105,6 +105,7 @@
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
+                    android:background="@color/colorPrimaryDark"
                     android:contentInsetEnd="0dp"
                     android:contentInsetLeft="0dp"
                     android:contentInsetRight="0dp"
@@ -117,8 +118,7 @@
 
                     <android.support.constraint.ConstraintLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@color/colorPrimaryDark">
+                        android:layout_height="match_parent">
 
                         <ImageView
                             android:id="@+id/button_back"

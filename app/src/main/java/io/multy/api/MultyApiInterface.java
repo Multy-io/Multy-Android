@@ -76,4 +76,6 @@ public interface MultyApiInterface {
     Call<AccountsResponse> getAccounts(int currencyId, int networkId, String publicKey);
 
     Call<ChainInfoResponse> getChainInfo(int currencyId, int networkId);
+
+    Call<ResponseBody> resyncWallet(int currencyId, int networkId, int walletIndex);
 }
