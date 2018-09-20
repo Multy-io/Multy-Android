@@ -134,6 +134,7 @@ dependencies {
     implementation 'cn.aigestudio.wheelpicker:WheelPicker:1.1.2'
     implementation 'com.github.douglasjunior:android-simple-tooltip:0.2.2'
     implementation 'com.github.TrustWallet:Web3View:0.01.6'
+    implementation 'com.anthonymandra:ToggleButtons:2.0.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

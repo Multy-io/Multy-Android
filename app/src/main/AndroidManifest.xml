@@ -139,6 +139,12 @@
         <activity
             android:name=".ui.activities.CreateMultiSigActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activities.ImportMultisigActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activities.ImportEthWalletActivity"
+            android:screenOrientation="portrait" />
 
         <!-- Branch install referrer tracking -->
         <receiver

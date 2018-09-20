@@ -372,4 +372,12 @@
     <string name="start_for">START FOR</string>
     <string name="not_enough_linked_balance">Not enough balance on linked wallet</string>
     <string name="confirmation_details">Confirmation details</string>
+    <string name="import_multisig">Import MultiSig</string>
+    <string name="import_eth_wallet">Import ethereum wallet</string>
+    <string name="import_multisig_wallet">Import multisig wallet</string>
+    <string name="your_private_key_for_eth_wallet">Your private key for ETH wallet</string>
+    <string name="hint_paste_key">Paste key here</string>
+    <string name="multisig_wallet_address">MultiSig wallet address</string>
+    <string name="hint_enter_address">Enter address here</string>
+    <string name="import_now">Import now</string>
 </resources>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2018 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_main">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:contentInsetEnd="0dp"
+        app:contentInsetLeft="0dp"
+        app:contentInsetRight="0dp"
+        app:contentInsetStart="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/text_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center_vertical"
+                android:fontFamily="@font/montserrat"
+                android:gravity="center"
+                android:lineSpacingExtra="10sp"
+                android:padding="16dp"
+                android:text="@string/import_multisig_wallet"
+                android:textAlignment="center"
+                android:textColor="#000000"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/text_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="right|center_vertical"
+                android:background="?android:attr/selectableItemBackground"
+                android:fontFamily="@font/montserrat"
+                android:gravity="center"
+                android:paddingEnd="16dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingStart="16dp"
+                android:text="@string/cancel"
+                android:textColor="#FF000000"
+                android:textSize="16sp" />
+        </FrameLayout>
+    </android.support.v7.widget.Toolbar>
+
+    <TextView
+        android:id="@+id/title_key"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="@string/your_private_key_for_eth_wallet"
+        android:textColor="@color/blue_light"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+    <EditText
+        android:id="@+id/input_key"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="24dp"
+        android:background="@drawable/shape_white_rounded"
+        android:gravity="center"
+        android:hint="@string/hint_paste_key"
+        android:padding="8dp"
+        app:layout_constraintTop_toBottomOf="@id/title_key" />
+
+    <android.support.v7.widget.ToggleGroup
+        android:id="@+id/group_network"
+        style="@style/Widget.Material.ToggleGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="24dp"
+        app:exclusive="true"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/input_key"
+        app:orientation="horizontal">
+
+        <android.support.v7.widget.ToggleButton
+            android:id="@+id/buttonHorizontal"
+            style="@style/ToggleStyle"
+            android:text="Mainnet" />
+
+        <android.support.v7.widget.ToggleButton
+            android:id="@+id/buttonVertical"
+            style="@style/ToggleStyle"
+            android:text="Testnet" />
+    </android.support.v7.widget.ToggleGroup>
+
+    <TextView
+        android:id="@+id/button_import"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/selector_blue_gradient"
+        android:gravity="center"
+        android:padding="16dp"
+        android:text="@string/import_now"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</android.support.constraint.ConstraintLayout>
