@@ -23,6 +23,8 @@ import butterknife.OnClick;
 import io.multy.R;
 import io.multy.ui.activities.CreateAssetActivity;
 import io.multy.ui.activities.CreateMultiSigActivity;
+import io.multy.ui.activities.ImportEthWalletActivity;
+import io.multy.ui.activities.ImportMultisigActivity;
 import io.multy.ui.activities.ImportWalletActivity;
 import io.multy.util.Constants;
 
@@ -101,14 +103,14 @@ public class AssetActionsDialogFragment extends BottomSheetDialogFragment implem
     public void onClickImportMultisig(View v) {
         v.setEnabled(false);
         dismiss();
-
+        startActivity(new Intent(getActivity(), ImportMultisigActivity.class));
     }
 
     @OnClick(R.id.button_import_eth)
     public void onClickImportEth(View v) {
         v.setEnabled(false);
         dismiss();
-
+        startActivity(new Intent(getActivity(), ImportEthWalletActivity.class));
     }
 
     @OnClick(R.id.button_import)

@@ -48,6 +48,7 @@ import timber.log.Timber;
 
 public class ImportMultisigActivity extends BaseActivity {
 
+    //for request
 //    {
 //        "currencyID": 60,
 //            "networkID": 4,
