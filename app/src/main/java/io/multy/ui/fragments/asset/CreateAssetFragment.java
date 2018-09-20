@@ -185,7 +185,8 @@ public class CreateAssetFragment extends BaseFragment {
         final int walletIndex = currencyId == NativeDataHelper.Blockchain.BTC.getValue() ?
                 Prefs.getInt(Constants.PREF_WALLET_TOP_INDEX_BTC + networkId, 0) :
                 Prefs.getInt(Constants.PREF_WALLET_TOP_INDEX_ETH + networkId, 0);
-        MultyApi.INSTANCE.getWalletVerbose(walletIndex, currencyId, networkId).enqueue(new Callback<SingleWalletResponse>() {
+        MultyApi.INSTANCE.getWalletVerbose(walletIndex, currencyId, networkId, Constants.ASSET_TYPE_ADDRESS_MULTY)
+                .enqueue(new Callback<SingleWalletResponse>() {
             @Override
             public void onResponse(Call<SingleWalletResponse> call, Response<SingleWalletResponse> response) {
                 walletViewModel.isLoading.setValue(false);

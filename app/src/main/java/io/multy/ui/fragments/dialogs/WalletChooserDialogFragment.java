@@ -44,6 +44,7 @@ public class WalletChooserDialogFragment extends DialogFragment {
     private static final String ARG_NETWORK_ID = "ARG_NETWORK_ID";
 
     private boolean isMainNet = false;
+    private boolean exceptMultisig = false;
 
     public static WalletChooserDialogFragment getInstance() {
         return new WalletChooserDialogFragment();
@@ -76,6 +77,10 @@ public class WalletChooserDialogFragment extends DialogFragment {
 
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
+
+    public void exceptMultisig(boolean value) {
+        this.exceptMultisig = value;
+    }
 
     private MyWalletsAdapter.OnWalletClickListener listener;
 
@@ -119,9 +124,9 @@ public class WalletChooserDialogFragment extends DialogFragment {
 
     public void setupAdapter() {
         recyclerView.setAdapter(new MyWalletsAdapter(wallet -> {
-            if (getTargetFragment() == null) {
+            if (listener != null) {
                 listener.onWalletClick(wallet);
-            } else {
+            } else if (getTargetFragment() != null) {
                 getTargetFragment().onActivityResult(REQUEST_WALLET_ID, Activity.RESULT_OK,
                         new Intent().putExtra(Constants.EXTRA_WALLET_ID, wallet.getId()));
             }
@@ -134,6 +139,9 @@ public class WalletChooserDialogFragment extends DialogFragment {
         if (getTargetFragment() == null) {
             wallets = new ArrayList<>();
             for (Wallet walletRealmObject : RealmManager.getAssetsDao().getWallets()) {
+                if (walletRealmObject.isMultisig()) {
+                    continue;
+                }
                 if (walletRealmObject.isPayable() &&
                         Long.valueOf(walletRealmObject.getAvailableBalance()) > 150 &&
                         walletRealmObject.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()) {
@@ -149,13 +157,25 @@ public class WalletChooserDialogFragment extends DialogFragment {
             }
         } else if (getArguments() != null) {
             if (getArguments().getInt(ARG_NETWORK_ID, -1) == -1) {
-                wallets = RealmManager.getAssetsDao().getWallets(getArguments().getInt(ARG_CURRENCY_ID));
+                wallets = RealmManager.getAssetsDao().getWallets(getArguments().getInt(ARG_CURRENCY_ID), false);
             } else {
                 wallets = RealmManager.getAssetsDao()
-                        .getWallets(getArguments().getInt(ARG_CURRENCY_ID), getArguments().getInt(ARG_NETWORK_ID));
+                        .getWallets(getArguments().getInt(ARG_CURRENCY_ID), getArguments().getInt(ARG_NETWORK_ID), false);
             }
         }
-        return wallets;
+
+        if (exceptMultisig) {
+            List<Wallet> result = new ArrayList<>();
+            for (Wallet wallet : wallets) {
+                if (wallet.getMultisigWallet() == null) {
+                    result.add(wallet);
+                }
+            }
+
+            return result;
+        } else {
+            return wallets;
+        }
     }
 
     @OnClick(R.id.button_back)

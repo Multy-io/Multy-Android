@@ -17,10 +17,8 @@
 
     <ImageView
         android:id="@+id/image_operation"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
+        android:layout_width="50dp"
+        android:layout_height="26dp"
         android:src="@drawable/ic_history_pending"
         app:layout_constraintBottom_toBottomOf="@+id/text_pending"
         app:layout_constraintStart_toStartOf="parent"
@@ -31,10 +29,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        android:layout_marginStart="16dp"
         android:orientation="vertical"
         app:layout_constraintEnd_toStartOf="@+id/text_amount"
-        app:layout_constraintStart_toEndOf="@+id/image_operation">
+        app:layout_constraintStart_toEndOf="@+id/image_operation"
+        tools:layout_editor_absoluteY="16dp">
 
     </LinearLayout>
 
@@ -110,7 +108,7 @@
             android:textSize="10sp"
             android:letterSpacing="-0.02"
             android:lineSpacingExtra="11sp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
@@ -130,13 +128,58 @@
             android:id="@+id/text_locked_fiat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/blue_light"
-            android:textSize="10sp"
             android:letterSpacing="-0.02"
             android:lineSpacingExtra="11sp"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:textColor="@color/blue_light"
+            android:textSize="10sp"
+            app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="@id/text_locked"
             tools:text="(200.400 USD)" />
+
+        <View
+            android:id="@+id/divider_bottom"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_locked"
+            style="@style/Divider" />
+
+        <TextView
+            android:id="@+id/text_confirmations"
+            style="@style/MsInformationText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:textSize="10sp"
+            app:layout_constraintBottom_toBottomOf="@+id/text_confirm_count"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/text_confirm_count"
+            app:layout_constraintTop_toTopOf="@+id/text_confirm_count"
+            tools:text="3 of 3 confirmations" />
+
+        <TextView
+            android:id="@+id/text_confirm_count"
+            style="@style/MsInformationText"
+            android:layout_marginRight="0dp"
+            android:layout_marginTop="6dp"
+            android:drawableLeft="@drawable/ic_votes_confirmed"
+            android:textColor="@color/text_main_dark"
+            android:textSize="10sp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/divider_bottom"
+            tools:text="@string/zero" />
+
+        <android.support.constraint.Group
+            android:id="@+id/group_multisig"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:constraint_referenced_ids="text_confirm_count,text_confirmations,divider_bottom"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible" />
     </android.support.constraint.ConstraintLayout>
 
     <View

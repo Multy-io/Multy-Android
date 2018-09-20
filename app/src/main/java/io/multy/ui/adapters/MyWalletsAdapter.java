@@ -6,6 +6,7 @@
 
 package io.multy.ui.adapters;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,17 +38,17 @@ public class MyWalletsAdapter extends RecyclerView.Adapter<MyWalletsAdapter.Hold
         this.rates = RealmManager.getSettingsDao().getCurrenciesRate();
     }
 
+    @NonNull
     @Override
-    public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new Holder(LayoutInflater.from(parent.getContext()).inflate(R.layout.view_asset_item, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(Holder holder, int position) {
+    public void onBindViewHolder(@NonNull Holder holder, int position) {
         Wallet wallet = data.get(position);
 
         holder.name.setText(wallet.getWalletName());
-        boolean pending = wallet.isPending();
 
         if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.ETH.getValue() && wallet.isPending()) {
             holder.amount.setText(wallet.getEthWallet().getPendingBalanceLabel());
@@ -60,7 +61,20 @@ public class MyWalletsAdapter extends RecyclerView.Adapter<MyWalletsAdapter.Hold
         holder.imageChain.setImageResource(wallet.getIconResourceId());
         holder.itemView.setOnClickListener(view -> listener.onWalletClick(wallet));
         holder.resync.setVisibility(wallet.isSyncing() ? View.VISIBLE : View.GONE);
-        holder.imagePending.setVisibility(pending ? View.VISIBLE : View.GONE);
+
+        if (wallet.isSyncing()) {
+            holder.resync.setVisibility(View.VISIBLE);
+            holder.imageChevron.setVisibility(View.INVISIBLE);
+            holder.imagePending.setVisibility(View.GONE);
+        } else if (wallet.isPending()) {
+            holder.resync.setVisibility(View.GONE);
+            holder.imageChevron.setVisibility(View.VISIBLE);
+            holder.imagePending.setVisibility(View.VISIBLE);
+        } else {
+            holder.resync.setVisibility(View.GONE);
+            holder.imageChevron.setVisibility(View.VISIBLE);
+            holder.imagePending.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -115,6 +129,8 @@ public class MyWalletsAdapter extends RecyclerView.Adapter<MyWalletsAdapter.Hold
         ImageView imagePending;
         @BindView(R.id.text_resync)
         TextView resync;
+        @BindView(R.id.image_chevron)
+        View imageChevron;
 
         Holder(View itemView) {
             super(itemView);

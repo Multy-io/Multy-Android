@@ -54,10 +54,6 @@ import static io.multy.util.Constants.TX_IN_BLOCK_OUTCOMING;
 import static io.multy.util.Constants.TX_MEMPOOL_INCOMING;
 import static io.multy.util.Constants.TX_MEMPOOL_OUTCOMING;
 
-/**
- * Created by anschutz1927@gmail.com on 16.01.18.
- */
-
 public class TransactionInfoFragment extends BaseFragment {
 
     public static final String TAG = TransactionInfoFragment.class.getSimpleName();
@@ -110,6 +106,10 @@ public class TransactionInfoFragment extends BaseFragment {
     View progress;
     @BindView(R.id.group_data_views)
     Group groupDataViews;
+    @BindView(R.id.group_fee)
+    Group groupFee;
+    @BindView(R.id.text_fee)
+    TextView textFee;
     @BindColor(R.color.green_light)
     int colorGreen;
     @BindColor(R.color.blue_sky)
@@ -143,7 +143,7 @@ public class TransactionInfoFragment extends BaseFragment {
                              @Nullable Bundle savedInstanceState) {
         View v = getLayoutInflater().inflate(R.layout.fragment_transaction_info, container, false);
         ButterKnife.bind(this, v);
-        viewModel = ViewModelProviders.of(getActivity()).get(WalletViewModel.class);
+        viewModel = ViewModelProviders.of(requireActivity()).get(WalletViewModel.class);
         isTransactionLogged = false;
         initialize();
         return v;
@@ -257,6 +257,10 @@ public class TransactionInfoFragment extends BaseFragment {
             long outValue = getOutComingAmount(transaction, walletAddresses, exchangeRate);
             textValue.append(CryptoFormatUtils.satoshiToBtc(outValue));
             textAmount.append(CryptoFormatUtils.satoshiToUsd(outValue, exchangeRate));
+            groupFee.setVisibility(View.VISIBLE);
+            String fee = CryptoFormatUtils.satoshiToBtc(transaction.getTxFee()) + " BTC / " +
+                    CryptoFormatUtils.satoshiToUsd(transaction.getTxFee(), exchangeRate) + " USD";
+            textFee.setText(fee);
         }
         recyclerInputAdresses.setNestedScrollingEnabled(false);
         recyclerInputAdresses.setLayoutManager(new LinearLayoutManager(getContext()));

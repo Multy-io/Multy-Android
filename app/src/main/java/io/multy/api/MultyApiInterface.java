@@ -9,6 +9,7 @@ package io.multy.api;
 
 import android.content.Context;
 
+import io.multy.model.entities.Estimation;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.requests.AddWalletAddressRequest;
 import io.multy.model.requests.CreateMultisigRequest;
@@ -27,7 +28,6 @@ import io.multy.model.responses.WalletsResponse;
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
-import retrofit2.http.Path;
 
 public interface MultyApiInterface {
 
@@ -47,7 +47,9 @@ public interface MultyApiInterface {
 
     Call<ResponseBody> addWalletAddress(AddWalletAddressRequest addWalletAddressRequest);
 
-    Call<SingleWalletResponse> getWalletVerbose(int walletIndex, int currencyId, int networkId);
+    Call<SingleWalletResponse> getWalletVerbose(int walletIndex, int currencyId, int networkId, int assetType);
+
+    Call<SingleWalletResponse> getMultisigWalletVerbose(String inviteCode, int currencyId, int networkId, int assetType);
 
     Call<WalletsResponse> getWalletsVerbose();
 
@@ -57,9 +59,15 @@ public interface MultyApiInterface {
 
     Call<TransactionHistoryResponse> getTransactionHistory(int currencyId, int networkId, int walletIndex);
 
+    Call<TransactionHistoryResponse> getMultisigTransactionHistory(int currencyId, int networkId, String address, int assetType);
+
     Call<ServerConfigResponse> getServerConfig();
 
     Call<FeeRateResponse> getFeeRates(int currencyId, int networkId);
+
+    Call<FeeRateResponse> getFeeRates(int currencyId, int networkId, String address);
+
+    Call<Estimation> getEstimations(String msWalletAddress);
 
     Call<ResponseBody> sendHdTransaction(HdTransactionRequestEntity transactionRequestEntity);
 
@@ -68,4 +76,6 @@ public interface MultyApiInterface {
     Call<AccountsResponse> getAccounts(int currencyId, int networkId, String publicKey);
 
     Call<ChainInfoResponse> getChainInfo(int currencyId, int networkId);
+
+    Call<ResponseBody> resyncWallet(int currencyId, int networkId, int walletIndex);
 }

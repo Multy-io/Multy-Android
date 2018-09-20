@@ -20,6 +20,7 @@ import javax.annotation.Nullable;
 
 import io.multy.Multy;
 import io.multy.model.entities.AuthEntity;
+import io.multy.model.entities.Estimation;
 import io.multy.model.entities.TransactionRequestEntity;
 import io.multy.model.entities.UserId;
 import io.multy.model.entities.wallet.Wallet;
@@ -142,8 +143,13 @@ public enum MultyApi implements MultyApiInterface {
         }
 
         @Override
-        public Call<SingleWalletResponse> getWalletVerbose(int walletIndex, int currencyId, int networkId) {
-            return api.getWalletVerboseByIndex(walletIndex, currencyId, networkId);
+        public Call<SingleWalletResponse> getWalletVerbose(int walletIndex, int currencyId, int networkId, int assetType) {
+            return api.getWalletVerboseByIndex(walletIndex, currencyId, networkId, assetType);
+        }
+
+        @Override
+        public Call<SingleWalletResponse> getMultisigWalletVerbose(String inviteCode, int currencyId, int networkId, int assetType) {
+            return api.getMultisigWalletVerboseByInvite(inviteCode, currencyId, networkId, assetType);
         }
 
         @Override
@@ -165,15 +171,35 @@ public enum MultyApi implements MultyApiInterface {
             return api.getTransactionHistory(currencyId, networkId, walletIndex);
         }
 
+        public Call<TransactionHistoryResponse> getMultisigTransactionHistory(int currencyId, int networkId, String address, int assetType) {
+            return api.getMultisigTransactionHistory(currencyId, networkId, address, assetType);
+        }
+
         @Override
         public Call<ServerConfigResponse> getServerConfig() {
             return api.getServerConfig();
 
         }
 
+        /**
+         * Request for default fee rates
+         */
         @Override
         public Call<FeeRateResponse> getFeeRates(int currencyId, int networkId) {
             return api.getFeeRates(currencyId, networkId);
+        }
+
+        /**
+         * Request for custom fee rates (current networks: Ethereum)
+         */
+        @Override
+        public Call<FeeRateResponse> getFeeRates(int currencyId, int networkId, String address) {
+            return api.getFeeRates(currencyId, networkId, address);
+        }
+
+        @Override
+        public Call<Estimation> getEstimations(String multisigWalletAddress) {
+            return api.getEstimations(multisigWalletAddress);
         }
 
         @Override
@@ -194,6 +220,11 @@ public enum MultyApi implements MultyApiInterface {
         @Override
         public Call<ChainInfoResponse> getChainInfo(int currencyId, int networkId) {
             return api.getChainInfo(currencyId, networkId);
+        }
+
+        @Override
+        public Call<ResponseBody> resyncWallet(int currencyId, int networkId, int walletIndex) {
+            return api.resyncWallet(currencyId, networkId, walletIndex);
         }
     }
 }

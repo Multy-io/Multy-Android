@@ -10,9 +10,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.ArrayList;
 
-import io.multy.R;
 import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
 import io.realm.Realm;
@@ -90,6 +88,18 @@ public class EthWallet extends RealmObject {
 
     public static double getTransactionPrice(long gasPrice) {
         return CryptoFormatUtils.weiToEth(String.valueOf(Long.valueOf(Constants.GAS_LIMIT_DEFAULT) * gasPrice));
+    }
+
+    public static double getTransactionPrice(long gasPrice, long gasLimit) {
+        return CryptoFormatUtils.weiToEth(String.valueOf(gasLimit * gasPrice));
+    }
+
+    public static double getTransactionMultisigPrice(long gasPrice, long gasLimit) {
+        return CryptoFormatUtils.weiToEth(String.valueOf(gasLimit * gasPrice));
+    }
+
+    public static String getTransactionPriceWei(long gasPrice, long gasLimit) {
+        return String.valueOf(gasLimit * gasPrice);
     }
 
     public BigInteger getPendingBalanceNumeric() {

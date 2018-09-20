@@ -6,13 +6,16 @@
 
 package io.multy.storage;
 
-import android.util.Log;
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import java.util.List;
 import java.util.Objects;
 
 import io.multy.model.entities.wallet.BtcWallet;
 import io.multy.model.entities.wallet.EthWallet;
+import io.multy.model.entities.wallet.MultisigWallet;
+import io.multy.model.entities.wallet.Owner;
 import io.multy.model.entities.wallet.RecentAddress;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.entities.wallet.WalletAddress;
@@ -43,7 +46,7 @@ public class AssetsDao {
 
                 Wallet toDelete = getWalletById(wallet.getId());
                 if (toDelete != null) {
-                    //todo there must being removing of all addresse, btcwallets and ethwallets
+                    //todo there must being removing of all wallets and !inner objects
                     //realm is not deleting inner object. do it manually
                     if (toDelete.getAddresses() != null) {
                         for (WalletAddress walletAddress : toDelete.getAddresses()) {
@@ -59,13 +62,36 @@ public class AssetsDao {
                         if (toDelete.getEthWallet() != null) {
                             toDelete.getEthWallet().deleteFromRealm();
                         }
+                        if (toDelete.getMultisigWallet() != null) {
+                            if (toDelete.getMultisigWallet().getOwners() != null) {
+                                toDelete.getMultisigWallet().getOwners().deleteAllFromRealm();
+                            }
+                            toDelete.getMultisigWallet().deleteFromRealm();
+                        }
                     }
                     toDelete.deleteFromRealm();
                 }
 
                 saveSingleWallet(wallet);
             }
+            RealmResults<Wallet> realmWallets = getWallets();
+            if (wallets.size() != realmWallets.size()) {
+                for (Wallet realmWallet : realmWallets) {
+                    if (!isWalletExist(realmWallet, wallets)) {
+                        realmWallet.deleteFromRealm();
+                    }
+                }
+            }
         });
+    }
+
+    private boolean isWalletExist(Wallet wallet, List<Wallet> wallets) {
+        for (Wallet listWallet : wallets) {
+            if (wallet.getId() == listWallet.getId()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void saveSingleWallet(Wallet wallet) {
@@ -82,6 +108,7 @@ public class AssetsDao {
         savedWallet.setNetworkId(wallet.getNetworkId());
         savedWallet.setCurrencyId(wallet.getCurrencyId());
         savedWallet.setPending(wallet.isPending());
+
         if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()) {
             savedWallet.setBtcWallet(wallet.getBtcWallet().asRealmObject(realm));
             savedWallet.setBalance(String.valueOf(savedWallet.getBtcWallet().calculateBalance()));
@@ -99,6 +126,10 @@ public class AssetsDao {
             savedWallet.setAvailableBalance(eosBalance);
 
         } else {
+            if (wallet.getMultisigWallet() != null) {
+                savedWallet.setMultisigWallet(Objects.requireNonNull(wallet.getMultisigWallet()).asRealmObject(realm));
+            }
+
             savedWallet.setEthWallet(Objects.requireNonNull(wallet.getEthWallet()).asRealmObject(realm));
             final String ethBalance = savedWallet.getEthWallet().getBalance();
             final String ethPendingBalance = savedWallet.getEthWallet().getPendingBalance();
@@ -116,7 +147,10 @@ public class AssetsDao {
     }
 
     public RealmResults<Wallet> getAvailableWallets() {
-        return realm.where(Wallet.class).notEqualTo("availableBalance", "0").sort("lastActionTime", Sort.ASCENDING).findAll();
+        return realm.where(Wallet.class)
+                .notEqualTo("availableBalance", "0")
+                .sort("lastActionTime", Sort.ASCENDING)
+                .findAll();
     }
 
     public RealmResults<Wallet> getAvailableWallets(int currencyId, int networkId) {
@@ -132,18 +166,51 @@ public class AssetsDao {
         return realm.where(Wallet.class).equalTo("currencyId", NativeDataHelper.Blockchain.BTC.getValue()).notEqualTo("availableBalance", "0").sort("lastActionTime", Sort.ASCENDING).findAll();
     }
 
-    public RealmResults<Wallet> getWallets(int blockChainId) {
-        return realm.where(Wallet.class).equalTo("currencyId", blockChainId).findAll();
+    public RealmResults<Wallet> getWallets(int blockChainId, boolean includeMultisig) {
+        RealmQuery<Wallet> query = realm.where(Wallet.class).equalTo("currencyId", blockChainId);
+        return includeMultisig ? query.findAll() : query.isNull("multisigWallet").findAll();
     }
 
-    public RealmResults<Wallet> getWallets(int blockChainId, int networkId) {
-        return realm.where(Wallet.class).equalTo("currencyId", blockChainId)
-                .equalTo("networkId", networkId).findAll();
+    public RealmResults<Wallet> getWallets(int blockChainId, int networkId, boolean includeMultisig) {
+        RealmQuery<Wallet> query = realm.where(Wallet.class).equalTo("currencyId", blockChainId)
+                .equalTo("networkId", networkId);
+        return includeMultisig ? query.findAll() : query.isNull("multisigWallet").findAll();
     }
 
     public Wallet getWallet(int blockChainId, int networkId, int walletIndex) {
         return realm.where(Wallet.class).equalTo("currencyId", blockChainId)
-                .equalTo("networkId", networkId).equalTo("index", walletIndex).findFirst();
+                .equalTo("networkId", networkId).equalTo("index", walletIndex)
+                .isNull("multisigWallet").findFirst();
+    }
+
+    @Nullable
+    public Wallet getMultisigLinkedWallet(List<Owner> owners) {
+        for(Owner owner : owners) {
+            if (!TextUtils.isEmpty(owner.getUserId())) {
+                return getMultisigLinkedWallet(owner.getAddress());
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    public Wallet getMultisigLinkedWallet(String linkedAddress) {
+        return realm.where(Wallet.class).isNull("multisigWallet").equalTo("ethWallet.addresses.address", linkedAddress).findFirst();
+    }
+
+    public Wallet getMultisigWallet(int blockChainId, int networkId, int walletIndex) {
+        return realm.where(Wallet.class).equalTo("currencyId", blockChainId)
+                .equalTo("networkId", networkId).equalTo("index", walletIndex)
+                .isNotNull("multisigWallet").findFirst();
+    }
+
+    public Wallet getMultisigWallet(String inviteCode) {
+        return realm.where(Wallet.class).isNotNull("multisigWallet")
+                .equalTo("multisigWallet.inviteCode", inviteCode).findFirst();
+    }
+
+    public RealmResults<Wallet> getMultisigWallets() {
+        return realm.where(Wallet.class).isNotNull("multisigWallet").findAll();
     }
 
     public void saveBtcAddress(long id, WalletAddress address) {
@@ -164,6 +231,7 @@ public class AssetsDao {
             realm.where(BtcWallet.class).findAll().deleteAllFromRealm();
             realm.where(EthWallet.class).findAll().deleteAllFromRealm();
             realm.where(WalletAddress.class).findAll().deleteAllFromRealm();
+            realm.where(MultisigWallet.class).findAll().deleteAllFromRealm();
         });
     }
 
@@ -184,6 +252,10 @@ public class AssetsDao {
             Wallet wallet = getWalletById(id);
             wallet.deleteFromRealm();
         });
+    }
+
+    public RealmResults<WalletAddress> getWalletAddress(String address) {
+        return realm.where(WalletAddress.class).equalTo("address", address).findAll();
     }
 
     public void saveRecentAddress(RecentAddress recentAddress) {

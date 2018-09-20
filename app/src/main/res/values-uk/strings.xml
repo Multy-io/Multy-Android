@@ -55,7 +55,7 @@
     <string name="about_multy">О Multy</string>
     <string name="leave_feedback">Залишити відгук</string>
     <string name="close">Закрити</string>
-    <string name="show_all_addresses">Показати всі адреси</string>
+    <string name="show_all_addresses">Показати всі\nадреси</string>
     <string name="operations_create">Натисніть кнопку,\nщоб створити запит на\nотримання коштів.</string>
     <string name="send_donation">Відправити</string>
     <string name="receive">Отримати</string>
@@ -75,6 +75,9 @@
     <string name="about_delete_wallet">
         Видалити цей гаманець з інтерфейсу користувача. Зверніть увагу, що ми будемо відстежувати
         баланс гаманця і повідомляти вас про вхідні транзакції.
+    </string>
+    <string name="about_delete_ms_wallet">
+        Не можна видалити цей гаманець з призначеного для користувача інтерфейсу після створення multisig гаманця.
     </string>
     <string name="delete_confirm">Ви впевнені, що хочете видалити гаманець?</string>
     <string name="all_addresses">Всі адреси гаманця</string>
@@ -258,7 +261,31 @@
     <string name="ram_notification">The RAM is required to store account information such as keys, balance and contract state. Users cannot ask the entire Blockchain if they need any data – it would take too long. So, it is stored in RAM and be accessed from the memory. Every single piece of data is replicated in the RAM of every node. This is the reason why keeping data in RAM is expensive</string>
     <string name="cpu_notification">The system needs to interpret/comprehend different log/signals pointing towards different actions. The calculation done to regain the actual state of message log is taken care by CPU and is known as Computational debt.  Much like bandwidth, computational capacity is allocated on a fractional reserve basis because they are transient (unused capacity cannot be saved for future use). CPU have an unstacking period of 3 days.</string>
     <string name="net_notification">Storage works in a similar way as RAM. The content like blog/graphics/videos could be stored in Storage. The blockchain does\'t store the content it just stores the log/hash pointing towards the content.  Storage similar to RAM is a reserved capacity which could not be delegated or leased to others.</string>
-    <string name="share_multisig_wallet">Share MultiSig wallet</string>
-    <string name="your_wallet_identification_code">Your wallet identification code</string>
+    <string name="share_multisig_wallet">Поділитися MultiSig гаманцем</string>
+    <string name="your_wallet_identification_code">Ваш код ідентифікації гаманця</string>
+    <string name="invite_code_not_recognized">Не удается подключиться к multisig wallet: нет свободных слотов</string>
+    <string name="confirmations_of">%d з %d підтверджень</string>
+    <string name="waiting_your_confirmation">Очікування Вашого підтвердження…</string>
+    <string name="waiting_other_confirmations">Очікування підтверджень користувачів…</string>
+    <string name="slide_to_confirm">Слайд для підтвердження</string>
+    <string name="waiting_confirmations">Очікування підтверджень…</string>
+    <string name="confirmed">Підтверджено</string>
+    <string name="viewed">Переглянуто</string>
+    <string name="waiting_confirmation">Очікування підтвердження…</string>
+    <string name="slide_to_decline">Слайд для відхилення</string>
+    <string name="declined">Відхилено</string>
+    <string name="wating_members">Чекаємо всіх учасників…</string>
+    <string name="ready_to_start">Готов Починати…</string>
     <string name="permissions_are_not_granted">Дозволи не надаються!</string>
+    <string name="recync_wallet">Синхронізація гаманця</string>
+    <string name="about_resync">У разі виникнення надзвичайної ситуації: ви можете виправити застрягли транзакції на цьому гаманці, виконавши повну повторну синхронізацію. Зверніть увагу, що це може зайняти деякий час, і ви не можете відправляти будь-які транзакції з цього гаманця протягом цього періоду.</string>
+    <string name="rejected">Відхилена</string>
+    <string name="start_for">Створити за </string>
+    <string name="invitation_code">Код запрошення</string>
+    <string name="user_joined">Приєднано\nкористувачів</string>
+    <string name="resync">Зачекайте\nСинхронізація гаманця</string>
+    <string name="not_enough_linked_balance">Недостатній баланс на прив\'язаному гаманці</string>
+    <string name="available_balance">Доступний баланс</string>
+    <string name="confirmation_details">Підтвердження</string>
+    <string name="share_address">Поділитися\nадресою</string>
 </resources>

@@ -70,6 +70,7 @@ public final class Constants {
     public static final int CAMERA_REQUEST_CODE = 328;
     public static final String EXTRA_QR_CONTENTS = "EXTRA_QR_CONTENTS";
     public static final String EXTRA_WALLET_ID = "EXTRA_WALLET_ID";
+    public static final String EXTRA_RELATED_WALLET_ID = "EXTRA_RELATED_WALLET_ID";
     public static final String EXTRA_SENDER_ADDRESS = "EXTRA_SENDER_ADDRESS";
     public static final String EXTRA_ADDRESS = "EXTRA_ADDRESS";
     public static final String EXTRA_AMOUNT = "EXTRA_AMOUNT";
@@ -77,6 +78,9 @@ public final class Constants {
     public static final String EXTRA_DONATION_CODE = "EXTRA_DONATION_CODE";
     public static final String EXTRA_TX_HASH = "EXTRA_TX_HASH";
     public static final String EXTRA_ACCOUNTS = "extra_accounts";
+    public static final String EXTRA_INVITE_CODE = "EXTRA_INVITE_CODE";
+    public static final String EXTRA_SCAN = "EXTRA_SCAN";
+    public static final String EXTRA_CREATE = "EXTRA_CREATE";
 
     public static final String DEEP_LINK_QR_CODE = "QR_CODE";
 
@@ -92,6 +96,7 @@ public final class Constants {
     public static final int TX_IN_BLOCK_OUTCOMING = 4;
     public static final int TX_CONFIRMED_INCOMING = 5;
     public static final int TX_CONFIRMED_OUTCOMING = 6;
+    public static final int TX_INVOCATION_FAIL = 7;
 
     public static final int REQUEST_CODE_RESTORE = 22;
     public static final int REQUEST_CODE_CREATE = 22;
@@ -123,6 +128,29 @@ public final class Constants {
 
     public static final int MULTISIG_MEMBERS_COUNT = 50;
     public static final int INVITE_CODE_LENGTH = 45;
+
+    public static final int MULTISIG_OWNER_STATUS_WAITING = 0;
+    public static final int MULTISIG_OWNER_STATUS_SEEN = 1;
+    public static final int MULTISIG_OWNER_STATUS_CONFIRMED = 2;
+    public static final int MULTISIG_OWNER_STATUS_DECLINED = 3;
+
+    public static final int DEPLOY_STATUS_CREATED = 1;
+    public static final int DEPLOY_STATUS_READY = 2;
+    public static final int DEPLOY_STATUS_PENDING = 3;
+    public static final int DEPLOY_STATUS_REJECTED = 4;
+    public static final int DEPLOY_STATUS_DEPLOYED = 5;
+
+    public static final int EVENT_TYPE_JOIN_MULTISIG = 1;
+    public static final int EVENT_TYPE_LEAVE_MULTISIG = 2;
+    public static final int EVENT_TYPE_DELETE_MULTISIG = 3;
+    public static final int EVENT_TYPE_KICK_MULTISIG = 4;
+    public static final int EVENT_TYPE_CHECK_MULTISIG = 5;
+    public static final int EVENT_TYPE_VIEW_MULTISIG = 6;
+    public static final int EVENT_TYPE_DECLINE_MULTISIG = 7;
+
+    public static final int ASSET_TYPE_ADDRESS_MULTY = 0;
+    public static final int ASSET_TYPE_ADDRESS_MULTISIG= 1;
+    public static final int ASSET_TYPE_ADDRESS_IMPORTED = 2;
 
     public static final String[] rootFiles = {
             "init.magisk.rc",

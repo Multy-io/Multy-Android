@@ -8,6 +8,7 @@ package io.multy.api;
 
 
 import io.multy.model.entities.AuthEntity;
+import io.multy.model.entities.Estimation;
 import io.multy.model.entities.TransactionRequestEntity;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.requests.AddWalletAddressRequest;
@@ -31,7 +32,6 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
-import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
@@ -52,8 +52,20 @@ public interface ApiServiceInterface {
     @POST("api/v1/gettransactioninfo/{id}")
     Call<ResponseBody> getTransactionInfo(@Path("id") String transactionId);
 
+    /**
+     * Request for default fee rates
+     */
     @GET("api/v1/transaction/feerate/{currencyId}/{networkId}")
     Call<FeeRateResponse> getFeeRates(@Path("currencyId") int currencyId, @Path("networkId") int networkId);
+
+    /**
+     * Request for custom fee rates (current networks: Ethereum)
+     */
+    @GET("api/v1/transaction/feerate/{currencyId}/{networkId}/{address}")
+    Call<FeeRateResponse> getFeeRates(@Path("currencyId") int currencyId, @Path("networkId") int networkId, @Path("address") String address);
+
+    @GET("/api/v1/multisig/estimate/{address}")
+    Call<Estimation> getEstimations(@Path("address") String multisigWalletAddress);
 
     @GET("api/v1/getwalletaddresses/{walletId}")
     Observable<UserAssetsResponse> getWalletAddresses(@Path("walletId") int walletId);
@@ -70,8 +82,11 @@ public interface ApiServiceInterface {
     @POST("api/v1/address")
     Call<ResponseBody> addWalletAddress(@Body AddWalletAddressRequest addWalletAddressRequest);
 
-    @GET("api/v1/wallet/{walletIndex}/verbose/{currencyId}/{networkId}")
-    Call<SingleWalletResponse> getWalletVerboseByIndex(@Path("walletIndex") int walletIndex, @Path("currencyId") int currencyId, @Path("networkId") int networkId);
+    @GET("api/v1/wallet/{walletIndex}/verbose/{currencyId}/{networkId}/{assetType}")
+    Call<SingleWalletResponse> getWalletVerboseByIndex(@Path("walletIndex") int walletIndex, @Path("currencyId") int currencyId, @Path("networkId") int networkId, @Path("assetType") int assetType);
+
+    @GET("api/v1/wallet/{inviteCode}/verbose/{currencyId}/{networkId}/{assetType}")
+    Call<SingleWalletResponse> getMultisigWalletVerboseByInvite(@Path(value = "inviteCode", encoded = true) String inviteCode, @Path("currencyId") int currencyId, @Path("networkId") int networkId, @Path("assetType") int assetType);
 
     @POST("api/v1/wallet/name")
     Call<ResponseBody> updateWalletName(@Body UpdateWalletNameRequest updateWalletName);
@@ -82,8 +97,11 @@ public interface ApiServiceInterface {
     @GET("api/v1/wallets/verbose")
     Call<WalletsResponse> getWalletsVerbose();
 
-    @GET("api/v1/wallets/transactions/{currencyid}/{networkid}/{walletIndex}")
+    @GET("api/v1/wallets/transactions/{currencyid}/{networkid}/{walletIndex}/0")
     Call<TransactionHistoryResponse> getTransactionHistory(@Path("currencyid") int currencyId, @Path("networkid") int networkId, @Path("walletIndex") int walletIndex);
+
+    @GET("api/v1/wallets/transactions/{currencyId}/{networkId}/{address}/{assetType}")
+    Call<TransactionHistoryResponse> getMultisigTransactionHistory(@Path("currencyId") int currencyId, @Path("networkId") int networkId, @Path("address") String address, @Path("assetType") int assetType);
 
     @GET("/server/config")
     Call<ServerConfigResponse> getServerConfig();
@@ -97,4 +115,6 @@ public interface ApiServiceInterface {
     @GET("/api/v1/chain/{currencyid}/{networkid}/info")
     Call<ChainInfoResponse> getChainInfo(@Path("currencyid") int currencyId, @Path("networkid") int networkId);
 
+    @POST("/api/v1/resync/wallet/{currencyId}/{networkId}/{walletIndex}")
+    Call<ResponseBody> resyncWallet(@Path("currencyId") int currencyId, @Path("networkId") int networkId, @Path("walletIndex") int walletIndex);
 }

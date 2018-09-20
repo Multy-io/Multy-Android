@@ -7,6 +7,7 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
@@ -37,6 +38,7 @@
                 app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
                 <android.support.constraint.ConstraintLayout
+                    android:id="@+id/container_header"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="?attr/actionBarSize"
@@ -51,7 +53,7 @@
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
                         app:max="4"
-                        app:progress="3"
+                        app:progress="0"
                         app:progressBarColor="@color/white"
                         app:progressBarThickness="2dp"
                         app:progressThumb="false"
@@ -63,13 +65,13 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="6dp"
                         android:gravity="center"
+                        android:text="@string/user_joined"
                         android:textSize="14sp"
                         app:layout_constraintBottom_toTopOf="@id/text_count"
                         app:layout_constraintLeft_toLeftOf="@id/progress"
                         app:layout_constraintRight_toRightOf="@id/progress"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_chainStyle="packed"
-                        tools:text="@string/user_joined" />
+                        app:layout_constraintVertical_chainStyle="packed" />
 
                     <TextView
                         android:id="@+id/text_count"
@@ -77,17 +79,33 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/white"
                         android:textSize="24sp"
-                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintBottom_toBottomOf="@id/progress"
                         app:layout_constraintLeft_toLeftOf="@id/progress"
                         app:layout_constraintRight_toRightOf="@id/progress"
                         app:layout_constraintTop_toBottomOf="@id/text_members"
                         tools:text="3 / 4" />
+
+                    <TextView
+                        android:id="@+id/text_owners"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center"
+                        android:paddingBottom="8dp"
+                        android:textColor="@color/grey_light"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/progress"
+                        tools:text="3DA28WCp4Cu5LQiddJnDJJmKWvm\nmZAKP5K3DA28WCp4Cu5LQ\niddJnDJJmKWvmmZAKP5K3DA28W" />
                 </android.support.constraint.ConstraintLayout>
 
                 <android.support.v7.widget.Toolbar
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
+                    android:background="@color/colorPrimaryDark"
                     android:contentInsetEnd="0dp"
                     android:contentInsetLeft="0dp"
                     android:contentInsetRight="0dp"
@@ -100,8 +118,7 @@
 
                     <android.support.constraint.ConstraintLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@color/colorPrimaryDark">
+                        android:layout_height="match_parent">
 
                         <ImageView
                             android:id="@+id/button_back"
@@ -128,12 +145,22 @@
                             android:id="@+id/text_status"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:drawablePadding="4dp"
                             android:textColor="@color/blue_light_bright"
                             android:textSize="12sp"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintLeft_toRightOf="@id/button_back"
                             app:layout_constraintTop_toBottomOf="@+id/text_title"
                             tools:text="Waiting for all members..." />
+
+                        <ImageView
+                            android:id="@+id/button_settings"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:padding="16dp"
+                            android:src="@drawable/ic_settings"
+                            app:layout_constraintRight_toRightOf="parent" />
                     </android.support.constraint.ConstraintLayout>
                 </android.support.v7.widget.Toolbar>
             </android.support.design.widget.CollapsingToolbarLayout>
@@ -155,6 +182,8 @@
         android:background="@drawable/gradient_horizontal_blue"
         android:clickable="true"
         android:focusable="true"
+        android:visibility="gone"
+        tools:visibility="visible"
         android:foreground="?attr/selectableItemBackground"
         android:padding="18dp"
         app:layout_constraintBottom_toBottomOf="parent">
@@ -163,11 +192,11 @@
             android:id="@+id/text_action"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@string/invitation_code"
             android:textColor="@color/white"
             android:textSize="18sp"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            tools:text="@string/invitation_code" />
+            app:layout_constraintRight_toRightOf="parent" />
 
         <ImageView
             android:id="@+id/image_action"

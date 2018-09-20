@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2018 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_main"
+    tools:showIn="io.multy.android.MainActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar"
+        android:layout_width="0dp"
+        android:layout_height="?android:attr/actionBarSize"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/background_main"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="?attr/actionBarTheme"
+            app:contentInsetEnd="0dp"
+            app:contentInsetLeft="0dp"
+            app:contentInsetRight="0dp"
+            app:contentInsetStart="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/button_cancel"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:layout_gravity="center"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:paddingEnd="20dp"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:paddingStart="20dp"
+                    android:scaleType="center"
+                    android:tint="@color/text_grey_dark"
+                    app:srcCompat="@drawable/ic_cancel_blue" />
+
+                <TextView
+                    android:id="@+id/text_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:fontFamily="@font/montserrat"
+                    android:maxLines="1"
+                    android:text="@string/wallet_settings"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/button_save"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:fontFamily="@font/montserrat"
+                    android:gravity="center"
+                    android:paddingEnd="16dp"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="16dp"
+                    android:paddingStart="8dp"
+                    android:text="@string/save"
+                    android:textColor="@color/text_main_dark"
+                    android:textSize="16sp" />
+            </LinearLayout>
+        </android.support.v7.widget.Toolbar>
+    </android.support.design.widget.AppBarLayout>
+
+    <View
+        android:id="@+id/divider_toolbar"
+        style="@style/Divider"
+        app:layout_constraintTop_toBottomOf="@+id/appbar" />
+
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/scroll"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/divider_toolbar">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/text_general"
+                style="@style/SettingSubtitle"
+                android:layout_marginTop="24dp"
+                android:letterSpacing="-0.02"
+                android:text="@string/general"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:id="@+id/divider_general"
+                style="@style/Divider"
+                android:layout_marginTop="17dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_general" />
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/text_name"
+                style="@style/InputLayout"
+                android:hint="@string/wallet_name"
+                android:theme="@style/InputLayoutAccent"
+                app:hintTextAppearance="@style/HintInputAppearance"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/divider_general">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/edit_name"
+                    style="@style/InputEdit"
+                    android:enabled="false"
+                    android:inputType="textCapSentences"
+                    android:lineSpacingExtra="6sp"
+                    android:maxLength="25"
+                    android:text="@string/personal"
+                    tools:text="Personal" />
+            </android.support.design.widget.TextInputLayout>
+
+            <View
+                android:id="@+id/divider_name"
+                style="@style/Divider"
+                android:layout_marginStart="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_name" />
+
+            <View
+                android:id="@+id/button_currency"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@drawable/selector_white"
+                android:clickable="true"
+                android:focusable="true"
+                app:layout_constraintBottom_toTopOf="@id/divider_currency"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/divider_name" />
+
+            <TextView
+                android:id="@+id/text_hint"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="11dp"
+                android:fontFamily="@font/montserrat"
+                android:lineSpacingExtra="10sp"
+                android:text="@string/reference_currency"
+                android:textColor="@color/text_grey"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/divider_name" />
+
+            <TextView
+                android:id="@+id/text_currency"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:fontFamily="@font/montserrat"
+                android:lineSpacingExtra="6sp"
+                android:text="@string/us_dollars_usd"
+                android:textColor="@color/text_main_dark"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_hint" />
+
+            <ImageView
+                android:id="@+id/image_arrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintBottom_toTopOf="@+id/divider_currency"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/divider_name"
+                app:srcCompat="@drawable/ic_arrow_right_grey" />
+
+            <View
+                android:id="@+id/divider_currency"
+                style="@style/Divider"
+                android:layout_marginTop="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_currency" />
+
+            <TextView
+                android:id="@+id/text_label_signs"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="11dp"
+                android:fontFamily="@font/montserrat"
+                android:lineSpacingExtra="10sp"
+                android:text="@string/signs_to_send"
+                android:textColor="@color/text_grey"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/divider_currency" />
+
+            <TextView
+                android:id="@+id/text_signs"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="11dp"
+                android:fontFamily="@font/montserrat"
+                android:lineSpacingExtra="10sp"
+                android:textColor="@color/text_grey"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/text_label_signs"
+                tools:text="2 of 3" />
+
+            <View
+                android:id="@+id/divider_signs"
+                style="@style/Divider"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_signs" />
+
+            <TextView
+                android:id="@+id/notice_key"
+                style="@style/NotificationSettings"
+                android:letterSpacing="-0.02"
+                android:lineSpacingExtra="5sp"
+                android:text="@string/about_signs"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/divider_signs" />
+
+            <ViewStub
+                android:id="@+id/container_params"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/notice_key" />
+
+            <View
+                android:id="@+id/divider_notice"
+                style="@style/Divider"
+                android:layout_marginTop="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/container_params" />
+
+            <TextView
+                android:id="@+id/text_linked_wallet"
+                style="@style/NotificationSettings"
+                android:letterSpacing="-0.02"
+                android:lineSpacingExtra="5sp"
+                android:text="@string/linked_wallet"
+                android:textAllCaps="true"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/divider_notice" />
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/container_wallet"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                app:layout_constraintTop_toBottomOf="@id/text_linked_wallet">
+
+                <ImageView
+                    android:id="@+id/image_wallet"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:src="@drawable/ic_eth_medium_icon" />
+
+                <TextView
+                    android:id="@+id/text_wallet_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:textColor="@color/black"
+                    app:layout_constraintLeft_toRightOf="@id/image_wallet"
+                    tools:text="ololosha eto ti?" />
+
+                <TextView
+                    android:id="@+id/text_wallet_address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_grey"
+                    app:layout_constraintLeft_toLeftOf="@id/text_wallet_name"
+                    app:layout_constraintTop_toBottomOf="@id/text_wallet_name"
+                    tools:text="AadDdrrsrsrSRSRSRSr123123123" />
+
+            </android.support.constraint.ConstraintLayout>
+
+            <TextView
+                android:id="@+id/button_delete"
+                android:layout_width="0dp"
+                android:layout_height="64dp"
+                android:background="@drawable/selector_white"
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="@font/montserrat"
+                android:gravity="center"
+                android:lineSpacingExtra="6sp"
+                android:text="@string/delete_wallet"
+                android:textColor="@color/text_red"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/container_wallet" />
+
+            <View
+                android:id="@+id/divider_delete"
+                style="@style/Divider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/button_delete" />
+
+            <TextView
+                android:id="@+id/notice_delete"
+                style="@style/NotificationSettings"
+                android:letterSpacing="-0.02"
+                android:lineSpacingExtra="5sp"
+                android:text="@string/about_delete_ms_wallet"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/divider_delete" />
+
+        </android.support.constraint.ConstraintLayout>
+    </android.support.v4.widget.NestedScrollView>
+</android.support.constraint.ConstraintLayout>

@@ -55,6 +55,7 @@ import butterknife.OnClick;
 import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.api.socket.BlueSocketManager;
+import io.multy.model.entities.Estimation;
 import io.multy.model.entities.FastReceiver;
 import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.model.entities.wallet.Wallet;
@@ -250,18 +251,10 @@ public class MagicSendActivity extends BaseActivity {
         initPagerWallets();
         receiversPagerAdapter = new ReceiversPagerAdapter(getSupportFragmentManager());
         pagerRequests.setAdapter(receiversPagerAdapter);
-        pagerRequests.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            }
-
+        pagerRequests.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
                 initPagerWallets();
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
             }
         });
     }
@@ -473,8 +466,7 @@ public class MagicSendActivity extends BaseActivity {
         handler.postDelayed(updateReceiversAction, UPDATE_PERIOD / 5);
     }
 
-    private boolean send(Wallet wallet, String gasPrice) throws JniException {
-
+    private boolean send(Wallet wallet, String gasPrice, @Nullable String estimation) throws JniException {
         final byte[] seed = RealmManager.getSettingsDao().getSeed().getSeed();
         FastReceiver receiver = receiversPagerAdapter.getReceiver(pagerRequests.getCurrentItem());
         String changeAddress = "";
@@ -492,9 +484,16 @@ public class MagicSendActivity extends BaseActivity {
                 isHd = true;
                 break;
             case ETH:
-                transaction = NativeDataHelper.makeTransactionETH(seed, wallet.getIndex(), 0, wallet.getCurrencyId(),
-                        wallet.getNetworkId(), wallet.getActiveAddress().getAmountString(), receiver.getAmount(),
-                        receiver.getAddress(), Constants.GAS_LIMIT_DEFAULT, gasPrice, wallet.getEthWallet().getNonce());
+                if (wallet.isMultisig()) {
+                    Wallet linkedWallet = RealmManager.getAssetsDao().getMultisigLinkedWallet(wallet.getMultisigWallet().getOwners());
+                    transaction = NativeDataHelper.makeTransactionMultisigETH(seed, linkedWallet.getIndex(), 0, linkedWallet.getCurrencyId(),
+                            linkedWallet.getNetworkId(), linkedWallet.getActiveAddress().getAmountString(), wallet.getActiveAddress().getAddress(), receiver.getAmount(),
+                            receiver.getAddress(), estimation, gasPrice, linkedWallet.getEthWallet().getNonce());
+                } else {
+                    transaction = NativeDataHelper.makeTransactionETH(seed, wallet.getIndex(), 0, wallet.getCurrencyId(),
+                            wallet.getNetworkId(), wallet.getActiveAddress().getAmountString(), receiver.getAmount(),
+                            receiver.getAddress(), estimation == null ? Constants.GAS_LIMIT_DEFAULT : estimation, gasPrice, wallet.getEthWallet().getNonce());
+                }
                 isHd = false;
                 break;
             default:
@@ -579,11 +578,15 @@ public class MagicSendActivity extends BaseActivity {
                     enableScroll();
 
                     final Wallet wallet = RealmManager.getAssetsDao().getWalletById(walletPagerAdapter.getSelectedWalletId(pagerWallets.getCurrentItem()));
-                    MultyApi.INSTANCE.getFeeRates(wallet.getCurrencyId(), wallet.getNetworkId()).enqueue(new Callback<FeeRateResponse>() {
+                    Callback<FeeRateResponse> callback = new Callback<FeeRateResponse>() {
                         @Override
-                        public void onResponse(Call<FeeRateResponse> call, Response<FeeRateResponse> response) {
+                        public void onResponse(@NonNull Call<FeeRateResponse> call, @NonNull Response<FeeRateResponse> response) {
                             try {
-                                send(wallet, String.valueOf((response.body()).getSpeeds().getFast()));
+                                if (wallet.isMultisig()) {
+                                    getEstimation(wallet, String.valueOf((response.body()).getSpeeds().getFast()));
+                                } else {
+                                    send(wallet, String.valueOf((response.body()).getSpeeds().getFast()), response.body().getCustomGasLimit());
+                                }
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 showError(e);
@@ -591,13 +594,41 @@ public class MagicSendActivity extends BaseActivity {
                         }
 
                         @Override
-                        public void onFailure(Call<FeeRateResponse> call, Throwable t) {
-
+                        public void onFailure(@NonNull Call<FeeRateResponse> call, @NonNull Throwable t) {
+                            t.printStackTrace();
+                            showError(new Exception(t));
                         }
-                    });
+                    };
+                    if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.ETH.getValue()) {
+                        MultyApi.INSTANCE.getFeeRates(wallet.getCurrencyId(), wallet.getNetworkId(),
+                                receiversPagerAdapter.getReceiver(pagerRequests.getCurrentItem()).getAddress()).enqueue(callback);
+                    } else {
+                        MultyApi.INSTANCE.getFeeRates(wallet.getCurrencyId(), wallet.getNetworkId()).enqueue(callback);
+                    }
 
                     receiversPagerAdapter.showSuccess(pagerRequests.getCurrentItem());
                 }).setDuration(500).alpha(0).setInterpolator(new AnticipateOvershootInterpolator()).start();
+    }
+
+    private void getEstimation(Wallet multisigWallet, String gasPrice) {
+        MultyApi.INSTANCE.getEstimations(multisigWallet.getActiveAddress().getAddress()).enqueue(new Callback<Estimation>() {
+            @Override
+            public void onResponse(@NonNull Call<Estimation> call, @NonNull Response<Estimation> response) {
+                Estimation body = response.body();
+                try {
+                    send(multisigWallet, gasPrice, body.getSubmitTransaction());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    showError(e);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Estimation> call, @NonNull Throwable t) {
+                t.printStackTrace();
+                showError(new Exception(t));
+            }
+        });
     }
 
     private void start() {

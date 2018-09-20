@@ -35,6 +35,7 @@ import butterknife.OnClick;
 import io.multy.R;
 import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
+import io.multy.ui.fragments.Web3Fragment;
 import io.multy.ui.fragments.main.AssetsFragment;
 import io.multy.ui.fragments.main.FastOperationsFragment;
 import io.multy.ui.fragments.main.FeedFragment;
@@ -66,7 +67,6 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         setupFooter();
@@ -140,7 +140,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
                 break;
             case Constants.POSITION_FEED:
                 Analytics.getInstance(this).logMain(AnalyticsConstants.TAB_ACTIVITY);
-                setFragment(R.id.container_frame, FeedFragment.newInstance());
+                setFragment(R.id.container_frame, Web3Fragment.newInstance());
                 break;
             case Constants.POSITION_CONTACTS:
                 Analytics.getInstance(this).logMain(AnalyticsConstants.TAB_CONTACTS);
@@ -190,9 +190,17 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
 
     @Override
     public void onBackPressed() {
-        FastOperationsFragment fragment = (FastOperationsFragment) getSupportFragmentManager().findFragmentByTag(FastOperationsFragment.TAG);
-        if (fragment != null && !fragment.isCanceling()) {
-            fragment.cancel();
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container_frame);
+
+        if (fragment instanceof Web3Fragment) {
+            ((Web3Fragment) fragment).onBackPressed();
+            return;
+        }
+
+
+        FastOperationsFragment operationsFragment = (FastOperationsFragment) getSupportFragmentManager().findFragmentByTag(FastOperationsFragment.TAG);
+        if (operationsFragment != null && !operationsFragment.isCanceling()) {
+            operationsFragment.cancel();
         } else {
             super.onBackPressed();
         }

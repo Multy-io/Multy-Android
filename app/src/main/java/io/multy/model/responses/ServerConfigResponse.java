@@ -10,6 +10,8 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
+import io.multy.model.entities.MultisigFactory;
+
 public class ServerConfigResponse {
 
     @SerializedName("android")
@@ -17,6 +19,13 @@ public class ServerConfigResponse {
 
     @SerializedName("donate")
     private List<Donate> donates;
+
+    @SerializedName("multisigfactory")
+    private MultisigFactory multisigFactory;
+
+    public MultisigFactory getMultisigFactory() {
+        return multisigFactory;
+    }
 
     public AndroidConfig getAndroidConfig() {
         return androidConfig;

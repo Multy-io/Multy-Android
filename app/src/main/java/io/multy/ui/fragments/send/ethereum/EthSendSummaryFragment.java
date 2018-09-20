@@ -174,7 +174,8 @@ public class EthSendSummaryFragment extends BaseFragment {
     private void send() {
         viewModel.isLoading.setValue(true);
         String addressTo = viewModel.getReceiverAddress().getValue();
-        Wallet wallet = viewModel.getWallet();
+        Wallet wallet = viewModel.getWallet().isMultisig() ?
+                RealmManager.getAssetsDao().getMultisigLinkedWallet(viewModel.getWallet().getMultisigWallet().getOwners()) : viewModel.getWallet();
 
         try {
             viewModel.isLoading.setValue(true);

@@ -8,6 +8,7 @@ package io.multy.ui.fragments;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.arch.lifecycle.Lifecycle;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.graphics.drawable.ColorDrawable;
@@ -83,7 +84,7 @@ public class BaseFragment extends Fragment implements ConnectionReceiver.Connect
             });
 
             baseViewModel.isLoading.observe(this, aBoolean -> {
-                if (aBoolean != null) {
+                if (getLifecycle().getCurrentState() == Lifecycle.State.RESUMED && aBoolean != null) {
                     if (aBoolean) {
                         showProgressDialog();
                     } else {
@@ -162,10 +163,12 @@ public class BaseFragment extends Fragment implements ConnectionReceiver.Connect
     }
 
     public void showKeyboard(Activity activity, View view) {
-        InputMethodManager inputMethodManager = (InputMethodManager)
-                activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (inputMethodManager != null) {
-            inputMethodManager.showSoftInput(view, 0);
+        if (activity != null) {
+            InputMethodManager inputMethodManager = (InputMethodManager)
+                    activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (inputMethodManager != null) {
+                inputMethodManager.showSoftInput(view, 0);
+            }
         }
     }
 }

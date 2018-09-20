@@ -23,12 +23,14 @@ import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.WindowManager;
 
+import java.net.URISyntaxException;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
+import io.multy.api.socket.SocketManager;
 import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.send.AmountChooserFragment;
 import io.multy.ui.fragments.send.AssetSendFragment;
@@ -53,6 +55,7 @@ public class AssetSendActivity extends BaseActivity {
 
     private boolean isFirstFragmentCreation;
     private AssetSendViewModel viewModel;
+    private SocketManager socketManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +78,25 @@ public class AssetSendActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        try {
+            if (socketManager == null) {
+                socketManager = new SocketManager();
+            }
+            socketManager.listenTransactionUpdates(() -> {
+                viewModel.updateWallets();
+            });
+            socketManager.connect();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        if (socketManager != null && socketManager.isConnected()) {
+            socketManager.disconnect();
+        }
+        super.onPause();
     }
 
     @Override

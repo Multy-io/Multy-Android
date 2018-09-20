@@ -52,6 +52,7 @@ import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
 import io.multy.util.analytics.Analytics;
 import io.multy.viewmodels.SeedViewModel;
+import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -266,7 +267,7 @@ public class SeedValidationFragment extends BaseSeedFragment {
                             onSeedRestoreFailure(callback);
                             return;
                         }
-
+                        Realm.deleteRealm(Realm.getDefaultConfiguration());
                         RealmManager.open();
                         SettingsDao settingsDao = RealmManager.getSettingsDao();
                         settingsDao.setUserId(new UserId(userId));
@@ -276,6 +277,7 @@ public class SeedValidationFragment extends BaseSeedFragment {
                         if (serverConfig != null) {
                             settingsDao.saveDonation(serverConfig.getDonates());
                         }
+                        settingsDao.saveMultisigFactory(serverConfig.getMultisigFactory());
                         RealmManager.close();
 
                         Prefs.putString(Constants.PREF_AUTH, response.body().getToken());

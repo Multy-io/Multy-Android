@@ -17,9 +17,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,12 +38,14 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.api.MultyApi;
+import io.multy.model.entities.TransactionHistory;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.events.TransactionUpdateEvent;
 import io.multy.model.responses.SingleWalletResponse;
@@ -55,6 +59,7 @@ import io.multy.ui.adapters.AssetTransactionsAdapter;
 import io.multy.ui.adapters.EthTransactionsAdapter;
 import io.multy.ui.fragments.AddressesFragment;
 import io.multy.ui.fragments.BaseFragment;
+import io.multy.ui.fragments.MultisigSettingsFragment;
 import io.multy.ui.fragments.dialogs.AddressActionsDialogFragment;
 import io.multy.ui.fragments.dialogs.DonateDialog;
 import io.multy.util.Constants;
@@ -126,7 +131,6 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         showWalletInfo(wallet);
         setAddressesVisibility(wallet.getCurrencyId());
         initSwipeRefresh();
-        requestTransactions(wallet.getCurrencyId(), wallet.getNetworkId(), wallet.getIndex());
         setButtonWarnVisibility();
 //        setTransactionsState();
 
@@ -213,24 +217,22 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         if (!viewModel.getWalletLive().getValue().isValid()) {
             viewModel.getWallet(getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0));
         }
-
-        final int walletIndex = viewModel.getWalletLive().getValue().getIndex();
         final int currencyId = viewModel.getWalletLive().getValue().getCurrencyId();
         final int networkId = viewModel.getWalletLive().getValue().getNetworkId();
         final long walletId = viewModel.getWalletLive().getValue().getId();
 
-        MultyApi.INSTANCE.getWalletVerbose(walletIndex, currencyId, networkId).enqueue(new Callback<SingleWalletResponse>() {
+        Callback<SingleWalletResponse> callback = new Callback<SingleWalletResponse>() {
             @Override
             public void onResponse(Call<SingleWalletResponse> call, Response<SingleWalletResponse> response) {
                 viewModel.isLoading.postValue(false);
-                if (response.isSuccessful() && response.body().getWallets() != null && response.body().getWallets().size() > 0) {
+                SingleWalletResponse body = response.body();
+                if (response.isSuccessful() && body != null && body.getWallets() != null && body.getWallets().size() > 0) {
                     AssetsDao assetsDao = RealmManager.getAssetsDao();
-                    assetsDao.saveWallet(response.body().getWallets().get(0));
+                    assetsDao.saveWallet(body.getWallets().get(0));
                     viewModel.wallet.setValue(assetsDao.getWalletById(walletId));
                 }
-
-                updateBalanceViews();
                 Wallet wallet = viewModel.wallet.getValue();
+                showWalletInfo(wallet);
                 requestTransactions(wallet.getCurrencyId(), wallet.getNetworkId(), wallet.getIndex());
             }
 
@@ -239,7 +241,16 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
                 viewModel.isLoading.setValue(false);
                 t.printStackTrace();
             }
-        });
+        };
+        if (viewModel.getWalletLive().getValue().isMultisig()) {
+            final String inviteCode = viewModel.getWalletLive().getValue().getMultisigWallet().getInviteCode().toLowerCase();
+            MultyApi.INSTANCE.getMultisigWalletVerbose(inviteCode, currencyId, networkId, Constants.ASSET_TYPE_ADDRESS_MULTISIG)
+                    .enqueue(callback);
+        } else {
+            final int walletIndex = viewModel.getWalletLive().getValue().getIndex();
+            MultyApi.INSTANCE.getWalletVerbose(walletIndex, currencyId, networkId, Constants.ASSET_TYPE_ADDRESS_MULTY)
+                    .enqueue(callback);
+        }
     }
 
     public void setWalletName(String name) {
@@ -247,30 +258,39 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     }
 
     private void requestTransactions(final int currencyId, final int networkId, final int walletIndex) {
-        viewModel.isLoading.postValue(true);
-        viewModel.getTransactionsHistory(currencyId, networkId, walletIndex).observe(this, transactions -> {
-            if (transactions != null && !transactions.isEmpty()) {
-                try {
-                    final long walletId = viewModel.wallet.getValue().isValid() ?
-                            viewModel.wallet.getValue().getId() :
-                            viewModel.getWallet(getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0)).getId();
+        if (viewModel.getWalletLive().getValue().isMultisig()) {
+            viewModel.getMultisigTransactionsHistory(viewModel.getWalletLive().getValue().getCurrencyId(),
+                    viewModel.getWalletLive().getValue().getNetworkId(),
+                    viewModel.getWalletLive().getValue().getActiveAddress().getAddress())
+                    .observe(this, transactions -> onTransactions(transactions, currencyId));
+        } else {
+            viewModel.getTransactionsHistory(currencyId, networkId, walletIndex)
+                    .observe(this, transactions -> onTransactions(transactions, currencyId));
+        }
+    }
 
-                    recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-                    if (currencyId == NativeDataHelper.Blockchain.BTC.getValue()) {
-                        recyclerView.setAdapter(new AssetTransactionsAdapter(transactions, walletId));
-                    } else if (currencyId == NativeDataHelper.Blockchain.EOS.getValue()) {
+    private void onTransactions(ArrayList<TransactionHistory> transactions, int currencyId) {
+        if (transactions != null && !transactions.isEmpty()) {
+            try {
+                final long walletId = viewModel.wallet.getValue().isValid() ?
+                        viewModel.wallet.getValue().getId() :
+                        viewModel.getWallet(getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0)).getId();
+
+                recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                if (currencyId == NativeDataHelper.Blockchain.BTC.getValue()) {
+                    recyclerView.setAdapter(new AssetTransactionsAdapter(transactions, walletId));
+                } else if (currencyId == NativeDataHelper.Blockchain.EOS.getValue()) {
 //                        recyclerView.setAdapter(new EosTransactionsAdapter(transactions, walletId));
-                    } else {
-                        recyclerView.setAdapter(new EthTransactionsAdapter(transactions, walletId));
+                } else {
+                    recyclerView.setAdapter(new EthTransactionsAdapter(transactions, walletId));
 
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+        }
 
-            setTransactionsState();
-        });
+        setTransactionsState();
     }
 
     private void setTransactionsState() {
@@ -299,12 +319,14 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
 
     private void showAddressAction() {
         Wallet wallet = viewModel.getWalletLive().getValue();
-        AddressActionsDialogFragment.getInstance(wallet.getActiveAddress().getAddress(), wallet.getCurrencyId(),
-                wallet.getNetworkId(), wallet.getIconResourceId(), false, () -> {
-                    if (recyclerView.getAdapter() != null) {
-                        recyclerView.getAdapter().notifyDataSetChanged();
-                    }
-                }).show(getChildFragmentManager(), AddressActionsDialogFragment.TAG);
+        if (wallet != null && wallet.isValid() && !TextUtils.isEmpty(wallet.getActiveAddress().getAddress())) {
+            AddressActionsDialogFragment.getInstance(wallet.getActiveAddress().getAddress(), wallet.getCurrencyId(),
+                    wallet.getNetworkId(), wallet.getIconResourceId(), false, () -> {
+                        if (recyclerView.getAdapter() != null) {
+                            recyclerView.getAdapter().notifyDataSetChanged();
+                        }
+                    }).show(getChildFragmentManager(), AddressActionsDialogFragment.TAG);
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -315,6 +337,8 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     @Override
     public void onStart() {
         super.onStart();
+        Wallet wallet = viewModel.getWalletLive().getValue();
+        requestTransactions(wallet.getCurrencyId(), wallet.getNetworkId(), wallet.getIndex());
         EventBus.getDefault().register(this);
     }
 
@@ -356,12 +380,20 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     @OnClick(R.id.button_send)
     void onClickSend() {
         Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_SEND, viewModel.getChainId());
-        if (viewModel.getWalletLive().getValue() != null && viewModel.getWalletLive().getValue().getAvailableBalanceNumeric().compareTo(BigDecimal.ZERO) <= 0) {
+        Wallet wallet = viewModel.getWalletLive().getValue();
+        if (wallet != null && wallet.getAvailableBalanceNumeric().compareTo(BigDecimal.ZERO) <= 0) {
             Toast.makeText(getActivity(), R.string.no_balance, Toast.LENGTH_SHORT).show();
             return;
         }
-
-        if (viewModel.getWalletLive().getValue().isPending()) {
+        if (wallet.isMultisig()) {
+            Wallet linked = RealmManager.getAssetsDao().getMultisigLinkedWallet(wallet.getMultisigWallet().getOwners());
+            if (linked == null || linked.getAvailableBalanceNumeric()
+                    .compareTo(new BigDecimal(CryptoFormatUtils.ethToWei(String.valueOf("0.0001")))) <= 0) {
+                viewModel.errorMessage.setValue(getString(R.string.not_enough_linked_balance));
+                return;
+            }
+        }
+        if (wallet.isPending()) {
             return;
         }
 
@@ -404,7 +436,15 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     @OnClick(R.id.options)
     public void onClickOptions() {
         Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_SETTINGS, viewModel.getChainId());
-        ((AssetActivity) getActivity()).setFragment(R.id.container_full, AssetSettingsFragment.newInstance());
+        Fragment fragment = null;
+        Wallet wallet = viewModel.getWalletLive().getValue();
+        if (wallet.isMultisig()) {
+            Wallet linkedWallet = RealmManager.getAssetsDao().getMultisigLinkedWallet(wallet.getMultisigWallet().getOwners());
+            fragment = MultisigSettingsFragment.newInstance(wallet, linkedWallet);
+        } else {
+            fragment = AssetSettingsFragment.newInstance();
+        }
+        ((AssetActivity) getActivity()).setFragment(R.id.container_full, fragment);
     }
 
     @OnClick(R.id.button_share)

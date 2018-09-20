@@ -95,6 +95,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:background="@color/white"
+                tools:itemCount="2"
                 tools:listitem="@layout/item_chain_availabe"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -129,11 +130,12 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:background="@color/white"
+                tools:itemCount="2"
+                tools:listitem="@layout/item_chain_soon"
                 android:clipToPadding="false"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/divider_soon"
-                tools:listitem="@layout/item_chain" />
+                app:layout_constraintTop_toBottomOf="@+id/divider_soon" />
 
             <View
                 android:id="@+id/divider_bottom"
@@ -141,6 +143,12 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
+
+            <android.support.constraint.Group
+                android:id="@+id/group_soon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="divider_bottom,recycler_soon,divider_soon,text_soon" />
 
         </android.support.constraint.ConstraintLayout>
 

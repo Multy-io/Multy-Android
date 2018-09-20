@@ -69,6 +69,9 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
     private BtcWallet btcWallet;
     @Nullable
     private EosWallet eosWallet;
+    @Nullable
+    @SerializedName("multisig")
+    private MultisigWallet multisigWallet;
 
     private BigInteger convertBalance(BigInteger divisor) {
         BigInteger value = new BigInteger(balance);
@@ -300,7 +303,11 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
             case BTC:
                 return networkId == NativeDataHelper.NetworkId.MAIN_NET.getValue() ? R.drawable.ic_btc : R.drawable.ic_chain_btc_test;
             case ETH:
-                return networkId == NativeDataHelper.NetworkId.ETH_MAIN_NET.getValue() ? R.drawable.ic_eth_medium_icon : R.drawable.ic_chain_eth_test;
+                if (getMultisigWallet() == null) {
+                    return networkId == NativeDataHelper.NetworkId.ETH_MAIN_NET.getValue() ? R.drawable.ic_eth_medium_icon : R.drawable.ic_chain_eth_test;
+                } else {
+                    return networkId == NativeDataHelper.NetworkId.ETH_MAIN_NET.getValue() ? R.drawable.ic_eth_multisig : R.drawable.ic_eth_multisig_grey;
+                }
             case EOS:
                 return networkId == NativeDataHelper.NetworkId.TEST_NET.getValue() ? R.drawable.ic_eos : R.drawable.ic_eos;
             default:
@@ -544,11 +551,24 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
     }
 
     @Nullable
+    public MultisigWallet getMultisigWallet() {
+        return multisigWallet;
+    }
+
+    public void setMultisigWallet(@Nullable MultisigWallet multisigWallet) {
+        this.multisigWallet = multisigWallet;
+    }
+
+    @Nullable
     public EosWallet getEosWallet() {
         return eosWallet;
     }
 
     public void setEosWallet(@Nullable EosWallet eosWallet) {
         this.eosWallet = eosWallet;
+    }
+
+    public boolean isMultisig() {
+        return getEthWallet() != null && getMultisigWallet() != null;
     }
 }

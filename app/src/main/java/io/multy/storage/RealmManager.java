@@ -13,6 +13,7 @@ import java.io.File;
 
 import io.multy.Multy;
 import io.realm.Realm;
+import io.realm.exceptions.RealmMigrationNeededException;
 
 public class RealmManager {
 
@@ -23,8 +24,8 @@ public class RealmManager {
     public static Realm open() {
         try {
             realm = Realm.getInstance(Multy.getRealmConfiguration());
-        } catch (Throwable t) {
-            t.printStackTrace(); //CONSIDER CATCHING REALM MIGRATION EXCEPTIONS HERE
+        } catch (RealmMigrationNeededException e) {
+            e.printStackTrace();
         }
         return realm;
     }

@@ -8,6 +8,7 @@ package io.multy.ui.fragments;
 
 import android.Manifest;
 import android.app.Activity;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -20,6 +21,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import com.google.gson.Gson;
 
 import java.util.Collections;
 
@@ -29,12 +33,15 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
 import io.multy.R;
+import io.multy.model.entities.wallet.MultisigEvent;
 import io.multy.ui.fragments.dialogs.WalletChooserDialogFragment;
 import io.multy.util.Constants;
 import io.multy.util.NativeDataHelper;
+import io.multy.viewmodels.CreateMultisigViewModel;
 import me.dm7.barcodescanner.zbar.BarcodeFormat;
 import me.dm7.barcodescanner.zbar.Result;
 import me.dm7.barcodescanner.zbar.ZBarScannerView;
+import timber.log.Timber;
 
 import static android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE;
 import static android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN;
@@ -63,16 +70,19 @@ public class ScanInvitationCodeFragment extends BaseFragment {
     @BindColor(R.color.background_dark_transparent)
     int colorDark;
 
-    public static ScanInvitationCodeFragment getInstance() {
+    private CreateMultisigViewModel viewModel;
+
+    public static ScanInvitationCodeFragment newInstance() {
         return new ScanInvitationCodeFragment();
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         if (getActivity() != null) {
-            getActivity().getWindow().setSoftInputMode(SOFT_INPUT_STATE_ALWAYS_HIDDEN|SOFT_INPUT_ADJUST_RESIZE);
+            getActivity().getWindow().setSoftInputMode(SOFT_INPUT_STATE_ALWAYS_HIDDEN | SOFT_INPUT_ADJUST_RESIZE);
         }
         super.onCreate(savedInstanceState);
+        viewModel = ViewModelProviders.of(getActivity()).get(CreateMultisigViewModel.class);
     }
 
     @Nullable
@@ -90,7 +100,7 @@ public class ScanInvitationCodeFragment extends BaseFragment {
         if (permissionsGranted(getContext())) {
             scanner.startCamera();
         } else {
-            requestPermissions(new String[] {Manifest.permission.CAMERA}, Constants.CAMERA_REQUEST_CODE);
+            requestPermissions(new String[]{Manifest.permission.CAMERA}, Constants.CAMERA_REQUEST_CODE);
         }
     }
 
@@ -109,7 +119,7 @@ public class ScanInvitationCodeFragment extends BaseFragment {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == Constants.CAMERA_REQUEST_CODE && getActivity() != null) {
-            for(int result : grantResults) {
+            for (int result : grantResults) {
                 if (result != PackageManager.PERMISSION_GRANTED) {
                     getActivity().onBackPressed();
                     break;
@@ -122,7 +132,8 @@ public class ScanInvitationCodeFragment extends BaseFragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == WalletChooserDialogFragment.REQUEST_WALLET_ID && resultCode == Activity.RESULT_OK && getActivity() != null) {
+        if (requestCode == WalletChooserDialogFragment.REQUEST_WALLET_ID &&
+                resultCode == Activity.RESULT_OK && getActivity() != null) {
             long walletId = data.getLongExtra(Constants.EXTRA_WALLET_ID, 0);
 //            startActivity(new Intent(getContext(), CreateMultiSigActivity.class).putExtra(Constants.EXTRA_WALLET_ID, walletId));
         } else {
@@ -151,13 +162,14 @@ public class ScanInvitationCodeFragment extends BaseFragment {
     private void onResult(Result result) {
         try {
             String resultString = result.getContents();
+            resultString = resultString.replace("invite code: ", "");
             if (resultString == null || resultString.length() != Constants.INVITE_CODE_LENGTH) {
                 throw new IllegalArgumentException("Scanned data has not have invite code.");
             } else {
                 inputCode.setText(resultString);
             }
-        } catch (Throwable t) {
-            t.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
             scanner.resumeCameraPreview(this::onResult);
         }
         scanner.postDelayed(() -> scanner.resumeCameraPreview(this::onResult), 3000);
@@ -199,12 +211,30 @@ public class ScanInvitationCodeFragment extends BaseFragment {
 
     @OnClick(R.id.button_join)
     void onClickJoin(View view) {
+        Timber.i("CLICKED JOIN");
         view.setEnabled(false);
         view.postDelayed(() -> view.setEnabled(true), 500);
-        if (getFragmentManager() != null) {
-            WalletChooserDialogFragment dialog = WalletChooserDialogFragment.getInstance(NativeDataHelper.Blockchain.ETH.getValue());
-            dialog.setTargetFragment(this, WalletChooserDialogFragment.REQUEST_WALLET_ID);
-            dialog.show(getFragmentManager(), WalletChooserDialogFragment.TAG);
-        }
+        final String inviteCode = inputCode.getText().toString();
+        viewModel.validate(inviteCode, ack -> {
+            Timber.i("VALIDATE: " + ack[0].toString());
+            MultisigEvent responseEvent = new Gson().fromJson(ack[0].toString(), MultisigEvent.class);
+            if (responseEvent.payload.exist) {
+                if (getFragmentManager() != null) {
+                    WalletChooserDialogFragment dialog = WalletChooserDialogFragment
+                            .getInstance(NativeDataHelper.Blockchain.ETH.getValue());
+                    dialog.setTargetFragment(ScanInvitationCodeFragment.this, WalletChooserDialogFragment.REQUEST_WALLET_ID);
+                    dialog.show(getFragmentManager(), WalletChooserDialogFragment.TAG);
+                    dialog.setOnWalletClickListener(wallet -> {
+                        dialog.dismiss();
+                        viewModel.setInviteCode(inviteCode);
+                        viewModel.setLinkedWallet(wallet);
+                        viewModel.join();
+                        getFragmentManager().beginTransaction().remove(ScanInvitationCodeFragment.this).commit();
+                    });
+                }
+            } else {
+                Toast.makeText(getActivity(), R.string.invite_code_not_recognized, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

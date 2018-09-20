@@ -6,6 +6,8 @@
 
 package io.multy.util;
 
+import android.text.TextUtils;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
@@ -142,11 +144,16 @@ public class CryptoFormatUtils {
     }
 
     public static String weiToEthLabel(String wei) {
-        return wei.equals("0") ? "0 ETH" : FORMAT_ETH.format(new BigDecimal(wei).divide(EthWallet.DIVISOR).doubleValue()) + " ETH";
+         return TextUtils.isEmpty(wei) || wei.equals("0") ?
+                 "0 ETH" : FORMAT_ETH.format(new BigDecimal(wei).divide(EthWallet.DIVISOR).doubleValue()) + " ETH";
     }
 
     public static String ethToWei(String eth) {
         return (new BigDecimal(eth).multiply(EthWallet.DIVISOR)).toBigInteger().toString();
+    }
+
+    public static BigInteger ethToWei(double eth) {
+        return (new BigDecimal(eth).multiply(EthWallet.DIVISOR)).toBigInteger();
     }
 
     public static String ethToUsd(double eth, double price) {
