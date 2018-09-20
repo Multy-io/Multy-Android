@@ -26,10 +26,6 @@ import io.multy.ui.activities.CreateMultiSigActivity;
 import io.multy.ui.activities.ImportWalletActivity;
 import io.multy.util.Constants;
 
-/**
- * Created by anschutz1927@gmail.com on 23.02.18.
- */
-
 public class AssetActionsDialogFragment extends BottomSheetDialogFragment implements DialogInterface.OnShowListener {
 
     public static final String TAG = AssetActionsDialogFragment.class.getSimpleName();
@@ -95,10 +91,24 @@ public class AssetActionsDialogFragment extends BottomSheetDialogFragment implem
     }
 
     @OnClick(R.id.button_join_multisig)
-    public void onJoinMultisig(View view) {
+    public void onClickJoinMultisig(View view) {
         view.setEnabled(false);
         dismiss();
         startActivity(new Intent(view.getContext(), CreateMultiSigActivity.class).putExtra(Constants.EXTRA_SCAN, true));
+    }
+
+    @OnClick(R.id.button_import_multisig)
+    public void onClickImportMultisig(View v) {
+        v.setEnabled(false);
+        dismiss();
+
+    }
+
+    @OnClick(R.id.button_import_eth)
+    public void onClickImportEth(View v) {
+        v.setEnabled(false);
+        dismiss();
+
     }
 
     @OnClick(R.id.button_import)

@@ -88,6 +88,42 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/button_create_multisig" />
 
+    <TextView
+        android:id="@+id/button_import_multisig"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:drawablePadding="32dp"
+        android:drawableStart="@drawable/ic_wallet_create_new_multisig"
+        android:gravity="center_vertical"
+        android:lineSpacingExtra="8sp"
+        android:paddingStart="16dp"
+        android:text="@string/import_multisig"
+        android:textColor="@color/black_light"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/button_import_eth"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/button_join_multisig" />
+
+    <TextView
+        android:id="@+id/button_import_eth"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:drawablePadding="32dp"
+        android:drawableStart="@drawable/ic_wallet_import"
+        android:gravity="center_vertical"
+        android:lineSpacingExtra="8sp"
+        android:paddingStart="16dp"
+        android:text="@string/import_eth_wallet"
+        android:textColor="@color/black_light"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/button_import"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/button_import_multisig" />
+
     <View
         android:id="@+id/button_import"
         android:layout_width="0dp"
