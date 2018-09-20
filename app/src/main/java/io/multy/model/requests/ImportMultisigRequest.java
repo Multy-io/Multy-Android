@@ -8,7 +8,7 @@ package io.multy.model.requests;
 
 import com.google.gson.annotations.SerializedName;
 
-public class CreateMultisigRequest {
+public class ImportMultisigRequest {
 
     @SerializedName("currencyID")
     private int currencyId;

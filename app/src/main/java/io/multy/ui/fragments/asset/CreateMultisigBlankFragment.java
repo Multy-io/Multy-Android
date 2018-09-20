@@ -35,6 +35,7 @@ import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.requests.CreateMultisigRequest;
+import io.multy.model.requests.Multisig;
 import io.multy.model.responses.WalletsResponse;
 import io.multy.storage.RealmManager;
 import io.multy.ui.activities.CreateMultiSigActivity;
@@ -298,7 +299,7 @@ public class CreateMultisigBlankFragment extends BaseFragment {
             request.setAddressIndex(wallet.getAddresses().size() - 1);
             request.setWalletIndex(wallet.getIndex());
             request.setWalletName(inputName.getText().toString());
-            request.setMultisig(new CreateMultisigRequest.Multisig(confirmationsCount, membersCount, inviteCode));
+            request.setMultisig(new Multisig(confirmationsCount, membersCount, inviteCode));
 
             MultyApi.INSTANCE.addWallet(view.getContext(), request).enqueue(new Callback<ResponseBody>() {
                 @Override
