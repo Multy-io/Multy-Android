@@ -971,6 +971,24 @@ Java_io_multy_util_NativeDataHelper_createEthMultisigWallet(JNIEnv *env, jclass 
 }
 
 JNIEXPORT jstring JNICALL
+Java_io_multy_util_NativeDataHelper_ethereumPersonalSign(JNIEnv *env, jclass type_, jstring key, jstring message) {
+
+    using namespace multy_core::internal;
+
+    const char *keyStr = env->GetStringUTFChars(key, nullptr);
+    const char *messageStr = env->GetStringUTFChars(message, nullptr);
+
+    CharPtr signature;
+
+    HANDLE_ERROR(ethereum_personal_sign(keyStr, messageStr, reset_sp(signature)));
+
+    env->ReleaseStringUTFChars(key, keyStr);
+    env->ReleaseStringUTFChars(message, messageStr);
+
+    return env->NewStringUTF(signature.get());;
+}
+
+JNIEXPORT jstring JNICALL
 Java_io_multy_util_NativeDataHelper_sendEOS(JNIEnv *env, jclass type_,
                                             jint jChainId, jint jNetType, jstring key,
                                             jint blockNumber, jstring refBlockPrefix,
