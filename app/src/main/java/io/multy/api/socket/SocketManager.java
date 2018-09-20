@@ -26,6 +26,7 @@ import io.socket.client.Manager;
 import io.socket.client.Socket;
 import io.socket.engineio.client.Transport;
 import io.socket.engineio.client.transports.WebSocket;
+import okhttp3.OkHttpClient;
 import timber.log.Timber;
 
 public class SocketManager {
@@ -49,16 +50,14 @@ public class SocketManager {
     private Gson gson;
 
     public SocketManager() throws URISyntaxException {
-//                    OkHttpClient okHttpClient = new OkHttpClient.Builder()
-//                    .hostnameVerifier((hostname, session) -> true)
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .hostnameVerifier((hostname, session) -> true)
 //                    .sslSocketFactory(mySSLContext.getSocketFactory(), myX509TrustManager)
-//                    .build();
+                .build();
 
-//            IO.setDefaultOkHttpWebSocketFactory(okHttpClient);
-//            IO.setDefaultOkHttpCallFactory(okHttpClient);
+        IO.setDefaultOkHttpWebSocketFactory(okHttpClient);
+        IO.setDefaultOkHttpCallFactory(okHttpClient);
 
-//            options.callFactory = okHttpClient;
-//            options.webSocketFactory = okHttpClient;
         gson = new Gson();
         IO.Options options = new IO.Options();
         options.forceNew = true;
@@ -66,6 +65,8 @@ public class SocketManager {
         options.transports = new String[]{WebSocket.NAME};
         options.path = "/socket.io";
         options.secure = false;
+        options.callFactory = okHttpClient;
+        options.webSocketFactory = okHttpClient;
         socket = IO.socket(SOCKET_URL, options);
         initDefaultHeaders();
         initDefaultEvents();
@@ -113,14 +114,15 @@ public class SocketManager {
                 transactionUpdateEntity.postValue(gson.fromJson(String.valueOf(args[0]), TransactionUpdateResponse.class).getEntity());
             } catch (Exception e) {
                 e.printStackTrace();
-            }}).on(EVENT_RECEIVE_DEPRECATED, args -> {
-                try {
-                    Timber.i("UPDATE " + String.valueOf(args[0]));
-                    transactionUpdateEntity.postValue(gson.fromJson(String.valueOf(args[0]), TransactionUpdateResponse.class).getEntity());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
+            }
+        }).on(EVENT_RECEIVE_DEPRECATED, args -> {
+            try {
+                Timber.i("UPDATE " + String.valueOf(args[0]));
+                transactionUpdateEntity.postValue(gson.fromJson(String.valueOf(args[0]), TransactionUpdateResponse.class).getEntity());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     public void sendMultisigTransactionOwnerAction(JSONObject eventJson, Ack ack) {

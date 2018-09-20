@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.multy.Multy;
 import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.model.entities.wallet.Wallet;
@@ -41,6 +42,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import timber.log.Timber;
 import trust.core.entity.Address;
+import trust.core.entity.Message;
+import trust.core.entity.TypedData;
+import trust.web3.OnSignTypedMessageListener;
 import trust.web3.Web3View;
 
 public class Web3Fragment extends BaseFragment {
@@ -52,6 +56,8 @@ public class Web3Fragment extends BaseFragment {
     private Wallet selectedWallet;
     private long walletId;
     byte[] seed;
+
+    private Message message;
 
     public static Web3Fragment newInstance() {
         Web3Fragment web3Fragment = new Web3Fragment();
@@ -68,7 +74,8 @@ public class Web3Fragment extends BaseFragment {
         showChooser();
         inputAddress.setOnEditorActionListener((v, actionId, event) -> {
             if ((actionId == EditorInfo.IME_ACTION_GO)) {
-                webView.loadUrl(inputAddress.getText().toString());
+//                webView.loadUrl(inputAddress.getText().toString());
+                webView.onSignMessageSuccessful(message, inputAddress.getText().toString());
                 return true;
 
             }
@@ -122,14 +129,24 @@ public class Web3Fragment extends BaseFragment {
 //        });
         webView.requestFocus();
         webView.setOnSignMessageListener(message -> {
-            Toast.makeText(getActivity(), "Message: " + message.value, Toast.LENGTH_LONG).show();
+//            Toast.makeText(getActivity(), "Message: " + message.value, Toast.LENGTH_LONG).show();
             Timber.d("onSignMessage:" + message.value);
-            webView.onSignCancel(message);
+            this.message = message;
+//            webView.onSignMessageSuccessful(message, inputAddress.getText().toString());
+//            webView.onSignCancel(message);
+            String signed = "0x" + NativeDataHelper.ethereumPersonalSign(getPrivateKey(), message.value);
+            Timber.i("signMessage=" + signed);
+            webView.onSignMessageSuccessful(message, signed);
         });
         webView.setOnSignPersonalMessageListener(message -> {
-            Toast.makeText(getActivity(), "Personal message: " + message.value, Toast.LENGTH_LONG).show();
+//            Toast.makeText(getActivity(), "Personal message: " + message.value, Toast.LENGTH_LONG).show();
             Timber.d("onSignPersonalMessage:" + message.value + "\n");
-            webView.onSignCancel(message);
+            this.message = message;
+//            webView.onSignPersonalMessageSuccessful(message, inputAddress.getText().toString());
+//            webView.onSignCancel(message);
+            String signed = "0x" + NativeDataHelper.ethereumPersonalSign(getPrivateKey(), message.value);
+            Timber.i("onSignPersonalMessage=" + signed);
+            webView.onSignPersonalMessageSuccessful(message, signed);
         });
         webView.setOnSignTransactionListener(transaction -> {
             getActivity().runOnUiThread(() -> {
@@ -149,8 +166,6 @@ public class Web3Fragment extends BaseFragment {
                     final String hex = "0x" + SendSummaryFragment.byteArrayToHex(tx);
                     Timber.i("hex converted " + hex);
 
-                    webView.onSignTransactionSuccessful(transaction, hex);
-
                     final HdTransactionRequestEntity entity = new HdTransactionRequestEntity(selectedWallet.getCurrencyId(), selectedWallet.getNetworkId(),
                             new HdTransactionRequestEntity.Payload("", selectedWallet.getActiveAddress().getIndex(),
                                     selectedWallet.getIndex(), hex, false));
@@ -162,6 +177,7 @@ public class Web3Fragment extends BaseFragment {
                             if (response.isSuccessful()) {
                                 Toast.makeText(getActivity(), "Buy item result - SUCCESS", Toast.LENGTH_LONG).show();
                                 Timber.i("BUYING SUCCESS");
+                                webView.onSignTransactionSuccessful(transaction, hex);
                             } else {
                                 Timber.i("BUYING FAIL");
                             }
@@ -182,6 +198,18 @@ public class Web3Fragment extends BaseFragment {
             Timber.d("onSignTransactionMessage:" + transaction.value + "\n recepient:" + transaction.recipient + "\n payLoad:" + transaction.payload);
 //            webView.onSignCancel(transaction);
         });
+    }
+
+    private String getPrivateKey() {
+        try {
+            int walletIndex = selectedWallet.getIndex();
+            int addressIndex = selectedWallet.getActiveAddress().getIndex();
+            return NativeDataHelper.getMyPrivateKey(seed, walletIndex, addressIndex, selectedWallet.getCurrencyId(), selectedWallet.getNetworkId());
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(Multy.getContext(), "Error while build private key", Toast.LENGTH_SHORT).show();
+            return null;
+        }
     }
 
     public void onBackPressed() {

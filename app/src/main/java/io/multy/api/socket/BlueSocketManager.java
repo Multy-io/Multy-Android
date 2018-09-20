@@ -61,13 +61,13 @@ public class BlueSocketManager {
 
     public void connect() {
         try {
-//            OkHttpClient okHttpClient = new OkHttpClient.Builder()
-//                    .hostnameVerifier((hostname, session) -> true)
+            OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                    .hostnameVerifier((hostname, session) -> true)
 //                    .sslSocketFactory(mySSLContext.getSocketFactory(), myX509TrustManager)
-//                    .build();
+                    .build();
 
-//            IO.setDefaultOkHttpWebSocketFactory(okHttpClient);
-//            IO.setDefaultOkHttpCallFactory(okHttpClient);
+            IO.setDefaultOkHttpWebSocketFactory(okHttpClient);
+            IO.setDefaultOkHttpCallFactory(okHttpClient);
 
             IO.Options options = new IO.Options();
             options.forceNew = true;
@@ -76,8 +76,8 @@ public class BlueSocketManager {
             options.path = "/socket.io";
             options.secure = false;
 //            options.callFactory = okHttpClient;
-//            options.webSocketFactory = okHttpClient;
-
+            options.webSocketFactory = okHttpClient;
+//
             final String userId = RealmManager.getSettingsDao().getUserId().getUserId();
 
             socket = IO.socket(SOCKET_URL, options);
@@ -93,43 +93,13 @@ public class BlueSocketManager {
             });
 
             socket
-                    .on(Socket.EVENT_CONNECT_ERROR, new Emitter.Listener() {
-                        @Override
-                        public void call(Object... args) {
-                            Timber.e("Error connecting to socket: " + args[0].toString());
-                        }
-                    })
-                    .on(Socket.EVENT_CONNECT_TIMEOUT, new Emitter.Listener() {
-                        @Override
-                        public void call(Object... args) {
-                            BlueSocketManager.this.log("connection timeout");
-                        }
-                    })
+                    .on(Socket.EVENT_CONNECT_ERROR, args -> Timber.e("Error connecting to socket: " + args[0].toString()))
+                    .on(Socket.EVENT_CONNECT_TIMEOUT, args -> BlueSocketManager.this.log("connection timeout"))
 //                    .on(Socket.EVENT_CONNECT, args -> log("Connected"))
-                    .on(EVENT_RECEIVER_ON, new Emitter.Listener() {
-                        @Override
-                        public void call(Object... args) {
-                            BlueSocketManager.this.log("Receiver on " + args[0]);
-                        }
-                    })
-                    .on(EVENT_SENDER_ON, new Emitter.Listener() {
-                        @Override
-                        public void call(Object... args) {
-                            BlueSocketManager.this.log("Sender on " + args[0]);
-                        }
-                    })
-                    .on(EVENT_SENDER_CHECK, new Emitter.Listener() {
-                        @Override
-                        public void call(Object... args) {
-                            Log.i("wise", "Sender check " + args[0].toString());
-                        }
-                    })
-                    .on(EVENT_FILTER, new Emitter.Listener() {
-                        @Override
-                        public void call(Object... args) {
-                            BlueSocketManager.this.log("Filter  " + args[0]);
-                        }
-                    })
+                    .on(EVENT_RECEIVER_ON, args -> BlueSocketManager.this.log("Receiver on " + args[0]))
+                    .on(EVENT_SENDER_ON, args -> BlueSocketManager.this.log("Sender on " + args[0]))
+                    .on(EVENT_SENDER_CHECK, args -> Log.i("wise", "Sender check " + args[0].toString()))
+                    .on(EVENT_FILTER, args -> BlueSocketManager.this.log("Filter  " + args[0]))
                     .on(EVENT_NEW_RECEIVER, new Emitter.Listener() {
                         @Override
                         public void call(Object... args) {

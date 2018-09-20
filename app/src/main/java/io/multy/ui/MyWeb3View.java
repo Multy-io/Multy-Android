@@ -40,7 +40,6 @@ public class MyWeb3View extends Web3View {
         setWebViewClient();
     }
 
-
     @Override
     public boolean onCheckIsTextEditor() {
         return true;

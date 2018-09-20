@@ -38,11 +38,6 @@ public class MyWalletsAdapter extends RecyclerView.Adapter<MyWalletsAdapter.Hold
     }
 
     @Override
-    public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new Holder(LayoutInflater.from(parent.getContext()).inflate(R.layout.view_asset_item, parent, false));
-    }
-
-    @Override
     public void onBindViewHolder(Holder holder, int position) {
         Wallet wallet = data.get(position);
 
@@ -61,6 +56,10 @@ public class MyWalletsAdapter extends RecyclerView.Adapter<MyWalletsAdapter.Hold
         holder.itemView.setOnClickListener(view -> listener.onWalletClick(wallet));
         holder.resync.setVisibility(wallet.isSyncing() ? View.VISIBLE : View.GONE);
         holder.imagePending.setVisibility(pending ? View.VISIBLE : View.GONE);
+    }
+
+    public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new Holder(LayoutInflater.from(parent.getContext()).inflate(R.layout.view_asset_item, parent, false));
     }
 
     @Override
