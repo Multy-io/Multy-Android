@@ -116,37 +116,35 @@ public class NativeDataHelper {
 
 
     /**
-     *
      * @param seed
-     * @param walletIndex linked wallet
-     * @param addressIndex linked wallet
-     * @param chainId linked wallet
-     * @param networkId linked wallet
-     * @param linkedBalance linked wallet
+     * @param walletIndex           linked wallet
+     * @param addressIndex          linked wallet
+     * @param chainId               linked wallet
+     * @param networkId             linked wallet
+     * @param linkedBalance         linked wallet
      * @param multisigWalletAddress
-     * @param amount spendable by user
-     * @param destionationAddress selected by user
-     * @param gasLimit estiomation "submit"
-     * @param gasPrice selected by user
-     * @param nonce linked wallet nonce
+     * @param amount                spendable by user
+     * @param destionationAddress   selected by user
+     * @param gasLimit              estiomation "submit"
+     * @param gasPrice              selected by user
+     * @param nonce                 linked wallet nonce
      * @return
      * @throws JniException
      */
     public static native byte[] makeTransactionMultisigETH(byte[] seed, int walletIndex, int addressIndex, int chainId, int networkId, String linkedBalance, String multisigWalletAddress, String amount, String destionationAddress, String gasLimit, String gasPrice, String nonce) throws JniException;
 
     /**
-     *
      * @param seed
-     * @param walletIndex linked wallet
-     * @param addressIndex linked wallet
-     * @param chainId linked wallet
-     * @param networkId linked wallet
-     * @param linkedBalance linked wallet
+     * @param walletIndex           linked wallet
+     * @param addressIndex          linked wallet
+     * @param chainId               linked wallet
+     * @param networkId             linked wallet
+     * @param linkedBalance         linked wallet
      * @param multisigWalletAddress
-     * @param requestId from api as "index"
-     * @param gasLimit estimation "confirm"
-     * @param gasPrice get medium from fee rate request
-     * @param nonce linked wallet nonce
+     * @param requestId             from api as "index"
+     * @param gasLimit              estimation "confirm"
+     * @param gasPrice              get medium from fee rate request
+     * @param nonce                 linked wallet nonce
      * @return
      * @throws JniException
      */
@@ -160,4 +158,5 @@ public class NativeDataHelper {
     public static native byte[] createEthMultisigWallet(byte[] seed, int walletIndex, int addressIndex, int chainId, int netType, String balance,
                                                         String gasLimit, String gasPrice, String nonce, String factoryAddress, String ownerAddress, int confirmation, String price) throws JniException;
 
+    public static native byte[] makeTransactionETHFromKey(String key, int chainId, int networkId, String balance, String amount, String destionationAddress, String gasLimit, String gasPrice, String nonce);
 }

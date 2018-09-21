@@ -57,7 +57,6 @@ public class WalletDeserializer implements JsonDeserializer<List<Wallet>> {
                             wallet.setAvailableBalance(multisigWallet.getBalance());
                             wallet.setMultisigWallet(multisigWallet);
                         }
-
                         wallet.setBalance(ethWallet.getBalance());
                         wallet.setAvailableBalance(ethWallet.getBalance());
                         wallet.setEthWallet(ethWallet);
