@@ -108,6 +108,7 @@ public class AssetsDao {
         savedWallet.setNetworkId(wallet.getNetworkId());
         savedWallet.setCurrencyId(wallet.getCurrencyId());
         savedWallet.setPending(wallet.isPending());
+        savedWallet.setSyncing(wallet.isSyncing());
 
         if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()) {
             savedWallet.setBtcWallet(wallet.getBtcWallet().asRealmObject(realm));
