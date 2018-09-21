@@ -126,6 +126,9 @@ public final class Constants {
     public static final int MIN_SATOSHI = 546;
     public static final String GAS_LIMIT_DEFAULT = "21000";
 
+    public static final String DEFAULT_IMPORT_WALLET_NAME = "Imported";
+    public static final String DEFAULT_IMPORT_MULTISIG_NAME = "Imported Multisig";
+
     public static final int MULTISIG_MEMBERS_COUNT = 50;
     public static final int INVITE_CODE_LENGTH = 45;
 

@@ -4,7 +4,8 @@
   ~ See LICENSE for details
   -->
 
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -60,70 +61,89 @@
         </FrameLayout>
     </android.support.v7.widget.Toolbar>
 
-    <TextView
-        android:id="@+id/title_key"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:text="@string/your_private_key_for_eth_wallet"
-        android:textColor="@color/blue_light"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar" />
-
-    <EditText
-        android:id="@+id/input_key"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:background="@drawable/shape_white_rounded"
-        android:gravity="center"
-        android:hint="@string/hint_paste_key"
-        android:padding="8dp"
-        app:layout_constraintTop_toBottomOf="@id/title_key" />
-
-    <TextView
-        android:id="@+id/title_address"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:text="@string/multisig_wallet_address"
-        android:textColor="@color/blue_light"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/input_key" />
-
-    <EditText
-        android:id="@+id/input_address"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:background="@drawable/shape_white_rounded"
-        android:gravity="center"
-        android:hint="@string/hint_enter_address"
-        android:padding="8dp"
-        app:layout_constraintTop_toBottomOf="@id/title_address" />
-
-    <android.support.v7.widget.ToggleGroup
-        android:id="@+id/group_network"
-        style="@style/Widget.Material.ToggleGroup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="24dp"
-        app:exclusive="true"
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/nested"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/button_import"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/input_address"
-        app:orientation="horizontal">
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
 
-        <android.support.v7.widget.ToggleButton
-            android:id="@+id/buttonHorizontal"
-            style="@style/ToggleStyle"
-            android:text="Mainnet" />
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <android.support.v7.widget.ToggleButton
-            android:id="@+id/buttonVertical"
-            style="@style/ToggleStyle"
-            android:text="Testnet" />
-    </android.support.v7.widget.ToggleGroup>
+            <TextView
+                android:id="@+id/title_key"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:text="@string/your_private_key_for_eth_wallet"
+                android:textColor="@color/blue_light"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
+                android:id="@+id/input_key"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:background="@drawable/shape_white_rounded"
+                android:gravity="center"
+                android:hint="@string/hint_paste_key"
+                android:inputType="text"
+                android:padding="8dp"
+                app:layout_constraintTop_toBottomOf="@id/title_key" />
+
+            <TextView
+                android:id="@+id/title_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:text="@string/multisig_wallet_address"
+                android:textColor="@color/blue_light"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/input_key" />
+
+            <EditText
+                android:id="@+id/input_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:background="@drawable/shape_white_rounded"
+                android:gravity="center"
+                android:hint="@string/hint_enter_address"
+                android:inputType="text"
+                android:padding="8dp"
+                app:layout_constraintTop_toBottomOf="@id/title_address" />
+
+            <android.support.v7.widget.ToggleGroup
+                android:id="@+id/group_network"
+                style="@style/Widget.Material.ToggleGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="24dp"
+                app:exclusive="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/input_address"
+                app:layout_constraintVertical_bias="0.0"
+                app:orientation="horizontal">
+
+                <android.support.v7.widget.ToggleButton
+                    android:id="@+id/button_main"
+                    style="@style/ToggleStyle"
+                    android:text="@string/mainnet" />
+
+                <android.support.v7.widget.ToggleButton
+                    android:id="@+id/button_test"
+                    style="@style/ToggleStyle"
+                    android:text="@string/testnet" />
+            </android.support.v7.widget.ToggleGroup>
+        </android.support.constraint.ConstraintLayout>
+    </android.support.v4.widget.NestedScrollView>
 
     <TextView
         android:id="@+id/button_import"

@@ -159,4 +159,9 @@ public class NativeDataHelper {
                                                         String gasLimit, String gasPrice, String nonce, String factoryAddress, String ownerAddress, int confirmation, String price) throws JniException;
 
     public static native byte[] makeTransactionETHFromKey(String key, int chainId, int networkId, String balance, String amount, String destionationAddress, String gasLimit, String gasPrice, String nonce);
+
+    public static native byte[] createEthMultisigWalletFromKey(String privateKey, int chainId, int netType, String balance,
+                                                               String gasLimit, String gasPrice, String nonce, String factoryAddress, String ownerAddress, int confirmation, String price) throws JniException;
+
+    public static native String makeAccountAddressFromKey(String privateKey, int chainId, int networkId) throws JniException;
 }

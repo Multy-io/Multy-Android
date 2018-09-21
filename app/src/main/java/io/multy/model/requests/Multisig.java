@@ -20,11 +20,19 @@ public class Multisig {
     private String inviteCode;
     @SerializedName("isImported")
     private boolean isImported = false;
+    @SerializedName("contractAddress")
+    private String multisigAddress;
 
     public Multisig(int confirmsCount, int membersCount, String inviteCode) {
         signatureRequired = confirmsCount;
         ownersCount = membersCount;
         this.inviteCode = inviteCode;
+    }
+
+    public Multisig(String multisigAddress) {
+        isMultisig = true;
+        isImported = true;
+        this.multisigAddress = multisigAddress;
     }
 
     public boolean isMultisig() {
@@ -65,5 +73,13 @@ public class Multisig {
 
     public void setInviteCode(String inviteCode) {
         this.inviteCode = inviteCode;
+    }
+
+    public String getMultisigAddress() {
+        return multisigAddress;
+    }
+
+    public void setMultisigAddress(String multisigAddress) {
+        this.multisigAddress = multisigAddress;
     }
 }
