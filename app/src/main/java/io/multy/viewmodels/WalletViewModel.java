@@ -72,6 +72,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import io.realm.Realm;
 import io.realm.RealmList;
+import io.realm.RealmResults;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -274,28 +275,43 @@ public class WalletViewModel extends BaseViewModel {
         return isWalletUpdated;
     }
 
-    public MutableLiveData<Boolean> removeWallet() {
-        isLoading.setValue(true);
-        MultyApi.INSTANCE.removeWallet(wallet.getValue().getCurrencyId(), wallet.getValue().getNetworkId(),
-                wallet.getValue().getIndex()).enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    RealmManager.getAssetsDao().removeWallet(wallet.getValue().getId());
-                    isRemoved.setValue(true);
-                } else {
-                    isRemoved.setValue(false);
-                }
-                isLoading.setValue(false);
+    private boolean isLinkedWallet(Wallet wallet) {
+        RealmResults<Wallet> multisigs = RealmManager.getAssetsDao().getMultisigWallets();
+        for (Wallet ms : multisigs) {
+            if (ms.getActiveAddress().getAddress().equals(wallet.getActiveAddress().getAddress())) {
+                return true;
             }
+        }
+        return false;
+    }
 
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable throwable) {
-                throwable.printStackTrace();
-                isLoading.setValue(false);
-                errorMessage.setValue(throwable.getMessage());
-            }
-        });
+    public MutableLiveData<Boolean> removeWallet() {
+        Wallet wallet = this.wallet.getValue();
+        if (wallet == null || isLinkedWallet(wallet)) {
+            isRemoved.setValue(false);
+        } else {
+            isLoading.setValue(true);
+            MultyApi.INSTANCE.removeWallet(wallet.getCurrencyId(), wallet.getNetworkId(),
+                    wallet.getIndex()).enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                    if (response.isSuccessful()) {
+                        RealmManager.getAssetsDao().removeWallet(wallet.getId());
+                        isRemoved.setValue(true);
+                    } else {
+                        isRemoved.setValue(false);
+                    }
+                    isLoading.setValue(false);
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable throwable) {
+                    throwable.printStackTrace();
+                    isLoading.setValue(false);
+                    errorMessage.setValue(throwable.getMessage());
+                }
+            });
+        }
         return isRemoved;
     }
 

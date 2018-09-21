@@ -64,7 +64,7 @@ public class MultisigSettingsFragment extends BaseFragment {
             textWalletAddress.setText(connectedWallet.getActiveAddress().getAddress());
             textWalletName.setText(connectedWallet.getWalletName());
             imageWallet.setImageResource(connectedWallet.getIconResourceId());
-            textSigngs.setText(wallet.getMultisigWallet().getOwners().size() + " / " + wallet.getMultisigWallet().getOwnersCount());
+            textSigngs.setText(wallet.getMultisigWallet().getConfirmations() + " / " + wallet.getMultisigWallet().getOwnersCount());
             if (wallet.getMultisigWallet().getDeployStatus() > 2) {
                 buttonDelete.setEnabled(false);
             }

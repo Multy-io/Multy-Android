@@ -158,10 +158,15 @@ public class NativeDataHelper {
     public static native byte[] createEthMultisigWallet(byte[] seed, int walletIndex, int addressIndex, int chainId, int netType, String balance,
                                                         String gasLimit, String gasPrice, String nonce, String factoryAddress, String ownerAddress, int confirmation, String price) throws JniException;
 
-    public static native byte[] makeTransactionETHFromKey(String key, int chainId, int networkId, String balance, String amount, String destionationAddress, String gasLimit, String gasPrice, String nonce);
+    public static native byte[] makeTransactionETHFromKey(String key, int chainId, int networkId, String balance, String amount, String destionationAddress, String gasLimit, String gasPrice, String nonce) throws JniException;
 
     public static native byte[] createEthMultisigWalletFromKey(String privateKey, int chainId, int netType, String balance,
                                                                String gasLimit, String gasPrice, String nonce, String factoryAddress, String ownerAddress, int confirmation, String price) throws JniException;
 
     public static native String makeAccountAddressFromKey(String privateKey, int chainId, int networkId) throws JniException;
+
+    public static native byte[] makeTransactionMultisigETHFromKey(String privatKey, int chainId, int networkId, String linkedBalance, String multisigWalletAddress, String amount, String destionationAddress, String gasLimit, String gasPrice, String nonce) throws JniException;
+
+    public static native byte[] confirmTransactionMultisigETHFromKey(String privateKey, int chainId, int networkId, String linkedBalance, String multisigWalletAddress, String requestId, String gasLimit, String gasPrice, String nonce) throws JniException;
+
 }

@@ -67,6 +67,6 @@
     <color name="divider_grey">#dfe0e6</color>
     <color name="divider_grey_lightest">#edf0f9</color>
     <color name="blue_dark_transparent">#9d00162d</color>
-    <color name="green_white">#5fcc7d</color>
+    <color name="green_white">#cfffdd</color>
     <color name="blue_white">#97ceff</color>
 </resources>

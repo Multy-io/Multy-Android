@@ -24,23 +24,23 @@
     </string-array>
 
     <string-array name="available_multisig_chain_abbrev">
-        <!--<item>ETH</item>-->
+        <item>ETH</item>
         <item>ETH Testnet</item>
     </string-array>
     <string-array name="available_multisig_chain_name">
-        <!--<item>Ethereum</item>-->
+        <item>Ethereum</item>
         <item>Ethereum</item>
     </string-array>
     <array name="available_chain_multisig_image_ids">
-        <!--<item>@drawable/chain_eth</item>-->
+        <item>@drawable/chain_eth</item>
         <item>@drawable/ic_chain_eth_test</item>
     </array>
     <integer-array name="available_multisig_chain_net_types">
-        <!--<item>1</item>-->
+        <item>1</item>
         <item>4</item>
     </integer-array>
     <integer-array name="available_multisig_chain_ids">
-        <!--<item>60</item>-->
+        <item>60</item>
         <item>60</item>
     </integer-array>
 

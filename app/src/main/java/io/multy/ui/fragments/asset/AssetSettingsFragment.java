@@ -63,7 +63,7 @@ public class AssetSettingsFragment extends BaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = ViewModelProviders.of(getActivity()).get(WalletViewModel.class);
+        viewModel = ViewModelProviders.of(requireActivity()).get(WalletViewModel.class);
         setBaseViewModel(viewModel);
     }
 
