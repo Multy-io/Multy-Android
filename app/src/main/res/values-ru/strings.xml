@@ -280,11 +280,22 @@
     <string name="about_resync">В случае возникновения чрезвычайной ситуации: вы можете исправить застрявшие транзакции на этом кошельке, выполнив полную повторную синхронизацию. Обратите внимание, что это может занять некоторое время, и вы не сможете отправлять какие-либо транзакции из этого кошелька в течение этого периода.</string>
     <string name="rejected">Отклоненная</string>
     <string name="start_for">Создать за </string>
-    <string name="invitation_code">Код приглошения</string>
-    <string name="user_joined">Присоединен\nпользователей</string>
+    <string name="invitation_code">Код приглашения</string>
+    <string name="user_joined">Присоединено\nпользователей</string>
     <string name="resync">Подождите\nСинхронизация кошелька</string>
     <string name="not_enough_linked_balance">Недостаточный баланс на привязанном кошельке</string>
     <string name="available_balance">Доступный баланс</string>
     <string name="confirmation_details">Подтверждения</string>
-    <string name="share_address">Поделиться\nадресом</string>
+    <string name="share_address">Поделиться адресом</string>
+    <string name="import_multisig">Импорт Multisig</string>
+    <string name="import_eth_wallet">Импорт Ethereum кошелька</string>
+    <string name="import_multisig_wallet">Импорт Multisig кошелька</string>
+    <string name="your_private_key_for_eth_wallet">Ваш приватный ключ от ETH кошелька</string>
+    <string name="hint_paste_key">Вставьте ключ здесь</string>
+    <string name="multisig_wallet_address">Адрес Multisig кошелька</string>
+    <string name="hint_enter_address">Вставьте адрес здесь</string>
+    <string name="import_now">Импортировать</string>
+    <string name="mainnet">Мэйннет</string>
+    <string name="testnet">Тестнет</string>
+    <string name="about_signs">Нельзя изменить количество необходимых подтверждений для отправки транзакции после создасния multisig кошелька.</string>
 </resources>

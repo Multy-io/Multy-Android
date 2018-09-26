@@ -132,7 +132,7 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             Analytics.getInstance(v.getContext()).logWallet(AnalyticsConstants.WALLET_TRANSACTION, 1);
             Fragment fragment;
             if (isMultisig && !isIncoming) {
-                fragment = MultisigTransactionInfoFragment.newInstance(position);
+                fragment = MultisigTransactionInfoFragment.newInstance(transactionHistoryList.get(position).getTxHash());
             } else {
                 Bundle transactionInfo = new Bundle();
                 int mode = isIncoming ? MODE_RECEIVE : MODE_SEND;
@@ -317,7 +317,9 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         counter = calculateStatus(owners, MULTISIG_OWNER_STATUS_DECLINED);
         holder.textRejectCount.setVisibility(counter > 0 ? View.VISIBLE : View.GONE);
         holder.textRejectCount.setText(String.valueOf(counter));
-        counter = calculateViewCount(owners);
+//        counter = calculateViewCount(owners);
+        counter = calculateStatus(owners, Constants.MULTISIG_OWNER_STATUS_SEEN);
+        holder.textViewCount.setVisibility(counter > 0 ? View.VISIBLE : View.GONE);
         holder.textViewCount.setText(String.valueOf(counter));
         setItemClickListener(holder.itemView, isIncoming, true, position);
     }

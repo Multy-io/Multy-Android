@@ -287,5 +287,16 @@
     <string name="not_enough_linked_balance">Недостатній баланс на прив\'язаному гаманці</string>
     <string name="available_balance">Доступний баланс</string>
     <string name="confirmation_details">Підтвердження</string>
-    <string name="share_address">Поділитися\nадресою</string>
+    <string name="share_address">Поділитися адресою</string>
+    <string name="import_multisig">Імпорт Multisig</string>
+    <string name="import_eth_wallet">Імпорт Ethereum гаманця</string>
+    <string name="import_multisig_wallet">Імпорт Multisig гаманця</string>
+    <string name="your_private_key_for_eth_wallet">Ваш приватний ключ від ETH гаманця</string>
+    <string name="hint_paste_key">Вставте ключ тут</string>
+    <string name="multisig_wallet_address">Адреса Multisig гаманця</string>
+    <string name="hint_enter_address">Вставте адресу тут</string>
+    <string name="import_now">Імпортувати</string>
+    <string name="mainnet">Мейннет</string>
+    <string name="testnet">Тестнет</string>
+    <string name="about_signs">Не можна змінити кількість необхідних підтверджень для відправки транзакції після создаснія multisig гаманця.</string>
 </resources>

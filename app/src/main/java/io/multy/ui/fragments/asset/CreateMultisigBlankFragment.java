@@ -129,10 +129,13 @@ public class CreateMultisigBlankFragment extends BaseFragment {
                 getActivity().getIntent().putExtra(Constants.EXTRA_WALLET_ID, data.getLongExtra(Constants.EXTRA_WALLET_ID, 0));
                 wallet = RealmManager.getAssetsDao().getWalletById(data.getLongExtra(Constants.EXTRA_WALLET_ID, 0));
                 showWalletInfo();
-            } else if (requestCode == Constants.REQUEST_CODE_SET_CHAIN) {
+            } else if (requestCode == Constants.REQUEST_CODE_SET_CHAIN && getActivity() != null) {
                 networkId = data.getIntExtra(Constants.CHAIN_NET, 0);
                 currencyId = data.getIntExtra(Constants.CHAIN_ID, 0);
                 chainName = data.getStringExtra(Constants.CHAIN_NAME);
+                wallet = null;
+                getActivity().getIntent().removeExtra(Constants.EXTRA_WALLET_ID);
+                showWalletInfo();
             }
         }
         super.onActivityResult(requestCode, resultCode, data);

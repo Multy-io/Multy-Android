@@ -34,22 +34,19 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.storage.RealmManager;
-import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
 import io.multy.ui.fragments.Web3Fragment;
+import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
 import io.multy.ui.fragments.main.AssetsFragment;
 import io.multy.ui.fragments.main.FastOperationsFragment;
 import io.multy.ui.fragments.main.FeedFragment;
 import io.multy.ui.fragments.main.SettingsFragment;
 import io.multy.ui.fragments.main.contacts.ContactInfoFragment;
 import io.multy.ui.fragments.main.contacts.ContactsFragment;
-import io.multy.ui.fragments.send.SendSummaryFragment;
 import io.multy.util.Constants;
 import io.multy.util.ContactUtils;
-import io.multy.util.NativeDataHelper;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.WalletViewModel;
-import timber.log.Timber;
 
 
 public class MainActivity extends BaseActivity implements TabLayout.OnTabSelectedListener, BaseActivity.OnLockCloseListener {
@@ -81,13 +78,6 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
             showLock();
         }
         logFirstLaunch();
-
-        final String key = "4161b715ad2fe22b46a2c5fbbc5fed256ef947140143126e8436ed09adab8800";
-        final byte[] tx = NativeDataHelper.makeTransactionETHFromKey(key, NativeDataHelper.Blockchain.ETH.getValue(), NativeDataHelper.NetworkId.RINKEBY.getValue(), "100000000000000000", "1000",
-                "0x0c52f1dfee7ba1689f34b1320e7a9b0517469561", "21000", "2000000000", "9");
-
-        final String txHex = SendSummaryFragment.byteArrayToHex(tx);
-        Timber.i("TXHEX=" + txHex);
     }
 
     @Override

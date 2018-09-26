@@ -46,7 +46,6 @@ import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.asset.AssetInfoFragment;
 import io.multy.ui.fragments.dialogs.AddressActionsDialogFragment;
 import io.multy.ui.fragments.dialogs.CompleteDialogFragment;
-import io.multy.ui.fragments.dialogs.DonateDialog;
 import io.multy.util.Constants;
 import io.multy.util.DeepLinkShareHelper;
 import io.multy.util.NativeDataHelper;
@@ -295,23 +294,23 @@ public class RequestSummaryFragment extends BaseFragment {
         });
     }
 
-    @OnClick(R.id.button_address)
-    void onClickAddressBook(View v) {
-        Analytics.getInstance(getActivity()).logReceiveSummary(AnalyticsConstants.RECEIVE_SUMMARY_ADDRESS_BOOK, viewModel.getChainId());
-        v.setEnabled(false);
-        v.postDelayed(() -> v.setEnabled(true), 500);
-        if (getActivity() != null) {
-            DonateDialog.getInstance(Constants.DONATE_ADDING_CONTACTS).show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
-        }
-    }
+//    @OnClick(R.id.button_address)
+//    void onClickAddressBook(View v) {
+//        Analytics.getInstance(getActivity()).logReceiveSummary(AnalyticsConstants.RECEIVE_SUMMARY_ADDRESS_BOOK, viewModel.getChainId());
+//        v.setEnabled(false);
+//        v.postDelayed(() -> v.setEnabled(true), 500);
+//        if (getActivity() != null) {
+//            DonateDialog.getInstance(Constants.DONATE_ADDING_CONTACTS).show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
+//        }
+//    }
 
-    @OnClick(R.id.button_scan_wireless)
-    void onClickWirelessScan() {
-        Analytics.getInstance(getActivity()).logReceiveSummary(AnalyticsConstants.RECEIVE_SUMMARY_WIRELESS, viewModel.getChainId());
-        if (getActivity() != null) {
-            DonateDialog.getInstance(Constants.DONATE_ADDING_WIRELESS_SCAN).show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
-        }
-    }
+//    @OnClick(R.id.button_scan_wireless)
+//    void onClickWirelessScan() {
+//        Analytics.getInstance(getActivity()).logReceiveSummary(AnalyticsConstants.RECEIVE_SUMMARY_WIRELESS, viewModel.getChainId());
+//        if (getActivity() != null) {
+//            DonateDialog.getInstance(Constants.DONATE_ADDING_WIRELESS_SCAN).show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
+//        }
+//    }
 
     @OnClick(R.id.button_options)
     void onClickOptions() {

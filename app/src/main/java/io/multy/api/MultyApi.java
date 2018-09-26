@@ -8,6 +8,7 @@ package io.multy.api;
 
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -27,6 +28,7 @@ import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.requests.AddWalletAddressRequest;
 import io.multy.model.requests.CreateMultisigRequest;
 import io.multy.model.requests.HdTransactionRequestEntity;
+import io.multy.model.requests.ImportWalletRequest;
 import io.multy.model.requests.UpdateWalletNameRequest;
 import io.multy.model.responses.AccountsResponse;
 import io.multy.model.responses.AuthResponse;
@@ -78,7 +80,7 @@ public enum MultyApi implements MultyApiInterface {
 
                             @Nullable
                             @Override
-                            public Request authenticate(Route route, Response response) throws IOException {
+                            public Request authenticate(@NonNull Route route, @NonNull Response response) throws IOException {
                                 Realm realm = Realm.getInstance(Multy.getRealmConfiguration());
                                 SettingsDao dao = new SettingsDao(realm);
 
@@ -120,6 +122,16 @@ public enum MultyApi implements MultyApiInterface {
         @Override
         public Call<ResponseBody> addWallet(Context context, CreateMultisigRequest request) {
             return api.addWallet(request);
+        }
+
+        @Override
+        public Call<ResponseBody> importWallet(ImportWalletRequest request) {
+            return api.importWallet(request);
+        }
+
+        @Override
+        public Call<ResponseBody> importMultisigWallet(ImportWalletRequest request) {
+            return api.importMultisigWallet(request);
         }
 
         @Override

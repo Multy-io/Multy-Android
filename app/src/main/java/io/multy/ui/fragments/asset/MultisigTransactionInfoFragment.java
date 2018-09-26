@@ -66,6 +66,7 @@ import static io.multy.util.Constants.TX_MEMPOOL_OUTCOMING;
 public class MultisigTransactionInfoFragment extends BaseFragment {
 
     public static final String TAG = MultisigTransactionInfoFragment.class.getSimpleName();
+    private static final String SELECTED_TX = "SELECTED_TX";
 
     @BindView(R.id.linear_parent)
     LinearLayout parent;
@@ -137,10 +138,10 @@ public class MultisigTransactionInfoFragment extends BaseFragment {
     private String walletAddress;
     private SocketManager socketManager;
 
-    public static MultisigTransactionInfoFragment newInstance(int transactionPosition) {
+    public static MultisigTransactionInfoFragment newInstance(String transactionId) {
         MultisigTransactionInfoFragment fragment = new MultisigTransactionInfoFragment();
         Bundle args = new Bundle();
-        args.putInt(TransactionInfoFragment.SELECTED_POSITION, transactionPosition);
+        args.putString(SELECTED_TX, transactionId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -151,7 +152,7 @@ public class MultisigTransactionInfoFragment extends BaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = ViewModelProviders.of(getActivity()).get(WalletViewModel.class);
+        viewModel = ViewModelProviders.of(requireActivity()).get(WalletViewModel.class);
         setBaseViewModel(viewModel);
         adapter = new MultisigOwnersAdapter();
         try {
@@ -163,13 +164,13 @@ public class MultisigTransactionInfoFragment extends BaseFragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = getLayoutInflater().inflate(R.layout.fragment_multisig_transaction_info, container, false);
         ButterKnife.bind(this, v);
         recyclerOwners.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerOwners.setAdapter(adapter);
         viewModel.wallet.observe(this, this::onWallet);
+        recyclerOwners.setNestedScrollingEnabled(false);
         initAnimationSliders();
         return v;
     }
@@ -214,9 +215,22 @@ public class MultisigTransactionInfoFragment extends BaseFragment {
 
     private void onHistory(ArrayList<TransactionHistory> transactionHistories) {
         if (transactionHistories != null && getArguments() != null) {
-            int position = getArguments().getInt(TransactionInfoFragment.SELECTED_POSITION);
-            setData(transactionHistories.get(position));
+            transaction = findTransaction(transactionHistories, getArguments().getString(SELECTED_TX));
+            if (transaction != null) {
+                setData(transaction);
+            } else if (getActivity() != null) {
+                getActivity().onBackPressed();
+            }
         }
+    }
+
+    private TransactionHistory findTransaction(ArrayList<TransactionHistory> histories, String transactionId) {
+        for (TransactionHistory history : histories) {
+            if (history.getTxHash().equals(transactionId)) {
+                return history;
+            }
+        }
+        return null;
     }
 
     private void setData(TransactionHistory transactionHistory) {

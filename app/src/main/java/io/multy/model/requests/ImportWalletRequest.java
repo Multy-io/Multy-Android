@@ -8,7 +8,7 @@ package io.multy.model.requests;
 
 import com.google.gson.annotations.SerializedName;
 
-public class ImportMultisigRequest {
+public class ImportWalletRequest {
 
     @SerializedName("currencyID")
     private int currencyId;
@@ -22,6 +22,8 @@ public class ImportMultisigRequest {
     private int walletIndex;
     @SerializedName("walletName")
     private String walletName;
+    @SerializedName("isImported")
+    private boolean isImported;
     @SerializedName("multisig")
     private Multisig multisig;
 
@@ -71,6 +73,14 @@ public class ImportMultisigRequest {
 
     public void setWalletName(String walletName) {
         this.walletName = walletName;
+    }
+
+    public boolean isImported() {
+        return isImported;
+    }
+
+    public void setImported(boolean imported) {
+        isImported = imported;
     }
 
     public Multisig getMultisig() {

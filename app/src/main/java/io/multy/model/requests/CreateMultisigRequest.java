@@ -22,6 +22,8 @@ public class CreateMultisigRequest {
     private int walletIndex;
     @SerializedName("walletName")
     private String walletName;
+    @SerializedName("isImported")
+    private boolean isImported;
     @SerializedName("multisig")
     private Multisig multisig;
 
@@ -79,5 +81,13 @@ public class CreateMultisigRequest {
 
     public void setMultisig(Multisig multisig) {
         this.multisig = multisig;
+    }
+
+    public boolean isImported() {
+        return isImported;
+    }
+
+    public void setImported(boolean imported) {
+        isImported = imported;
     }
 }

@@ -141,9 +141,11 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activities.ImportMultisigActivity"
+            android:windowSoftInputMode="adjustResize|stateAlwaysVisible"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activities.ImportEthWalletActivity"
+            android:windowSoftInputMode="adjustResize|stateAlwaysVisible"
             android:screenOrientation="portrait" />
 
         <!-- Branch install referrer tracking -->

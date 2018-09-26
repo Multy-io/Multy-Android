@@ -315,62 +315,62 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/button_start_broadcast" />
 
-        <TextView
-            android:id="@+id/button_address"
-            style="@style/ShareButton"
-            android:layout_marginTop="@dimen/margin_10dp"
-            android:drawableTop="@drawable/ic_donation_icon_smallest"
-            android:drawablePadding="8dp"
-            android:letterSpacing="0.01"
-            android:lineSpacingExtra="4sp"
-            android:paddingTop="10dp"
-            android:text="@string/contacts_bottombar"
-            android:textSize="12sp"
-            app:layout_constraintHorizontal_chainStyle="spread"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/button_scan_wireless"
-            app:layout_constraintTop_toBottomOf="@id/text_send_via" />
+        <!--<TextView-->
+            <!--android:id="@+id/button_address"-->
+            <!--style="@style/ShareButton"-->
+            <!--android:layout_marginTop="@dimen/margin_10dp"-->
+            <!--android:drawableTop="@drawable/ic_donation_icon_smallest"-->
+            <!--android:drawablePadding="8dp"-->
+            <!--android:letterSpacing="0.01"-->
+            <!--android:lineSpacingExtra="4sp"-->
+            <!--android:paddingTop="10dp"-->
+            <!--android:text="@string/contacts_bottombar"-->
+            <!--android:textSize="12sp"-->
+            <!--app:layout_constraintHorizontal_chainStyle="spread"-->
+            <!--app:layout_constraintLeft_toLeftOf="parent"-->
+            <!--app:layout_constraintRight_toLeftOf="@+id/button_scan_wireless"-->
+            <!--app:layout_constraintTop_toBottomOf="@id/text_send_via" />-->
 
-        <TextView
-            android:id="@+id/contacts_donate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:text="@string/work_in_progress"
-            android:textColor="@color/red_warn"
-            android:textSize="10sp"
-            app:layout_constraintBottom_toBottomOf="@id/button_address"
-            app:layout_constraintEnd_toEndOf="@id/button_address"
-            app:layout_constraintStart_toStartOf="@id/button_address" />
+        <!--<TextView-->
+            <!--android:id="@+id/contacts_donate"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginBottom="8dp"-->
+            <!--android:text="@string/work_in_progress"-->
+            <!--android:textColor="@color/red_warn"-->
+            <!--android:textSize="10sp"-->
+            <!--app:layout_constraintBottom_toBottomOf="@id/button_address"-->
+            <!--app:layout_constraintEnd_toEndOf="@id/button_address"-->
+            <!--app:layout_constraintStart_toStartOf="@id/button_address" />-->
 
-        <TextView
-            android:id="@+id/button_scan_wireless"
-            style="@style/ShareButton"
-            android:layout_marginTop="10dp"
-            android:drawableTop="@drawable/ic_donation_icon_smallest"
-            android:drawablePadding="8dp"
-            android:letterSpacing="0.01"
-            android:lineSpacingExtra="4sp"
-            android:visibility="gone"
-            android:paddingTop="10dp"
-            android:text="@string/wireless_scan"
-            android:textSize="12sp"
-            app:layout_constraintLeft_toRightOf="@+id/button_address"
-            app:layout_constraintRight_toLeftOf="@+id/button_options"
-            app:layout_constraintTop_toBottomOf="@id/text_send_via" />
+        <!--<TextView-->
+            <!--android:id="@+id/button_scan_wireless"-->
+            <!--style="@style/ShareButton"-->
+            <!--android:layout_marginTop="10dp"-->
+            <!--android:drawablePadding="8dp"-->
+            <!--android:drawableTop="@drawable/ic_donation_icon_smallest"-->
+            <!--android:letterSpacing="0.01"-->
+            <!--android:lineSpacingExtra="4sp"-->
+            <!--android:paddingTop="10dp"-->
+            <!--android:text="@string/wireless_scan"-->
+            <!--android:textSize="12sp"-->
+            <!--android:visibility="visible"-->
+            <!--app:layout_constraintLeft_toRightOf="@+id/button_address"-->
+            <!--app:layout_constraintRight_toLeftOf="@+id/button_options"-->
+            <!--app:layout_constraintTop_toBottomOf="@id/text_send_via" />-->
 
-        <TextView
-            android:id="@+id/wireless_donate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_marginBottom="8dp"
-            android:text="@string/work_in_progress"
-            android:textColor="@color/red_warn"
-            android:textSize="10sp"
-            app:layout_constraintBottom_toBottomOf="@id/button_scan_wireless"
-            app:layout_constraintEnd_toEndOf="@id/button_scan_wireless"
-            app:layout_constraintStart_toStartOf="@id/button_scan_wireless" />
+        <!--<TextView-->
+            <!--android:id="@+id/wireless_donate"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginBottom="8dp"-->
+            <!--android:text="@string/work_in_progress"-->
+            <!--android:textColor="@color/red_warn"-->
+            <!--android:textSize="10sp"-->
+            <!--android:visibility="visible"-->
+            <!--app:layout_constraintBottom_toBottomOf="@id/button_scan_wireless"-->
+            <!--app:layout_constraintEnd_toEndOf="@id/button_scan_wireless"-->
+            <!--app:layout_constraintStart_toStartOf="@id/button_scan_wireless" />-->
 
         <TextView
             android:id="@+id/button_options"
@@ -383,7 +383,7 @@
             android:paddingTop="@dimen/margin_10dp"
             android:text="@string/more_options"
             android:textSize="12sp"
-            app:layout_constraintLeft_toRightOf="@+id/button_scan_wireless"
+            app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/text_send_via" />
     </android.support.constraint.ConstraintLayout>

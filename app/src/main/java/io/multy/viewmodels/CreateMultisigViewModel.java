@@ -20,11 +20,19 @@ import io.multy.Multy;
 import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.api.socket.SocketManager;
+import io.multy.model.entities.Estimation;
 import io.multy.model.entities.wallet.MultisigEvent;
 import io.multy.model.entities.wallet.Owner;
 import io.multy.model.entities.wallet.Wallet;
+import io.multy.model.responses.FeeRateResponse;
 import io.multy.model.responses.WalletsResponse;
 import io.multy.storage.RealmManager;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.FlowableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import io.realm.RealmList;
 import io.socket.client.Ack;
 import io.socket.emitter.Emitter;
@@ -41,6 +49,8 @@ public class CreateMultisigViewModel extends BaseViewModel {
     private MutableLiveData<Wallet> multisigWallet = new MutableLiveData<>();
     private MutableLiveData<Wallet> linkedWallet = new MutableLiveData<>();
     private MutableLiveData<String> inviteCode = new MutableLiveData<>();
+    private String gasLimit = "5000000";
+    private String gasPrice = "3000000000";
 
     public void connectSockets(Emitter.Listener args) {
         try {
@@ -65,6 +75,14 @@ public class CreateMultisigViewModel extends BaseViewModel {
         return isCreator;
     }
 
+    public String getGasLimit() {
+        return gasLimit;
+    }
+
+    public String getGasPrice() {
+        return gasPrice;
+    }
+
     public long getWalletId() {
         return walletId;
     }
@@ -73,6 +91,9 @@ public class CreateMultisigViewModel extends BaseViewModel {
         this.walletId = walletId;
         getMultisigWallet();
         checkCreatorStatus();
+        if (isCreator) {
+            requestEstimation();
+        }
     }
 
     public MutableLiveData<String> getInviteCode() {
@@ -132,6 +153,33 @@ public class CreateMultisigViewModel extends BaseViewModel {
         if (getMultisigWallet().getValue() != null) {
             RealmList<Owner> owners = getMultisigWallet().getValue().getMultisigWallet().getOwners();
             linkedWallet.setValue(RealmManager.getAssetsDao().getMultisigLinkedWallet(owners));
+        }
+    }
+
+    private void requestEstimation() {
+        Wallet wallet = getMultisigWallet().getValue();
+        if (wallet != null && wallet.isValid()) {
+            Wallet objectWallet = wallet.getRealm().copyFromRealm(wallet);
+            isLoading.setValue(true);
+            Disposable disposable = Flowable.create((FlowableOnSubscribe<Void>) e -> {
+                FeeRateResponse fee = MultyApi.INSTANCE
+                        .getFeeRates(objectWallet.getCurrencyId(), objectWallet.getNetworkId(), "price")
+                        .execute().body();
+                if (fee != null) {
+                    gasPrice = String.valueOf(fee.getSpeeds().getFast());
+                }
+                Estimation estimation = MultyApi.INSTANCE.getEstimations("price").execute().body();
+                if (estimation != null) {
+                    gasLimit = String.valueOf(estimation.getDeployMultisig());
+                }
+                e.onComplete();
+            }, BackpressureStrategy.LATEST).subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(aVoid -> {}, throwable -> {
+                        throwable.printStackTrace();
+                        isLoading.setValue(false);
+                    }, () -> isLoading.setValue(false));
+            addDisposable(disposable);
         }
     }
 

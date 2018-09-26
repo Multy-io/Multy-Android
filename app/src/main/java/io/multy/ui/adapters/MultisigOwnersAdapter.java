@@ -75,6 +75,7 @@ public class MultisigOwnersAdapter extends RecyclerView.Adapter<MultisigOwnersAd
         } else {
             holder.textStatus.setText(holder.textDate.getContext().getString(R.string.waiting_confirmation));
             holder.textStatus.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.blue_light));
+            holder.textDate.setText("");
         }
     }
 

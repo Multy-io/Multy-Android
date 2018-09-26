@@ -6,6 +6,7 @@
 
 package io.multy.ui.activities;
 
+import android.app.Dialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -18,6 +19,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -85,7 +87,7 @@ public class CreateMultiSigActivity extends BaseActivity {
     Drawable waitingDrawable;
     @BindDrawable(R.drawable.ic_ready_to_start)
     Drawable readyDrawable;
-    @BindColor(R.color.green_lightest)
+    @BindColor(R.color.green_light)
     int colorGreen;
     @BindColor(R.color.colorPrimaryDark)
     int colorBlue;
@@ -96,6 +98,7 @@ public class CreateMultiSigActivity extends BaseActivity {
 
     private OwnersAdapter ownersAdapter;
     private CreateMultisigViewModel viewModel;
+    private Dialog progressDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -103,6 +106,7 @@ public class CreateMultiSigActivity extends BaseActivity {
         setContentView(R.layout.activity_create_multisig);
         ButterKnife.bind(this);
         viewModel = ViewModelProviders.of(this).get(CreateMultisigViewModel.class);
+        viewModel.isLoading.observe(this, this::onProgress);
         viewModel.errorMessage.observe(this, this::onError);
         if (getIntent().getBooleanExtra(Constants.EXTRA_SCAN, false)) {
             getSupportFragmentManager()
@@ -218,7 +222,7 @@ public class CreateMultiSigActivity extends BaseActivity {
                     public void onResponse(@NonNull Call<Estimation> call, @NonNull Response<Estimation> response) {
                         final String deployWei = response.body().getPriceOfCreation();
                         final String deployEth = CryptoFormatUtils.weiToEthLabel(deployWei);
-                        textAction.setText(getString(R.string.start_for) + deployEth);
+                        textAction.setText(String.format("%s %s", getString(R.string.start_for), deployEth));
                         textAction.setTag(deployWei);
                     }
 
@@ -271,6 +275,34 @@ public class CreateMultiSigActivity extends BaseActivity {
         });
     }
 
+    private void onProgress(boolean isLoading) {
+        if (isLoading) {
+            showProgressDialog();
+        } else {
+            dismissProgressDialog();
+        }
+    }
+
+    public void showProgressDialog() {
+        if (progressDialog == null) {
+            progressDialog = new Dialog(this);
+            progressDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            progressDialog.setContentView(R.layout.dialog_spinner);
+            progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+            progressDialog.setCancelable(false);
+            progressDialog.setCanceledOnTouchOutside(false);
+            progressDialog.show();
+        } else {
+            progressDialog.show();
+        }
+    }
+
+    public void dismissProgressDialog() {
+        if (progressDialog != null) {
+            progressDialog.dismiss();
+        }
+    }
+
     @OnClick(R.id.button_action)
     public void onClickAction() {
         if (imageAction.getVisibility() == View.VISIBLE) {
@@ -298,7 +330,7 @@ public class CreateMultiSigActivity extends BaseActivity {
 
             try {
                 final byte[] transaction = NativeDataHelper.createEthMultisigWallet(seed, linkedWallet.getIndex(), linkedWallet.getActiveAddress().getIndex(), linkedWallet.getCurrencyId(), linkedWallet.getNetworkId(),
-                        linkedWallet.getActiveAddress().getAmountString(), "5000000", "3000000000", linkedWallet.getEthWallet().getNonce(), factoryAddress,
+                        linkedWallet.getActiveAddress().getAmountString(), viewModel.getGasLimit(), viewModel.getGasPrice(), linkedWallet.getEthWallet().getNonce(), factoryAddress,
                         stringBuilder.toString(), multisigWallet.getMultisigWallet().getConfirmations(), priceOfCreation);
                 String hex = "0x" + byteArrayToHex(transaction);
 
@@ -313,18 +345,19 @@ public class CreateMultiSigActivity extends BaseActivity {
                         if (response.isSuccessful()) {
                             CompleteDialogFragment.newInstance(multisigWallet.getCurrencyId()).show(getSupportFragmentManager(), "");
                         } else {
-//                        showError(null);
+                            onError(getString(R.string.something_went_wrong));
                         }
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
                         t.printStackTrace();
-//                    showError((Exception) t);
+                        onError(getString(R.string.something_went_wrong));
                     }
                 });
             } catch (JniException e) {
                 e.printStackTrace();
+                onError(getString(R.string.something_went_wrong));
             }
         }
     }

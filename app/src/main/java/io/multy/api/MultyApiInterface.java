@@ -14,6 +14,7 @@ import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.requests.AddWalletAddressRequest;
 import io.multy.model.requests.CreateMultisigRequest;
 import io.multy.model.requests.HdTransactionRequestEntity;
+import io.multy.model.requests.ImportWalletRequest;
 import io.multy.model.requests.UpdateWalletNameRequest;
 import io.multy.model.responses.AccountsResponse;
 import io.multy.model.responses.AuthResponse;
@@ -38,6 +39,10 @@ public interface MultyApiInterface {
     Observable<ResponseBody> addWalletReactive(Wallet wallet);
 
     Call<ResponseBody> addWallet(Context context, CreateMultisigRequest request);
+
+    Call<ResponseBody> importWallet(ImportWalletRequest request);
+
+    Call<ResponseBody> importMultisigWallet(ImportWalletRequest request);
 
     void getTransactionInfo(String transactionId);
 
