@@ -298,4 +298,5 @@
     <string name="mainnet">Мэйннет</string>
     <string name="testnet">Тестнет</string>
     <string name="about_signs">Нельзя изменить количество необходимых подтверждений для отправки транзакции после создасния multisig кошелька.</string>
+    <string name="request_not_ready">Запрос оплаты еще не готов для просмотра, пожалуйста, попробуйте позже.</string>
 </resources>

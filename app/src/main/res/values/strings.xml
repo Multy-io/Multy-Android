@@ -382,4 +382,5 @@
     <string name="import_now">Import now</string>
     <string name="mainnet">Mainnet</string>
     <string name="testnet">Testnet</string>
+    <string name="request_not_ready">Payment request is not ready to be viewed yet, please come back later.</string>
 </resources>

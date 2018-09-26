@@ -220,10 +220,12 @@ public class CreateMultiSigActivity extends BaseActivity {
                 MultyApi.INSTANCE.getEstimations("price").enqueue(new Callback<Estimation>() {
                     @Override
                     public void onResponse(@NonNull Call<Estimation> call, @NonNull Response<Estimation> response) {
-                        final String deployWei = response.body().getPriceOfCreation();
-                        final String deployEth = CryptoFormatUtils.weiToEthLabel(deployWei);
-                        textAction.setText(String.format("%s %s", getString(R.string.start_for), deployEth));
-                        textAction.setTag(deployWei);
+                        if (response.isSuccessful()) {
+                            final String deployWei = response.body().getPriceOfCreation();
+                            final String deployEth = CryptoFormatUtils.weiToEthLabel(deployWei);
+                            textAction.setText(String.format("%s %s", getString(R.string.start_for), deployEth));
+                            textAction.setTag(deployWei);
+                        }
                     }
 
                     @Override
@@ -315,10 +317,16 @@ public class CreateMultiSigActivity extends BaseActivity {
         } else {
             final String priceOfCreation = (String) textAction.getTag();
             final byte[] seed = RealmManager.getSettingsDao().getSeed().getSeed();
-            final String factoryAddress = RealmManager.getSettingsDao().getMultisigFactory().getEthTestNet();
+            String factoryAddress = null;
             Wallet multisigWallet = viewModel.getMultisigWallet().getValue();
             Wallet linkedWallet = viewModel.getLinkedWallet().getValue();
-
+            if (linkedWallet.getCurrencyId() == NativeDataHelper.Blockchain.ETH.getValue() &&
+                    linkedWallet.getNetworkId() == NativeDataHelper.NetworkId.RINKEBY.getValue()) {
+                factoryAddress = RealmManager.getSettingsDao().getMultisigFactory().getEthTestNet();
+            } else if (linkedWallet.getCurrencyId() == NativeDataHelper.Blockchain.ETH.getValue() &&
+                    linkedWallet.getNetworkId() == NativeDataHelper.NetworkId.ETH_MAIN_NET.getValue()) {
+                factoryAddress = RealmManager.getSettingsDao().getMultisigFactory().getEthMainNet();
+            }
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append("[");
             for (Owner owner : multisigWallet.getMultisigWallet().getOwners()) {
