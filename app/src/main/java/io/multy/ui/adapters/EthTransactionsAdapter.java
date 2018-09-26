@@ -6,12 +6,14 @@
 
 package io.multy.ui.adapters;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.Group;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,6 +37,7 @@ import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.asset.EthTransactionInfoFragment;
 import io.multy.ui.fragments.asset.MultisigTransactionInfoFragment;
+import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
 import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
 import io.multy.util.DateHelper;
@@ -132,7 +135,12 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             Analytics.getInstance(v.getContext()).logWallet(AnalyticsConstants.WALLET_TRANSACTION, 1);
             Fragment fragment;
             if (isMultisig && !isIncoming) {
-                fragment = MultisigTransactionInfoFragment.newInstance(transactionHistoryList.get(position).getTxHash());
+                if (transactionHistoryList.get(position).getMultisigInfo().isInvocationStatus()) {
+                    fragment = MultisigTransactionInfoFragment.newInstance(transactionHistoryList.get(position).getTxHash());
+                } else {
+                    showNotification(view.getContext(), view.getContext().getString(R.string.request_not_ready));
+                    return;
+                }
             } else {
                 Bundle transactionInfo = new Bundle();
                 int mode = isIncoming ? MODE_RECEIVE : MODE_SEND;
@@ -415,6 +423,15 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 //        }
 //        textView.setText(text);
         destination.addView(textView);
+    }
+
+    private void showNotification(Context context, String message) {
+        if (context instanceof AppCompatActivity) {
+            SimpleDialogFragment dialog = SimpleDialogFragment
+                    .newInstanceNegative(context.getString(R.string.error), message, null);
+            dialog.setTitle("");
+            dialog.show(((AppCompatActivity) context).getSupportFragmentManager(), "");
+        }
     }
 
     @Override
