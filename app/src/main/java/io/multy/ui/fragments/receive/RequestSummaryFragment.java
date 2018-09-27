@@ -30,15 +30,20 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
+
+import java.net.URISyntaxException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
-import io.multy.api.socket.BlueSocketManager;
+import io.multy.api.socket.SocketManager;
 import io.multy.api.socket.TransactionUpdateResponse;
 import io.multy.model.entities.wallet.CurrencyCode;
+import io.multy.model.socket.ReceiveMessage;
+import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetRequestActivity;
 import io.multy.ui.activities.FastReceiveActivity;
 import io.multy.ui.fragments.AddressesFragment;
@@ -53,11 +58,7 @@ import io.multy.util.NumberFormatter;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.AssetRequestViewModel;
-import io.socket.client.Socket;
-import io.socket.emitter.Emitter;
 import timber.log.Timber;
-
-import static io.multy.api.socket.BlueSocketManager.EVENT_TRANSACTION_UPDATE_BTC;
 
 
 public class RequestSummaryFragment extends BaseFragment {
@@ -95,7 +96,7 @@ public class RequestSummaryFragment extends BaseFragment {
 
     private AssetRequestViewModel viewModel;
     private SharingBroadcastReceiver receiver;
-    private BlueSocketManager socketManager = new BlueSocketManager(); //TODO refactor. shame on me
+    private SocketManager socketManager;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -157,21 +158,37 @@ public class RequestSummaryFragment extends BaseFragment {
     }
 
     private void connectSockets() {
-        socketManager.connect();
-        socketManager.getSocket().on(Socket.EVENT_CONNECT, new Emitter.Listener() {
-            @Override
-            public void call(Object... args) {
-                Timber.i("Connected");
+        try {
+            if (socketManager == null) {
+                socketManager = new SocketManager();
             }
-        });
-        socketManager.getSocket().on(EVENT_TRANSACTION_UPDATE_BTC, new Emitter.Listener() {
-            @Override
-            public void call(Object... args) {
+            socketManager.listenEvent(SocketManager.EVENT_RECEIVE, args -> {
                 if (getActivity() != null) {
-                    getActivity().runOnUiThread(() -> verifyTransaction(args[0].toString()));
+                    getActivity().runOnUiThread(() -> {
+                        try {
+                            verifyTransaction(args[0].toString());
+                        } catch (Throwable t) {
+                            t.printStackTrace();
+                            Crashlytics.logException(t);
+                        }
+                    });
                 }
-            }
-        });
+            });
+            socketManager.listenEvent(SocketManager.getEventReceive(RealmManager.getSettingsDao().getUserId().getUserId()), args -> {
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
+                        try {
+                            verifyTransaction(new Gson().fromJson(args[0].toString(), ReceiveMessage.class));
+                        } catch (Throwable t) {
+                            t.printStackTrace();
+                        }
+                    });
+                }
+            });
+            socketManager.connect();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
 
     private void verifyTransaction(String json) {
@@ -185,8 +202,17 @@ public class RequestSummaryFragment extends BaseFragment {
         }
     }
 
+    private void verifyTransaction(ReceiveMessage receiveMessage) {
+        final String address = viewModel.getWallet().getActiveAddress().getAddress();
+        final ReceiveMessage.Payload payload = receiveMessage.getPayload();
+        if (payload.getTo().equals(address) && (receiveMessage.getType() == Constants.EVENT_TYPE_NOTIFY_PAYMENT_REQUEST ||
+                receiveMessage.getType() == Constants.EVENT_TYPE_NOTIFY_INCOMING_TX)) {
+            CompleteDialogFragment.newInstance(viewModel.getWallet().getCurrencyId()).show(getActivity().getSupportFragmentManager(), "");
+        }
+    }
+
     private void disconnectSockets() {
-        if (socketManager.getSocket() != null && socketManager.getSocket().connected()) {
+        if(socketManager != null && socketManager.isConnected()) {
             socketManager.disconnect();
         }
     }

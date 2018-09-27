@@ -195,6 +195,9 @@ public class MultisigTransactionInfoFragment extends BaseFragment {
 
     private void onReceiveEvent(Object[] objects) {
         viewModel.getMultisigTransactionsHistory(currencyId, networkId, walletAddress);
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(() -> viewModel.updateWallets());
+        }
     }
 
     private void onWallet(Wallet wallet) {
@@ -241,7 +244,7 @@ public class MultisigTransactionInfoFragment extends BaseFragment {
         textAmount.setText(isIncoming ? "+ " : "- ");
         if (!isIncoming) {
             groupFee.setVisibility(View.VISIBLE);
-            final double feeAmount =CryptoFormatUtils.weiToEth(String.valueOf(transactionHistory.getGasLimit() * transactionHistory.getGasPrice()));
+            final double feeAmount = CryptoFormatUtils.weiToEth(String.valueOf(transactionHistory.getGasLimit() * transactionHistory.getGasPrice()));
             final double feeFiat = feeAmount * getPreferredExchangeRate(transactionHistory.getStockExchangeRates());
             String fee = CryptoFormatUtils.FORMAT_ETH.format(feeAmount) + " ETH / " + CryptoFormatUtils.FORMAT_USD.format(feeFiat) + " USD";
             textFee.setText(fee);
@@ -260,7 +263,8 @@ public class MultisigTransactionInfoFragment extends BaseFragment {
             buttonView.setVisibility(View.GONE);
             imageOperation.setImageResource(isIncoming ? R.drawable.ic_receive_big_icon_waiting : R.drawable.ic_send_big_icon_waiting);
             if (!isOwnerHasStatus(transactionHistory.getMultisigInfo().getOwners(),
-                    Constants.MULTISIG_OWNER_STATUS_CONFIRMED, Constants.MULTISIG_OWNER_STATUS_DECLINED)) {
+                    Constants.MULTISIG_OWNER_STATUS_CONFIRMED, Constants.MULTISIG_OWNER_STATUS_DECLINED) &&
+                    !isConfirmSuccess(transactionHistory.getMultisigInfo().getOwners())) {
                 setVisibilityConfirmButtons(View.VISIBLE);
                 enableAnimationSliders();
             }
@@ -275,6 +279,24 @@ public class MultisigTransactionInfoFragment extends BaseFragment {
         textCounter.setText(String.format(Locale.ENGLISH,
                 "%d %s %d", getConfirmCount(transactionHistory.getMultisigInfo().getOwners()), getString(R.string.of), confirmationsNeeded));
         adapter.setOwners(transactionHistory.getMultisigInfo().getOwners());
+    }
+
+    private int calculateStatus(ArrayList<TransactionOwner> owners, int status) {
+        int counter = 0;
+        for (TransactionOwner owner : owners) {
+            if (owner.getConfirmationStatus() == status) {
+                counter++;
+            }
+        }
+        return counter;
+    }
+
+    private boolean isConfirmSuccess(ArrayList<TransactionOwner> owners) {
+        if (viewModel.getWalletLive().getValue() != null && viewModel.getWalletLive().getValue().isValid()) {
+            int confirmCount = calculateStatus(owners, Constants.MULTISIG_OWNER_STATUS_CONFIRMED);
+            return viewModel.getWalletLive().getValue().getMultisigWallet().getConfirmations() <= confirmCount;
+        }
+        return false;
     }
 
     private boolean isOwnerHasStatus(ArrayList<TransactionOwner> owners, int... statuses) {

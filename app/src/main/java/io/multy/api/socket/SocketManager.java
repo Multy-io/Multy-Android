@@ -38,7 +38,7 @@ public class SocketManager {
     private static final String HEADER_AUTH = "jwtToken";
     private static final String HEADER_DEVICE_TYPE = "deviceType";
     private static final String HEADER_USER_ID = "userId";
-    private static final String EVENT_RECEIVE = "TransactionUpdate";
+    public static final String EVENT_RECEIVE = "TransactionUpdate";
     @Deprecated
     private static final String EVENT_RECEIVE_DEPRECATED = "btcTransactionUpdate";
     private static final String EVENT_EXCHANGE_RESPONSE = "exchangePoloniex";

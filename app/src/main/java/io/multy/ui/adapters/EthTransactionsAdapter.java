@@ -275,17 +275,8 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         TransactionHistory entity = transactionHistoryList.get(position);
         Wallet wallet = RealmManager.getAssetsDao().getWalletById(walletId);
         final boolean isIncoming = entity.getTxStatus() == TX_MEMPOOL_INCOMING;
-        final String amount;
-        final String amountFiat;
-        if (isIncoming) {
-            amount = CryptoFormatUtils.FORMAT_ETH.format(CryptoFormatUtils.weiToEth(entity.getTxOutAmount()));
-            amountFiat = getFiatAmount(entity, CryptoFormatUtils.weiToEth(entity.getTxOutAmount()));
-        } else {
-            final String price = String.valueOf(entity.getGasLimit() * entity.getGasPrice());
-            final String fullAmount = new BigInteger(entity.getTxOutAmount()).add(new BigInteger(price)).toString();
-            amount = CryptoFormatUtils.FORMAT_ETH.format(CryptoFormatUtils.weiToEth(fullAmount));
-            amountFiat = getFiatAmount(entity, CryptoFormatUtils.weiToEth(fullAmount));
-        }
+        final String amount = CryptoFormatUtils.FORMAT_ETH.format(CryptoFormatUtils.weiToEth(entity.getTxOutAmount()));
+        final String amountFiat = getFiatAmount(entity, CryptoFormatUtils.weiToEth(entity.getTxOutAmount()));
         ArrayList<TransactionOwner> owners = entity.getMultisigInfo().getOwners();
         final int ownersStatus = getOwnersVoteStatus(wallet.getMultisigWallet().getConfirmations(), owners);
         int operationImage = entity.getMultisigInfo().isConfirmed() ? isIncoming ? R.drawable.ic_receive : R.drawable.ic_send :

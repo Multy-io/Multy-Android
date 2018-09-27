@@ -82,9 +82,11 @@ public class AssetSendActivity extends BaseActivity {
             if (socketManager == null) {
                 socketManager = new SocketManager();
             }
-            socketManager.listenTransactionUpdates(() -> {
+            socketManager.listenTransactionUpdates(() -> {//todo remove it when it will become deprecated
                 viewModel.updateWallets();
             });
+            socketManager.listenEvent(SocketManager.getEventReceive(
+                    RealmManager.getSettingsDao().getUserId().getUserId()), args -> viewModel.updateWallets());
             socketManager.connect();
         } catch (URISyntaxException e) {
             e.printStackTrace();

@@ -143,6 +143,7 @@ public final class Constants {
     public static final int DEPLOY_STATUS_REJECTED = 4;
     public static final int DEPLOY_STATUS_DEPLOYED = 5;
 
+    //Event types for sockets
     public static final int EVENT_TYPE_JOIN_MULTISIG = 1;
     public static final int EVENT_TYPE_LEAVE_MULTISIG = 2;
     public static final int EVENT_TYPE_DELETE_MULTISIG = 3;
@@ -150,6 +151,13 @@ public final class Constants {
     public static final int EVENT_TYPE_CHECK_MULTISIG = 5;
     public static final int EVENT_TYPE_VIEW_MULTISIG = 6;
     public static final int EVENT_TYPE_DECLINE_MULTISIG = 7;
+    public static final int EVENT_TYPE_NOTIFY_DEPLOY = 8;
+    public static final int EVENT_TYPE_NOTIFY_PAYMENT_REQUEST = 9;
+    public static final int EVENT_TYPE_NOTIFY_INCOMING_TX = 10;
+    public static final int EVENT_TYPE_NOTIFY_CONFIRM_TX = 11;
+    public static final int EVENT_TYPE_NOTIFY_REVOKE_TX = 12;
+    public static final int EVENT_TYPE_NOTIFY_RESYNC_END = 13;
+    public static final int EVENT_TYPE_NOTIFY_SUBMITED_TX = 14;
 
     public static final int ASSET_TYPE_ADDRESS_MULTY = 0;
     public static final int ASSET_TYPE_ADDRESS_MULTISIG= 1;

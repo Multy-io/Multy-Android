@@ -50,6 +50,7 @@ import io.multy.model.requests.UpdateWalletNameRequest;
 import io.multy.model.responses.FeeRateResponse;
 import io.multy.model.responses.ServerConfigResponse;
 import io.multy.model.responses.TransactionHistoryResponse;
+import io.multy.model.responses.WalletsResponse;
 import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.asset.AssetInfoFragment;
 import io.multy.ui.fragments.send.SendSummaryFragment;
@@ -243,6 +244,27 @@ public class WalletViewModel extends BaseViewModel {
             }
         });
         return transactions;
+    }
+
+    public void updateWallets() {
+        isLoading.setValue(true);
+        MultyApi.INSTANCE.getWalletsVerbose().enqueue(new Callback<WalletsResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<WalletsResponse> call, @NonNull Response<WalletsResponse> response) {
+                isLoading.setValue(false);
+                WalletsResponse body = response.body();
+                if (response.isSuccessful() && body != null && body.getWallets() != null) {
+                    RealmManager.getAssetsDao().saveWallets(body.getWallets());
+                    actualizeWallet();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<WalletsResponse> call, @NonNull Throwable t) {
+                isLoading.setValue(false);
+                t.printStackTrace();
+            }
+        });
     }
 
     public MutableLiveData<Boolean> updateWalletSetting(String newName) {
@@ -514,7 +536,9 @@ public class WalletViewModel extends BaseViewModel {
         Wallet wallet = getWalletLive().getValue();
         if (wallet != null && wallet.isValid()) {
             isLoading.setValue(true);
-            MultyApi.INSTANCE.resyncWallet(wallet.getCurrencyId(), wallet.getNetworkId(), wallet.getIndex())
+            int assetType = wallet.isMultisig() ? Constants.ASSET_TYPE_ADDRESS_MULTISIG : wallet.getIndex() < 0 ?
+                    Constants.ASSET_TYPE_ADDRESS_IMPORTED : Constants.ASSET_TYPE_ADDRESS_MULTY;
+            MultyApi.INSTANCE.resyncWallet(wallet.getCurrencyId(), wallet.getNetworkId(), wallet.getIndex(), assetType)
                     .enqueue(new Callback<ResponseBody>() {
                         @Override
                         public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
