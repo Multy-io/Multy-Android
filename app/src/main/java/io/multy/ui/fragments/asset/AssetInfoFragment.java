@@ -244,8 +244,25 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         };
         if (viewModel.getWalletLive().getValue().isMultisig()) {
             final String inviteCode = viewModel.getWalletLive().getValue().getMultisigWallet().getInviteCode().toLowerCase();
+            int linkedIndex = RealmManager.getAssetsDao()
+                    .getMultisigLinkedWallet(viewModel.getWalletLive().getValue().getMultisigWallet().getOwners()).getIndex();
             MultyApi.INSTANCE.getMultisigWalletVerbose(inviteCode, currencyId, networkId, Constants.ASSET_TYPE_ADDRESS_MULTISIG)
                     .enqueue(callback);
+            MultyApi.INSTANCE.getWalletVerbose(linkedIndex, currencyId, networkId, Constants.ASSET_TYPE_ADDRESS_MULTY)
+                    .enqueue(new Callback<SingleWalletResponse>() {
+                        @Override
+                        public void onResponse(@NonNull Call<SingleWalletResponse> call, @NonNull Response<SingleWalletResponse> response) {
+                            SingleWalletResponse body = response.body();
+                            if (response.isSuccessful() && body != null) {
+                                RealmManager.getAssetsDao().saveWallet(body.getWallets().get(0));
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(@NonNull Call<SingleWalletResponse> call, @NonNull Throwable t) {
+                            t.printStackTrace();
+                        }
+                    });
         } else {
             final int walletIndex = viewModel.getWalletLive().getValue().getIndex();
             MultyApi.INSTANCE.getWalletVerbose(walletIndex, currencyId, networkId, Constants.ASSET_TYPE_ADDRESS_MULTY)

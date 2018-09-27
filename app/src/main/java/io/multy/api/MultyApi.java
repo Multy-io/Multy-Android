@@ -235,8 +235,8 @@ public enum MultyApi implements MultyApiInterface {
         }
 
         @Override
-        public Call<ResponseBody> resyncWallet(int currencyId, int networkId, int walletIndex) {
-            return api.resyncWallet(currencyId, networkId, walletIndex);
+        public Call<ResponseBody> resyncWallet(int currencyId, int networkId, int walletIndex, int assetType) {
+            return api.resyncWallet(currencyId, networkId, walletIndex, assetType);
         }
     }
 }
