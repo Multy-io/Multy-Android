@@ -6,6 +6,7 @@
 
 package io.multy.util;
 
+import io.multy.api.socket.CurrenciesRate;
 import io.multy.model.entities.wallet.EthWallet;
 import io.multy.model.entities.wallet.RecentAddress;
 import io.multy.model.entities.wallet.Wallet;
@@ -35,10 +36,11 @@ public class MultyRealmMigration implements io.realm.RealmMigration {
                 addressSchema.removeField("amount");
                 addressSchema.addField("amount", String.class);
                 oldVersion++;
-            case 3:
+            case 3: {
                 final RealmObjectSchema walletSchema = schema.get(Wallet.class.getSimpleName());
                 walletSchema.addField("syncing", boolean.class);
                 oldVersion++;
+            }
             case 4:
                 RealmObjectSchema contactAddressSchema = schema.create("ContactAddress");
                 contactAddressSchema.addField("address", String.class, FieldAttribute.INDEXED);
@@ -60,6 +62,42 @@ public class MultyRealmMigration implements io.realm.RealmMigration {
                 RealmObjectSchema pendingWalletSchema = schema.get(Wallet.class.getSimpleName());
                 pendingWalletSchema.addField("in", int.class);
                 pendingWalletSchema.addField("out", int.class);
+                oldVersion++;
+            case 6:
+                RealmObjectSchema currenciesRateSchema = schema.get(CurrenciesRate.class.getSimpleName());
+                currenciesRateSchema.addField("eosToUsd", double.class);
+                currenciesRateSchema.addField("eosToEur", double.class);
+                RealmObjectSchema addressesSchema = schema.get(WalletAddress.class.getSimpleName());
+                RealmObjectSchema eosWalletSchema = schema.create("EosWallet");
+                eosWalletSchema.addField("pendingBalance", String.class);
+                eosWalletSchema.addField("balance", String.class);
+                eosWalletSchema.addField("publicKey", String.class);
+                eosWalletSchema.addField("privateKey", String.class);
+                eosWalletSchema.addRealmListField("addresses", addressesSchema);
+                RealmObjectSchema multisigFactorySchema = schema.create("MultisigFactory");
+                multisigFactorySchema.addField("id", int.class);
+                multisigFactorySchema.addField("ethMainNet", String.class);
+                multisigFactorySchema.addField("ethTestNet", String.class);
+                multisigFactorySchema.addPrimaryKey("id");
+                RealmObjectSchema ownerSchema = schema.create("Owner");
+                ownerSchema.addField("userId", String.class);
+                ownerSchema.addField("address", String.class);
+                ownerSchema.addField("associated", boolean.class);
+                ownerSchema.addField("creator", boolean.class);
+                ownerSchema.addField("walletIndex", int.class);
+                ownerSchema.addField("addressIndex", int.class);
+                RealmObjectSchema multisigWalletSchema = schema.create("MultisigWallet");
+                multisigWalletSchema.addRealmListField("owners", ownerSchema);
+                multisigWalletSchema.addField("confirmations", int.class);
+                multisigWalletSchema.addField("inviteCode", String.class);
+                multisigWalletSchema.addField("ownersCount", int.class);
+                multisigWalletSchema.addField("deployStatus", int.class);
+                multisigWalletSchema.addField("nonce", String.class);
+                multisigWalletSchema.addField("balance", String.class);
+                multisigWalletSchema.addField("pendingBalance", String.class);
+                RealmObjectSchema walletSchema = schema.get(Wallet.class.getSimpleName());
+                walletSchema.addRealmObjectField("eosWallet", eosWalletSchema);
+                walletSchema.addRealmObjectField("multisigWallet", multisigWalletSchema);
                 oldVersion++;
         }
     }

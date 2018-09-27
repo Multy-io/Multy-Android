@@ -41,8 +41,11 @@ import io.multy.BuildConfig;
 import io.multy.Multy;
 import io.multy.R;
 import io.multy.api.socket.BlueSocketManager;
+import io.multy.api.socket.SocketManager;
 import io.multy.api.socket.TransactionUpdateResponse;
 import io.multy.model.entities.wallet.CurrencyCode;
+import io.multy.model.socket.ReceiveMessage;
+import io.multy.storage.RealmManager;
 import io.multy.storage.SettingsDao;
 import io.multy.ui.Hash2PicView;
 import io.multy.ui.fragments.dialogs.CompleteDialogFragment;
@@ -57,7 +60,6 @@ import io.socket.client.Socket;
 
 import static io.multy.api.socket.BlueSocketManager.EVENT_PAY_RECEIVE;
 import static io.multy.api.socket.BlueSocketManager.EVENT_TRANSACTION_UPDATE;
-import static io.multy.api.socket.BlueSocketManager.EVENT_TRANSACTION_UPDATE_BTC;
 
 public class MagicReceiveFragment extends BaseFragment {
 
@@ -150,8 +152,19 @@ public class MagicReceiveFragment extends BaseFragment {
             final double amount = viewModel.getAmount();
             final int currencyId = viewModel.getWallet().getCurrencyId();
             socketManager.getSocket().on(Socket.EVENT_CONNECT, args -> becomeReceiver(amount, currencyId));
-            socketManager.getSocket().on(EVENT_TRANSACTION_UPDATE_BTC, args -> getActivity().runOnUiThread(() -> verifyTransactionUpdate(args[0].toString())));
+//            socketManager.getSocket().on(EVENT_TRANSACTION_UPDATE_BTC, args -> getActivity().runOnUiThread(() -> verifyTransactionUpdate(args[0].toString())));
             socketManager.getSocket().on(EVENT_TRANSACTION_UPDATE, args -> getActivity().runOnUiThread(() -> verifyTransactionUpdate(args[0].toString())));
+            socketManager.getSocket().on(SocketManager.getEventReceive(RealmManager.getSettingsDao().getUserId().getUserId()), args -> {
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
+                        try {
+                            verifyTransaction(new Gson().fromJson(args[0].toString(), ReceiveMessage.class));
+                        } catch (Throwable t) {
+                            t.printStackTrace();
+                        }
+                    });
+                }
+            });
         }
     }
 
@@ -185,6 +198,29 @@ public class MagicReceiveFragment extends BaseFragment {
                 CompleteDialogFragment.newInstance(viewModel.getWallet().getCurrencyId(), amount,
                         response.getEntity().getAddressFrom()).show(getActivity().getSupportFragmentManager(), "");
             }
+        }
+    }
+
+    private void verifyTransaction(ReceiveMessage receiveMessage) {
+        final String address = viewModel.getWallet().getActiveAddress().getAddress();
+        final ReceiveMessage.Payload payload = receiveMessage.getPayload();
+        if (payload.getTo().equals(address) && (receiveMessage.getType() == Constants.EVENT_TYPE_NOTIFY_PAYMENT_REQUEST ||
+                receiveMessage.getType() == Constants.EVENT_TYPE_NOTIFY_INCOMING_TX)) {
+            if (socketManager.getSocket() != null && socketManager.getSocket().connected()) {
+                socketManager.disconnect();
+            }
+            String amount = "";
+            switch (NativeDataHelper.Blockchain.valueOf(viewModel.getWallet().getCurrencyId())) {
+                case BTC:
+                    amount = CryptoFormatUtils.satoshiToBtcLabel(Long.parseLong(receiveMessage.getPayload().getAmount()));
+                    break;
+                case ETH:
+                    amount = CryptoFormatUtils.weiToEthLabel(receiveMessage.getPayload().getAmount());
+                    break;
+            }
+            Analytics.getInstance(getActivity()).logEvent(AnalyticsConstants.KF_RECEIVED_TRANSACTION, AnalyticsConstants.KF_RECEIVED_TRANSACTION, "true");
+            CompleteDialogFragment.newInstance(viewModel.getWallet().getCurrencyId(), amount,
+                    receiveMessage.getPayload().getFrom()).show(getActivity().getSupportFragmentManager(), "");
         }
     }
 
