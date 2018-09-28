@@ -214,6 +214,11 @@ public class AssetsDao {
         return realm.where(Wallet.class).isNotNull("multisigWallet").findAll();
     }
 
+    public boolean isSelfOwnerAddress(String address) {
+        return realm.where(Owner.class).isNotNull("userId").isNotEmpty("userId")
+                .equalTo("address", address).findFirst() != null;
+    }
+
     public void saveBtcAddress(long id, WalletAddress address) {
         realm.executeTransaction(realm -> {
             Wallet wallet = getWalletById(id);

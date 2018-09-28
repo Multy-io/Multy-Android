@@ -73,7 +73,6 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import io.realm.Realm;
 import io.realm.RealmList;
-import io.realm.RealmResults;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -298,13 +297,7 @@ public class WalletViewModel extends BaseViewModel {
     }
 
     private boolean isLinkedWallet(Wallet wallet) {
-        RealmResults<Wallet> multisigs = RealmManager.getAssetsDao().getMultisigWallets();
-        for (Wallet ms : multisigs) {
-            if (ms.getActiveAddress().getAddress().equals(wallet.getActiveAddress().getAddress())) {
-                return true;
-            }
-        }
-        return false;
+        return RealmManager.getAssetsDao().isSelfOwnerAddress(wallet.getActiveAddress().getAddress());
     }
 
     public MutableLiveData<Boolean> removeWallet() {
