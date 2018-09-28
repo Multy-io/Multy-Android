@@ -54,7 +54,9 @@ public class SettingsDao {
     }
 
     public void saveMultisigFactory(MultisigFactory multisigFactory) {
-        realm.executeTransaction(realm -> realm.insertOrUpdate(multisigFactory));
+        if (multisigFactory != null) {
+            realm.executeTransaction(realm -> realm.insertOrUpdate(multisigFactory));
+        }
     }
 
     public MultisigFactory getMultisigFactory() {

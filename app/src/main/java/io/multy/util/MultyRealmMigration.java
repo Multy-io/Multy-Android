@@ -95,6 +95,7 @@ public class MultyRealmMigration implements io.realm.RealmMigration {
                 multisigWalletSchema.addField("nonce", String.class);
                 multisigWalletSchema.addField("balance", String.class);
                 multisigWalletSchema.addField("pendingBalance", String.class);
+                multisigWalletSchema.addField("havePaymentRequests", boolean.class);
                 RealmObjectSchema walletSchema = schema.get(Wallet.class.getSimpleName());
                 walletSchema.addRealmObjectField("eosWallet", eosWalletSchema);
                 walletSchema.addRealmObjectField("multisigWallet", multisigWalletSchema);
