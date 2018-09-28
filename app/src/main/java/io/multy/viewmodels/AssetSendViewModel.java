@@ -36,7 +36,7 @@ import retrofit2.Response;
 
 public class AssetSendViewModel extends BaseViewModel {
 
-    public MutableLiveData<Wallet> wallet = new MutableLiveData<>();
+    private MutableLiveData<Wallet> wallet = new MutableLiveData<>();
     public MutableLiveData<FeeRateResponse.Speeds> speeds = new MutableLiveData<>();
     public MutableLiveData<Estimation> estimation = new MutableLiveData<>();
     public MutableLiveData<Fee> fee = new MutableLiveData<>();
@@ -50,6 +50,7 @@ public class AssetSendViewModel extends BaseViewModel {
     private String donationAmount = "0";
     private boolean isAmountScanned = false;
     private CurrenciesRate currenciesRate;
+    private long walletId;
 
     private String changeAddress;
     private String donationAddress;
@@ -70,6 +71,7 @@ public class AssetSendViewModel extends BaseViewModel {
     }
 
     public void setWallet(Wallet wallet) {
+        walletId = wallet.getId();
         this.wallet.setValue(wallet);
     }
 
@@ -307,7 +309,6 @@ public class AssetSendViewModel extends BaseViewModel {
                 isLoading.setValue(false);
                 WalletsResponse body = response.body();
                 if (response.isSuccessful() && body != null) {
-                    final long walletId = wallet.getValue().getId();
                     RealmManager.getAssetsDao().saveWallets(body.getWallets());
                     Wallet newWallet = RealmManager.getAssetsDao().getWalletById(walletId);
                     setWallet(newWallet);
