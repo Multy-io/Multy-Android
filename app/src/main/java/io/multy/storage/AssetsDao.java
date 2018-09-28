@@ -54,20 +54,21 @@ public class AssetsDao {
                                 walletAddress.getOutputs().deleteAllFromRealm();
                             }
                         }
-                        ((RealmList<WalletAddress>) toDelete.getAddresses()).deleteAllFromRealm();
 
-                        if (toDelete.getBtcWallet() != null) {
-                            toDelete.getBtcWallet().deleteFromRealm();
+                        ((RealmList<WalletAddress>) toDelete.getAddresses()).deleteAllFromRealm();
+                    }
+
+                    if (toDelete.getBtcWallet() != null) {
+                        toDelete.getBtcWallet().deleteFromRealm();
+                    }
+                    if (toDelete.getEthWallet() != null) {
+                        toDelete.getEthWallet().deleteFromRealm();
+                    }
+                    if (toDelete.getMultisigWallet() != null) {
+                        if (toDelete.getMultisigWallet().getOwners() != null) {
+                            toDelete.getMultisigWallet().getOwners().deleteAllFromRealm();
                         }
-                        if (toDelete.getEthWallet() != null) {
-                            toDelete.getEthWallet().deleteFromRealm();
-                        }
-                        if (toDelete.getMultisigWallet() != null) {
-                            if (toDelete.getMultisigWallet().getOwners() != null) {
-                                toDelete.getMultisigWallet().getOwners().deleteAllFromRealm();
-                            }
-                            toDelete.getMultisigWallet().deleteFromRealm();
-                        }
+                        toDelete.getMultisigWallet().deleteFromRealm();
                     }
                     toDelete.deleteFromRealm();
                 }
@@ -186,7 +187,7 @@ public class AssetsDao {
 
     @Nullable
     public Wallet getMultisigLinkedWallet(List<Owner> owners) {
-        for(Owner owner : owners) {
+        for (Owner owner : owners) {
             if (!TextUtils.isEmpty(owner.getUserId())) {
                 return getMultisigLinkedWallet(owner.getAddress());
             }

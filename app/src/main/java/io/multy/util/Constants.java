@@ -97,6 +97,8 @@ public final class Constants {
     public static final int TX_CONFIRMED_INCOMING = 5;
     public static final int TX_CONFIRMED_OUTCOMING = 6;
     public static final int TX_INVOCATION_FAIL = 7;
+    public static final int TX_REJECTED_INCOMING = 8;
+    public static final int TX_REJECTED_OUTCOIMNG = 9;
 
     public static final int REQUEST_CODE_RESTORE = 22;
     public static final int REQUEST_CODE_CREATE = 22;

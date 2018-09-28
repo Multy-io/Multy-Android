@@ -16,11 +16,6 @@
         android:imeOptions="actionGo"
         android:inputType="textNoSuggestions" />
 
-    <trust.web3.Web3View
-        android:id="@+id/web_view"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/input_address" />
+    <!--there will be our web3view -->
 
 </android.support.constraint.ConstraintLayout>

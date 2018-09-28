@@ -274,9 +274,7 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
                 socketManager = new SocketManager();
             }
             final String eventReceive = SocketManager.getEventReceive(RealmManager.getSettingsDao().getUserId().getUserId());
-            socketManager.listenEvent(eventReceive, args -> {
-                updateWallets();
-            });
+            socketManager.listenEvent(eventReceive, args -> updateWallets());
             socketManager.connect();
         } catch (URISyntaxException e) {
             e.printStackTrace();

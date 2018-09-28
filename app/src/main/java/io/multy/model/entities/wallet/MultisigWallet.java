@@ -46,6 +46,8 @@ public class MultisigWallet extends RealmObject {
     private String balance = "0";
     @SerializedName("pendingbalance")
     private String pendingBalance = "0";
+    @SerializedName("havePaymentReqests")
+    private boolean havePaymentRequests = false;
 
     public RealmList<Owner> getOwners() {
         return owners;
@@ -111,6 +113,14 @@ public class MultisigWallet extends RealmObject {
         this.deployStatus = deployStatus;
     }
 
+    public boolean isHavePaymentRequests() {
+        return havePaymentRequests;
+    }
+
+    public void setHavePaymentRequests(boolean havePaymentRequests) {
+        this.havePaymentRequests = havePaymentRequests;
+    }
+
     public MultisigWallet asRealmObject(Realm realm) {
         MultisigWallet multisigWallet = realm.createObject(MultisigWallet.class);
         multisigWallet.setOwners(new RealmList<>());
@@ -126,6 +136,7 @@ public class MultisigWallet extends RealmObject {
         multisigWallet.setDeployStatus(deployStatus);
         multisigWallet.setInviteCode(inviteCode);
         multisigWallet.setOwnersCount(ownersCount);
+        multisigWallet.setHavePaymentRequests(havePaymentRequests);
         return multisigWallet;
     }
 

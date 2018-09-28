@@ -16,8 +16,8 @@ android {
         applicationId "io.multy"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 18
-        versionName "1.1.0"
+        versionCode 19
+        versionName "1.2.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         
 //        ndk {
@@ -133,7 +133,7 @@ dependencies {
     implementation 'com.github.guilhe:circular-progress-view:1.3.1'
     implementation 'cn.aigestudio.wheelpicker:WheelPicker:1.1.2'
     implementation 'com.github.douglasjunior:android-simple-tooltip:0.2.2'
-    implementation 'com.github.TrustWallet:Web3View:0.01.6'
+//    implementation 'com.github.TrustWallet:Web3View:0.01.6'
     implementation 'com.anthonymandra:ToggleButtons:2.0.0'
 }
 

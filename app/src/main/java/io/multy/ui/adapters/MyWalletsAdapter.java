@@ -60,7 +60,13 @@ public class MyWalletsAdapter extends RecyclerView.Adapter<MyWalletsAdapter.Hold
 
         holder.imageChain.setImageResource(wallet.getIconResourceId());
         holder.itemView.setOnClickListener(view -> listener.onWalletClick(wallet));
-        holder.resync.setVisibility(wallet.isSyncing() ? View.VISIBLE : View.GONE);
+
+        if (wallet.isSyncing()) {
+            holder.resync.setVisibility(wallet.isSyncing() ? View.VISIBLE : View.GONE);
+        } else if (wallet.getMultisigWallet() != null && wallet.getMultisigWallet().isHavePaymentRequests()) {
+            holder.imageWaiting.setVisibility(wallet.getMultisigWallet().isHavePaymentRequests() ? View.VISIBLE : View.GONE);
+        }
+
 
         if (wallet.isSyncing()) {
             holder.resync.setVisibility(View.VISIBLE);
@@ -79,7 +85,7 @@ public class MyWalletsAdapter extends RecyclerView.Adapter<MyWalletsAdapter.Hold
 
     @Override
     public int getItemCount() {
-        return data == null || (data instanceof RealmResults && !((RealmResults)data).isValid()) ? 0 : data.size();
+        return data == null || (data instanceof RealmResults && !((RealmResults) data).isValid()) ? 0 : data.size();
     }
 
     public void updateRates(CurrenciesRate rates) {
@@ -131,6 +137,9 @@ public class MyWalletsAdapter extends RecyclerView.Adapter<MyWalletsAdapter.Hold
         TextView resync;
         @BindView(R.id.image_chevron)
         View imageChevron;
+        @BindView(R.id.image_waiting)
+        View imageWaiting;
+
 
         Holder(View itemView) {
             super(itemView);
