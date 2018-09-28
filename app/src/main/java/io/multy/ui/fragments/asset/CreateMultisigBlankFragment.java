@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -41,6 +42,7 @@ import io.multy.storage.RealmManager;
 import io.multy.ui.activities.CreateMultiSigActivity;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.dialogs.ChooseMembersDialog;
+import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
 import io.multy.ui.fragments.dialogs.WalletChooserDialogFragment;
 import io.multy.util.Constants;
 import io.multy.util.JniException;
@@ -190,6 +192,14 @@ public class CreateMultisigBlankFragment extends BaseFragment {
                 .map(CharSequence::toString).subscribe(name -> validateData());
     }
 
+    private void showNotification(String message) {
+        SimpleDialogFragment dialog = SimpleDialogFragment.newInstanceNegative(getString(R.string.notification), message,
+                null);
+        dialog.setTitleResId(R.string.error);
+        dialog.setMessageResId(R.string.error);
+        dialog.show(getFragmentManager(), "");
+    }
+
     @Nullable
     private String getInviteCode() {
         StringBuilder inviteCode = new StringBuilder(UUID.randomUUID().toString()).append(Constants.DEVICE_NAME);
@@ -335,6 +345,14 @@ public class CreateMultisigBlankFragment extends BaseFragment {
                     validateData();
                 }
             });
+        } else {
+            if (TextUtils.isEmpty(inputName.getText())) {
+                showNotification(getString(R.string.invalid_wallet_name));
+            } else if (membersCount == 0 || confirmationsCount == 0) {
+                showNotification(getString(R.string.incorrect_members_count));
+            } else if (wallet == null) {
+                showNotification(getString(R.string.select_walet));
+            }
         }
     }
 

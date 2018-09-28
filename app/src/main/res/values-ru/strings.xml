@@ -300,4 +300,8 @@
     <string name="about_signs">Нельзя изменить количество необходимых подтверждений для отправки транзакции после создасния multisig кошелька.</string>
     <string name="request_not_ready">Запрос оплаты еще не готов для просмотра, пожалуйста, попробуйте позже.</string>
     <string name="notification">Уведомление</string>
+    <string name="invalid_wallet_name">Укажите имя кошелька</string>
+    <string name="incorrect_members_count">Укажите количество участников</string>
+    <string name="select_walet">Выберите кошелек</string>
+    <string name="wait_creation">Пожалуйста, подождите подтверждения создания кошелька!</string>
 </resources>

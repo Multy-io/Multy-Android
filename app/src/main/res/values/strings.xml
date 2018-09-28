@@ -384,4 +384,8 @@
     <string name="testnet">Testnet</string>
     <string name="request_not_ready">Payment request is not ready to be viewed yet, please come back later.</string>
     <string name="notification">Notification</string>
+    <string name="invalid_wallet_name">Invalid name</string>
+    <string name="incorrect_members_count">Incorrect members count</string>
+    <string name="select_walet">Select wallet</string>
+    <string name="wait_creation">Please, wait confirmation of wallet\'s creation!</string>
 </resources>

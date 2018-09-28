@@ -301,4 +301,8 @@
     <string name="about_signs">Не можна змінити кількість необхідних підтверджень для відправки транзакції після создаснія multisig гаманця.</string>
     <string name="request_not_ready">Запит оплати ще не готовий для перегляду, будь ласка, спробуйте пізніше.</string>
     <string name="notification">Повідомлення</string>
+    <string name="invalid_wallet_name">Вкажіть ім\'я гаманця</string>
+    <string name="incorrect_members_count">Вкажіть кількість учасників</string>
+    <string name="select_walet">Виберіть гаманець</string>
+    <string name="wait_creation">Будь ласка, зачекайте підтвердження створення гаманця!</string>
 </resources>

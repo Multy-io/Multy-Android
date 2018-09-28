@@ -73,15 +73,16 @@ public class BaseFragment extends Fragment implements ConnectionReceiver.Connect
         this.baseViewModel = baseViewModel;
     }
 
+    protected void showMessage(String message) {
+        SimpleDialogFragment dialog = SimpleDialogFragment.newInstanceNegative(getString(R.string.error), message, null);
+        dialog.setTitleResId(R.string.error);
+        dialog.setMessageResId(R.string.error);
+        dialog.show(requireFragmentManager(), "");
+    }
+
     protected void subscribeToErrors() {
         if (baseViewModel != null) {
-            baseViewModel.errorMessage.observe(this, s -> {
-                SimpleDialogFragment dialog = SimpleDialogFragment.newInstanceNegative(getString(R.string.error), baseViewModel.errorMessage.getValue(),
-                        null);
-                dialog.setTitleResId(R.string.error);
-                dialog.setMessageResId(R.string.error);
-                dialog.show(getFragmentManager(), "");
-            });
+            baseViewModel.errorMessage.observe(this, this::showMessage);
 
             baseViewModel.isLoading.observe(this, aBoolean -> {
                 if (getLifecycle().getCurrentState() == Lifecycle.State.RESUMED && aBoolean != null) {
