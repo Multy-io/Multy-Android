@@ -134,13 +134,11 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         view.setOnClickListener((v) -> {
             Analytics.getInstance(v.getContext()).logWallet(AnalyticsConstants.WALLET_TRANSACTION, 1);
             Fragment fragment;
-            if (isMultisig && !isIncoming) {
-                if (transactionHistoryList.get(position).getMultisigInfo().isInvocationStatus()) {
-                    fragment = MultisigTransactionInfoFragment.newInstance(transactionHistoryList.get(position).getTxHash());
-                } else {
-                    showNotification(view.getContext(), view.getContext().getString(R.string.request_not_ready));
-                    return;
-                }
+            if (isMultisig && !transactionHistoryList.get(position).getMultisigInfo().isInvocationStatus()) {
+                showNotification(view.getContext(), view.getContext().getString(R.string.request_not_ready));
+                return;
+            } else if (isMultisig && !isIncoming) {
+                fragment = MultisigTransactionInfoFragment.newInstance(transactionHistoryList.get(position).getTxHash());
             } else {
                 Bundle transactionInfo = new Bundle();
                 int mode = isIncoming ? MODE_RECEIVE : MODE_SEND;
@@ -420,7 +418,7 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         if (context instanceof AppCompatActivity) {
             SimpleDialogFragment dialog = SimpleDialogFragment
                     .newInstanceNegative(context.getString(R.string.error), message, null);
-            dialog.setTitle("");
+            dialog.setTitle(context.getString(R.string.notification));
             dialog.show(((AppCompatActivity) context).getSupportFragmentManager(), "");
         }
     }
