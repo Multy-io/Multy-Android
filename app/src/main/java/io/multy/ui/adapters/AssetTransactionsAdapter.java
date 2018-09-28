@@ -44,6 +44,8 @@ import static io.multy.util.Constants.TX_IN_BLOCK_INCOMING;
 import static io.multy.util.Constants.TX_MEMPOOL_INCOMING;
 import static io.multy.util.Constants.TX_MEMPOOL_OUTCOMING;
 import static io.multy.util.Constants.TX_REJECTED;
+import static io.multy.util.Constants.TX_REJECTED_INCOMING;
+import static io.multy.util.Constants.TX_REJECTED_OUTCOIMNG;
 
 public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -104,7 +106,7 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
         TransactionHistory entity = transactionHistoryList.get(position);
         if (entity.getTxStatus() == TX_MEMPOOL_INCOMING || entity.getTxStatus() == TX_MEMPOOL_OUTCOMING) {
             return TYPE_BLOCKED;
-        } else if (entity.getTxStatus() == TX_REJECTED) {
+        } else if (entity.getTxStatus() == TX_REJECTED || entity.getTxStatus() == TX_REJECTED_INCOMING || entity.getTxStatus() == TX_REJECTED_OUTCOIMNG) {
             return TYPE_REJECTED;
         } else {
             return TYPE_CONFIRMED;
@@ -273,7 +275,7 @@ public class AssetTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.
 
         holder.imageDirection.setImageResource(isIncoming ? R.drawable.ic_receive_gray : R.drawable.ic_send_gray);
         holder.textRejectedDirection.setText(isIncoming ? R.string.rejected_receive : R.string.rejected_send);
-        holder.amount.setText(CryptoFormatUtils.satoshiToBtc(isIncoming?
+        holder.amount.setText(CryptoFormatUtils.satoshiToBtc(isIncoming ?
                 transactionHistory.getTxOutAmountLong() : transactionHistory.getTxOutAmountLong() + transactionHistory.getTxFee()));
         holder.fiat.setText(getFiatAmount(transactionHistory, CryptoFormatUtils.satoshiToBtcDouble(transactionHistory.getTxOutAmountLong())));
 

@@ -76,10 +76,11 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
         if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
             if (!isLockVisible) {
                 if (RealmManager.open() == null) {
-                    finish();
-                    Intent splashIntent = new Intent(this, SplashActivity.class);
-                    splashIntent.putExtra(SplashActivity.RESET_FLAG, true);
-                    startActivity(splashIntent);
+                    //TODO resolve issues with realm
+//                    finish();
+//                    Intent splashIntent = new Intent(this, SplashActivity.class);
+//                    splashIntent.putExtra(SplashActivity.RESET_FLAG, true);
+//                    startActivity(splashIntent);
                 }
             }
             count = 6;
@@ -106,10 +107,11 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
             public void foreground() {
                 if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
                     if (RealmManager.open() == null) {
-                        finish();
-                        Intent splashIntent = new Intent(BaseActivity.this, SplashActivity.class);
-                        splashIntent.putExtra(SplashActivity.RESET_FLAG, true);
-                        startActivity(splashIntent);
+//                        TODO resolve issue with realm
+//                        finish();
+//                        Intent splashIntent = new Intent(BaseActivity.this, SplashActivity.class);
+//                        splashIntent.putExtra(SplashActivity.RESET_FLAG, true);
+//                        startActivity(splashIntent);
                     }
                 }
 

@@ -140,7 +140,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
                 break;
             case Constants.POSITION_FEED:
                 Analytics.getInstance(this).logMain(AnalyticsConstants.TAB_ACTIVITY);
-                setFragment(R.id.container_frame, Web3Fragment.newInstance());
+                setFragment(R.id.container_frame, FeedFragment.newInstance());
                 break;
             case Constants.POSITION_CONTACTS:
                 Analytics.getInstance(this).logMain(AnalyticsConstants.TAB_CONTACTS);
@@ -192,10 +192,11 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
     public void onBackPressed() {
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container_frame);
 
-        if (fragment instanceof Web3Fragment) {
-            ((Web3Fragment) fragment).onBackPressed();
-            return;
-        }
+        //TODO
+//        if (fragment instanceof Web3Fragment) {
+//            ((Web3Fragment) fragment).onBackPressed();
+//            return;
+//        }
 
 
         FastOperationsFragment operationsFragment = (FastOperationsFragment) getSupportFragmentManager().findFragmentByTag(FastOperationsFragment.TAG);
