@@ -137,10 +137,10 @@ public class SplashActivity extends AppCompatActivity {
                         if (versionCode < androidConfig.getSoftVersion()) {
                             //we can still use soft version
                             //leave this clause for future possible purposes
-//                            showUpdateDialog();
-                            showMainActivity();
-                        } else if (BuildConfig.VERSION_CODE < androidConfig.getHardVersion()) {
                             showUpdateDialog();
+//                            showMainActivity();
+                        } else if (BuildConfig.VERSION_CODE < androidConfig.getHardVersion()) {
+                            showStrongUpdateDialog();
                         } else {
                             showMainActivity();
                         }
@@ -202,8 +202,15 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void showUpdateDialog() {
-        SimpleDialogFragment.newInstanceNegative(getString(R.string.new_version_title), getString(R.string.new_version_message), view -> {
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + getPackageName())));
+        SimpleDialogFragment.newInstance(R.string.new_version_title, R.string.new_version_message, view -> {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=io.multy")));
+            finish();
+        }).show(getSupportFragmentManager(), "");
+    }
+
+    private void showStrongUpdateDialog() {
+        SimpleDialogFragment.newInstanceNegative(R.string.new_version_title, R.string.new_version_message, view -> {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=io.multy")));
             finish();
         }).show(getSupportFragmentManager(), "");
     }
@@ -261,7 +268,7 @@ public class SplashActivity extends AppCompatActivity {
         if (getIntent() != null && getIntent().getAction() != null &&
                 getIntent().getAction().equals(Intent.ACTION_VIEW) && getIntent().getData() != null) {
             try {
-                final String[] projection = new String[] {
+                final String[] projection = new String[]{
                         ContactsContract.Data.RAW_CONTACT_ID,
                         ContactsContract.Data.DATA2,
                         ContactsContract.Data.DATA3
@@ -279,7 +286,7 @@ public class SplashActivity extends AppCompatActivity {
                         final String address = clickedData.split("\n")[2];
                         intent.putExtra(ContactUtils.EXTRA_ACTION, ContactUtils.EXTRA_ACTION_OPEN_SEND);
                         intent.putExtra(Constants.EXTRA_ADDRESS, address);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                     }
                     clickedDataCursor.close();
                 }
