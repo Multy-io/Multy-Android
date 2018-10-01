@@ -332,6 +332,13 @@
 
             </android.support.constraint.ConstraintLayout>
 
+            <View
+                android:id="@+id/divider_linked"
+                style="@style/Divider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/container_wallet" />
+
             <TextView
                 android:id="@+id/button_delete"
                 android:layout_width="0dp"
@@ -347,7 +354,7 @@
                 android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/container_wallet" />
+                app:layout_constraintTop_toBottomOf="@+id/divider_linked" />
 
             <View
                 android:id="@+id/divider_delete"
