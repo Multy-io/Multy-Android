@@ -92,6 +92,9 @@ public interface ApiServiceInterface {
     @GET("api/v1/wallet/{walletIndex}/verbose/{currencyId}/{networkId}/{assetType}")
     Call<SingleWalletResponse> getWalletVerboseByIndex(@Path("walletIndex") int walletIndex, @Path("currencyId") int currencyId, @Path("networkId") int networkId, @Path("assetType") int assetType);
 
+    @GET("api/v1/wallet/{walletAddress}/verbose/{currencyId}/{networkId}/{assetType}")
+    Call<SingleWalletResponse> getWalletVerboseByAddress(@Path("walletAddress") String walletAddress, @Path("currencyId") int currencyId, @Path("networkId") int networkId, @Path("assetType") int assetType);
+
     @GET("api/v1/wallet/{inviteCode}/verbose/{currencyId}/{networkId}/{assetType}")
     Call<SingleWalletResponse> getMultisigWalletVerboseByInvite(@Path(value = "inviteCode", encoded = true) String inviteCode, @Path("currencyId") int currencyId, @Path("networkId") int networkId, @Path("assetType") int assetType);
 
@@ -106,6 +109,9 @@ public interface ApiServiceInterface {
 
     @GET("api/v1/wallets/transactions/{currencyid}/{networkid}/{walletIndex}/0")
     Call<TransactionHistoryResponse> getTransactionHistory(@Path("currencyid") int currencyId, @Path("networkid") int networkId, @Path("walletIndex") int walletIndex);
+
+    @GET("api/v1/wallets/transactions/{currencyid}/{networkid}/{walletAddress}/0")
+    Call<TransactionHistoryResponse> getTransactionHistory(@Path("currencyid") int currencyId, @Path("networkid") int networkId, @Path("walletAddress") String walletAddress);
 
     @GET("api/v1/wallets/transactions/{currencyId}/{networkId}/{address}/{assetType}")
     Call<TransactionHistoryResponse> getMultisigTransactionHistory(@Path("currencyId") int currencyId, @Path("networkId") int networkId, @Path("address") String address, @Path("assetType") int assetType);

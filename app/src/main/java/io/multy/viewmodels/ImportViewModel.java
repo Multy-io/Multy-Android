@@ -10,12 +10,16 @@ import android.arch.lifecycle.MutableLiveData;
 
 import java.util.List;
 
+import io.multy.Multy;
+import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.entities.wallet.WalletAddress;
+import io.multy.model.entities.wallet.WalletPrivateKey;
 import io.multy.model.requests.ImportWalletRequest;
 import io.multy.model.requests.Multisig;
 import io.multy.model.responses.WalletsResponse;
+import io.multy.storage.RealmManager;
 import io.multy.util.Constants;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
@@ -57,26 +61,43 @@ public class ImportViewModel extends BaseViewModel {
         addDisposable(disposable);
     }
 
-    private boolean isAddressExist(String address) {
+    private boolean isAddressExist(String address, int currencyId, int networkId, boolean onlyVisible) {
         if (wallets.getValue() == null) {
             return false;
         }
         for (Wallet wallet : wallets.getValue()) {
-            for (WalletAddress walletAddress : wallet.getAddresses()) {
-                if (walletAddress.getAddress().equals(address)) {
-                    return true;
+            if (wallet.getCurrencyId() == currencyId && wallet.getNetworkId() == networkId) {
+                for (WalletAddress walletAddress : wallet.getAddresses()) {
+                    if (walletAddress.getAddress().equals(address) && (!onlyVisible || wallet.isVisible())) {
+                        return true;
+                    }
                 }
             }
         }
         return false;
     }
 
-    public void importEthWallet(int currencyId, int networkId, String address, Consumer<Boolean> onNext) {
+    private boolean isPrivateKeyExist(String privateKey, String walletAddress, int currencyId, int networkId) {
+        WalletPrivateKey keyObject = RealmManager.getAssetsDao().getPrivateKey(walletAddress, currencyId, networkId);
+        return keyObject != null && keyObject.getPrivateKey().equals(privateKey);
+    }
+
+    private void savePrivateKey(String address, String privateKey, int currencyId, int networkId) {
+        RealmManager.getAssetsDao().savePrivateKey(address, privateKey, currencyId, networkId);
+    }
+
+    public void importEthWallet(String privateKey, int currencyId, int networkId, String address,
+                                boolean isMultisig, Consumer<Boolean> onNext) {
         isLoading.setValue(true);
         getVerbose(() -> {
-            if (isAddressExist(address)) {
-                onNext.accept(true);
+            if (isAddressExist(address, currencyId, networkId, false)) {
                 isLoading.setValue(false);
+                if (isPrivateKeyExist(privateKey, address, currencyId, networkId) && !isMultisig) {
+                    errorMessage.setValue(Multy.getContext().getString(R.string.private_key_exist));
+                } else {
+                    savePrivateKey(address, privateKey, currencyId, networkId);
+                    onNext.accept(true);
+                }
             } else {
                 Disposable disposable = Flowable.create((FlowableOnSubscribe<Boolean>) e -> {
                     ImportWalletRequest request = new ImportWalletRequest();
@@ -90,20 +111,25 @@ public class ImportViewModel extends BaseViewModel {
                     e.onNext(response.isSuccessful());
                 }, BackpressureStrategy.LATEST).subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(onNext, this::onError);
+                        .subscribe(isSuccess -> {
+                            if (isSuccess) {
+                                savePrivateKey(address, privateKey, currencyId, networkId);
+                            }
+                            onNext.accept(isSuccess);
+                        }, this::onError);
                 addDisposable(disposable);
             }
         });
     }
 
-    public void importEthMultisigWallet(int currencyId, int networkId,
-                                        String linkedAddress, String multisigAddress, Consumer<Boolean> onNext) {
+    public void importEthMultisigWallet(int currencyId, int networkId, String linkedAddress,
+                                        String multisigAddress, Consumer<Boolean> onNext) throws Exception {
         isLoading.setValue(true);
-        if (isAddressExist(multisigAddress)) {
-            try {
+        if (isAddressExist(multisigAddress, currencyId, networkId, false)) {
+            if (isAddressExist(multisigAddress, currencyId, networkId, true)) {
+                errorMessage.setValue(Multy.getContext().getString(R.string.multisig_imported));
+            } else {
                 onNext.accept(true);
-            } catch (Exception e) {
-                e.printStackTrace();
             }
             isLoading.setValue(false);
         } else {

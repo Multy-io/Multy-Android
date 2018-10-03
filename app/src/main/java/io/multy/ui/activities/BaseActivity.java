@@ -37,6 +37,7 @@ import io.multy.storage.RealmManager;
 import io.multy.storage.SecurePreferencesHelper;
 import io.multy.ui.adapters.PinDotsAdapter;
 import io.multy.ui.adapters.PinNumbersAdapter;
+import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
 import io.multy.util.Constants;
 
 public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter.OnFingerPrintClickListener, PinNumbersAdapter.OnNumberClickListener, PinNumbersAdapter.OnBackSpaceClickListener {
@@ -146,6 +147,13 @@ public class BaseActivity extends AppCompatActivity implements PinNumbersAdapter
             inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
             inputManager.hideSoftInputFromInputMethod(getCurrentFocus().getWindowToken(), 0);
         }
+    }
+
+    protected void showMessage(String message) {
+        SimpleDialogFragment dialog = SimpleDialogFragment.newInstanceNegative(getString(R.string.error), message, null);
+        dialog.setTitleResId(R.string.error);
+        dialog.setMessageResId(R.string.error);
+        dialog.show(getSupportFragmentManager(), "");
     }
 
     public void showLock() {

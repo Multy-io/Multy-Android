@@ -26,7 +26,7 @@
         android:layout_height="56dp"
         android:gravity="center_vertical"
         android:paddingStart="16dp"
-        android:text="@string/create_wallet"
+        android:text="@string/create_or_import_new_wallet"
         android:textColor="@color/blue_light"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@id/button_create"
@@ -98,7 +98,6 @@
         android:lineSpacingExtra="8sp"
         android:paddingStart="16dp"
         android:text="@string/import_multisig"
-        android:visibility="gone"
         android:textColor="@color/black_light"
         android:textSize="16sp"
         android:textStyle="bold"
@@ -112,7 +111,6 @@
         android:layout_width="0dp"
         android:layout_height="48dp"
         android:drawablePadding="32dp"
-        android:visibility="gone"
         android:drawableStart="@drawable/ic_wallet_import"
         android:gravity="center_vertical"
         android:lineSpacingExtra="8sp"
@@ -125,59 +123,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/button_import_multisig" />
-
-    <View
-        android:id="@+id/button_import"
-        android:layout_width="0dp"
-        android:layout_height="48dp"
-        android:background="?attr/selectableItemBackground"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/button_cancel"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <ImageView
-        android:id="@+id/image_import"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginStart="16dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/button_import"
-        app:layout_constraintStart_toStartOf="@id/button_import"
-        app:layout_constraintTop_toTopOf="@id/button_import"
-        app:srcCompat="@drawable/ic_wallet_import" />
-
-    <TextView
-        android:id="@+id/text_import"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="6dp"
-        android:lineSpacingExtra="8sp"
-        android:text="@string/import_wallet"
-        android:textColor="@color/black_light"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/text_in_progress"
-        app:layout_constraintEnd_toStartOf="@id/image_donate"
-        app:layout_constraintStart_toEndOf="@id/image_import"
-        app:layout_constraintTop_toTopOf="@id/button_import" />
-
-    <TextView
-        android:id="@+id/text_in_progress"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:letterSpacing="0.01"
-        android:text="@string/work_in_progress"
-        android:textColor="@color/red_warn"
-        android:textSize="10sp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/button_import"
-        app:layout_constraintEnd_toStartOf="@id/image_donate"
-        app:layout_constraintStart_toStartOf="@id/text_import"
-        app:layout_constraintTop_toBottomOf="@id/text_import" />
 
     <TextView
         android:id="@+id/button_cancel"
@@ -196,6 +141,7 @@
         android:textColor="@color/black_light"
         android:textSize="16sp"
         android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/button_import_eth"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

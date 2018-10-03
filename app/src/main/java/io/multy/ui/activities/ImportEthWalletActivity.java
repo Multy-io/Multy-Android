@@ -38,6 +38,7 @@ public class ImportEthWalletActivity extends BaseActivity {
         setContentView(R.layout.activity_import_eth);
         ButterKnife.bind(this);
         viewModel = ViewModelProviders.of(this).get(ImportViewModel.class);
+        viewModel.errorMessage.observe(this, this::showMessage);
     }
 
     @OnClick(R.id.text_cancel)
@@ -55,7 +56,7 @@ public class ImportEthWalletActivity extends BaseActivity {
                 final int networkId = groupNetwork.getCheckedId() == R.id.button_main ?
                         NativeDataHelper.NetworkId.ETH_MAIN_NET.getValue() : NativeDataHelper.NetworkId.RINKEBY.getValue();
                 final String address = NativeDataHelper.makeAccountAddressFromKey(key, currencyId, networkId);
-                viewModel.importEthWallet(currencyId, networkId, address, isSuccessful -> {
+                viewModel.importEthWallet(key, currencyId, networkId, address, false, isSuccessful -> {
                     if (!isSuccessful) {
                         viewModel.errorMessage.setValue(getString(R.string.something_went_wrong));
                     } else {

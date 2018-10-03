@@ -160,6 +160,11 @@ public enum MultyApi implements MultyApiInterface {
         }
 
         @Override
+        public Call<SingleWalletResponse> getWalletVerbose(String walletAddress, int currencyId, int networkId, int assetType) {
+            return api.getWalletVerboseByAddress(walletAddress, currencyId, networkId, assetType);
+        }
+
+        @Override
         public Call<SingleWalletResponse> getMultisigWalletVerbose(String inviteCode, int currencyId, int networkId, int assetType) {
             return api.getMultisigWalletVerboseByInvite(inviteCode, currencyId, networkId, assetType);
         }
@@ -179,8 +184,14 @@ public enum MultyApi implements MultyApiInterface {
             return api.removeWallet(currencyId, networkId, walletIndex);
         }
 
+        @Override
         public Call<TransactionHistoryResponse> getTransactionHistory(int currencyId, int networkId, int walletIndex) {
             return api.getTransactionHistory(currencyId, networkId, walletIndex);
+        }
+
+        @Override
+        public Call<TransactionHistoryResponse> getTransactionHistory(int currencyId, int networkId, String walletAddress) {
+            return api.getTransactionHistory(currencyId, networkId, walletAddress);
         }
 
         public Call<TransactionHistoryResponse> getMultisigTransactionHistory(int currencyId, int networkId, String address, int assetType) {

@@ -194,7 +194,7 @@ public class MultisigTransactionInfoFragment extends BaseFragment {
     }
 
     private void onReceiveEvent(Object[] objects) {
-        viewModel.getMultisigTransactionsHistory(currencyId, networkId, walletAddress);
+        viewModel.getMultisigTransactionsHistory(currencyId, networkId, walletAddress, Constants.ASSET_TYPE_ADDRESS_MULTISIG);
         if (getActivity() != null) {
             getActivity().runOnUiThread(() -> viewModel.updateWallets());
         }
@@ -463,7 +463,7 @@ public class MultisigTransactionInfoFragment extends BaseFragment {
                 viewModel.sendConfirmTransaction(walletAddress, transaction.getMultisigInfo().getRequestId(),
                         estimationConfirm, mediumGasPrice, isSuccess -> {
                             if (isSuccess) {
-                                viewModel.getMultisigTransactionsHistory(currencyId, networkId, walletAddress);
+                                viewModel.getMultisigTransactionsHistory(currencyId, networkId, walletAddress, Constants.ASSET_TYPE_ADDRESS_MULTISIG);
                             } else {
                                 setVisibilityConfirmButtons(View.VISIBLE);
                                 viewModel.errorMessage.setValue(getString(R.string.something_went_wrong));

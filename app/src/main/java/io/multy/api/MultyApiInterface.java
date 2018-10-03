@@ -54,6 +54,10 @@ public interface MultyApiInterface {
 
     Call<SingleWalletResponse> getWalletVerbose(int walletIndex, int currencyId, int networkId, int assetType);
 
+    Call<SingleWalletResponse> getWalletVerbose(String walletAddress, int currencyId, int networkId, int assetType);
+
+    Call<TransactionHistoryResponse> getTransactionHistory(int currencyId, int networkId, String walletAddress);
+
     Call<SingleWalletResponse> getMultisigWalletVerbose(String inviteCode, int currencyId, int networkId, int assetType);
 
     Call<WalletsResponse> getWalletsVerbose();

@@ -246,7 +246,7 @@
         android:gravity="center_vertical"
         android:paddingEnd="@dimen/activity_horizontal_margin"
         android:paddingStart="@dimen/activity_horizontal_margin"
-        android:text="@string/spendable"
+        android:text="@string/available_amount"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
         android:textColor="@color/text_grey"
         app:layout_constraintBottom_toTopOf="@+id/button_next"

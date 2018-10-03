@@ -22,12 +22,18 @@ public class UpdateWalletNameRequest {
     private int walletIndex;
     @SerializedName("networkID")
     private int networkId;
+    @SerializedName("address")
+    private String address;
+    @SerializedName("type")
+    private int type;
 
-    public UpdateWalletNameRequest(String newName, int currencyId, int walletIndex, int networkId) {
+    public UpdateWalletNameRequest(String newName, int currencyId, int walletIndex, int networkId, String address, int type) {
         this.newName = newName;
         this.currencyId = currencyId;
         this.walletIndex = walletIndex;
         this.networkId = networkId;
+        this.address = address;
+        this.type = type;
     }
 
     public int getNetworkId() {
@@ -51,5 +57,21 @@ public class UpdateWalletNameRequest {
         return "UpdateWalletNameRequest{" +
                 "newName=" + newName +
                 '}';
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 }

@@ -45,12 +45,14 @@ import io.multy.model.entities.wallet.EthWallet;
 import io.multy.model.entities.wallet.MultisigEvent;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.entities.wallet.WalletAddress;
+import io.multy.model.entities.wallet.WalletPrivateKey;
 import io.multy.model.requests.HdTransactionRequestEntity;
 import io.multy.model.requests.UpdateWalletNameRequest;
 import io.multy.model.responses.FeeRateResponse;
 import io.multy.model.responses.ServerConfigResponse;
 import io.multy.model.responses.TransactionHistoryResponse;
 import io.multy.model.responses.WalletsResponse;
+import io.multy.storage.AssetsDao;
 import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.asset.AssetInfoFragment;
 import io.multy.ui.fragments.send.SendSummaryFragment;
@@ -224,9 +226,9 @@ public class WalletViewModel extends BaseViewModel {
         return transactions;
     }
 
-    public MutableLiveData<ArrayList<TransactionHistory>> getMultisigTransactionsHistory(int currencyId, int networkId, String address) {
+    public MutableLiveData<ArrayList<TransactionHistory>> getMultisigTransactionsHistory(int currencyId, int networkId, String address, int assetType) {
         isLoading.postValue(true);
-        MultyApi.INSTANCE.getMultisigTransactionHistory(currencyId, networkId, address, Constants.ASSET_TYPE_ADDRESS_MULTISIG)
+        MultyApi.INSTANCE.getMultisigTransactionHistory(currencyId, networkId, address, assetType)
                 .enqueue(new Callback<TransactionHistoryResponse>() {
             @Override
             public void onResponse(@NonNull Call<TransactionHistoryResponse> call, @NonNull Response<TransactionHistoryResponse> response) {
@@ -269,7 +271,9 @@ public class WalletViewModel extends BaseViewModel {
     public MutableLiveData<Boolean> updateWalletSetting(String newName) {
         int index = wallet.getValue().getIndex();
         int currencyId = wallet.getValue().getCurrencyId();
-        UpdateWalletNameRequest updateWalletName = new UpdateWalletNameRequest(newName, currencyId, index, wallet.getValue().getNetworkId());
+        UpdateWalletNameRequest updateWalletName = new UpdateWalletNameRequest(newName, currencyId, index,
+                wallet.getValue().getNetworkId(), wallet.getValue().getActiveAddress().getAddress(),
+                index < 0 ? Constants.ASSET_TYPE_ADDRESS_IMPORTED : Constants.ASSET_TYPE_ADDRESS_MULTY);
         MultyApi.INSTANCE.updateWalletName(updateWalletName).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -448,23 +452,50 @@ public class WalletViewModel extends BaseViewModel {
 
     public void sendConfirmTransaction(String walletAddress, String requestId, String estimationConfirm, String mediumGasPrice,
                                        Consumer<Boolean> onNext, Consumer<Throwable> onError) {
-        Wallet linked = RealmManager.getAssetsDao().getMultisigLinkedWallet(getWalletLive().getValue().getMultisigWallet().getOwners());
+        Wallet linkedWallet = RealmManager.getAssetsDao().getMultisigLinkedWallet(getWalletLive().getValue().getMultisigWallet().getOwners());
         String price = String.valueOf(Long.parseLong(estimationConfirm) * Long.parseLong(mediumGasPrice));
-        if (new BigInteger(linked.getAvailableBalance()).compareTo(new BigInteger(price)) < 0) {
+        if (new BigInteger(linkedWallet.getAvailableBalance()).compareTo(new BigInteger(price)) < 0) {
             errorMessage.setValue(Multy.getContext().getString(R.string.not_enough_linked_balance));
             return;
         }
         isLoading.setValue(true);
-        Wallet linkedWallet = RealmManager.getAssetsDao().getMultisigLinkedWallet(wallet.getValue().getMultisigWallet().getOwners());
         final int currencyId = linkedWallet.getCurrencyId();
         final int networkId = linkedWallet.getNetworkId();
         final int walletIndex = linkedWallet.getIndex();
+        final String linkedAddress = linkedWallet.getActiveAddress().getAddress();
         final String amount =linkedWallet.getActiveAddress().getAmountString();
         final String nonce = linkedWallet.getEthWallet().getNonce();
         final byte[] seed = RealmManager.getSettingsDao().getSeed().getSeed();
         Disposable disposable = Observable.create((ObservableOnSubscribe<Boolean>) e -> {
-            byte[] tx = NativeDataHelper.confirmTransactionMultisigETH(seed, walletIndex, 0,
-                    currencyId, networkId, amount, walletAddress, requestId, estimationConfirm, mediumGasPrice, nonce);
+            byte[] tx;
+            if (walletIndex < 0) {
+                Realm realm = Realm.getInstance(Multy.getRealmConfiguration());
+                WalletPrivateKey privateKey = new AssetsDao(realm).getPrivateKey(linkedAddress, currencyId, networkId);
+                tx = NativeDataHelper.confirmTransactionMultisigETHFromKey(
+                        privateKey.getPrivateKey(),
+                        currencyId,
+                        networkId,
+                        amount,
+                        walletAddress,
+                        requestId,
+                        estimationConfirm,
+                        mediumGasPrice,
+                        nonce);
+                realm.close();
+            } else {
+                tx = NativeDataHelper.confirmTransactionMultisigETH(
+                        seed,
+                        walletIndex,
+                        0,
+                        currencyId,
+                        networkId,
+                        amount,
+                        walletAddress,
+                        requestId,
+                        estimationConfirm,
+                        mediumGasPrice,
+                        nonce);
+            }
             Timber.i(getClass().getSimpleName(), SendSummaryFragment.byteArrayToHex(tx));
             Response<ResponseBody> response = MultyApi.INSTANCE.sendHdTransaction(new HdTransactionRequestEntity(currencyId, networkId,
                     new HdTransactionRequestEntity.Payload("", 0, walletIndex,
