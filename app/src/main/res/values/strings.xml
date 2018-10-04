@@ -371,6 +371,7 @@
     <string name="rejected">Rejected</string>
     <string name="start_for">START FOR</string>
     <string name="not_enough_linked_balance">Not enough balance on linked wallet</string>
+    <string name="not_enough_balance">Not enough balance on wallet</string>
     <string name="confirmation_details">Confirmation details</string>
     <string name="import_multisig">Import MultiSig</string>
     <string name="import_eth_wallet">Import Ethereum wallet</string>
@@ -388,4 +389,7 @@
     <string name="incorrect_members_count">Incorrect members count</string>
     <string name="select_walet">Select wallet</string>
     <string name="wait_creation">Please, wait confirmation of wallet\'s creation!</string>
+    <string name="private_key_exist">This private key has already been imported!</string>
+    <string name="multisig_imported">This multisig wallet has already been imported!</string>
+    <string name="invalid_key_for_multisig">Invalid private key for current multisug wallet</string>
 </resources>

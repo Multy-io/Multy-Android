@@ -233,11 +233,13 @@ public class CreateMultisigBlankFragment extends BaseFragment {
                 if (response.isSuccessful() && body != null) {
                     RealmManager.getAssetsDao().saveWallets(body.getWallets());
                     wallet = RealmManager.getAssetsDao().getWalletById(dateOfCreation);
-                    startActivity(new Intent(getContext(), CreateMultiSigActivity.class)
-                            .putExtra(Constants.EXTRA_WALLET_ID, dateOfCreation)
-                            .putExtra(Constants.EXTRA_CREATE, true)
-                            .putExtra(Constants.EXTRA_RELATED_WALLET_ID, wallet.getId())
-                            .putExtra(Constants.EXTRA_INVITE_CODE, inviteCode));
+                    if (getContext() != null) {
+                        startActivity(new Intent(getContext(), CreateMultiSigActivity.class)
+                                .putExtra(Constants.EXTRA_WALLET_ID, dateOfCreation)
+                                .putExtra(Constants.EXTRA_CREATE, true)
+                                .putExtra(Constants.EXTRA_RELATED_WALLET_ID, wallet.getId())
+                                .putExtra(Constants.EXTRA_INVITE_CODE, inviteCode));
+                    }
                 }
             }
 

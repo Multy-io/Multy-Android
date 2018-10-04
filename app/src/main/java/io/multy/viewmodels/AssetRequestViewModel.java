@@ -38,6 +38,7 @@ public class AssetRequestViewModel extends BaseViewModel {
 
     private Wallet wallet;
     private double amount = 0;
+    private long walletId = 0;
     private MutableLiveData<String> address = new MutableLiveData<>();
     private MutableLiveData<Wallet> walletLive = new MutableLiveData<>();
 
@@ -50,10 +51,14 @@ public class AssetRequestViewModel extends BaseViewModel {
 
     public void setWallet(Wallet wallet) {
         this.wallet = wallet;
+        this.walletId = wallet.getId();
     }
 
     public Wallet getWallet() {
-        if (wallet == null && walletLive.getValue() != null) {
+        if (wallet == null || !wallet.isValid()) {
+            if (walletLive.getValue() == null || !walletLive.getValue().isValid()) {
+                walletLive.setValue(RealmManager.getAssetsDao().getWalletById(walletId));
+            }
             wallet = walletLive.getValue();
         }
         return wallet;
@@ -74,6 +79,9 @@ public class AssetRequestViewModel extends BaseViewModel {
     }
 
     public MutableLiveData<Wallet> getWalletLive() {
+        if (walletLive.getValue() == null || !walletLive.getValue().isValid()) {
+            walletLive.setValue(RealmManager.getAssetsDao().getWalletById(walletId));
+        }
         return walletLive;
     }
 

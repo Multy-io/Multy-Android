@@ -51,6 +51,9 @@ public class AssetsViewModel extends BaseViewModel implements LifecycleObserver 
                 socketManager = new SocketManager();
             }
             socketManager.listenRatesAndTransactions(rates, transactionUpdate);
+            socketManager.listenEvent(SocketManager.getEventReceive(RealmManager.getSettingsDao().getUserId().getUserId()), args -> {
+                transactionUpdate.postValue(new TransactionUpdateEntity());
+            });
             socketManager.connect();
         } catch (URISyntaxException e) {
             e.printStackTrace();

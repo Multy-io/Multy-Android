@@ -159,8 +159,8 @@ public class AssetSendFragment extends BaseFragment implements RecentAddressesAd
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                boolean isValidAddress = getActivity() != null &&
-                        getActivity().getIntent().hasCategory(Constants.EXTRA_SENDER_ADDRESS) && viewModel.getWallet() != null ?
+                boolean isValidAddress = getActivity() != null && getActivity().getIntent().hasCategory(Constants.EXTRA_SENDER_ADDRESS)
+                        && viewModel.getWallet() != null && viewModel.getWallet().isValid() ?
                         checkAddressForValidation(charSequence.toString(),
                                 viewModel.getWallet().getCurrencyId(), viewModel.getWallet().getNetworkId()) :
                         checkAddressForValidation(charSequence.toString());
