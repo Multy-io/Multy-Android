@@ -269,22 +269,24 @@ public class MagicReceiveFragment extends BaseFragment {
     }
 
     public void becomeReceiver(double amount, int currencyId) {
-        BluetoothLeAdvertiser advertiser = BluetoothAdapter.getDefaultAdapter().getBluetoothLeAdvertiser();
-        AdvertiseSettings advertiseSettings = buildAdvertiseSettings();
-        final String userCode = stringToHex(textAddress.getText().toString().substring(0, 4).getBytes());
-        AdvertiseData advertiseData = buildAdvertiseData(userCode);
-        callback.setUserCode(userCode);
-        String requestSum = "0";
-        switch (NativeDataHelper.Blockchain.valueOf(currencyId)) {
-            case BTC:
-                requestSum = CryptoFormatUtils.btcToSatoshiString(amount);
-                break;
-            case ETH:
-                requestSum = CryptoFormatUtils.ethToWei(String.valueOf(amount));
-                break;
+        if (callback != null) {
+            BluetoothLeAdvertiser advertiser = BluetoothAdapter.getDefaultAdapter().getBluetoothLeAdvertiser();
+            AdvertiseSettings advertiseSettings = buildAdvertiseSettings();
+            final String userCode = stringToHex(textAddress.getText().toString().substring(0, 4).getBytes());
+            AdvertiseData advertiseData = buildAdvertiseData(userCode);
+            callback.setUserCode(userCode);
+            String requestSum = "0";
+            switch (NativeDataHelper.Blockchain.valueOf(currencyId)) {
+                case BTC:
+                    requestSum = CryptoFormatUtils.btcToSatoshiString(amount);
+                    break;
+                case ETH:
+                    requestSum = CryptoFormatUtils.ethToWei(String.valueOf(amount));
+                    break;
+            }
+            callback.setRequestSum(requestSum);
+            advertiser.startAdvertising(advertiseSettings, advertiseData, callback);
         }
-        callback.setRequestSum(requestSum);
-        advertiser.startAdvertising(advertiseSettings, advertiseData, callback);
     }
 
     @OnClick(R.id.button_cancel)

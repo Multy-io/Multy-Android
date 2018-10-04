@@ -36,7 +36,6 @@ import io.multy.R;
 import io.multy.model.entities.wallet.MultisigEvent;
 import io.multy.ui.fragments.dialogs.WalletChooserDialogFragment;
 import io.multy.util.Constants;
-import io.multy.util.NativeDataHelper;
 import io.multy.viewmodels.CreateMultisigViewModel;
 import me.dm7.barcodescanner.zbar.BarcodeFormat;
 import me.dm7.barcodescanner.zbar.Result;
@@ -221,7 +220,7 @@ public class ScanInvitationCodeFragment extends BaseFragment {
             if (responseEvent.payload.exist) {
                 if (getFragmentManager() != null) {
                     WalletChooserDialogFragment dialog = WalletChooserDialogFragment
-                            .getInstance(NativeDataHelper.Blockchain.ETH.getValue());
+                            .getInstance(responseEvent.payload.currencyId, responseEvent.payload.networkId);
                     dialog.setTargetFragment(ScanInvitationCodeFragment.this, WalletChooserDialogFragment.REQUEST_WALLET_ID);
                     dialog.show(getFragmentManager(), WalletChooserDialogFragment.TAG);
                     dialog.setOnWalletClickListener(wallet -> {

@@ -33,6 +33,7 @@ import butterknife.BindDrawable;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.multy.Multy;
 import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.model.entities.Estimation;
@@ -306,7 +307,7 @@ public class CreateMultiSigActivity extends BaseActivity {
     }
 
     @OnClick(R.id.button_action)
-    public void onClickAction() {
+    public void onClickAction(View view) {
         if (imageAction.getVisibility() == View.VISIBLE) {
             getSupportFragmentManager()
                     .beginTransaction()
@@ -315,6 +316,7 @@ public class CreateMultiSigActivity extends BaseActivity {
                     .commit();
 
         } else {
+            view.setEnabled(false);
             final String priceOfCreation = (String) textAction.getTag();
             final byte[] seed = RealmManager.getSettingsDao().getSeed().getSeed();
             String factoryAddress = null;
@@ -347,25 +349,34 @@ public class CreateMultiSigActivity extends BaseActivity {
                                 multisigWallet.getIndex(), hex, false));
 
                 Timber.i("hex=%s", hex);
+                showProgressDialog();
                 MultyApi.INSTANCE.sendHdTransaction(entity).enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                        dismissProgressDialog();
                         if (response.isSuccessful()) {
                             CompleteDialogFragment.newInstance(multisigWallet.getCurrencyId()).show(getSupportFragmentManager(), "");
                         } else {
                             onError(getString(R.string.something_went_wrong));
+                            view.setEnabled(true);
                         }
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                        dismissProgressDialog();
                         t.printStackTrace();
                         onError(getString(R.string.something_went_wrong));
+                        view.setEnabled(true);
                     }
                 });
             } catch (JniException e) {
                 e.printStackTrace();
-                onError(getString(R.string.something_went_wrong));
+                if (e.getMessage().contains("Transaction is trying to spend more than available")) {
+                    onError(Multy.getContext().getString(R.string.not_enough_balance));
+                } else {
+                    onError(getString(R.string.something_went_wrong));
+                }
             }
         }
     }

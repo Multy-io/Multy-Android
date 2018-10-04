@@ -284,6 +284,7 @@
     <string name="user_joined">Присоединено\nпользователей</string>
     <string name="resync">Подождите\nСинхронизация кошелька</string>
     <string name="not_enough_linked_balance">Недостаточный баланс на привязанном кошельке</string>
+    <string name="not_enough_balance">Недостаточный баланс на кошельке</string>
     <string name="available_balance">Доступный баланс</string>
     <string name="confirmation_details">Подтверждения</string>
     <string name="share_address">Поделиться адресом</string>
@@ -304,4 +305,11 @@
     <string name="incorrect_members_count">Укажите количество участников</string>
     <string name="select_walet">Выберите кошелек</string>
     <string name="wait_creation">Пожалуйста, подождите подтверждения создания кошелька!</string>
+    <string name="delete_user">Удалить пользователя?</string>
+    <string name="waiting_for_member">Ожидание пользователя…</string>
+    <string name="wrong_private_key">Неверный приватный ключ</string>
+    <string name="_or_">" или "</string>
+    <string name="private_key_exist">Этот приватный ключ уже импортирован!</string>
+    <string name="multisig_imported">Этот мультисиг кошелек уже импортирован!</string>
+    <string name="invalid_key_for_multisig">Приватный ключ не подходит для Multisig кошелька</string>
 </resources>

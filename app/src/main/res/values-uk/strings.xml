@@ -285,6 +285,7 @@
     <string name="user_joined">Приєднано\nкористувачів</string>
     <string name="resync">Зачекайте\nСинхронізація гаманця</string>
     <string name="not_enough_linked_balance">Недостатній баланс на прив\'язаному гаманці</string>
+    <string name="not_enough_balance">Недостатній баланс на гаманці</string>
     <string name="available_balance">Доступний баланс</string>
     <string name="confirmation_details">Підтвердження</string>
     <string name="share_address">Поділитися адресою</string>
@@ -305,4 +306,11 @@
     <string name="incorrect_members_count">Вкажіть кількість учасників</string>
     <string name="select_walet">Виберіть гаманець</string>
     <string name="wait_creation">Будь ласка, зачекайте підтвердження створення гаманця!</string>
+    <string name="delete_user">"Видалити користувача? "</string>
+    <string name="waiting_for_member">"Очікування користувача…"</string>
+    <string name="wrong_private_key">Невірний приватний ключ</string>
+    <string name="_or_">" або "</string>
+    <string name="private_key_exist">Цей приватний ключ вже імпортовано!</string>
+    <string name="multisig_imported">Цей мультісіг гаманець вже імпортовано!</string>
+    <string name="invalid_key_for_multisig">Приватний ключ не підходить для Multisig гаманця</string>
 </resources>
