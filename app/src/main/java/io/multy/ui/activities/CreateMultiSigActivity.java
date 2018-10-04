@@ -222,10 +222,13 @@ public class CreateMultiSigActivity extends BaseActivity {
                     @Override
                     public void onResponse(@NonNull Call<Estimation> call, @NonNull Response<Estimation> response) {
                         if (response.isSuccessful()) {
-                            final String deployWei = response.body().getPriceOfCreation();
-                            final String deployEth = CryptoFormatUtils.weiToEthLabel(deployWei);
+                            final long deployWei = Long.parseLong(response.body().getPriceOfCreation());
+                            final long gasLimit = Long.parseLong(viewModel.getGasLimit());
+                            final long gasPrice = Long.parseLong(viewModel.getGasPrice());
+                            final String deployEth = CryptoFormatUtils.weiToEthLabel(String.valueOf(deployWei + (gasLimit * gasPrice)));
+
                             textAction.setText(String.format("%s %s", getString(R.string.start_for), deployEth));
-                            textAction.setTag(deployWei);
+                            textAction.setTag(String.valueOf(deployWei));
                         }
                     }
 
