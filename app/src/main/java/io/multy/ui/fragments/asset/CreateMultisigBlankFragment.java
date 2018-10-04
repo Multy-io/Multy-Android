@@ -87,8 +87,8 @@ public class CreateMultisigBlankFragment extends BaseFragment {
     private Wallet wallet;
     private Disposable disposable;
     private int currencyId = NativeDataHelper.Blockchain.ETH.getValue();
-    private int networkId = NativeDataHelper.NetworkId.RINKEBY.getValue();
-    private String chainName = "Ethereum・ETH Testnet";
+    private int networkId = NativeDataHelper.NetworkId.ETH_MAIN_NET.getValue();
+    private String chainName = "Ethereum・ETH";
 
     public static CreateMultisigBlankFragment getInstance() {
         return new CreateMultisigBlankFragment();
