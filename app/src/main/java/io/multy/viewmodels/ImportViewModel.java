@@ -16,8 +16,7 @@ import io.multy.api.MultyApi;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.entities.wallet.WalletPrivateKey;
-import io.multy.model.requests.ImportWalletRequest;
-import io.multy.model.requests.Multisig;
+import io.multy.model.requests.WalletRequest;
 import io.multy.model.responses.WalletsResponse;
 import io.multy.storage.RealmManager;
 import io.multy.util.Constants;
@@ -100,12 +99,13 @@ public class ImportViewModel extends BaseViewModel {
                 }
             } else {
                 Disposable disposable = Flowable.create((FlowableOnSubscribe<Boolean>) e -> {
-                    ImportWalletRequest request = new ImportWalletRequest();
-                    request.setCurrencyId(currencyId);
-                    request.setNetworkId(networkId);
-                    request.setAddress(address);
-                    request.setWalletName(Constants.DEFAULT_IMPORT_WALLET_NAME);
-                    request.setImported(true);
+                    WalletRequest request = WalletRequest.getBulilder()
+                            .setCurrencyId(currencyId)
+                            .setNetworkId(networkId)
+                            .setAddress(address)
+                            .setWalletName(Constants.DEFAULT_IMPORT_WALLET_NAME)
+                            .setImported(true)
+                            .build();
                     Response<ResponseBody> response = MultyApi.INSTANCE.importWallet(request).execute();
                     isLoading.postValue(false);
                     e.onNext(response.isSuccessful());
@@ -134,13 +134,18 @@ public class ImportViewModel extends BaseViewModel {
             isLoading.setValue(false);
         } else {
             Disposable disposable = Flowable.create((FlowableOnSubscribe<Boolean>) e -> {
-                ImportWalletRequest request = new ImportWalletRequest();
-                request.setCurrencyId(currencyId);
-                request.setNetworkId(networkId);
-                request.setAddress(linkedAddress);
-                request.setWalletName(Constants.DEFAULT_IMPORT_MULTISIG_NAME);
-                request.setImported(true);
-                request.setMultisig(new Multisig(multisigAddress));
+                WalletRequest request = WalletRequest.getBulilder()
+                        .setCurrencyId(currencyId)
+                        .setNetworkId(networkId)
+                        .setAddress(linkedAddress)
+                        .setWalletName(Constants.DEFAULT_IMPORT_MULTISIG_NAME)
+                        .setImported(true)
+                        .setMultisig(WalletRequest.Multisig.getBuilder()
+                                .setMultisigAddress(multisigAddress)
+                                .setIsMultisig(true)
+                                .setIsImported(true)
+                                .build())
+                        .build();
                 Response<ResponseBody> response = MultyApi.INSTANCE.importMultisigWallet(request).execute();
                 isLoading.postValue(false);
                 e.onNext(response.isSuccessful());

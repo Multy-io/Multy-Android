@@ -12,10 +12,9 @@ import android.content.Context;
 import io.multy.model.entities.Estimation;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.requests.AddWalletAddressRequest;
-import io.multy.model.requests.CreateMultisigRequest;
 import io.multy.model.requests.HdTransactionRequestEntity;
-import io.multy.model.requests.ImportWalletRequest;
 import io.multy.model.requests.UpdateWalletNameRequest;
+import io.multy.model.requests.WalletRequest;
 import io.multy.model.responses.AccountsResponse;
 import io.multy.model.responses.AuthResponse;
 import io.multy.model.responses.ChainInfoResponse;
@@ -38,11 +37,11 @@ public interface MultyApiInterface {
 
     Observable<ResponseBody> addWalletReactive(Wallet wallet);
 
-    Call<ResponseBody> addWallet(Context context, CreateMultisigRequest request);
+    Call<ResponseBody> addWallet(Context context, WalletRequest request);
 
-    Call<ResponseBody> importWallet(ImportWalletRequest request);
+    Call<ResponseBody> importWallet(WalletRequest request);
 
-    Call<ResponseBody> importMultisigWallet(ImportWalletRequest request);
+    Call<ResponseBody> importMultisigWallet(WalletRequest request);
 
     void getTransactionInfo(String transactionId);
 

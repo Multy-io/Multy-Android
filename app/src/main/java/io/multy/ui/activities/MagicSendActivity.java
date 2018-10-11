@@ -59,6 +59,7 @@ import io.multy.model.entities.Estimation;
 import io.multy.model.entities.FastReceiver;
 import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.model.entities.wallet.Wallet;
+import io.multy.model.entities.wallet.WalletPrivateKey;
 import io.multy.model.requests.HdTransactionRequestEntity;
 import io.multy.model.responses.FeeRateResponse;
 import io.multy.storage.RealmManager;
@@ -479,20 +480,78 @@ public class MagicSendActivity extends BaseActivity {
         final boolean isHd;
         switch (NativeDataHelper.Blockchain.valueOf(receiver.getCurrencyId())) {
             case BTC:
-                transaction = NativeDataHelper.makeTransaction(wallet.getId(), wallet.getNetworkId(), seed, wallet.getIndex(),
-                        receiver.getAmount(), "10", "0", receiver.getAddress(), changeAddress, "", true);
+                transaction = NativeDataHelper.makeTransaction(
+                        wallet.getId(),
+                        wallet.getNetworkId(),
+                        seed,
+                        wallet.getIndex(),
+                        receiver.getAmount(),
+                        "10",
+                        "0",
+                        receiver.getAddress(),
+                        changeAddress,
+                        "",
+                        true);
                 isHd = true;
                 break;
             case ETH:
                 if (wallet.isMultisig()) {
                     Wallet linkedWallet = RealmManager.getAssetsDao().getMultisigLinkedWallet(wallet.getMultisigWallet().getOwners());
-                    transaction = NativeDataHelper.makeTransactionMultisigETH(seed, linkedWallet.getIndex(), 0, linkedWallet.getCurrencyId(),
-                            linkedWallet.getNetworkId(), linkedWallet.getActiveAddress().getAmountString(), wallet.getActiveAddress().getAddress(), receiver.getAmount(),
-                            receiver.getAddress(), estimation, gasPrice, linkedWallet.getEthWallet().getNonce());
+                    if (linkedWallet.getIndex() < 0) {
+                        WalletPrivateKey keyObject = RealmManager.getAssetsDao().getPrivateKey(linkedWallet.getActiveAddress().getAddress(),
+                                linkedWallet.getCurrencyId(), linkedWallet.getNetworkId());
+                        transaction = NativeDataHelper.makeTransactionMultisigETHFromKey(
+                                keyObject.getPrivateKey(),
+                                linkedWallet.getCurrencyId(),
+                                linkedWallet.getNetworkId(),
+                                linkedWallet.getActiveAddress().getAmountString(),
+                                wallet.getActiveAddress().getAddress(),
+                                receiver.getAmount(),
+                                receiver.getAddress(),
+                                estimation, gasPrice, linkedWallet.getEthWallet().getNonce());
+                    } else {
+                        transaction = NativeDataHelper.makeTransactionMultisigETH(
+                                seed,
+                                linkedWallet.getIndex(),
+                                0,
+                                linkedWallet.getCurrencyId(),
+                                linkedWallet.getNetworkId(),
+                                linkedWallet.getActiveAddress().getAmountString(),
+                                wallet.getActiveAddress().getAddress(),
+                                receiver.getAmount(),
+                                receiver.getAddress(),
+                                estimation,
+                                gasPrice,
+                                linkedWallet.getEthWallet().getNonce());
+                    }
                 } else {
-                    transaction = NativeDataHelper.makeTransactionETH(seed, wallet.getIndex(), 0, wallet.getCurrencyId(),
-                            wallet.getNetworkId(), wallet.getActiveAddress().getAmountString(), receiver.getAmount(),
-                            receiver.getAddress(), estimation == null ? Constants.GAS_LIMIT_DEFAULT : estimation, gasPrice, wallet.getEthWallet().getNonce());
+                    if (wallet.getIndex() < 0) {
+                        WalletPrivateKey keyObject = RealmManager.getAssetsDao().getPrivateKey(wallet.getActiveAddress().getAddress(),
+                                wallet.getCurrencyId(), wallet.getNetworkId());
+                                transaction = NativeDataHelper.makeTransactionETHFromKey(
+                                keyObject.getPrivateKey(),
+                                wallet.getCurrencyId(),
+                                wallet.getNetworkId(),
+                                wallet.getActiveAddress().getAmountString(),
+                                receiver.getAmount(),
+                                receiver.getAddress(),
+                                estimation == null ? Constants.GAS_LIMIT_DEFAULT : estimation,
+                                gasPrice,
+                                wallet.getEthWallet().getNonce());
+                    } else {
+                        transaction = NativeDataHelper.makeTransactionETH(
+                                seed,
+                                wallet.getIndex(),
+                                0,
+                                wallet.getCurrencyId(),
+                                wallet.getNetworkId(),
+                                wallet.getActiveAddress().getAmountString(),
+                                receiver.getAmount(),
+                                receiver.getAddress(),
+                                estimation == null ? Constants.GAS_LIMIT_DEFAULT : estimation,
+                                gasPrice,
+                                wallet.getEthWallet().getNonce());
+                    }
                 }
                 isHd = false;
                 break;
