@@ -28,7 +28,6 @@ public class WalletsResponse {
     @JsonAdapter(WalletDeserializer.class)
     @SerializedName("wallets")
     private List<Wallet> wallets;
-
     @SerializedName("topindexes")
     private ArrayList<TopIndex> topIndexes;
 
@@ -36,34 +35,25 @@ public class WalletsResponse {
         return topIndexes;
     }
 
-    public void saveBtcTopWalletIndex() {
-        //TODO DRY
+    public void saveTopIndexes() {
         if (topIndexes != null) {
-            for (TopIndex topIndex : topIndexes) {
-                if (topIndex.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()) {
-                    Prefs.putInt(Constants.PREF_WALLET_TOP_INDEX_BTC + topIndex.getNetworkId(), topIndex.getTopWalletIndex());
-                }
-            }
-        }
-    }
-
-    public void saveEthTopWalletIndex() {
-        //TODO DRY
-        if (topIndexes != null) {
-            for (TopIndex topIndex : topIndexes) {
-                if (topIndex.getCurrencyId() == NativeDataHelper.Blockchain.ETH.getValue()) {
-                    Prefs.putInt(Constants.PREF_WALLET_TOP_INDEX_ETH + topIndex.getNetworkId(), topIndex.getTopWalletIndex());
-                }
-            }
-        }
-    }
-
-    public void saveEosTopWalletIndex() {
-        //TODO DRY
-        if (topIndexes != null) {
-            for (TopIndex topIndex : topIndexes) {
-                if (topIndex.getCurrencyId() == NativeDataHelper.Blockchain.EOS.getValue()) {
-                    Prefs.putInt(Constants.PREF_WALLET_TOP_INDEX_EOS + topIndex.getNetworkId(), topIndex.getTopWalletIndex());
+            for (TopIndex index : topIndexes) {
+                try {
+                    String prefKey = null;
+                    switch (NativeDataHelper.Blockchain.valueOf(index.currencyId)) {
+                        case BTC:
+                            prefKey = Constants.PREF_WALLET_TOP_INDEX_BTC;
+                            break;
+                        case ETH:
+                            prefKey = Constants.PREF_WALLET_TOP_INDEX_ETH;
+                            break;
+                        case EOS:
+                            prefKey = Constants.PREF_WALLET_TOP_INDEX_EOS;
+                            break;
+                    }
+                    Prefs.putInt(prefKey + index.getNetworkId(), index.getTopWalletIndex());
+                } catch (Exception e) {
+                    e.printStackTrace(); // except if server will send top index of unsupported chain id
                 }
             }
         }
@@ -100,10 +90,10 @@ public class WalletsResponse {
 
         @SerializedName("currencyid")
         private int currencyId;
-        @SerializedName("topindex")
-        private int topWalletIndex;
         @SerializedName("networkid")
         private int networkId;
+        @SerializedName("topindex")
+        private int topWalletIndex;
 
         public int getCurrencyId() {
             return currencyId;

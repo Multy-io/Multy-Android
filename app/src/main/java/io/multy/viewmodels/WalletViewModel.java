@@ -380,7 +380,6 @@ public class WalletViewModel extends BaseViewModel {
         Toast.makeText(activity, R.string.address_copied, Toast.LENGTH_SHORT).show();
     }
 
-    //todo review this
     public void createFirstWallets(Runnable onComplete) {
         Disposable disposable = Flowable.create((FlowableOnSubscribe<Boolean>) emitter -> {
             boolean result = false;
@@ -517,21 +516,25 @@ public class WalletViewModel extends BaseViewModel {
         sendTransactionStatus(Constants.EVENT_TYPE_VIEW_MULTISIG, currencyId, networkId, walletIndex, txId, lifecycle);
     }
 
-    public void sendTransactionStatus(int eventStatus, int currencyId, int networkId, int walletIndex, String txId, Lifecycle lifecycle) {
+    public void sendTransactionStatus(int eventType, int currencyId, int networkId, int walletIndex, String txId, Lifecycle lifecycle) {
         try {
             isLoading.setValue(true);
             SocketManager socketManager = new SocketManager();
             socketManager.connect();
-            MultisigEvent.Payload payload = new MultisigEvent.Payload();
-            payload.userId = RealmManager.getSettingsDao().getUserId().getUserId();
-            payload.address = RealmManager.getAssetsDao()
-                    .getMultisigLinkedWallet(wallet.getValue().getMultisigWallet().getOwners()).getActiveAddress().getAddress();
-            payload.inviteCode = wallet.getValue().getMultisigWallet().getInviteCode();
-            payload.walletIndex = walletIndex;
-            payload.currencyId = currencyId;
-            payload.networkId = networkId;
-            payload.txId = txId;
-            MultisigEvent event = new MultisigEvent(eventStatus, System.currentTimeMillis(), payload);
+            MultisigEvent event = MultisigEvent.getBuilder()
+                    .setType(eventType)
+                    .setDate(System.currentTimeMillis())
+                    .setPayload(MultisigEvent.Payload.getBuilder()
+                            .setUserId(RealmManager.getSettingsDao().getUserId().getUserId())
+                            .setAddress(RealmManager.getAssetsDao().getMultisigLinkedWallet(wallet.getValue()
+                                    .getMultisigWallet().getOwners()).getActiveAddress().getAddress())
+                            .setInviteCode(wallet.getValue().getMultisigWallet().getInviteCode())
+                            .setWalletIndex(walletIndex)
+                            .setCurrencyId(currencyId)
+                            .setNetworkId(networkId)
+                            .setTxId(txId)
+                            .build())
+                    .build();
             try {
                 JSONObject eventJson = new JSONObject(new Gson().toJson(event));
                 socketManager.sendMultisigTransactionOwnerAction(eventJson, args -> {

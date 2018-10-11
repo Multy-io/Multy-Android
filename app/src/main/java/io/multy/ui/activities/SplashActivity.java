@@ -9,6 +9,7 @@ package io.multy.ui.activities;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.arch.lifecycle.Lifecycle;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -216,38 +217,42 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void showMainActivity() {
-        Thread background = new Thread() {
-            public void run() {
-                try {
-                    Intent mainActivityIntent = new Intent(SplashActivity.this, MainActivity.class)
-                            .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                    mainActivityIntent.putExtra(MainActivity.IS_ANIMATION_MUST_SHOW, true);
-                    addDeepLinkExtra(mainActivityIntent);
-                    checkForContactAction(mainActivityIntent);
-                    startActivity(mainActivityIntent);
-                    finish();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Intent i = new Intent(getBaseContext(), MainActivity.class);
-                    addDeepLinkExtra(i);
-                    startActivity(i);
+        if (getLifecycle().getCurrentState() == Lifecycle.State.RESUMED) {
+            Thread background = new Thread() {
+                public void run() {
+                    try {
+                        Intent mainActivityIntent = new Intent(SplashActivity.this, MainActivity.class)
+                                .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        mainActivityIntent.putExtra(MainActivity.IS_ANIMATION_MUST_SHOW, true);
+                        addDeepLinkExtra(mainActivityIntent);
+                        checkForContactAction(mainActivityIntent);
+                        startActivity(mainActivityIntent);
+                        finish();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Intent i = new Intent(getBaseContext(), MainActivity.class);
+                        addDeepLinkExtra(i);
+                        startActivity(i);
+                    }
                 }
-            }
-        };
-        background.start();
+            };
+            background.start();
+        } else {
+            finish();
+        }
     }
 
     private void initBranchIO() {
         Branch branch = Branch.getInstance(getApplicationContext());
         branch.initSession((referringParams, error) -> {
             if (error == null) {
-                String address = referringParams.optString(getString(R.string.address));
-                String amount = referringParams.optString(getString(R.string.amount));
+                String address = referringParams.optString(SplashActivity.this.getString(R.string.address));
+                String amount = referringParams.optString(SplashActivity.this.getString(R.string.amount));
                 if (!TextUtils.isEmpty(address)) {
-                    getIntent().putExtra(Constants.EXTRA_ADDRESS, address);
+                    SplashActivity.this.getIntent().putExtra(Constants.EXTRA_ADDRESS, address);
                 }
                 if (!TextUtils.isEmpty(amount)) {
-                    getIntent().putExtra(Constants.EXTRA_AMOUNT, amount);
+                    SplashActivity.this.getIntent().putExtra(Constants.EXTRA_AMOUNT, amount);
                 }
             } else {
                 Timber.i(error.getMessage());

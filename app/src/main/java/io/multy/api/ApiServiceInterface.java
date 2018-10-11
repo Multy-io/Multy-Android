@@ -12,10 +12,9 @@ import io.multy.model.entities.Estimation;
 import io.multy.model.entities.TransactionRequestEntity;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.requests.AddWalletAddressRequest;
-import io.multy.model.requests.CreateMultisigRequest;
 import io.multy.model.requests.HdTransactionRequestEntity;
-import io.multy.model.requests.ImportWalletRequest;
 import io.multy.model.requests.UpdateWalletNameRequest;
+import io.multy.model.requests.WalletRequest;
 import io.multy.model.responses.AccountsResponse;
 import io.multy.model.responses.AddressBalanceResponse;
 import io.multy.model.responses.AuthResponse;
@@ -48,13 +47,13 @@ public interface ApiServiceInterface {
     Observable<ResponseBody> addWalletReactive(@Body Wallet wallet);
 
     @POST("api/v1/wallet")
-    Call<ResponseBody> addWallet(@Body CreateMultisigRequest request);
+    Call<ResponseBody> addWallet(@Body WalletRequest request);
 
     @POST("api/v1/wallet")
-    Call<ResponseBody> importWallet(@Body ImportWalletRequest wallet);
+    Call<ResponseBody> importWallet(@Body WalletRequest wallet);
 
     @POST("api/v1/wallet")
-    Call<ResponseBody> importMultisigWallet(@Body ImportWalletRequest request);
+    Call<ResponseBody> importMultisigWallet(@Body WalletRequest request);
 
     @POST("api/v1/gettransactioninfo/{id}")
     Call<ResponseBody> getTransactionInfo(@Path("id") String transactionId);

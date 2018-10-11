@@ -146,8 +146,9 @@ public class EosTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         TransactionHistory transactionHistory = transactionHistoryList.get(position);
         final boolean isIncoming = transactionHistory.getTxStatus() == TX_MEMPOOL_INCOMING;
 
-        final String amount = CryptoFormatUtils.FORMAT_ETH.format(CryptoFormatUtils.weiToEth(transactionHistory.getTxOutAmount())); //TODO improve
-        final String amountFiat = getFiatAmount(transactionHistory, CryptoFormatUtils.weiToEth(transactionHistory.getTxOutAmount()));
+        final double amountEth = CryptoFormatUtils.weiToEth(transactionHistory.getTxOutAmount());
+        final String amount = CryptoFormatUtils.FORMAT_ETH.format(amountEth);
+        final String amountFiat = getFiatAmount(transactionHistory, amountEth);
         final String address;
 
         holder.containerAddresses.removeAllViews();

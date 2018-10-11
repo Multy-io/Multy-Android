@@ -22,7 +22,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.jakewharton.rxbinding2.widget.RxTextView;
-import com.samwolfand.oneprefs.Prefs;
 
 import org.json.JSONObject;
 
@@ -35,8 +34,7 @@ import butterknife.OnClick;
 import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.model.entities.wallet.Wallet;
-import io.multy.model.requests.CreateMultisigRequest;
-import io.multy.model.requests.Multisig;
+import io.multy.model.requests.WalletRequest;
 import io.multy.model.responses.WalletsResponse;
 import io.multy.storage.RealmManager;
 import io.multy.ui.activities.CreateMultiSigActivity;
@@ -305,16 +303,19 @@ public class CreateMultisigBlankFragment extends BaseFragment {
             showProgressDialog();
             final String inviteCode = getInviteCode();
             final int networkId = wallet.getNetworkId();
-            final int topIndex = Prefs.getInt(Constants.PREF_WALLET_TOP_INDEX_ETH + networkId, 0);
-            //TODO builder.pattern please
-            CreateMultisigRequest request = new CreateMultisigRequest();
-            request.setCurrencyId(NativeDataHelper.Blockchain.ETH.getValue());
-            request.setNetworkId(networkId);
-            request.setAddress(wallet.getActiveAddress().getAddress());
-            request.setAddressIndex(wallet.getAddresses().size() - 1);
-            request.setWalletIndex(wallet.getIndex());
-            request.setWalletName(inputName.getText().toString());
-            request.setMultisig(new Multisig(confirmationsCount, membersCount, inviteCode));
+            WalletRequest request = WalletRequest.getBulilder()
+                    .setCurrencyId(NativeDataHelper.Blockchain.ETH.getValue())
+                    .setNetworkId(networkId)
+                    .setAddress(wallet.getActiveAddress().getAddress())
+                    .setAddressIndex(wallet.getAddresses().size() - 1)
+                    .setWalletIndex(wallet.getIndex())
+                    .setWalletName(inputName.getText().toString())
+                    .setMultisig(WalletRequest.Multisig.getBuilder()
+                            .setSignatureRequired(confirmationsCount)
+                            .setOwnerCount(membersCount)
+                            .setInviteCode(inviteCode)
+                            .build())
+                    .build();
 
             MultyApi.INSTANCE.addWallet(view.getContext(), request).enqueue(new Callback<ResponseBody>() {
                 @Override

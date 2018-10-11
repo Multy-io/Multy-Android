@@ -217,10 +217,10 @@ public class ScanInvitationCodeFragment extends BaseFragment {
         viewModel.validate(inviteCode, ack -> {
             Timber.i("VALIDATE: " + ack[0].toString());
             MultisigEvent responseEvent = new Gson().fromJson(ack[0].toString(), MultisigEvent.class);
-            if (responseEvent.payload.exist) {
+            if (responseEvent.getPayload().isExist()) {
                 if (getFragmentManager() != null) {
                     WalletChooserDialogFragment dialog = WalletChooserDialogFragment
-                            .getInstance(responseEvent.payload.currencyId, responseEvent.payload.networkId);
+                            .getInstance(responseEvent.getPayload().getCurrencyId(), responseEvent.getPayload().getNetworkId());
                     dialog.setTargetFragment(ScanInvitationCodeFragment.this, WalletChooserDialogFragment.REQUEST_WALLET_ID);
                     dialog.show(getFragmentManager(), WalletChooserDialogFragment.TAG);
                     dialog.setOnWalletClickListener(wallet -> {
