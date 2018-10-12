@@ -18,13 +18,16 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.github.guilhe.circularprogressview.CircularProgressView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -39,6 +42,7 @@ import io.multy.api.MultyApi;
 import io.multy.model.entities.Estimation;
 import io.multy.model.entities.wallet.Owner;
 import io.multy.model.entities.wallet.Wallet;
+import io.multy.model.entities.wallet.WalletPrivateKey;
 import io.multy.model.requests.HdTransactionRequestEntity;
 import io.multy.storage.RealmManager;
 import io.multy.ui.adapters.OwnersAdapter;
@@ -342,9 +346,39 @@ public class CreateMultiSigActivity extends BaseActivity {
             stringBuilder.append("]");
 
             try {
-                final byte[] transaction = NativeDataHelper.createEthMultisigWallet(seed, linkedWallet.getIndex(), linkedWallet.getActiveAddress().getIndex(), linkedWallet.getCurrencyId(), linkedWallet.getNetworkId(),
-                        linkedWallet.getActiveAddress().getAmountString(), viewModel.getGasLimit(), viewModel.getGasPrice(), linkedWallet.getEthWallet().getNonce(), factoryAddress,
-                        stringBuilder.toString(), multisigWallet.getMultisigWallet().getConfirmations(), priceOfCreation);
+                final byte[] transaction;
+                if (linkedWallet.getIndex() < 0) {
+                    WalletPrivateKey keyObject = RealmManager.getAssetsDao().getPrivateKey(linkedWallet.getActiveAddress().getAddress(),
+                            linkedWallet.getCurrencyId(), linkedWallet.getNetworkId());
+                    transaction = NativeDataHelper.createEthMultisigWalletFromKey(
+                            keyObject.getPrivateKey(),
+                            linkedWallet.getCurrencyId(),
+                            linkedWallet.getNetworkId(),
+                            linkedWallet.getActiveAddress().getAmountString(),
+                            viewModel.getGasLimit(),
+                            viewModel.getGasPrice(),
+                            linkedWallet.getEthWallet().getNonce(),
+                            factoryAddress,
+                            stringBuilder.toString(),
+                            multisigWallet.getMultisigWallet().getConfirmations(),
+                            priceOfCreation
+                            );
+                } else {
+                   transaction = NativeDataHelper.createEthMultisigWallet(
+                            seed,
+                            linkedWallet.getIndex(),
+                            linkedWallet.getActiveAddress().getIndex(),
+                            linkedWallet.getCurrencyId(),
+                            linkedWallet.getNetworkId(),
+                            linkedWallet.getActiveAddress().getAmountString(),
+                            viewModel.getGasLimit(),
+                            viewModel.getGasPrice(),
+                            linkedWallet.getEthWallet().getNonce(),
+                            factoryAddress,
+                            stringBuilder.toString(),
+                            multisigWallet.getMultisigWallet().getConfirmations(),
+                            priceOfCreation);
+                }
                 String hex = "0x" + byteArrayToHex(transaction);
 
                 final HdTransactionRequestEntity entity = new HdTransactionRequestEntity(multisigWallet.getCurrencyId(), multisigWallet.getNetworkId(),
@@ -361,6 +395,14 @@ public class CreateMultiSigActivity extends BaseActivity {
                             CompleteDialogFragment.newInstance(multisigWallet.getCurrencyId()).show(getSupportFragmentManager(), "");
                         } else {
                             onError(getString(R.string.something_went_wrong));
+                            ResponseBody errorBody = response.errorBody();
+                            try {
+                                if (errorBody != null && !TextUtils.isEmpty(errorBody.string()) && errorBody.string().contains("nonce too low")) {
+                                    viewModel.updateMultisigWallet();
+                                }
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                             view.setEnabled(true);
                         }
                     }
@@ -380,6 +422,9 @@ public class CreateMultiSigActivity extends BaseActivity {
                 } else {
                     onError(getString(R.string.something_went_wrong));
                 }
+            } catch (Exception e) {
+                onError(getString(R.string.something_went_wrong));
+                Crashlytics.logException(e);
             }
         }
     }

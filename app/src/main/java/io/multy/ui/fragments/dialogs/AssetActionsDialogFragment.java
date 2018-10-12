@@ -25,7 +25,6 @@ import io.multy.ui.activities.CreateAssetActivity;
 import io.multy.ui.activities.CreateMultiSigActivity;
 import io.multy.ui.activities.ImportEthWalletActivity;
 import io.multy.ui.activities.ImportMultisigActivity;
-import io.multy.ui.activities.ImportWalletActivity;
 import io.multy.util.Constants;
 
 public class AssetActionsDialogFragment extends BottomSheetDialogFragment implements DialogInterface.OnShowListener {
@@ -113,16 +112,16 @@ public class AssetActionsDialogFragment extends BottomSheetDialogFragment implem
         startActivity(new Intent(getActivity(), ImportEthWalletActivity.class));
     }
 
-    @OnClick(R.id.button_import)
-    public void onClickImport(View v) {
-        v.setEnabled(false);
-        v.postDelayed(() -> v.setEnabled(true), 500);
-        if (getActivity() != null) {
-            startActivity(new Intent(getActivity(), ImportWalletActivity.class));
-            dismiss();
+//    @OnClick(R.id.button_import)
+//    public void onClickImport(View v) {
+//        v.setEnabled(false);
+//        v.postDelayed(() -> v.setEnabled(true), 500);
+//        if (getActivity() != null) {
+//            startActivity(new Intent(getActivity(), ImportWalletActivity.class));
+//            dismiss();
 //            DonateDialog.getInstance(Constants.DONATE_ADDING_IMPORT_WALLET).show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
-        }
-    }
+//        }
+//    }
 
     @OnClick(R.id.button_cancel)
     public void onClickCancel(View view) {

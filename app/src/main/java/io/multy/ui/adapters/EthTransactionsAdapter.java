@@ -376,17 +376,19 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         holder.date.setText(DateHelper.DATE_FORMAT_HISTORY.format(transactionHistory.getBlockTime() * 1000));
         holder.containerAddresses.removeAllViews();
         final String amount;
+        final double amountEth;
         final String amountFiat;
         final String address;
         if (isIncoming) {
-            amount = CryptoFormatUtils.FORMAT_ETH.format(CryptoFormatUtils.weiToEth(transactionHistory.getTxOutAmount())); //TODO improve
-            amountFiat = getFiatAmount(transactionHistory, CryptoFormatUtils.weiToEth(transactionHistory.getTxOutAmount()));
+            amountEth = CryptoFormatUtils.weiToEth(transactionHistory.getTxOutAmount());
         } else {
             final String price = String.valueOf(transactionHistory.getGasLimit() * transactionHistory.getGasPrice());
             final String fullAmount = new BigInteger(transactionHistory.getTxOutAmount()).add(new BigInteger(price)).toString();
-            amount = CryptoFormatUtils.FORMAT_ETH.format(CryptoFormatUtils.weiToEth(fullAmount)); //TODO improve
-            amountFiat = getFiatAmount(transactionHistory, CryptoFormatUtils.weiToEth(fullAmount));
+            amountEth = CryptoFormatUtils.weiToEth(fullAmount);
         }
+        amount = CryptoFormatUtils.FORMAT_ETH.format(amountEth);
+        amountFiat = getFiatAmount(transactionHistory, amountEth);
+
         holder.containerAddresses.removeAllViews();
 
         if (isIncoming) {

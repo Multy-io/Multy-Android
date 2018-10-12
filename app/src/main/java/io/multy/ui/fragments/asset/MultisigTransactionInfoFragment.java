@@ -194,7 +194,7 @@ public class MultisigTransactionInfoFragment extends BaseFragment {
     }
 
     private void onReceiveEvent(Object[] objects) {
-        viewModel.getMultisigTransactionsHistory(currencyId, networkId, walletAddress);
+        viewModel.getMultisigTransactionsHistory(currencyId, networkId, walletAddress, Constants.ASSET_TYPE_ADDRESS_MULTISIG);
         if (getActivity() != null) {
             getActivity().runOnUiThread(() -> viewModel.updateWallets());
         }
@@ -463,7 +463,7 @@ public class MultisigTransactionInfoFragment extends BaseFragment {
                 viewModel.sendConfirmTransaction(walletAddress, transaction.getMultisigInfo().getRequestId(),
                         estimationConfirm, mediumGasPrice, isSuccess -> {
                             if (isSuccess) {
-                                viewModel.getMultisigTransactionsHistory(currencyId, networkId, walletAddress);
+                                viewModel.getMultisigTransactionsHistory(currencyId, networkId, walletAddress, Constants.ASSET_TYPE_ADDRESS_MULTISIG);
                             } else {
                                 setVisibilityConfirmButtons(View.VISIBLE);
                                 viewModel.errorMessage.setValue(getString(R.string.something_went_wrong));
@@ -478,8 +478,16 @@ public class MultisigTransactionInfoFragment extends BaseFragment {
     }
 
     private void onThrowable(Throwable throwable) {
-        viewModel.errorMessage.setValue(throwable.getLocalizedMessage());
-        throwable.printStackTrace();
+        if (throwable.getMessage().contains("Transaction is trying to spend more than available")) {
+            viewModel.errorMessage.setValue(getString(R.string.not_enough_balance));
+        } else {
+            if (throwable.getMessage().contains("nonce too low")) {
+                viewModel.updateWallets();
+            }
+            viewModel.errorMessage.setValue(getString(R.string.error_sending_tx));
+            setVisibilityConfirmButtons(View.VISIBLE);
+            throwable.printStackTrace();
+        }
     }
 
     @OnTouch(R.id.image_slider_accept)

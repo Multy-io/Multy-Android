@@ -10,7 +10,6 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import java.util.List;
-import java.util.Objects;
 
 import io.multy.model.entities.wallet.BtcWallet;
 import io.multy.model.entities.wallet.EthWallet;
@@ -19,6 +18,7 @@ import io.multy.model.entities.wallet.Owner;
 import io.multy.model.entities.wallet.RecentAddress;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.entities.wallet.WalletAddress;
+import io.multy.model.entities.wallet.WalletPrivateKey;
 import io.multy.util.NativeDataHelper;
 import io.reactivex.annotations.NonNull;
 import io.realm.Realm;
@@ -96,60 +96,87 @@ public class AssetsDao {
     }
 
     private void saveSingleWallet(Wallet wallet) {
-        final int index = wallet.getIndex();
-        final String name = wallet.getWalletName();
-        final String balance = wallet.getBalance();
+        if (wallet.getIndex() < 0 && getPrivateKey(wallet.getActiveAddress().getAddress(),
+                wallet.getCurrencyId(), wallet.getNetworkId()) == null) {
+            wallet.setVisible(false);
+        }
+//        final int index = wallet.getIndex();
+//        final String name = wallet.getWalletName();
+//        final String balance = wallet.getBalance();
 
-        Wallet savedWallet = new Wallet();
-        savedWallet.setDateOfCreation(wallet.getDateOfCreation());
-        savedWallet.setLastActionTime(wallet.getLastActionTime());
-        savedWallet.setIndex(index);
-        savedWallet.setWalletName(name);
-        savedWallet.setBalance(balance);
-        savedWallet.setNetworkId(wallet.getNetworkId());
-        savedWallet.setCurrencyId(wallet.getCurrencyId());
-        savedWallet.setPending(wallet.isPending());
-        savedWallet.setSyncing(wallet.isSyncing());
-
+//        Wallet savedWallet = new Wallet();
+//        savedWallet.setDateOfCreation(wallet.getDateOfCreation());
+//        savedWallet.setLastActionTime(wallet.getLastActionTime());
+//        savedWallet.setIndex(index);
+//        savedWallet.setWalletName(name);
+//        savedWallet.setBalance(balance);
+//        savedWallet.setNetworkId(wallet.getNetworkId());
+//        savedWallet.setCurrencyId(wallet.getCurrencyId());
+//        savedWallet.setPending(wallet.isPending());
+//        savedWallet.setSyncing(wallet.isSyncing());
+//
         if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()) {
-            savedWallet.setBtcWallet(wallet.getBtcWallet().asRealmObject(realm));
-            savedWallet.setBalance(String.valueOf(savedWallet.getBtcWallet().calculateBalance()));
-            savedWallet.setAvailableBalance(String.valueOf(savedWallet.getBtcWallet().calculateAvailableBalance()));
+//            savedWallet.setBtcWallet(wallet.getBtcWallet().asRealmObject(realm));
+            wallet.setBalance(String.valueOf(wallet.getBtcWallet().calculateBalance()));
+//            savedWallet.setBalance(String.valueOf(savedWallet.getBtcWallet().calculateBalance()));
+            wallet.setAvailableBalance(String.valueOf(wallet.getBtcWallet().calculateAvailableBalance()));
+//            savedWallet.setAvailableBalance(String.valueOf(savedWallet.getBtcWallet().calculateAvailableBalance()));
 
         } else if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.EOS.getValue()) {
-            savedWallet.setEosWallet(wallet.getEosWallet().asRealmObject(realm));
-            String eosBalance = savedWallet.getEosWallet().getBalance();
+//            savedWallet.setEosWallet(wallet.getEosWallet().asRealmObject(realm));
+            String eosBalance = wallet.getEosWallet().getBalance();
+//            String eosBalance = savedWallet.getEosWallet().getBalance();
             if (!eosBalance.equals("0")) {
-                eosBalance = savedWallet.getEosWallet().getDividedBalance(balance);
+                eosBalance = wallet.getEosWallet().getDividedBalance(wallet.getBalance());
+//                eosBalance = savedWallet.getEosWallet().getDividedBalance(balance);
             }
-            savedWallet.getEosWallet().setBalance(eosBalance);
-            savedWallet.getEosWallet().setPendingBalance(eosBalance);
-            savedWallet.setBalance(eosBalance);
-            savedWallet.setAvailableBalance(eosBalance);
+            wallet.getEosWallet().setBalance(eosBalance);
+//            savedWallet.getEosWallet().setBalance(eosBalance);
+            wallet.getEosWallet().setPendingBalance(eosBalance);
+//            savedWallet.getEosWallet().setPendingBalance(eosBalance);
+            wallet.setBalance(eosBalance);
+//            savedWallet.setBalance(eosBalance);
+            wallet.setAvailableBalance(eosBalance);
+//            savedWallet.setAvailableBalance(eosBalance);
 
         } else {
             if (wallet.getMultisigWallet() != null) {
-                savedWallet.setMultisigWallet(Objects.requireNonNull(wallet.getMultisigWallet()).asRealmObject(realm));
+//                savedWallet.setMultisigWallet(Objects.requireNonNull(wallet.getMultisigWallet()).asRealmObject(realm));
+                for (Owner owner : wallet.getMultisigWallet().getOwners()) {
+                    if (!TextUtils.isEmpty(owner.getUserId())) {
+                        if (owner.getWalletIndex() < 0 && getPrivateKey(owner.getAddress(),
+                                wallet.getCurrencyId(), wallet.getNetworkId()) == null) {
+                            wallet.setVisible(false);
+                        }
+                        break;
+                    }
+                }
             }
 
-            savedWallet.setEthWallet(Objects.requireNonNull(wallet.getEthWallet()).asRealmObject(realm));
-            final String ethBalance = savedWallet.getEthWallet().getBalance();
-            final String ethPendingBalance = savedWallet.getEthWallet().getPendingBalance();
-            final String ethAvailableBalance = savedWallet.getEthWallet().calculateAvailableBalance(ethBalance);
+//            savedWallet.setEthWallet(Objects.requireNonNull(wallet.getEthWallet()).asRealmObject(realm));
+            final String ethBalance = wallet.getEthWallet().getBalance();
+//            final String ethBalance = savedWallet.getEthWallet().getBalance();
+//            final String ethPendingBalance = savedWallet.getEthWallet().getPendingBalance();
+            final String ethAvailableBalance = wallet.getEthWallet().calculateAvailableBalance(ethBalance);
+//            final String ethAvailableBalance = savedWallet.getEthWallet().calculateAvailableBalance(ethBalance);
 
-            savedWallet.setBalance(ethBalance);
-            savedWallet.setAvailableBalance(ethAvailableBalance);
+            wallet.setBalance(ethBalance);
+//            savedWallet.setBalance(ethBalance);
+            wallet.setAvailableBalance(ethAvailableBalance);
+//            savedWallet.setAvailableBalance(ethAvailableBalance);
         }
 
-        realm.insertOrUpdate(savedWallet);
+        realm.insertOrUpdate(wallet);
+//        realm.insertOrUpdate(savedWallet);
     }
 
     public RealmResults<Wallet> getWallets() {
-        return realm.where(Wallet.class).sort("lastActionTime", Sort.DESCENDING).findAll();
+        return realm.where(Wallet.class).equalTo("visible", true).sort("lastActionTime", Sort.DESCENDING).findAll();
     }
 
     public RealmResults<Wallet> getAvailableWallets() {
         return realm.where(Wallet.class)
+                .equalTo("visible", true)
                 .notEqualTo("availableBalance", "0")
                 .sort("lastActionTime", Sort.ASCENDING)
                 .findAll();
@@ -157,6 +184,7 @@ public class AssetsDao {
 
     public RealmResults<Wallet> getAvailableWallets(int currencyId, int networkId) {
         return realm.where(Wallet.class)
+                .equalTo("visible", true)
                 .equalTo("networkId", networkId)
                 .equalTo("currencyId", currencyId)
                 .notEqualTo("availableBalance", "0")
@@ -165,22 +193,33 @@ public class AssetsDao {
     }
 
     public RealmResults<Wallet> getAvailableBtcWallets() {
-        return realm.where(Wallet.class).equalTo("currencyId", NativeDataHelper.Blockchain.BTC.getValue()).notEqualTo("availableBalance", "0").sort("lastActionTime", Sort.ASCENDING).findAll();
+        return realm.where(Wallet.class)
+                .equalTo("visible", true)
+                .equalTo("currencyId", NativeDataHelper.Blockchain.BTC.getValue())
+                .notEqualTo("availableBalance", "0")
+                .sort("lastActionTime", Sort.ASCENDING)
+                .findAll();
     }
 
     public RealmResults<Wallet> getWallets(int blockChainId, boolean includeMultisig) {
-        RealmQuery<Wallet> query = realm.where(Wallet.class).equalTo("currencyId", blockChainId);
+        RealmQuery<Wallet> query = realm.where(Wallet.class)
+                .equalTo("visible", true)
+                .equalTo("currencyId", blockChainId);
         return includeMultisig ? query.findAll() : query.isNull("multisigWallet").findAll();
     }
 
     public RealmResults<Wallet> getWallets(int blockChainId, int networkId, boolean includeMultisig) {
-        RealmQuery<Wallet> query = realm.where(Wallet.class).equalTo("currencyId", blockChainId)
+        RealmQuery<Wallet> query = realm.where(Wallet.class)
+                .equalTo("visible", true)
+                .equalTo("currencyId", blockChainId)
                 .equalTo("networkId", networkId);
         return includeMultisig ? query.findAll() : query.isNull("multisigWallet").findAll();
     }
 
     public Wallet getWallet(int blockChainId, int networkId, int walletIndex) {
-        return realm.where(Wallet.class).equalTo("currencyId", blockChainId)
+        return realm.where(Wallet.class)
+                .equalTo("visible", true)
+                .equalTo("currencyId", blockChainId)
                 .equalTo("networkId", networkId).equalTo("index", walletIndex)
                 .isNull("multisigWallet").findFirst();
     }
@@ -212,7 +251,9 @@ public class AssetsDao {
     }
 
     public RealmResults<Wallet> getMultisigWallets() {
-        return realm.where(Wallet.class).isNotNull("multisigWallet").findAll();
+        return realm.where(Wallet.class)
+                .equalTo("visible", true)
+                .isNotNull("multisigWallet").findAll();
     }
 
     public boolean isSelfOwnerAddress(String address) {
@@ -281,5 +322,20 @@ public class AssetsDao {
     public boolean ifAddressExist(long addressTo) {
         RealmQuery<RecentAddress> query = realm.where(RecentAddress.class).equalTo(RecentAddress.RECENT_ADDRESS_ID, addressTo);
         return query.count() != 0;
+    }
+
+    public void savePrivateKey(String walletAddress, String privateKey, int currencyId, int networkId) {
+        realm.executeTransaction(realm -> {
+            WalletPrivateKey key = new WalletPrivateKey(walletAddress, privateKey, currencyId, networkId);
+            realm.insertOrUpdate(key);
+        });
+    }
+
+    public WalletPrivateKey getPrivateKey(String walletAddress, int currencyId, int networkId) {
+        return realm.where(WalletPrivateKey.class)
+                .equalTo(WalletPrivateKey.WALLET_ADDRESS, walletAddress)
+                .equalTo(WalletPrivateKey.CURRENCY_ID, currencyId)
+                .equalTo(WalletPrivateKey.NETWORK_ID, networkId)
+                .findFirst();
     }
 }

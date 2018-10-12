@@ -5,12 +5,9 @@
   -->
 
 <resources>
-    <string name="app_name">Multy</string>
-    <!--<string name="wallets">wallets</string>-->
-    <!--<string name="feed">activity</string>-->
-    <!--<string name="contacts">contacts</string>-->
+    <string name="app_name" translatable="false">Multy</string>
     <string name="settings">Settings</string>
-    <string name="receive_btc">Receive BTC</string>
+    <!--<string name="receive_btc">Receive BTC</string>-->
     <string name="send">Send</string>
     <string name="receive">Receive</string>
     <string name="exchange">Exchange</string>
@@ -65,22 +62,22 @@
     <string name="recent_addresses">Recent Addresses</string>
     <string name="scan_qr">Scan \nQR</string>
     <string name="hint_search_or_enter_address">Enter Address Here</string>
-    <string name="btc">BTC</string>
+    <string name="btc" translatable="false">BTC</string>
     <string name="pay_for_commission">Pay for commission</string>
-    <string name="spendable">Spendable:</string>
+    <!--<string name="spendable">Spendable:</string>-->
     <string name="max">SEND ALL</string>
     <string name="close">Close</string>
-    <string name="choose_amount">Please, choose amount</string>
+    <!--<string name="choose_amount">Please, choose amount</string>-->
     <string name="choose_transaction_speed">Please choose Fee Rate.</string>
-    <string name="usd">USD</string>
+    <string name="usd" translatable="false">USD</string>
     <string name="send_to">Send to</string>
     <string name="send_from">Send from</string>
     <!--<string name="send_formatted" formatted="false">Send %s</string>-->
     <string name="transaction_fee">Transaction fee</string>
     <!--<string name="ready_to_send">Ready to send</string>-->
-    <string name="donation_default">0.0001</string>
-    <string name="donation_format_pattern">##.##</string>
-    <string name="donation_format_pattern_bitcoin">##.####</string>
+    <string name="donation_default" translatable="false">0.0001</string>
+    <string name="donation_format_pattern" translatable="false">##.##</string>
+    <string name="donation_format_pattern_bitcoin" translatable="false">##.####</string>
     <!--<string name="error_balance">Invalid amount to spend.</string>-->
     <string name="root_message">Sorry, rooted devices is not supported yet according to our safety policy. Please use our app on authorized device.</string>
     <string name="root_title">Root detected</string>
@@ -92,7 +89,7 @@
     <!--<string name="btc_addresses">BTC Addresses</string>-->
     <string name="address_formatted">%s Address</string>
     <string name="addresses">Addresses</string>
-    <string name="eth">ETH</string>
+    <string name="eth" translatable="false">ETH</string>
     <string name="tokens">Tokens</string>
     <string name="create">Create</string>
     <string name="reference_currency">Reference currency</string>
@@ -102,10 +99,9 @@
     <string name="select_currency">Select currency</string>
     <string name="wallet_name">Wallet Name</string>
     <string name="no_contacts">No contacts yet</string>
-    <string name="no_contacts_message">This screen is not developed yet.</string>
     <!--<string name="no_activity">No activity yet</string>-->
     <!--<string name="no_activity_message">This screen is not developed yet.</string>-->
-    <string name="multy_name_long">Multi cryptocurrency and\nassets open-source wallet</string>
+    <string name="multy_name_long" translatable="false">Multi cryptocurrency and\nassets open-source wallet</string>
     <string name="address_copied">Address was copied to clipboard</string>
     <string name="copied_to_clipboard">Copied to clipboard</string>
     <string name="wallet_settings">Wallet Settings</string>
@@ -133,7 +129,7 @@
     </string>
     <string name="us_dollars_usd">US Dollars ∙ USD</string>
     <string name="fast_operations">Fast Operations</string>
-    <string name="nfc">NFC</string>
+    <string name="nfc" translatable="false">NFC</string>
     <string name="scan">Scan</string>
     <string name="error">Error</string>
     <string name="not_implemented">Sorry, this feature is not implemented</string>
@@ -141,9 +137,9 @@
     <!--<string name="receive_summ">Receive Summ</string>-->
     <string name="receive_amount">Receive Amount</string>
     <string name="send_amount">Send Amount</string>
-    <string name="input_symbols">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890</string>
-    <string name="point">.</string>
-    <string name="receive_summary">Receive summary</string>
+    <string name="input_symbols" translatable="false">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890</string>
+    <string name="point" translatable="false">.</string>
+    <!--<string name="receive_summary">Receive summary</string>-->
     <string name="send_summary">Confirm Sending</string>
     <string name="done">Done</string>
     <string name="create_first_wallet">Create First Wallet</string>
@@ -158,7 +154,7 @@
     <string name="backup_is_not_executed">Backup is needed!</string>
     <string name="wallet_removed">Wallet removed</string>
     <string name="something_went_wrong">Something went wrong</string>
-    <string name="zero_zero">0.0</string>
+    <string name="zero_zero" translatable="false">0.0</string>
     <string name="show_all_addresses">Show All Addresses</string>
     <string name="operations_empty">You don\'t have\nany transactions</string>
     <string name="operations_create">Tap the button\nto create funds\nrequest</string>
@@ -166,7 +162,7 @@
     <!--<string name="error_config_error">Unable to get config</string>-->
     <string name="no_internet_connection">No internet connection</string>
     <string name="no_internet_connection_message">Unfortunately you are not conencted\nto the network now. Multy needs\nconstant connection to provide it’s\nwork correctly</string>
-    <string name="tree_dots">…</string>
+    <string name="tree_dots" translatable="false">…</string>
     <string name="_or_">" or "</string>
     <string name="personal">Personal</string>
     <string name="locked_funds">Locked funds</string>
@@ -222,13 +218,12 @@
     <string name="chain_id">chain_id</string>
     <string name="no_balance">Not enough amount on chosen wallet!</string>
     <string name="available_amount">Available: %s</string>
-    <!--<string name="available_amount_eth">Available: %s ETH</string>-->
     <string name="select_an_addresses">SELECT AN ADDRESS TO VIEW PRIVATE KEY</string>
     <string name="select_wallet_donation">Select wallet and donation summ</string>
     <string name="wallet">Wallet</string>
     <string name="activity">Activity</string>
     <string name="donation">Donation</string>
-    <string name="select_speed">Select speed</string>
+    <!--<string name="select_speed">Select speed</string>-->
     <string name="send_donation">Send</string>
     <string name="error_donation">Error sending donation</string>
     <string name="error_donation_message">Can\'t send a donation. Please check that donation sum is not too small(&lt; 5000 Satoshi) and wallet`s balance is sufficient.</string>
@@ -237,7 +232,6 @@
     <string name="CANCEL">CANCEL</string>
     <string name="donate_for_this_option">Donate for this option</string>
     <string name="chain">Blockchain</string>
-    <!--<string name="excepteur_sint">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>-->
     <string name="address_book_title">Contacts</string>
     <string name="sync_my_address_book">Vote for contacts</string>
     <string name="work_in_progress">(work in progress)</string>
@@ -245,13 +239,13 @@
     <string name="feature_challenge">Vote for features</string>
     <string name="feature_challenge_message">We want you to speak up. By voting for certain feature, you give a feedback on want you want most and support project at the same time. Your vote will help us to choose the right path.</string>
     <string name="vote_for_activity">Vote for activity</string>
-    <string name="git_new_line">Git:\n</string>
-    <string name="core_new_line">Core:\n</string>
-    <string name="version_title">Multy Crypto Wallet v</string>
-    <string name="environment_new_line">Environment:\n </string>
+    <string name="git_new_line" translatable="false">Git:\n</string>
+    <string name="core_new_line" translatable="false">Core:\n</string>
+    <string name="version_title" translatable="false">Multy Crypto Wallet v</string>
+    <string name="environment_new_line" translatable="false">Environment:\n </string>
     <string name="gas_price">GAS Price</string>
     <string name="gas_limit">GAS Limit</string>
-    <string name="percent_0">0%</string>
+    <string name="percent_0" translatable="false">0%</string>
     <string name="crypto_portfolio">Crypto portfolio</string>
     <string name="currency_charts">Сurrency charts</string>
     <string name="terms_of_service">Terms of service</string>
@@ -262,9 +256,9 @@
     <string name="create_or_import_new_wallet">Create or Import New Wallet</string>
     <string name="create_new">Create New</string>
     <string name="import_wallet">Import Wallet</string>
-    <string name="wei">WEI</string>
+    <string name="wei" translatable="false">WEI</string>
     <string name="error_initializing_wallet">Error initializing wallet.</string>
-    <string name="gwei">GWEI</string>
+    <string name="gwei" translatable="false">GWEI</string>
     <string name="available">AVAILABLE</string>
     <string name="soon">WORK IN PROGRESS</string>
     <string name="you_are_have_no_wallets">You don`t have any wallets yet. Please create one</string>
@@ -279,12 +273,12 @@
     <string name="fee_slow">Slow</string>
     <string name="fee_very_slow">Very Slow</string>
     <string name="fee_custom">Custom</string>
-    <string name="ten_minutes">10 min</string>
-    <string name="six_hours">6 hours</string>
-    <string name="five_days">5 days</string>
-    <string name="one_week">1 week</string>
-    <string name="two_weeks">2 weeks</string>
-    <string name="n_blocks">%d blocks</string>
+    <!--<string name="ten_minutes">10 min</string>-->
+    <!--<string name="six_hours">6 hours</string>-->
+    <!--<string name="five_days">5 days</string>-->
+    <!--<string name="one_week">1 week</string>-->
+    <!--<string name="two_weeks">2 weeks</string>-->
+    <!--<string name="n_blocks">%d blocks</string>-->
     <string name="new_version_title">We have an update!</string>
     <string name="new_version_message">Please update Multy from Google Play Market.</string>
     <string name="exchanging">Exchange</string>
@@ -300,8 +294,8 @@
     <string name="terms_url">https://raw.githubusercontent.com/wiki/Appscrunch/Multy/Legal:-Terms-of-service.md</string>
     <string name="permissions_for_access_nearby_devices">We need permissions to access finding nearby devices. We don\'t use your location.</string>
     <string name="searching">Searching\nactive\nrequests</string>
-    <string name="my_first_wallet_name">My first %s wallet</string>
-    <string name="bitcoin_btc">Bitcoin・BTC</string>
+    <string name="my_first_wallet_name" translatable="false">My first %s wallet</string>
+    <string name="bitcoin_btc" translatable="false">Bitcoin・BTC</string>
     <string name="magic_send">Magical send</string>
     <string name="resync">Hold on.\nWallet is resyncing</string>
     <string name="push_new_transaction_notification">You got transaction with %s</string>
@@ -310,7 +304,7 @@
     <string name="available_balance">Available balance</string>
     <string name="pending_balance">Pending balance</string>
     <string name="share_address">Share address</string>
-    <string name="contact_default_link_name">Multy wallet</string>
+    <string name="contact_default_link_name" translatable="false">Multy wallet</string>
     <string name="address_bind">The selected address already bind!</string>
     <string name="shure_delete_address">Are you sure want to delete selected address?</string>
     <string name="delete">Delete</string>
@@ -339,17 +333,17 @@
     <string name="wrong_private_key">Wrong private key</string>
     <string name="import_eos_hint">Now we are going to import these accounts into Multy and create corresponding wallets for you. That means your private key will be stored in our secure database. In the nearest future you will be able to replace that key with one Multy-key.</string>
     <string name="wallet_parameters">Wallet parameters</string>
-    <string name="ram">RAM</string>
-    <string name="cpu">CPU</string>
-    <string name="net">NET</string>
+    <string name="ram" translatable="false">RAM</string>
+    <string name="cpu" translatable="false">CPU</string>
+    <string name="net" translatable="false">NET</string>
     <string name="ram_notification">The RAM is required to store account information such as keys, balance and contract state. Users cannot ask the entire Blockchain if they need any data – it would take too long. So, it is stored in RAM and be accessed from the memory. Every single piece of data is replicated in the RAM of every node. This is the reason why keeping data in RAM is expensive.</string>
     <string name="cpu_notification">The system needs to interpret/comprehend different log/signals pointing towards different actions. The calculation done to regain the actual state of message log is taken care by CPU and is known as Computational debt.  Much like bandwidth, computational capacity is allocated on a fractional reserve basis because they are transient (unused capacity cannot be saved for future use). CPU have an unstacking period of 3 days.</string>
     <string name="net_notification">Storage works in a similar way as RAM. The content like blog/graphics/videos could be stored in Storage. The blockchain does\'t store the content it just stores the log/hash pointing towards the content.  Storage similar to RAM is a reserved capacity which could not be delegated or leased to others.</string>
     <string name="share_multisig_wallet">Share MultiSig wallet</string>
     <string name="your_wallet_identification_code">Your wallet identification code</string>
     <string name="waiting_for_member">Waiting for member…</string>
-    <string name="ethereum">Ethereum</string>
-    <string name="ethereum_eth">Ethereum・ETH</string>
+    <string name="ethereum" translatable="false">Ethereum</string>
+    <string name="ethereum_eth" translatable="false">Ethereum・ETH</string>
     <string name="invite_code_not_recognized">Can\'t join multisig wallet: no free slots available</string>
     <string name="about_signs">You can’t change the number of signs needed for sending money after creating multisig vallet.</string>
     <string name="delete_user">Delete user?</string>

@@ -62,6 +62,7 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
 
     private String balance = "0"; //satoshi for btc, wei for eth
     private String availableBalance = "0";
+    private boolean visible = true;
 
     @Nullable
     private EthWallet ethWallet;
@@ -570,5 +571,13 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
 
     public boolean isMultisig() {
         return getEthWallet() != null && getMultisigWallet() != null;
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 }

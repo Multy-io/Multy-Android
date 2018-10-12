@@ -61,28 +61,12 @@ public class MyWalletsAdapter extends RecyclerView.Adapter<MyWalletsAdapter.Hold
         holder.imageChain.setImageResource(wallet.getIconResourceId());
         holder.itemView.setOnClickListener(view -> listener.onWalletClick(wallet));
 
-        //TODO REFACTOR THIS SHT ASAP
-        if (wallet.isSyncing()) {
-            holder.imageWaiting.setVisibility(View.GONE);
-            holder.resync.setVisibility(View.VISIBLE);
-            holder.imageChevron.setVisibility(View.INVISIBLE);
-            holder.imagePending.setVisibility(View.GONE);
-        } else if (wallet.isPending()) {
-            holder.imageWaiting.setVisibility(View.GONE);
-            holder.resync.setVisibility(View.GONE);
-            holder.imageChevron.setVisibility(View.VISIBLE);
-            holder.imagePending.setVisibility(View.VISIBLE);
-        } else if (wallet.getMultisigWallet() != null && wallet.getMultisigWallet().isHavePaymentRequests()) {
-            holder.imageWaiting.setVisibility(wallet.getMultisigWallet().isHavePaymentRequests() ? View.VISIBLE : View.GONE);
-            holder.imageChevron.setVisibility(View.INVISIBLE);
-            holder.imagePending.setVisibility(View.GONE);
-            holder.resync.setVisibility(View.GONE);
-        } else {
-            holder.imageWaiting.setVisibility(View.GONE);
-            holder.resync.setVisibility(View.GONE);
-            holder.imageChevron.setVisibility(View.VISIBLE);
-            holder.imagePending.setVisibility(View.GONE);
-        }
+        holder.imageChevron.setVisibility(wallet.getMultisigWallet() != null && wallet.getMultisigWallet().isHavePaymentRequests() ||
+                wallet.isSyncing() ? View.INVISIBLE : View.VISIBLE);
+        holder.imageWaiting.setVisibility(wallet.isMultisig() &&
+                wallet.getMultisigWallet().isHavePaymentRequests() ? View.VISIBLE : View.GONE);
+        holder.resync.setVisibility(wallet.isSyncing() ? View.VISIBLE : View.GONE);
+        holder.imagePending.setVisibility(wallet.isPending() ? View.VISIBLE : View.GONE);
     }
 
     @Override

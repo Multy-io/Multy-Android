@@ -244,29 +244,41 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         };
         if (viewModel.getWalletLive().getValue().isMultisig()) {
             final String inviteCode = viewModel.getWalletLive().getValue().getMultisigWallet().getInviteCode().toLowerCase();
-            int linkedIndex = RealmManager.getAssetsDao()
-                    .getMultisigLinkedWallet(viewModel.getWalletLive().getValue().getMultisigWallet().getOwners()).getIndex();
+            Wallet linkedWallet = RealmManager.getAssetsDao()
+                    .getMultisigLinkedWallet(viewModel.getWalletLive().getValue().getMultisigWallet().getOwners());
+            int linkedIndex = linkedWallet.getIndex();
             MultyApi.INSTANCE.getMultisigWalletVerbose(inviteCode, currencyId, networkId, Constants.ASSET_TYPE_ADDRESS_MULTISIG)
                     .enqueue(callback);
-            MultyApi.INSTANCE.getWalletVerbose(linkedIndex, currencyId, networkId, Constants.ASSET_TYPE_ADDRESS_MULTY)
-                    .enqueue(new Callback<SingleWalletResponse>() {
-                        @Override
-                        public void onResponse(@NonNull Call<SingleWalletResponse> call, @NonNull Response<SingleWalletResponse> response) {
-                            SingleWalletResponse body = response.body();
-                            if (response.isSuccessful() && body != null) {
-                                RealmManager.getAssetsDao().saveWallet(body.getWallets().get(0));
-                            }
-                        }
+            Callback<SingleWalletResponse> verboseCallback = new Callback<SingleWalletResponse>() {
+                @Override
+                public void onResponse(@NonNull Call<SingleWalletResponse> call, @NonNull Response<SingleWalletResponse> response) {
+                    SingleWalletResponse body = response.body();
+                    if (response.isSuccessful() && body != null && body.getWallets().size() > 0) {
+                        RealmManager.getAssetsDao().saveWallet(body.getWallets().get(0));
+                    }
+                }
 
-                        @Override
-                        public void onFailure(@NonNull Call<SingleWalletResponse> call, @NonNull Throwable t) {
-                            t.printStackTrace();
-                        }
-                    });
+                @Override
+                public void onFailure(@NonNull Call<SingleWalletResponse> call, @NonNull Throwable t) {
+                    t.printStackTrace();
+                }
+            };
+            if (linkedIndex < 0) {
+                MultyApi.INSTANCE.getWalletVerbose(linkedWallet.getActiveAddress().getAddress(),
+                        currencyId, networkId, Constants.ASSET_TYPE_ADDRESS_MULTY).enqueue(verboseCallback);
+            } else {
+                MultyApi.INSTANCE.getWalletVerbose(linkedIndex, currencyId, networkId, Constants.ASSET_TYPE_ADDRESS_MULTY)
+                        .enqueue(verboseCallback);
+            }
         } else {
             final int walletIndex = viewModel.getWalletLive().getValue().getIndex();
-            MultyApi.INSTANCE.getWalletVerbose(walletIndex, currencyId, networkId, Constants.ASSET_TYPE_ADDRESS_MULTY)
-                    .enqueue(callback);
+            if (walletIndex < 0) {
+                MultyApi.INSTANCE.getWalletVerbose(viewModel.getWalletLive().getValue().getActiveAddress().getAddress(),
+                        currencyId, networkId, Constants.ASSET_TYPE_ADDRESS_IMPORTED).enqueue(callback);
+            } else {
+                MultyApi.INSTANCE.getWalletVerbose(walletIndex, currencyId, networkId, Constants.ASSET_TYPE_ADDRESS_MULTY)
+                        .enqueue(callback);
+            }
         }
     }
 
@@ -275,10 +287,11 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     }
 
     private void requestTransactions(final int currencyId, final int networkId, final int walletIndex) {
-        if (viewModel.getWalletLive().getValue().isMultisig()) {
+        if (viewModel.getWalletLive().getValue().isMultisig() || walletIndex < 0) {
             viewModel.getMultisigTransactionsHistory(viewModel.getWalletLive().getValue().getCurrencyId(),
                     viewModel.getWalletLive().getValue().getNetworkId(),
-                    viewModel.getWalletLive().getValue().getActiveAddress().getAddress())
+                    viewModel.getWalletLive().getValue().getActiveAddress().getAddress(),
+                    walletIndex < 0 ? Constants.ASSET_TYPE_ADDRESS_IMPORTED : Constants.ASSET_TYPE_ADDRESS_MULTISIG)
                     .observe(this, transactions -> onTransactions(transactions, currencyId));
         } else {
             viewModel.getTransactionsHistory(currencyId, networkId, walletIndex)

@@ -198,13 +198,17 @@ public class CreateMultisigViewModel extends BaseViewModel {
     public void validate(String inviteCode, Ack ack) {
         if (socketManager != null) {
             final String userId = RealmManager.getSettingsDao().getUserId().getUserId();
-            MultisigEvent.Payload payload = new MultisigEvent.Payload();
-            payload.inviteCode = inviteCode;
-            payload.userId = userId;
-            MultisigEvent event = new MultisigEvent(SocketManager.SOCKET_VALIDATE, System.currentTimeMillis(), payload);
+            MultisigEvent event = MultisigEvent.getBuilder()
+                    .setType(SocketManager.SOCKET_VALIDATE)
+                    .setDate(System.currentTimeMillis())
+                    .setPayload(MultisigEvent.Payload.getBuilder()
+                            .setInviteCode(inviteCode)
+                            .setUserId(userId)
+                            .build())
+                    .build();
             try {
-                Timber.i("sending socket " + new JSONObject(new Gson().toJson(event)).toString());
                 final String eventJson = new Gson().toJson(event);
+                Timber.i("sending socket " + eventJson);
                 socketManager.sendEvent(SocketManager.EVENT_MESSAGE_SEND, new JSONObject(eventJson), ack);
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -216,14 +220,18 @@ public class CreateMultisigViewModel extends BaseViewModel {
         if (socketManager != null) {
             Wallet linkedWallet = getLinkedWallet().getValue();
             final String userId = RealmManager.getSettingsDao().getUserId().getUserId();
-            MultisigEvent.Payload payload = new MultisigEvent.Payload();
-            payload.address = linkedWallet.getActiveAddress().getAddress();
-            payload.inviteCode = inviteCode.getValue();
-            payload.walletIndex = linkedWallet.getIndex();
-            payload.currencyId = linkedWallet.getCurrencyId();
-            payload.networkId = linkedWallet.getNetworkId();
-            payload.userId = userId;
-            final MultisigEvent event = new MultisigEvent(SocketManager.SOCKET_JOIN, System.currentTimeMillis(), payload);
+            final MultisigEvent event = MultisigEvent.getBuilder()
+                    .setType(SocketManager.SOCKET_JOIN)
+                    .setDate(System.currentTimeMillis())
+                    .setPayload(MultisigEvent.Payload.getBuilder()
+                            .setAddress(linkedWallet.getActiveAddress().getAddress())
+                            .setInviteCode(inviteCode.getValue())
+                            .setWalletIndex(linkedWallet.getIndex())
+                            .setCurrencyId(linkedWallet.getCurrencyId())
+                            .setNetworkId(linkedWallet.getNetworkId())
+                            .setUserId(userId)
+                            .build())
+                    .build();
             try {
                 final String eventJson = new Gson().toJson(event);
                 socketManager.sendEvent(SocketManager.EVENT_MESSAGE_SEND, new JSONObject(eventJson), ack -> {
@@ -242,15 +250,19 @@ public class CreateMultisigViewModel extends BaseViewModel {
         if (socketManager != null) {
             Wallet linkedWallet = getLinkedWallet().getValue();
             final String userId = RealmManager.getSettingsDao().getUserId().getUserId();
-            MultisigEvent.Payload payload = new MultisigEvent.Payload();
-            payload.address = linkedWallet.getActiveAddress().getAddress();
-            payload.inviteCode = inviteCode.getValue();
-            payload.walletIndex = linkedWallet.getIndex();
-            payload.currencyId = linkedWallet.getCurrencyId();
-            payload.networkId = linkedWallet.getNetworkId();
-            payload.userId = userId;
-            payload.addressToKick = addressToKick;
-            final MultisigEvent event = new MultisigEvent(SocketManager.SOCKET_KICK, System.currentTimeMillis(), payload);
+            final MultisigEvent event = MultisigEvent.getBuilder()
+                    .setType(SocketManager.SOCKET_KICK)
+                    .setDate(System.currentTimeMillis())
+                    .setPayload(MultisigEvent.Payload.getBuilder()
+                            .setAddress(linkedWallet.getActiveAddress().getAddress())
+                            .setInviteCode(inviteCode.getValue())
+                            .setWalletIndex(linkedWallet.getIndex())
+                            .setCurrencyId(linkedWallet.getCurrencyId())
+                            .setNetworkId(linkedWallet.getNetworkId())
+                            .setUserId(userId)
+                            .setAddressToKick(addressToKick)
+                            .build())
+                    .build();
             final String eventJson = new Gson().toJson(event);
             try {
                 socketManager.sendEvent(SocketManager.EVENT_MESSAGE_SEND, new JSONObject(eventJson), args -> {
@@ -268,14 +280,18 @@ public class CreateMultisigViewModel extends BaseViewModel {
         if (socketManager != null) {
             Wallet linkedWallet = getLinkedWallet().getValue();
             final String userId = RealmManager.getSettingsDao().getUserId().getUserId();
-            MultisigEvent.Payload payload = new MultisigEvent.Payload();
-            payload.address = linkedWallet.getActiveAddress().getAddress();
-            payload.inviteCode = inviteCode.getValue();
-            payload.walletIndex = linkedWallet.getIndex();
-            payload.currencyId = linkedWallet.getCurrencyId();
-            payload.networkId = linkedWallet.getNetworkId();
-            payload.userId = userId;
-            final MultisigEvent event = new MultisigEvent(SocketManager.SOCKET_LEAVE, System.currentTimeMillis(), payload);
+            final MultisigEvent event = MultisigEvent.getBuilder()
+                    .setType(SocketManager.SOCKET_LEAVE)
+                    .setDate(System.currentTimeMillis())
+                    .setPayload(MultisigEvent.Payload.getBuilder()
+                            .setAddress(linkedWallet.getActiveAddress().getAddress())
+                            .setInviteCode(inviteCode.getValue())
+                            .setWalletIndex(linkedWallet.getIndex())
+                            .setCurrencyId(linkedWallet.getCurrencyId())
+                            .setNetworkId(linkedWallet.getNetworkId())
+                            .setUserId(userId)
+                            .build())
+                    .build();
             try {
                 final String eventJson = new Gson().toJson(event);
                 socketManager.sendEvent(SocketManager.EVENT_MESSAGE_SEND, new JSONObject(eventJson), ack);
@@ -290,14 +306,18 @@ public class CreateMultisigViewModel extends BaseViewModel {
         if (socketManager != null) {
             Wallet linkedWallet = getLinkedWallet().getValue();
             final String userId = RealmManager.getSettingsDao().getUserId().getUserId();
-            MultisigEvent.Payload payload = new MultisigEvent.Payload();
-            payload.address = linkedWallet.getActiveAddress().getAddress();
-            payload.inviteCode = inviteCode.getValue();
-            payload.walletIndex = linkedWallet.getIndex();
-            payload.currencyId = linkedWallet.getCurrencyId();
-            payload.networkId = linkedWallet.getNetworkId();
-            payload.userId = userId;
-            final MultisigEvent event = new MultisigEvent(SocketManager.SOCKET_DELETE, System.currentTimeMillis(), payload);
+            final MultisigEvent event = MultisigEvent.getBuilder()
+                    .setType(SocketManager.SOCKET_DELETE)
+                    .setDate(System.currentTimeMillis())
+                    .setPayload(MultisigEvent.Payload.getBuilder()
+                            .setAddress(linkedWallet.getActiveAddress().getAddress())
+                            .setInviteCode(inviteCode.getValue())
+                            .setWalletIndex(linkedWallet.getIndex())
+                            .setCurrencyId(linkedWallet.getCurrencyId())
+                            .setNetworkId(linkedWallet.getNetworkId())
+                            .setUserId(userId)
+                            .build())
+                    .build();
             try {
                 final String eventJson = new Gson().toJson(event);
                 socketManager.sendEvent(SocketManager.EVENT_MESSAGE_SEND, new JSONObject(eventJson), ack);

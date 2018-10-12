@@ -45,6 +45,7 @@ public class ImportMultisigActivity extends BaseActivity {
         setContentView(R.layout.activity_import_multisig);
         ButterKnife.bind(this);
         viewModel = ViewModelProviders.of(this).get(ImportViewModel.class);
+        viewModel.errorMessage.observe(this, this::showMessage);
     }
 
     @OnFocusChange({R.id.input_key, R.id.input_address})
@@ -68,7 +69,7 @@ public class ImportMultisigActivity extends BaseActivity {
                 final int networkId = groupNetwork.getCheckedId() == R.id.button_main ?
                         NativeDataHelper.NetworkId.ETH_MAIN_NET.getValue() : NativeDataHelper.NetworkId.RINKEBY.getValue();
                 final String linkedAddress = NativeDataHelper.makeAccountAddressFromKey(key, currencyId, networkId);
-                viewModel.importEthWallet(currencyId, networkId, linkedAddress, isLinkedWallet -> {
+                viewModel.importEthWallet(key, currencyId, networkId, linkedAddress, true, isLinkedWallet -> {
                     if (isLinkedWallet) {
                         viewModel.importEthMultisigWallet(currencyId, networkId, linkedAddress, multisigAddress, isMultisigWallet -> {
                             if (isMultisigWallet) {

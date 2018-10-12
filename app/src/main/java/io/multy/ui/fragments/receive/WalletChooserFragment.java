@@ -95,9 +95,7 @@ public class WalletChooserFragment extends BaseFragment implements MyWalletsAdap
             @Override
             public void onResponse(@NonNull Call<WalletsResponse> call, @NonNull Response<WalletsResponse> response) {
                 if (response.body() != null) {
-                    response.body().saveBtcTopWalletIndex();
-                    response.body().saveEthTopWalletIndex();
-                    response.body().saveEosTopWalletIndex();
+                    response.body().saveTopIndexes();
                     if (response.body().getWallets() != null && response.body().getWallets().size() != 0) {
                         final long selectedWalletId = viewModel.getWallet().getId();
                         RealmManager.getAssetsDao().deleteAll();

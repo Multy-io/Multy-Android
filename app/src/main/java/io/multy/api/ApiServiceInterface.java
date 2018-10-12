@@ -12,10 +12,9 @@ import io.multy.model.entities.Estimation;
 import io.multy.model.entities.TransactionRequestEntity;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.requests.AddWalletAddressRequest;
-import io.multy.model.requests.CreateMultisigRequest;
 import io.multy.model.requests.HdTransactionRequestEntity;
-import io.multy.model.requests.ImportWalletRequest;
 import io.multy.model.requests.UpdateWalletNameRequest;
+import io.multy.model.requests.WalletRequest;
 import io.multy.model.responses.AccountsResponse;
 import io.multy.model.responses.AddressBalanceResponse;
 import io.multy.model.responses.AuthResponse;
@@ -48,13 +47,13 @@ public interface ApiServiceInterface {
     Observable<ResponseBody> addWalletReactive(@Body Wallet wallet);
 
     @POST("api/v1/wallet")
-    Call<ResponseBody> addWallet(@Body CreateMultisigRequest request);
+    Call<ResponseBody> addWallet(@Body WalletRequest request);
 
     @POST("api/v1/wallet")
-    Call<ResponseBody> importWallet(@Body ImportWalletRequest wallet);
+    Call<ResponseBody> importWallet(@Body WalletRequest wallet);
 
     @POST("api/v1/wallet")
-    Call<ResponseBody> importMultisigWallet(@Body ImportWalletRequest request);
+    Call<ResponseBody> importMultisigWallet(@Body WalletRequest request);
 
     @POST("api/v1/gettransactioninfo/{id}")
     Call<ResponseBody> getTransactionInfo(@Path("id") String transactionId);
@@ -92,6 +91,9 @@ public interface ApiServiceInterface {
     @GET("api/v1/wallet/{walletIndex}/verbose/{currencyId}/{networkId}/{assetType}")
     Call<SingleWalletResponse> getWalletVerboseByIndex(@Path("walletIndex") int walletIndex, @Path("currencyId") int currencyId, @Path("networkId") int networkId, @Path("assetType") int assetType);
 
+    @GET("api/v1/wallet/{walletAddress}/verbose/{currencyId}/{networkId}/{assetType}")
+    Call<SingleWalletResponse> getWalletVerboseByAddress(@Path("walletAddress") String walletAddress, @Path("currencyId") int currencyId, @Path("networkId") int networkId, @Path("assetType") int assetType);
+
     @GET("api/v1/wallet/{inviteCode}/verbose/{currencyId}/{networkId}/{assetType}")
     Call<SingleWalletResponse> getMultisigWalletVerboseByInvite(@Path(value = "inviteCode", encoded = true) String inviteCode, @Path("currencyId") int currencyId, @Path("networkId") int networkId, @Path("assetType") int assetType);
 
@@ -106,6 +108,9 @@ public interface ApiServiceInterface {
 
     @GET("api/v1/wallets/transactions/{currencyid}/{networkid}/{walletIndex}/0")
     Call<TransactionHistoryResponse> getTransactionHistory(@Path("currencyid") int currencyId, @Path("networkid") int networkId, @Path("walletIndex") int walletIndex);
+
+    @GET("api/v1/wallets/transactions/{currencyid}/{networkid}/{walletAddress}/0")
+    Call<TransactionHistoryResponse> getTransactionHistory(@Path("currencyid") int currencyId, @Path("networkid") int networkId, @Path("walletAddress") String walletAddress);
 
     @GET("api/v1/wallets/transactions/{currencyId}/{networkId}/{address}/{assetType}")
     Call<TransactionHistoryResponse> getMultisigTransactionHistory(@Path("currencyId") int currencyId, @Path("networkId") int networkId, @Path("address") String address, @Path("assetType") int assetType);

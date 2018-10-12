@@ -9,17 +9,17 @@ package io.multy.model.entities;
 
 public class Fee {
 
-    private String time;
+//    private String time;
     private String name;
     private long amount;
-    private int blockCount;
+//    private int blockCount;
     private boolean isSelected = false;
 
-    public Fee(String name, long amount, int blockCount, String time) {
+    public Fee(String name, long amount/*, int blockCount, String time*/) {
         this.name = name;
         this.amount = amount;
-        this.blockCount = blockCount;
-        this.time = time;
+//        this.blockCount = blockCount;
+//        this.time = time;
     }
 
     public boolean isSelected() {
@@ -30,9 +30,9 @@ public class Fee {
         isSelected = selected;
     }
 
-    public String getTime() {
-        return time;
-    }
+//    public String getTime() {
+//        return time;
+//    }
 
     public String getName() {
         return name;
@@ -50,11 +50,11 @@ public class Fee {
         this.amount = amount;
     }
 
-    public int getBlockCount() {
-        return blockCount;
-    }
+//    public int getBlockCount() {
+//        return blockCount;
+//    }
 
-    public void setBlockCount(int blockCount) {
-        this.blockCount = blockCount;
-    }
+//    public void setBlockCount(int blockCount) {
+//        this.blockCount = blockCount;
+//    }
 }
