@@ -501,9 +501,9 @@ public class WalletViewModel extends BaseViewModel {
                     new HdTransactionRequestEntity.Payload("", 0, walletIndex,
                             "0x" + EthSendSummaryFragment.byteArrayToHex(tx), false))).execute();
             if (!response.isSuccessful()) {
-                ResponseBody errorBody = response.errorBody();
-                if (errorBody != null && !TextUtils.isEmpty(errorBody.string())) {
-                    throw new IllegalStateException(errorBody.string());
+                String errorBody = response.errorBody() == null ? null : response.errorBody().string();
+                if (!TextUtils.isEmpty(errorBody)) {
+                    throw new IllegalStateException(errorBody);
                 }
             }
             e.onNext(response.isSuccessful());

@@ -126,6 +126,7 @@ public class ScanInvitationCodeFragment extends BaseFragment {
                     break;
                 }
             }
+            scanner.startCamera();
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
