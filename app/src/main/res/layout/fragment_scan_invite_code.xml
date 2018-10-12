@@ -17,7 +17,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:focusable="true"
-        app:borderColor="#00000000"
+        app:borderColor="#86c1ffc6"
         app:finderOffset="0dp"
         app:laserEnabled="false"
         app:layout_constraintBottom_toBottomOf="parent"

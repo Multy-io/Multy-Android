@@ -432,7 +432,8 @@ public class MultisigTransactionInfoFragment extends BaseFragment {
             if (limit < 0 && !isConfirming) {
                 isConfirming = true;
                 view.clearFocus();
-                hideConfirmButtonAnimation();
+                cancelSlide(view);
+//                hideConfirmButtonAnimation();
                 onSliderFinish.run();
             }
         }
@@ -463,10 +464,11 @@ public class MultisigTransactionInfoFragment extends BaseFragment {
                 viewModel.sendConfirmTransaction(walletAddress, transaction.getMultisigInfo().getRequestId(),
                         estimationConfirm, mediumGasPrice, isSuccess -> {
                             if (isSuccess) {
+                                hideConfirmButtonAnimation();
                                 viewModel.getMultisigTransactionsHistory(currencyId, networkId, walletAddress, Constants.ASSET_TYPE_ADDRESS_MULTISIG);
                             } else {
-                                setVisibilityConfirmButtons(View.VISIBLE);
                                 viewModel.errorMessage.setValue(getString(R.string.something_went_wrong));
+                                isConfirming = false;
                             }
                         }, this::onThrowable);
             }, this::onThrowable);
@@ -474,24 +476,29 @@ public class MultisigTransactionInfoFragment extends BaseFragment {
     }
 
     private void onDeclineTransaction() {
+        hideConfirmButtonAnimation();
         viewModel.sendDeclineTransaction(currencyId, networkId, walletIndex, transaction.getTxHash(), getLifecycle());
     }
 
     private void onThrowable(Throwable throwable) {
-        if (throwable.getMessage().contains("Transaction is trying to spend more than available")) {
+        if (throwable.getMessage().contains("Transaction is trying to spend more than available") ||
+                throwable.getMessage().contains("insufficient funds")) {
             viewModel.errorMessage.setValue(getString(R.string.not_enough_balance));
         } else {
             if (throwable.getMessage().contains("nonce too low")) {
                 viewModel.updateWallets();
             }
             viewModel.errorMessage.setValue(getString(R.string.error_sending_tx));
-            setVisibilityConfirmButtons(View.VISIBLE);
             throwable.printStackTrace();
         }
+        isConfirming = false;
     }
 
     @OnTouch(R.id.image_slider_accept)
     boolean onTouchAccept(View view, MotionEvent event) {
+        if (isConfirming) {
+            return false;
+        }
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 readyViewsToSlide(sliderAccept, sliderDecline, R.string.slide_to_confirm);
@@ -509,6 +516,9 @@ public class MultisigTransactionInfoFragment extends BaseFragment {
 
     @OnTouch(R.id.image_slider_decline)
     boolean onTouchDecline(View view, MotionEvent event) {
+        if (isConfirming) {
+            return false;
+        }
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 readyViewsToSlide(sliderDecline, sliderAccept, R.string.slide_to_decline);
