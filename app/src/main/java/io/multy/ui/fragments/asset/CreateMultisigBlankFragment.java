@@ -239,11 +239,17 @@ public class CreateMultisigBlankFragment extends BaseFragment {
                                 .putExtra(Constants.EXTRA_INVITE_CODE, inviteCode));
                     }
                 }
+                if (getActivity() != null) {
+                    getActivity().onBackPressed();
+                }
             }
 
             @Override
             public void onFailure(@NonNull Call<WalletsResponse> call, @NonNull Throwable t) {
                 t.printStackTrace();
+                if (getActivity() != null) {
+                    getActivity().onBackPressed();
+                }
             }
         });
     }
@@ -322,21 +328,20 @@ public class CreateMultisigBlankFragment extends BaseFragment {
                 public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                     if (response.isSuccessful()) {
                         Timber.i("create multisig success");
-                        getActivity().finish();
                         try {
-                            if (response.isSuccessful()) {
-                                String body = response.body().string();
-                                long dateOfCreation = new JSONObject(body).getLong("time");
-                                loadWalletsAndOpenMultisig(dateOfCreation, inviteCode);
-                            } else {
-                                throw new Exception(getString(R.string.something_went_wrong));
-                            }
+                            String body = response.body().string();
+                            long dateOfCreation = new JSONObject(body).getLong("time");
+                            loadWalletsAndOpenMultisig(dateOfCreation, inviteCode);
                         } catch (Exception e) {
                             e.printStackTrace();
+                        }
+                        if (getActivity() != null) {
+                            getActivity().finish();
                         }
                     } else {
                         Timber.e("create multisig fail");
                         validateData();
+                        showMessage(getString(R.string.something_went_wrong));
                     }
                     dismissProgressDialog();
                 }
@@ -346,6 +351,7 @@ public class CreateMultisigBlankFragment extends BaseFragment {
                     t.printStackTrace();
                     dismissProgressDialog();
                     validateData();
+                    showMessage(getString(R.string.something_went_wrong));
                 }
             });
         } else {

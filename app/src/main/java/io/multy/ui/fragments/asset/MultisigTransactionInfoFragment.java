@@ -478,8 +478,16 @@ public class MultisigTransactionInfoFragment extends BaseFragment {
     }
 
     private void onThrowable(Throwable throwable) {
-        viewModel.errorMessage.setValue(throwable.getLocalizedMessage());
-        throwable.printStackTrace();
+        if (throwable.getMessage().contains("Transaction is trying to spend more than available")) {
+            viewModel.errorMessage.setValue(getString(R.string.not_enough_balance));
+        } else {
+            if (throwable.getMessage().contains("nonce too low")) {
+                viewModel.updateWallets();
+            }
+            viewModel.errorMessage.setValue(getString(R.string.error_sending_tx));
+            setVisibilityConfirmButtons(View.VISIBLE);
+            throwable.printStackTrace();
+        }
     }
 
     @OnTouch(R.id.image_slider_accept)

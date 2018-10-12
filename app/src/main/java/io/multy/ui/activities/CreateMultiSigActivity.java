@@ -18,6 +18,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
@@ -26,6 +27,7 @@ import android.widget.TextView;
 import com.crashlytics.android.Crashlytics;
 import com.github.guilhe.circularprogressview.CircularProgressView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -393,6 +395,14 @@ public class CreateMultiSigActivity extends BaseActivity {
                             CompleteDialogFragment.newInstance(multisigWallet.getCurrencyId()).show(getSupportFragmentManager(), "");
                         } else {
                             onError(getString(R.string.something_went_wrong));
+                            ResponseBody errorBody = response.errorBody();
+                            try {
+                                if (errorBody != null && !TextUtils.isEmpty(errorBody.string()) && errorBody.string().contains("nonce too low")) {
+                                    viewModel.updateMultisigWallet();
+                                }
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                             view.setEnabled(true);
                         }
                     }

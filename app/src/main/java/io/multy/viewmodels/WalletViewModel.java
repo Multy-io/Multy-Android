@@ -18,6 +18,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -499,6 +500,12 @@ public class WalletViewModel extends BaseViewModel {
             Response<ResponseBody> response = MultyApi.INSTANCE.sendHdTransaction(new HdTransactionRequestEntity(currencyId, networkId,
                     new HdTransactionRequestEntity.Payload("", 0, walletIndex,
                             "0x" + EthSendSummaryFragment.byteArrayToHex(tx), false))).execute();
+            if (!response.isSuccessful()) {
+                ResponseBody errorBody = response.errorBody();
+                if (errorBody != null && !TextUtils.isEmpty(errorBody.string())) {
+                    throw new IllegalStateException(errorBody.string());
+                }
+            }
             e.onNext(response.isSuccessful());
             e.onComplete();
         }).doOnError(t -> isLoading.postValue(false))

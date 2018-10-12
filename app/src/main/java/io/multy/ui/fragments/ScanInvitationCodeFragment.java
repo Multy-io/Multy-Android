@@ -8,6 +8,7 @@ package io.multy.ui.fragments;
 
 import android.Manifest;
 import android.app.Activity;
+import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
@@ -21,7 +22,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -82,6 +82,8 @@ public class ScanInvitationCodeFragment extends BaseFragment {
         }
         super.onCreate(savedInstanceState);
         viewModel = ViewModelProviders.of(getActivity()).get(CreateMultisigViewModel.class);
+        setBaseViewModel(viewModel);
+        subscribeToErrors();
     }
 
     @Nullable
@@ -94,8 +96,8 @@ public class ScanInvitationCodeFragment extends BaseFragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
         if (permissionsGranted(getContext())) {
             scanner.startCamera();
         } else {
@@ -104,9 +106,9 @@ public class ScanInvitationCodeFragment extends BaseFragment {
     }
 
     @Override
-    public void onPause() {
+    public void onStop() {
         scanner.stopCamera();
-        super.onPause();
+        super.onStop();
     }
 
     @Override
@@ -162,16 +164,20 @@ public class ScanInvitationCodeFragment extends BaseFragment {
         try {
             String resultString = result.getContents();
             resultString = resultString.replace("invite code: ", "");
-            if (resultString == null || resultString.length() != Constants.INVITE_CODE_LENGTH) {
+            if (resultString.length() != Constants.INVITE_CODE_LENGTH) {
                 throw new IllegalArgumentException("Scanned data has not have invite code.");
             } else {
                 inputCode.setText(resultString);
             }
+            scanner.postDelayed(() -> {
+                if (getLifecycle().getCurrentState() == Lifecycle.State.RESUMED) {
+                    scanner.resumeCameraPreview(this::onResult);
+                }
+            }, 3000);
         } catch (Exception e) {
             e.printStackTrace();
             scanner.resumeCameraPreview(this::onResult);
         }
-        scanner.postDelayed(() -> scanner.resumeCameraPreview(this::onResult), 3000);
     }
 
     private void setBackgroundDarkness(boolean isDark) {
@@ -232,7 +238,7 @@ public class ScanInvitationCodeFragment extends BaseFragment {
                     });
                 }
             } else {
-                Toast.makeText(getActivity(), R.string.invite_code_not_recognized, Toast.LENGTH_SHORT).show();
+                viewModel.errorMessage.postValue(getString(R.string.invite_code_not_recognized));
             }
         });
     }
