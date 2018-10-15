@@ -12,6 +12,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.graphics.drawable.Animatable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.ColorUtils;
@@ -25,6 +26,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
+
+import java.io.IOException;
 
 import butterknife.BindString;
 import butterknife.BindView;
@@ -201,19 +204,28 @@ public class SendSummaryFragment extends BaseFragment {
                         CompleteDialogFragment.newInstance(viewModel.getChainId()).show(getActivity().getSupportFragmentManager(), TAG_SEND_SUCCESS);
                     } else {
                         Analytics.getInstance(getActivity()).logError(AnalyticsConstants.ERROR_TRANSACTION_API);
-                        showError();
+                        try {
+                            String errorBody = response.errorBody() == null ? "" : response.errorBody().string();
+                            showError(new IllegalStateException(errorBody));
+                            if (response.code() == 406 && getContext() != null) {
+                                Analytics.getInstance(getContext()).logEvent(TAG, "406", errorBody);
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            showError(new IllegalStateException(""));
+                        }
                     }
                 }
 
                 @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
                     t.printStackTrace();
-                    showError();
+                    showError(t);
                 }
             });
         } catch (Exception e) {
             e.printStackTrace();
-            showError();
+            showError(e);
         }
     }
 
@@ -254,9 +266,15 @@ public class SendSummaryFragment extends BaseFragment {
         imageLogo.setImageResource(viewModel.getWallet().getIconResourceId());
     }
 
-    private void showError() {
+    private void showError(Throwable throwable) {
         viewModel.isLoading.postValue(false);
-        viewModel.errorMessage.postValue(getString(R.string.error_sending_tx));
+        if (throwable.getMessage().contains("Transaction is trying to spend more than available") ||
+                throwable.getMessage().contains("insufficient funds")) {
+            viewModel.errorMessage.setValue(getString(R.string.not_enough_balance));
+        } else {
+            viewModel.errorMessage.setValue(getString(R.string.error_sending_tx));
+            throwable.printStackTrace();
+        }
         slider.postDelayed(() -> {
             isSending = false;
             sliderFinish.setVisibility(View.VISIBLE);

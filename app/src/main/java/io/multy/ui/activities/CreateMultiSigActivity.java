@@ -18,7 +18,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
@@ -53,8 +52,8 @@ import io.multy.ui.fragments.dialogs.CompleteDialogFragment;
 import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
 import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
-import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
+import io.multy.util.analytics.Analytics;
 import io.multy.viewmodels.CreateMultisigViewModel;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -140,6 +139,21 @@ public class CreateMultiSigActivity extends BaseActivity {
     protected void onPause() {
         viewModel.disconnectSockets();
         super.onPause();
+    }
+
+    private void showError(Throwable throwable) {
+        viewModel.isLoading.postValue(false);
+        if (throwable.getMessage().contains("Transaction is trying to spend more than available") ||
+                throwable.getMessage().contains("insufficient funds")) {
+            viewModel.errorMessage.setValue(getString(R.string.not_enough_balance));
+        } else {
+            if (throwable.getMessage().contains("nonce too low")) {
+                viewModel.updateMultisigWallet();
+            }
+            viewModel.errorMessage.setValue(getString(R.string.error_sending_tx));
+        }
+        throwable.printStackTrace();
+        Crashlytics.logException(throwable);
     }
 
     private void onError(String message) {
@@ -394,14 +408,14 @@ public class CreateMultiSigActivity extends BaseActivity {
                         if (response.isSuccessful()) {
                             CompleteDialogFragment.newInstance(multisigWallet.getCurrencyId()).show(getSupportFragmentManager(), "");
                         } else {
-                            onError(getString(R.string.something_went_wrong));
-                            ResponseBody errorBody = response.errorBody();
                             try {
-                                if (errorBody != null && !TextUtils.isEmpty(errorBody.string()) && errorBody.string().contains("nonce too low")) {
-                                    viewModel.updateMultisigWallet();
+                                String errorBody = response.errorBody() == null ? "" : response.errorBody().string();
+                                showError(new IllegalStateException(errorBody));
+                                if (response.code() == 406) {
+                                    Analytics.getInstance(Multy.getContext()).logEvent(getClass().getSimpleName(), "406", errorBody);
                                 }
                             } catch (IOException e) {
-                                e.printStackTrace();
+                                showError(new IllegalStateException(""));
                             }
                             view.setEnabled(true);
                         }
@@ -415,16 +429,9 @@ public class CreateMultiSigActivity extends BaseActivity {
                         view.setEnabled(true);
                     }
                 });
-            } catch (JniException e) {
-                e.printStackTrace();
-                if (e.getMessage().contains("Transaction is trying to spend more than available")) {
-                    onError(Multy.getContext().getString(R.string.not_enough_balance));
-                } else {
-                    onError(getString(R.string.something_went_wrong));
-                }
             } catch (Exception e) {
-                onError(getString(R.string.something_went_wrong));
-                Crashlytics.logException(e);
+                showError(e);
+                view.setEnabled(true);
             }
         }
     }

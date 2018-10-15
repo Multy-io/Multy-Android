@@ -28,6 +28,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -37,11 +38,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,6 +55,7 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.multy.Multy;
 import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.api.socket.BlueSocketManager;
@@ -576,7 +580,15 @@ public class MagicSendActivity extends BaseActivity {
                 if (response.isSuccessful()) {
                     showSuccess();
                 } else {
-                    showError(null);
+                    try {
+                        String errorBody = response.errorBody() == null ? "" : response.errorBody().string();
+                        showError(new IllegalStateException(errorBody));
+                        if (response.code() == 406) {
+                            Analytics.getInstance(Multy.getContext()).logEvent(getClass().getSimpleName(), "406", errorBody);
+                        }
+                    } catch (IOException e) {
+                        showError(new IllegalStateException(""));
+                    }
                 }
             }
 
@@ -610,10 +622,28 @@ public class MagicSendActivity extends BaseActivity {
         }
     }
 
-    private void showError(Exception e) {
+    private void logError(Exception e) {
         Analytics.getInstance(this).logEvent(AnalyticsConstants.KF_TRANSACTION_ERROR, AnalyticsConstants.KF_TRANSACTION_ERROR, e == null ? "Unknown error" : e.getMessage());
+    }
+
+    private void showError(Exception e) {
+        logError(e);
+        if (e.getMessage().contains("Transaction is trying to spend more than available") ||
+                e.getMessage().contains("insufficient funds")) {
+            showError(getString(R.string.not_enough_balance));
+        } else {
+            if (e.getMessage().contains("nonce too low")) {
+                initPagerWallets();
+            }
+            showError(getString(R.string.error_sending_tx));
+        }
+        e.printStackTrace();
+        Crashlytics.logException(e);
+    }
+
+    private void showError(String message) {
         AlertDialog dialog = new AlertDialog.Builder(MagicSendActivity.this)
-                .setTitle(getString(R.string.error_sending_tx))
+                .setTitle(TextUtils.isEmpty(message) ? getString(R.string.error_sending_tx) : message)
                 .setPositiveButton(R.string.ok, (dialog1, which) -> dialog1.dismiss())
                 .setCancelable(false)
                 .create();
@@ -677,15 +707,16 @@ public class MagicSendActivity extends BaseActivity {
                 try {
                     send(multisigWallet, gasPrice, body.getSubmitTransaction());
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    showError(e);
+                    logError(e);
+                    showError("");
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<Estimation> call, @NonNull Throwable t) {
                 t.printStackTrace();
-                showError(new Exception(t));
+                logError(new Exception(t));
+                showError("");
             }
         });
     }

@@ -505,6 +505,9 @@ public class WalletViewModel extends BaseViewModel {
                 if (!TextUtils.isEmpty(errorBody)) {
                     throw new IllegalStateException(errorBody);
                 }
+                if (response.code() == 406) {
+                    Analytics.getInstance(Multy.getContext()).logEvent(getClass().getSimpleName(), "406", errorBody);
+                }
             }
             e.onNext(response.isSuccessful());
             e.onComplete();
