@@ -386,4 +386,6 @@
     <string name="private_key_exist">This private key has already been imported!</string>
     <string name="multisig_imported">This multisig wallet has already been imported!</string>
     <string name="invalid_key_for_multisig">Invalid private key for current multisug wallet</string>
+    <string name="imported_wallet">Imported Wallet</string>
+    <string name="about_imported">Wallet with fixed private and public keys</string>
 </resources>

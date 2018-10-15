@@ -316,12 +316,56 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/divider_resync" />
 
+            <TextView
+                android:id="@+id/button_imported"
+                android:layout_width="0dp"
+                android:layout_height="64dp"
+                android:background="@drawable/selector_white"
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="@font/montserrat"
+                android:gravity="center"
+                android:lineSpacingExtra="6sp"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:text="@string/imported_wallet"
+                android:textColor="@color/text_main_dark"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/notice_resync" />
+
+            <View
+                android:id="@+id/divider_import"
+                style="@style/Divider"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/button_imported" />
+
+            <TextView
+                android:id="@+id/notice_imported"
+                style="@style/NotificationSettings"
+                android:letterSpacing="-0.02"
+                android:lineSpacingExtra="5sp"
+                android:text="@string/about_imported"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/divider_import" />
+
+            <android.support.constraint.Group
+                android:id="@+id/group_imported_wallet"
+                app:constraint_referenced_ids="divider_import, notice_imported, button_imported"
+                android:visibility="gone"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"/>
+
             <ViewStub
                 android:id="@+id/container_params"
                 android:layout_width="0dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/notice_resync"
+                app:layout_constraintTop_toBottomOf="@id/notice_imported"
                 android:layout_height="wrap_content" />
 
             <View

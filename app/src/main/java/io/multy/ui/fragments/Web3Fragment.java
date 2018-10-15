@@ -19,7 +19,12 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
+
+import org.angmarch.views.NiceSpinner;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -30,6 +35,7 @@ import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.requests.HdTransactionRequestEntity;
 import io.multy.storage.RealmManager;
 import io.multy.ui.MyWebView;
+import io.multy.ui.adapters.SpinnerWalletsAdapter;
 import io.multy.ui.fragments.dialogs.WalletChooserDialogFragment;
 import io.multy.ui.fragments.send.SendSummaryFragment;
 import io.multy.util.Constants;
@@ -48,6 +54,9 @@ public class Web3Fragment extends BaseFragment {
     MyWebView webView;
     @BindView(R.id.input_address)
     EditText inputAddress;
+    @BindView(R.id.spinner)
+    NiceSpinner spinner;
+
     private Wallet selectedWallet;
     private long walletId;
     byte[] seed;
@@ -73,7 +82,18 @@ public class Web3Fragment extends BaseFragment {
             }
             return false;
         });
+
+        initSpinner();
         return convertView;
+    }
+
+    private void initSpinner() {
+        List<Wallet> wallets = RealmManager.getAssetsDao().getAvailableWallets(NativeDataHelper.Blockchain.ETH.getValue(), NativeDataHelper.NetworkId.ETH_MAIN_NET.getValue());
+        if (wallets.size() > 0) {
+            spinner.setAdapter(new SpinnerWalletsAdapter(getActivity(), R.layout.item_spinner_wallet, wallets.toArray(new Wallet[]{})));
+        } else {
+            spinner.setAdapter(null);
+        }
     }
 
     @Override

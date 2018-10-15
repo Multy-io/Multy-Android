@@ -52,6 +52,8 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
     private String creationAddress;
     @SerializedName("issyncing")
     private boolean syncing = false;
+    @SerializedName("brokenStatus")
+    private int brokenStatus;
 
     @SerializedName("in")
     private int in;
@@ -130,6 +132,14 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
             final boolean isIncoming = new BigInteger(ethWallet.getPendingBalance()).compareTo(new BigInteger(ethWallet.getBalance())) > 0;
             return isPending() && isIncoming;
         }
+    }
+
+    public boolean shouldUseExternalKey() {
+        return index < 0 || brokenStatus > 0;
+    }
+
+    public WalletPrivateKey getExternalKey() {
+        return RealmManager.getAssetsDao().getPrivateKey(getActiveAddress().getAddress(), getCurrencyId(), getNetworkId());
     }
 
     /**
@@ -579,5 +589,13 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
 
     public void setVisible(boolean visible) {
         this.visible = visible;
+    }
+
+    public int getBrokenStatus() {
+        return brokenStatus;
+    }
+
+    public void setBrokenStatus(int brokenStatus) {
+        this.brokenStatus = brokenStatus;
     }
 }

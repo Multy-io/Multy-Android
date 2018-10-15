@@ -21,6 +21,7 @@ import javax.annotation.Nullable;
 
 import io.multy.Multy;
 import io.multy.model.entities.AuthEntity;
+import io.multy.model.entities.BrokenAddresses;
 import io.multy.model.entities.Estimation;
 import io.multy.model.entities.TransactionRequestEntity;
 import io.multy.model.entities.UserId;
@@ -247,6 +248,11 @@ public enum MultyApi implements MultyApiInterface {
         @Override
         public Call<ResponseBody> resyncWallet(int currencyId, int networkId, int walletIndex, int assetType) {
             return api.resyncWallet(currencyId, networkId, walletIndex, assetType);
+        }
+
+        @Override
+        public Call<ResponseBody> makeBroken(BrokenAddresses brokenAddresses) {
+            return api.makeBroken(brokenAddresses);
         }
     }
 }

@@ -497,7 +497,7 @@ public class MagicSendActivity extends BaseActivity {
             case ETH:
                 if (wallet.isMultisig()) {
                     Wallet linkedWallet = RealmManager.getAssetsDao().getMultisigLinkedWallet(wallet.getMultisigWallet().getOwners());
-                    if (linkedWallet.getIndex() < 0) {
+                    if (linkedWallet.shouldUseExternalKey()) {
                         WalletPrivateKey keyObject = RealmManager.getAssetsDao().getPrivateKey(linkedWallet.getActiveAddress().getAddress(),
                                 linkedWallet.getCurrencyId(), linkedWallet.getNetworkId());
                         transaction = NativeDataHelper.makeTransactionMultisigETHFromKey(
@@ -525,7 +525,7 @@ public class MagicSendActivity extends BaseActivity {
                                 linkedWallet.getEthWallet().getNonce());
                     }
                 } else {
-                    if (wallet.getIndex() < 0) {
+                    if (wallet.shouldUseExternalKey()) {
                         WalletPrivateKey keyObject = RealmManager.getAssetsDao().getPrivateKey(wallet.getActiveAddress().getAddress(),
                                 wallet.getCurrencyId(), wallet.getNetworkId());
                                 transaction = NativeDataHelper.makeTransactionETHFromKey(

@@ -347,7 +347,7 @@ public class CreateMultiSigActivity extends BaseActivity {
 
             try {
                 final byte[] transaction;
-                if (linkedWallet.getIndex() < 0) {
+                if (linkedWallet.shouldUseExternalKey()) {
                     WalletPrivateKey keyObject = RealmManager.getAssetsDao().getPrivateKey(linkedWallet.getActiveAddress().getAddress(),
                             linkedWallet.getCurrencyId(), linkedWallet.getNetworkId());
                     transaction = NativeDataHelper.createEthMultisigWalletFromKey(

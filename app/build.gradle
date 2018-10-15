@@ -135,6 +135,7 @@ dependencies {
     implementation 'com.github.douglasjunior:android-simple-tooltip:0.2.2'
     implementation 'com.github.TrustWallet:Web3View:0.01.6'
     implementation 'com.anthonymandra:ToggleButtons:2.0.0'
+    implementation 'com.github.arcadefire:nice-spinner:1.3.4'
 }
 
 apply plugin: 'com.google.gms.google-services'

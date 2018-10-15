@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.constraint.Group;
 import android.support.v4.content.ContextCompat;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -45,6 +46,10 @@ public class AssetSettingsFragment extends BaseFragment {
     EditText inputName;
     @BindView(R.id.container_params)
     ViewStub stubParams;
+    @BindView(R.id.group_imported_wallet)
+    Group groupImportedWallet;
+
+
     @Nullable
     private WalletParams walletParams;
 
@@ -69,13 +74,13 @@ public class AssetSettingsFragment extends BaseFragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_asset_settings, container, false);
         ButterKnife.bind(this, v);
         viewModel.getWalletLive().observe(this, walletRealmObject -> {
             if (walletRealmObject != null && walletRealmObject.getWalletName() != null) {
                 inputName.setText(walletRealmObject.getWalletName());
+                groupImportedWallet.setVisibility(walletRealmObject.shouldUseExternalKey() ? View.VISIBLE : View.GONE);
                 if (walletRealmObject.getCurrencyId() == NativeDataHelper.Blockchain.EOS.getValue() && stubParams.getParent() != null) {  //for multisig need to set
                     stubParams.setLayoutResource(R.layout.view_wallet_parameters);                      //multisig wallet params
                     walletParams = new WalletParams(this.stubParams.inflate());                         //view layout id and create
@@ -144,8 +149,7 @@ public class AssetSettingsFragment extends BaseFragment {
             if (isRemoved != null && isRemoved) {
                 Toast.makeText(getActivity(), R.string.wallet_removed, Toast.LENGTH_SHORT).show();
                 getActivity().finish();
-            }
-            else if (isRemoved != null) {
+            } else if (isRemoved != null) {
                 Toast.makeText(getActivity(), R.string.error, Toast.LENGTH_SHORT).show();
             }
         });
@@ -211,9 +215,9 @@ public class AssetSettingsFragment extends BaseFragment {
         view.setEnabled(false);
         view.postDelayed(() -> view.setEnabled(true), 500);
         DeleteAssetDialogFragment.getInstance(() -> {
-                    Analytics.getInstance(getActivity()).logWalletSettings(AnalyticsConstants.WALLET_SETTINGS_DELETE_YES, viewModel.getChainId());
-                    deleteWallet();
-                }).show(getChildFragmentManager(), DeleteAssetDialogFragment.TAG);
+            Analytics.getInstance(getActivity()).logWalletSettings(AnalyticsConstants.WALLET_SETTINGS_DELETE_YES, viewModel.getChainId());
+            deleteWallet();
+        }).show(getChildFragmentManager(), DeleteAssetDialogFragment.TAG);
     }
 
     class WalletParams {
