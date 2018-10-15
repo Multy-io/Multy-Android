@@ -33,6 +33,8 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -40,8 +42,11 @@ import butterknife.OnClick;
 import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.api.socket.SocketManager;
+import io.multy.model.entities.BrokenAddresses;
 import io.multy.model.entities.wallet.MultisigWallet;
 import io.multy.model.entities.wallet.Wallet;
+import io.multy.model.entities.wallet.WalletAddress;
+import io.multy.model.entities.wallet.WalletPrivateKey;
 import io.multy.model.events.TransactionUpdateEvent;
 import io.multy.model.responses.WalletsResponse;
 import io.multy.storage.AssetsDao;
@@ -56,11 +61,14 @@ import io.multy.ui.adapters.PortfoliosAdapter;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.dialogs.AssetActionsDialogFragment;
 import io.multy.util.Constants;
+import io.multy.util.JniException;
+import io.multy.util.NativeDataHelper;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.AssetsViewModel;
 import io.multy.viewmodels.WalletViewModel;
 import io.realm.RealmResults;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -306,6 +314,7 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
                         groupCreateDescription.setVisibility(View.VISIBLE);
                         recyclerView.setVisibility(View.GONE);
                     }
+                    detectBrokenWallets();
                 }
                 refreshLayout.setRefreshing(false);
             }
@@ -315,6 +324,56 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
                 t.printStackTrace();
             }
         });
+    }
+
+    private void detectBrokenWallets() {
+        if (!Prefs.getBoolean(Constants.PREF_DETECT_BROKEN, false)) {
+            return;
+        }
+
+        List<Wallet> walletList = RealmManager.getAssetsDao().getWallets(NativeDataHelper.Blockchain.ETH.getValue(), false);
+        List<WalletPrivateKey> keys = new ArrayList<>();
+        List<String> forcedAddresses = new ArrayList<>();
+
+        final byte[] seed = RealmManager.getSettingsDao().getSeed().getSeed();
+
+        for (Wallet wallet : walletList) {
+            final WalletAddress address = wallet.getActiveAddress();
+            try {
+                final String libraryAddress = NativeDataHelper.makeAccountAddress(seed, wallet.getIndex(), address.getIndex(), wallet.getCurrencyId(), wallet.getNetworkId());
+                final boolean isEqual = address.equals(libraryAddress);
+
+                if (!isEqual) {
+                    //NOTIFY API THAT ADDRESS CANT BE RESTORED AND DO BRUTE FORCE
+                    final String privateKey = NativeDataHelper.bruteForceAddress(seed, wallet.getIndex(), address.getIndex(), wallet.getCurrencyId(), wallet.getNetworkId(), address.getAddress());
+
+                    if (!privateKey.equals("")) {
+                        forcedAddresses.add(wallet.getActiveAddress().getAddress());
+                        keys.add(new WalletPrivateKey(wallet.getActiveAddress().getAddress(), privateKey, wallet.getCurrencyId(), wallet.getNetworkId()));
+                    }
+                }
+
+            } catch (JniException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (forcedAddresses.size() > 0) {
+            MultyApi.INSTANCE.makeBroken(new BrokenAddresses(forcedAddresses)).enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    if (response.isSuccessful()) {
+                        Prefs.putBoolean(Constants.PREF_DETECT_BROKEN, false);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+                }
+            });
+            RealmManager.getAssetsDao().savePrivateKeys(keys);
+        }
     }
 
     private void initList() {

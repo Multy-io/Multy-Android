@@ -6,6 +6,8 @@
 
 package io.multy.util;
 
+import com.samwolfand.oneprefs.Prefs;
+
 import io.multy.api.socket.CurrenciesRate;
 import io.multy.model.entities.wallet.EthWallet;
 import io.multy.model.entities.wallet.RecentAddress;
@@ -69,7 +71,7 @@ public class MultyRealmMigration implements io.realm.RealmMigration {
                 eosWalletSchema.addField("balance", String.class);
                 eosWalletSchema.addField("publicKey", String.class);
                 eosWalletSchema.addField("privateKey", String.class);
-                eosWalletSchema.addRealmListField("addresses", addressesSchema);
+                eosWalletSchema.addRealmListField("admdresses", addressesSchema);
                 RealmObjectSchema multisigFactorySchema = schema.create("MultisigFactory");
                 multisigFactorySchema.addField("id", int.class);
                 multisigFactorySchema.addField("ethMainNet", String.class);
@@ -104,6 +106,7 @@ public class MultyRealmMigration implements io.realm.RealmMigration {
                 walletPrivateKeySchema.addField("networkId", int.class);
                 RealmObjectSchema walletSchema = schema.get(Wallet.class.getSimpleName());
                 walletSchema.addField("visible", boolean.class);
+                Prefs.putBoolean(Constants.PREF_DETECT_BROKEN, true);
         }
     }
 

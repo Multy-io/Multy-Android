@@ -8,6 +8,7 @@ package io.multy.api;
 
 
 import io.multy.model.entities.AuthEntity;
+import io.multy.model.entities.BrokenAddresses;
 import io.multy.model.entities.Estimation;
 import io.multy.model.entities.TransactionRequestEntity;
 import io.multy.model.entities.wallet.Wallet;
@@ -129,4 +130,7 @@ public interface ApiServiceInterface {
 
     @POST("/api/v1/resync/wallet/{currencyId}/{networkId}/{walletIndex}/{assetType}")
     Call<ResponseBody> resyncWallet(@Path("currencyId") int currencyId, @Path("networkId") int networkId, @Path("walletIndex") int walletIndex, @Path("assetType") int assetType);
+
+    @POST("/api/v1/wallet/convert/broken")
+    Call<ResponseBody> makeBroken(@Body BrokenAddresses brokenAddresses);
 }

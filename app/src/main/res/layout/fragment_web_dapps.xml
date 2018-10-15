@@ -11,10 +11,18 @@
 
     <EditText
         android:id="@+id/input_address"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:imeOptions="actionGo"
-        android:inputType="textNoSuggestions" />
+        android:inputType="textNoSuggestions"
+        app:layout_constraintLeft_toLeftOf="parent" />
+
+    <org.angmarch.views.NiceSpinner
+        android:id="@+id/spinner"
+        android:layout_width="160dp"
+        android:layout_height="46dp"
+        android:layout_margin="16dp"
+        app:layout_constraintTop_toBottomOf="@id/input_address" />
 
     <io.multy.ui.MyWebView
         android:id="@+id/web_view"

@@ -96,7 +96,7 @@ public class AssetsDao {
     }
 
     private void saveSingleWallet(Wallet wallet) {
-        if (wallet.getIndex() < 0 && getPrivateKey(wallet.getActiveAddress().getAddress(),
+        if (wallet.shouldUseExternalKey() && getPrivateKey(wallet.getActiveAddress().getAddress(),
                 wallet.getCurrencyId(), wallet.getNetworkId()) == null) {
             wallet.setVisible(false);
         }
@@ -322,6 +322,10 @@ public class AssetsDao {
     public boolean ifAddressExist(long addressTo) {
         RealmQuery<RecentAddress> query = realm.where(RecentAddress.class).equalTo(RecentAddress.RECENT_ADDRESS_ID, addressTo);
         return query.count() != 0;
+    }
+
+    public void savePrivateKeys(List<WalletPrivateKey> keys) {
+        realm.executeTransaction(realm -> realm.insertOrUpdate(keys));
     }
 
     public void savePrivateKey(String walletAddress, String privateKey, int currencyId, int networkId) {

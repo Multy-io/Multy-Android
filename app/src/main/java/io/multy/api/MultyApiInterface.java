@@ -9,6 +9,7 @@ package io.multy.api;
 
 import android.content.Context;
 
+import io.multy.model.entities.BrokenAddresses;
 import io.multy.model.entities.Estimation;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.requests.AddWalletAddressRequest;
@@ -86,4 +87,6 @@ public interface MultyApiInterface {
     Call<ChainInfoResponse> getChainInfo(int currencyId, int networkId);
 
     Call<ResponseBody> resyncWallet(int currencyId, int networkId, int walletIndex, int assetType);
+
+    Call<ResponseBody> makeBroken(BrokenAddresses brokenAddresses);
 }

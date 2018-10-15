@@ -267,7 +267,7 @@ public class AssetSendViewModel extends BaseViewModel {
                     errorMessage.setValue(Multy.getContext().getString(R.string.not_enough_linked_balance));
                     return;
                 }
-                if (linkedWallet.getIndex() < 0) {
+                if (linkedWallet.shouldUseExternalKey()) {
                     WalletPrivateKey privateKey = RealmManager.getAssetsDao()
                             .getPrivateKey(linkedWallet.getActiveAddress().getAddress(), linkedWallet.getCurrencyId(), linkedWallet.getNetworkId());
                     tx = NativeDataHelper.makeTransactionMultisigETHFromKey(
@@ -296,7 +296,7 @@ public class AssetSendViewModel extends BaseViewModel {
                             String.valueOf(fee.getValue().getAmount()),
                             linkedWallet.getEthWallet().getNonce());
                 }
-            } else if (wallet.getValue().getIndex() < 0) {
+            } else if (wallet.getValue().shouldUseExternalKey()) {
                 WalletPrivateKey keyObject = RealmManager.getAssetsDao()
                         .getPrivateKey(getWallet().getActiveAddress().getAddress(), getWallet().getCurrencyId(), getWallet().getNetworkId());
                 tx = NativeDataHelper.makeTransactionETHFromKey(

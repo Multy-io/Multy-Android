@@ -169,4 +169,5 @@ public class NativeDataHelper {
 
     public static native byte[] confirmTransactionMultisigETHFromKey(String privateKey, int chainId, int networkId, String linkedBalance, String multisigWalletAddress, String requestId, String gasLimit, String gasPrice, String nonce) throws JniException;
 
+    public static native String bruteForceAddress(byte[] seed, int walletIndex, int adressIndex, int blockChain, int networkType, String address);
 }

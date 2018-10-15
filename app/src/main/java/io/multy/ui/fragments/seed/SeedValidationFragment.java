@@ -254,7 +254,6 @@ public class SeedValidationFragment extends BaseSeedFragment {
         try {
             seedModel.isLoading.setValue(true);
 
-
             byte[] seed = NativeDataHelper.makeSeed(phrase);
             final String userId = NativeDataHelper.makeAccountId(seed);
             MultyApi.INSTANCE.auth(userId).enqueue(new Callback<AuthResponse>() {
@@ -283,6 +282,7 @@ public class SeedValidationFragment extends BaseSeedFragment {
                         Prefs.putString(Constants.PREF_AUTH, response.body().getToken());
                         seedModel.isLoading.setValue(false);
                         seedModel.failed.setValue(false);
+                        Prefs.putBoolean(Constants.PREF_DETECT_BROKEN, true);
                         callback.run();
                     } else {
                         onSeedRestoreFailure(callback);

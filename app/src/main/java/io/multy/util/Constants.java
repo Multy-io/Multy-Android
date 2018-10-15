@@ -59,6 +59,7 @@ public final class Constants {
     public static final String FLAG_VIEW_SEED_PHRASE = "view_seed_phrase";
     public static final String PREF_IS_PUSH_ENABLED = "PREF_IS_PUSH_ENABLED";
     public static final String PREF_TERMS_ACCEPTED = "TERMS_TERMS_ACCEPTED";
+    public static final String PREF_DETECT_BROKEN = "PREF_DETECT_BROKEN";
 
     public static final int REQUEST_CODE_SET_CHAIN = 560;
     public static final int REQUEST_CODE_SET_GAS = 560;
