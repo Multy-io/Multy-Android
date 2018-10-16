@@ -246,8 +246,8 @@ public class SplashActivity extends AppCompatActivity {
         Branch branch = Branch.getInstance(getApplicationContext());
         branch.initSession((referringParams, error) -> {
             if (error == null) {
-                String address = referringParams.optString(SplashActivity.this.getString(R.string.address));
-                String amount = referringParams.optString(SplashActivity.this.getString(R.string.amount));
+                String address = referringParams.optString(Constants.DEEP_LINK_ADDRESS);
+                String amount = referringParams.optString(Constants.DEEP_LINK_AMOUNT);
                 if (!TextUtils.isEmpty(address)) {
                     SplashActivity.this.getIntent().putExtra(Constants.EXTRA_ADDRESS, address);
                 }

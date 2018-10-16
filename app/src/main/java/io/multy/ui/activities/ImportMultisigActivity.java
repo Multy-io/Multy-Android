@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.ToggleGroup;
+import android.text.Editable;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
@@ -19,6 +20,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnFocusChange;
+import butterknife.OnTextChanged;
 import io.multy.R;
 import io.multy.ui.fragments.dialogs.CompleteDialogFragment;
 import io.multy.util.JniException;
@@ -46,6 +48,16 @@ public class ImportMultisigActivity extends BaseActivity {
         ButterKnife.bind(this);
         viewModel = ViewModelProviders.of(this).get(ImportViewModel.class);
         viewModel.errorMessage.observe(this, this::showMessage);
+    }
+
+    @OnTextChanged(value = {R.id.input_key, R.id.input_address}, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
+    void onTextChanged(Editable editable) {
+        String text = editable.toString();
+        if ((text.contains(" ") || text.contains("\n")) && getCurrentFocus() instanceof EditText) {
+            text = text.replace(" ", "").replace("\n", "");
+            ((EditText) getCurrentFocus()).setText(text);
+            ((EditText) getCurrentFocus()).setSelection(text.length());
+        }
     }
 
     @OnFocusChange({R.id.input_key, R.id.input_address})

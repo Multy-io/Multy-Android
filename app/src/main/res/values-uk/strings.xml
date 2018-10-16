@@ -313,4 +313,7 @@
     <string name="private_key_exist">Цей приватний ключ вже імпортовано!</string>
     <string name="multisig_imported">Цей мультісіг гаманець вже імпортовано!</string>
     <string name="invalid_key_for_multisig">Приватний ключ не підходить для Multisig гаманця</string>
+    <string name="imported_wallet">Імпортований гаманець</string>
+    <string name="about_imported">Зверніть увагу, що імпортовані гаманці не можна відновити з seed фрази на іншому пристрої. Ви повинні зробити резервну копію свого особистого ключа, щоб захистити свої кошти, тому ви можете імпортувати його пізніше на інший пристрій.</string>
+    <string name="enter_sum_too_much">Ви намагаєтеся ввести суму більшу, ніж у вас є на рахунку</string>
 </resources>

@@ -77,6 +77,9 @@ public class AssetSendViewModel extends BaseViewModel {
     }
 
     public Wallet getWallet() {
+        if (wallet.getValue() == null || !wallet.getValue().isValid()) {
+            setWallet(RealmManager.getAssetsDao().getWalletById(walletId));
+        }
         return this.wallet.getValue();
     }
 

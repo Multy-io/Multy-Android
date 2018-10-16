@@ -66,6 +66,7 @@ import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.entities.wallet.WalletPrivateKey;
 import io.multy.model.requests.HdTransactionRequestEntity;
 import io.multy.model.responses.FeeRateResponse;
+import io.multy.model.responses.WalletsResponse;
 import io.multy.storage.RealmManager;
 import io.multy.ui.adapters.MyWalletPagerAdapter;
 import io.multy.ui.adapters.ReceiversPagerAdapter;
@@ -371,6 +372,24 @@ public class MagicSendActivity extends BaseActivity {
         }
     }
 
+    private void updateLocalWallets() {
+        MultyApi.INSTANCE.getWalletsVerbose().enqueue(new Callback<WalletsResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<WalletsResponse> call, @NonNull Response<WalletsResponse> response) {
+                WalletsResponse body = response.body();
+                if (response.isSuccessful() && body != null && body.getWallets() != null) {
+                    RealmManager.getAssetsDao().saveWallets(body.getWallets());
+                    initPagerWallets();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<WalletsResponse> call, @NonNull Throwable t) {
+                t.printStackTrace();
+            }
+        });
+    }
+
 //    v -> {
 //        handler.removeCallbacksAndMessages(null);
 //        if (containerSend.getVisibility() == View.VISIBLE) {
@@ -633,7 +652,7 @@ public class MagicSendActivity extends BaseActivity {
             showError(getString(R.string.not_enough_balance));
         } else {
             if (e.getMessage().contains("nonce too low")) {
-                initPagerWallets();
+                updateLocalWallets();
             }
             showError(getString(R.string.error_sending_tx));
         }

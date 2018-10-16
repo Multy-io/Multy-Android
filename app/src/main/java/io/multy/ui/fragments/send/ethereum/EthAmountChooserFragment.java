@@ -14,7 +14,6 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.Group;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.SwitchCompat;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -61,7 +60,7 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
     @BindView(R.id.group_send)
     Group groupSend;
     @BindView(R.id.input_balance_original)
-    AppCompatEditText inputOriginal;
+    EditText inputOriginal;
     @BindView(R.id.input_balance_currency)
     EditText inputCurrency;
     @BindView(R.id.text_spendable)
@@ -295,7 +294,7 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
         isAmountSwapped = true;
     }
 
-    private void showTotalSum(String sum) {
+    private boolean showTotalSum(String sum) {
         if (sum.equals("") || sum.equals(".")) {
             sum = "0";
         } else {
@@ -306,10 +305,16 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
                     totalSum += transactionPriceEth;
                     sum = CryptoFormatUtils.FORMAT_ETH.format(totalSum);
                 }
+                if (Double.parseDouble(sum) > CryptoFormatUtils.weiToEth(viewModel.getWallet().getAvailableBalance())) {
+                    return false;
+                }
             } else {
                 //CASE FOR FIAT SELECTED
                 if (switcher.isChecked()) {
                     sum = String.valueOf(Double.parseDouble(sum) + Double.parseDouble(CryptoFormatUtils.ethToUsd(transactionPriceEth)));
+                }
+                if (new BigDecimal(sum).compareTo(new BigDecimal(CryptoFormatUtils.ethToUsd(CryptoFormatUtils.weiToEth(viewModel.getWallet().getAvailableBalance())))) > 0) {
+                    return false;
                 }
             }
         }
@@ -318,6 +323,7 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
         textTotal.append(Constants.SPACE);
         textTotal.append(isAmountSwapped ? CurrencyCode.USD.name() : CurrencyCode.ETH.name());
         viewModel.setAmount(Double.parseDouble(sum));
+        return true;
     }
 
     private void initWatchers() {
@@ -334,7 +340,12 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
                             final double ethValue = Double.parseDouble(charSequence.toString());
                             final String fiatValue = CryptoFormatUtils.ethToUsd(ethValue);
                             inputCurrency.setText(fiatValue);
-                            showTotalSum(charSequence.toString());
+                            if (!showTotalSum(charSequence.toString())) {
+                                viewModel.errorMessage.setValue(getString(R.string.enter_sum_too_much));
+                                int subCount = inputOriginal.getText().length() - 1;
+                                inputOriginal.setText(inputOriginal.getText().subSequence(0, subCount < 0 ? 0 : subCount));
+                                inputOriginal.setSelection(inputOriginal.getText().length());
+                            }
                         }
                     } else {
                         showTotalSum("");
@@ -388,8 +399,14 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
             @Override
             public void afterTextChanged(Editable editable) {
                 if (isAmountSwapped) {
-                    showTotalSum(editable.toString());
-                    checkForPointAndZeros(editable.toString(), inputCurrency);
+                    if (showTotalSum(editable.toString())) {
+                        checkForPointAndZeros(editable.toString(), inputCurrency);
+                    } else {
+                        viewModel.errorMessage.setValue(getString(R.string.enter_sum_too_much));
+                        int subCount = inputCurrency.getText().length() - 1;
+                        inputCurrency.setText(inputCurrency.getText().subSequence(0, subCount < 0 ? 0 : subCount));
+                        inputCurrency.setSelection(inputCurrency.getText().length());
+                    }
                 }
             }
         };
@@ -563,11 +580,15 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
                 viewModel.setPayForCommission(isChecked);
                 checkCommas();
                 initSpendable();
-                showTotalSum(isAmountSwapped ? inputCurrency.getText().toString() : inputOriginal.getText().toString());
-                if (isChecked) {
-                    Analytics.getInstance(getActivity()).logSendChooseAmount(AnalyticsConstants.SEND_AMOUNT_COMMISSION_ENABLED, viewModel.getChainId());
-                } else {
-                    Analytics.getInstance(getActivity()).logSendChooseAmount(AnalyticsConstants.SEND_AMOUNT_COMMISSION_DISABLED, viewModel.getChainId());
+                if (showTotalSum(isAmountSwapped ? inputCurrency.getText().toString() : inputOriginal.getText().toString())) {
+                    if (isChecked) {
+                        Analytics.getInstance(getActivity()).logSendChooseAmount(AnalyticsConstants.SEND_AMOUNT_COMMISSION_ENABLED, viewModel.getChainId());
+                    } else {
+                        Analytics.getInstance(getActivity()).logSendChooseAmount(AnalyticsConstants.SEND_AMOUNT_COMMISSION_DISABLED, viewModel.getChainId());
+                    }
+                } else if (isChecked) {
+                    switcher.setChecked(false);
+                    viewModel.errorMessage.setValue(getString(R.string.enter_sum_too_much));
                 }
             });
             switcher.setChecked(viewModel.isPayForCommission());
