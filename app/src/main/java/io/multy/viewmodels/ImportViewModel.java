@@ -11,6 +11,7 @@ import android.text.TextUtils;
 
 import com.crashlytics.android.Crashlytics;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.multy.Multy;
@@ -50,7 +51,7 @@ public class ImportViewModel extends BaseViewModel {
 
     private void onError(Throwable throwable) {
         throwable.printStackTrace();
-        isLoading.setValue(false);A
+        isLoading.setValue(false);
         Crashlytics.logException(throwable);
         errorMessage.setValue(Multy.getContext().getString(R.string.something_went_wrong));
     }
@@ -60,7 +61,7 @@ public class ImportViewModel extends BaseViewModel {
         Disposable disposable = Flowable.create((FlowableOnSubscribe<List<Wallet>>) e -> {
             WalletsResponse body = MultyApi.INSTANCE.getWalletsVerbose().execute().body();
             if (body != null) {
-                e.onNext(checkWalletVisibility(body.getWallets()));
+                e.onNext(body.getWallets() == null ? new ArrayList<>() : checkWalletVisibility(body.getWallets()));
                 e.onComplete();
             }
         }, BackpressureStrategy.LATEST).subscribeOn(Schedulers.io())
