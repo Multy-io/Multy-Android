@@ -454,12 +454,21 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
         try {
             if (isAmountSwapped) {                                  // if currency input is main we set total balance in currency (usd, eur, etc.)
                 if (!TextUtils.isEmpty(inputCurrency.getText())) {  // checks input for value to not parse null
+                    String total;
                     if (switcher.isChecked()) {                     // if pay for commission is checked we add fee and donation to total amount
-                        textTotal.setText(NumberFormatter.getFiatInstance()
-                                .format(Double.parseDouble(inputCurrency.getText().toString()) + (Double.parseDouble(CryptoFormatUtils.satoshiToBtc(getFeePlusDonation())) * currenciesRate.getBtcToUsd())));
+                        total = NumberFormatter.getFiatInstance()
+                                .format(Double.parseDouble(inputCurrency.getText().toString()) + (Double.parseDouble(CryptoFormatUtils.satoshiToBtc(getFeePlusDonation())) * currenciesRate.getBtcToUsd()));
                     } else {                                        // if pay for commission is unchecked we add just value from input to total amount
-                        textTotal.setText(NumberFormatter.getFiatInstance().format(Double.parseDouble(inputCurrency.getText().toString())));
+                        total = NumberFormatter.getFiatInstance().format(Double.parseDouble(inputCurrency.getText().toString()));
                     }
+                    if (CryptoFormatUtils.btcToSatoshi(total) > Long.parseLong(viewModel.getWallet().getAvailableBalance())) {
+                        int substringCount = inputCurrency.getText().length() - 1;
+                        inputCurrency.setText(inputCurrency.getText().subSequence(0, substringCount < 0 ? 0 : substringCount));
+                        inputCurrency.setSelection(inputCurrency.getText().length());
+                        viewModel.errorMessage.setValue(getString(R.string.enter_sum_too_much));
+                        return;
+                    }
+                    textTotal.setText(total);
                     textTotal.append(Constants.SPACE);
                     textTotal.append(CurrencyCode.USD.name());
                 } else {
@@ -467,13 +476,17 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
                 }
             } else {
                 if (!TextUtils.isEmpty(inputOriginal.getText())) { // checks input for value to not parse null
-                    if (switcher.isChecked()) {                    // if pay for commission is checked we add fee and donation to total amount
-
-                        textTotal.setText(NumberFormatter.getInstance()
-                                .format(Double.parseDouble(inputOriginal.getText().toString()) + Double.parseDouble(CryptoFormatUtils.satoshiToBtc(getFeePlusDonation()))));
-                    } else {                                       // if pay for commission is unchecked we add just value from input to total amount
-                        textTotal.setText(inputOriginal.getText());
+                    String total = switcher.isChecked() ?                     // if pay for commission is checked we add fee and donation to total amount
+                        NumberFormatter.getInstance().format(Double.parseDouble(inputOriginal.getText().toString()) + Double.parseDouble(CryptoFormatUtils.satoshiToBtc(getFeePlusDonation()))) :
+                            inputOriginal.getText().toString();
+                    if (CryptoFormatUtils.btcToSatoshi(total) > Long.parseLong(viewModel.getWallet().getAvailableBalance())) {
+                        int substringCount = inputOriginal.getText().length() - 1;
+                        inputOriginal.setText(inputOriginal.getText().subSequence(0, substringCount < 0 ? 0 : substringCount));
+                        inputOriginal.setSelection(inputOriginal.getText().length());
+                        viewModel.errorMessage.setValue(getString(R.string.enter_sum_too_much));
+                        return;
                     }
+                    textTotal.setText(total);
                     textTotal.append(Constants.SPACE);
                     textTotal.append(CurrencyCode.BTC.name());
                 } else {
@@ -482,6 +495,10 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
             }
         } catch (Throwable t) {
             t.printStackTrace();
+            EditText targetEdit = isAmountSwapped ? inputCurrency : inputOriginal;
+            int substringCount = targetEdit.getText().length() - 1;
+            targetEdit.setText(targetEdit.getText().subSequence(0, substringCount < 0 ? 0 : substringCount));
+            targetEdit.setSelection(targetEdit.getText().length());
         }
     }
 

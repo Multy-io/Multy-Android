@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -38,6 +39,7 @@ import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
 import io.multy.util.analytics.Analytics;
 import io.multy.viewmodels.WalletViewModel;
+import io.realm.Sort;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -66,7 +68,7 @@ public class AddressesFragment extends BaseFragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View convertView = inflater.inflate(R.layout.fragment_addresses, container, false);
         ButterKnife.bind(this, convertView);
 
@@ -90,7 +92,7 @@ public class AddressesFragment extends BaseFragment {
         if (getArguments().getLong(Constants.EXTRA_WALLET_ID) != -1) {
             Wallet wallet = RealmManager.getAssetsDao().getWalletById(getArguments().getLong(Constants.EXTRA_WALLET_ID, -1));
             textViewTitle.setText(wallet.getWalletName());
-            recyclerView.setAdapter(new AddressesAdapter(wallet.getBtcWallet().getAddresses(), selectedAddress -> {
+            recyclerView.setAdapter(new AddressesAdapter(wallet.getBtcWallet().getAddresses().sort("date", Sort.ASCENDING),selectedAddress -> {
                 if (getTargetFragment() == null) {
                     AddressActionsDialogFragment.getInstance(selectedAddress.getAddress(), wallet.getCurrencyId(),
                             wallet.getNetworkId(), wallet.getIconResourceId(), false)

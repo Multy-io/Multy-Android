@@ -71,7 +71,7 @@ public class MultyRealmMigration implements io.realm.RealmMigration {
                 eosWalletSchema.addField("balance", String.class);
                 eosWalletSchema.addField("publicKey", String.class);
                 eosWalletSchema.addField("privateKey", String.class);
-                eosWalletSchema.addRealmListField("admdresses", addressesSchema);
+                eosWalletSchema.addRealmListField("addresses", addressesSchema);
                 RealmObjectSchema multisigFactorySchema = schema.create("MultisigFactory");
                 multisigFactorySchema.addField("id", int.class);
                 multisigFactorySchema.addField("ethMainNet", String.class);
@@ -106,6 +106,7 @@ public class MultyRealmMigration implements io.realm.RealmMigration {
                 walletPrivateKeySchema.addField("networkId", int.class);
                 RealmObjectSchema walletSchema = schema.get(Wallet.class.getSimpleName());
                 walletSchema.addField("visible", boolean.class);
+                walletSchema.addField("brokenStatus", int.class);
                 Prefs.putBoolean(Constants.PREF_DETECT_BROKEN, true);
         }
     }

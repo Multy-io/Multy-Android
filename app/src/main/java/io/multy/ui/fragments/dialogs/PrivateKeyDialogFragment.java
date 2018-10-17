@@ -63,7 +63,7 @@ public class PrivateKeyDialogFragment extends BottomSheetDialogFragment implemen
         ButterKnife.bind(this, view);
         dialog.setContentView(view);
         dialog.setOnShowListener(this);
-        viewModel = ViewModelProviders.of(getActivity()).get(WalletViewModel.class);
+        viewModel = ViewModelProviders.of(requireActivity()).get(WalletViewModel.class);
         String key = getPrivateKey();
         if (key != null && !key.isEmpty()) {
             textKey.setText(getPrivateKey());
@@ -101,10 +101,14 @@ public class PrivateKeyDialogFragment extends BottomSheetDialogFragment implemen
 
     private String getPrivateKey() {
         try {
-            byte[] seed = RealmManager.getSettingsDao().getSeed().getSeed();
-            int walletIndex = viewModel.getWalletLive().getValue().getIndex();
-            int addressIndex = address.getIndex();
-            return NativeDataHelper.getMyPrivateKey(seed, walletIndex, addressIndex, currencyId, networkId);
+            if (viewModel.getWalletLive().getValue().shouldUseExternalKey()) {
+                return RealmManager.getAssetsDao().getPrivateKey(address.getAddress(), currencyId, networkId).getPrivateKey();
+            } else {
+                byte[] seed = RealmManager.getSettingsDao().getSeed().getSeed();
+                int walletIndex = viewModel.getWalletLive().getValue().getIndex();
+                int addressIndex = address.getIndex();
+                return NativeDataHelper.getMyPrivateKey(seed, walletIndex, addressIndex, currencyId, networkId);
+            }
         } catch (Throwable throwable) {
             throwable.printStackTrace();
             //TODO create new error message

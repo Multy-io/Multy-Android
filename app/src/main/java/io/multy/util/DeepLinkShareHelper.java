@@ -20,8 +20,8 @@ public class DeepLinkShareHelper {
     public static String getDeepLink(Context context, String address, String amount) {
 
         ContentMetadata contentMetadata = new ContentMetadata();
-        contentMetadata.addCustomMetadata(context.getString(R.string.address), address);
-        contentMetadata.addCustomMetadata(context.getString(R.string.amount), amount);
+        contentMetadata.addCustomMetadata(Constants.DEEP_LINK_ADDRESS, address);
+        contentMetadata.addCustomMetadata(Constants.DEEP_LINK_AMOUNT, amount);
 
         BranchUniversalObject branchUniversalObject = new BranchUniversalObject()
                 .setTitle(context.getString(R.string.app_name))

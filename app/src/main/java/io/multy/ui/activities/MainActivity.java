@@ -324,7 +324,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
                 String addressUri = intent.getStringExtra(Constants.EXTRA_ADDRESS);
                 Intent sendLauncher = new Intent(this, AssetSendActivity.class);
                 sendLauncher.putExtra(Constants.EXTRA_ADDRESS, addressUri.substring(addressUri.indexOf(":") + 1, addressUri.length()));
-                if (intent.hasExtra(Constants.EXTRA_ADDRESS)) {
+                if (intent.hasExtra(Constants.EXTRA_AMOUNT)) {
                     sendLauncher.putExtra(Constants.EXTRA_AMOUNT, intent.getStringExtra(Constants.EXTRA_AMOUNT));
                     intent.removeExtra(Constants.EXTRA_AMOUNT);
                 }

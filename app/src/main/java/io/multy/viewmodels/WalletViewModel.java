@@ -461,7 +461,7 @@ public class WalletViewModel extends BaseViewModel {
         isLoading.setValue(true);
         final int currencyId = linkedWallet.getCurrencyId();
         final int networkId = linkedWallet.getNetworkId();
-        final int walletIndex = linkedWallet.getIndex();
+        final int walletIndex = linkedWallet.shouldUseExternalKey() ? -1 : linkedWallet.getIndex();
         final String linkedAddress = linkedWallet.getActiveAddress().getAddress();
         final String amount =linkedWallet.getActiveAddress().getAmountString();
         final String nonce = linkedWallet.getEthWallet().getNonce();
@@ -504,6 +504,9 @@ public class WalletViewModel extends BaseViewModel {
                 String errorBody = response.errorBody() == null ? null : response.errorBody().string();
                 if (!TextUtils.isEmpty(errorBody)) {
                     throw new IllegalStateException(errorBody);
+                }
+                if (response.code() == 406) {
+                    Analytics.getInstance(Multy.getContext()).logEvent(getClass().getSimpleName(), "406", errorBody);
                 }
             }
             e.onNext(response.isSuccessful());

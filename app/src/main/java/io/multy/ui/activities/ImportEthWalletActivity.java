@@ -10,6 +10,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.ToggleGroup;
+import android.text.Editable;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
@@ -17,6 +18,7 @@ import android.widget.EditText;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnTextChanged;
 import io.multy.R;
 import io.multy.ui.fragments.dialogs.CompleteDialogFragment;
 import io.multy.util.NativeDataHelper;
@@ -39,6 +41,16 @@ public class ImportEthWalletActivity extends BaseActivity {
         ButterKnife.bind(this);
         viewModel = ViewModelProviders.of(this).get(ImportViewModel.class);
         viewModel.errorMessage.observe(this, this::showMessage);
+    }
+
+    @OnTextChanged(value = R.id.input_key, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
+    void onTextChanged(Editable editable) {
+        String text = editable.toString();
+        if (text.contains(" ") && text.contains("\n")) {
+            text = text.replace(" ", "").replace("\n", "");
+            inputKey.setText(text);
+            inputKey.setSelection(text.length());
+        }
     }
 
     @OnClick(R.id.text_cancel)

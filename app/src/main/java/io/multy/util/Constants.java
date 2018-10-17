@@ -84,6 +84,8 @@ public final class Constants {
     public static final String EXTRA_CREATE = "EXTRA_CREATE";
 
     public static final String DEEP_LINK_QR_CODE = "QR_CODE";
+    public static final String DEEP_LINK_ADDRESS = "address";
+    public static final String DEEP_LINK_AMOUNT = "amount";
 
     public final static String BTC = "BTC";
     public final static String ETH = "ETH";

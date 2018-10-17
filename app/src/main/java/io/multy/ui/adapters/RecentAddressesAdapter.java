@@ -52,7 +52,7 @@ public class RecentAddressesAdapter extends RecyclerView.Adapter<RecentAddresses
                     R.drawable.ic_btc_huge : R.drawable.ic_chain_btc_test;
         } else if (data.get(position).getCurrencyId() == NativeDataHelper.Blockchain.ETH.getValue()) {
             resImgId = data.get(position).getNetworkId() == NativeDataHelper.NetworkId.ETH_MAIN_NET.getValue() ?
-                    R.drawable.ic_chain_eth_test : R.drawable.ic_eth_medium_icon;
+                    R.drawable.ic_eth_medium_icon : R.drawable.ic_chain_eth_test;
         } else {
             resImgId = R.drawable.ic_eos;
         }

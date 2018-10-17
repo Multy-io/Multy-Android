@@ -102,6 +102,7 @@ public class WalletChooserFragment extends BaseFragment implements MyWalletsAdap
                     viewModel.setWallet(RealmManager.getAssetsDao().getWalletById(wallet.getId()));
                     proceed(viewModel.getWallet());
                 } else {
+                    viewModel.setWallet(wallet);
                     proceed(wallet);
                 }
 
@@ -117,7 +118,7 @@ public class WalletChooserFragment extends BaseFragment implements MyWalletsAdap
     }
 
     private void proceed(Wallet wallet) {
-        if (viewModel.getWallet().getAvailableBalanceNumeric().compareTo(BigDecimal.ZERO) <= 0) {
+        if (wallet.getAvailableBalanceNumeric().compareTo(BigDecimal.ZERO) <= 0) {
             Toast.makeText(getContext(), R.string.no_balance, Toast.LENGTH_SHORT).show();
             return;
         }

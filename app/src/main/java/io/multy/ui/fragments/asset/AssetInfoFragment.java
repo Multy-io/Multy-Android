@@ -253,7 +253,7 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
                 @Override
                 public void onResponse(@NonNull Call<SingleWalletResponse> call, @NonNull Response<SingleWalletResponse> response) {
                     SingleWalletResponse body = response.body();
-                    if (response.isSuccessful() && body != null && body.getWallets().size() > 0) {
+                    if (response.isSuccessful() && body != null && body.getWallets() != null && body.getWallets().size() > 0) {
                         RealmManager.getAssetsDao().saveWallet(body.getWallets().get(0));
                     }
                 }

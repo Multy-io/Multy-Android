@@ -4,8 +4,7 @@
   ~ See LICENSE for details
   -->
 
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -91,8 +90,8 @@
                 android:layout_margin="16dp"
                 android:background="@drawable/shape_white_rounded"
                 android:gravity="center"
+                android:maxLines="2"
                 android:hint="@string/hint_paste_key"
-                android:inputType="text"
                 android:padding="8dp"
                 app:layout_constraintTop_toBottomOf="@id/title_key" />
 
@@ -111,10 +110,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
+                android:maxLines="3"
                 android:background="@drawable/shape_white_rounded"
                 android:gravity="center"
                 android:hint="@string/hint_enter_address"
-                android:inputType="text"
                 android:padding="8dp"
                 app:layout_constraintTop_toBottomOf="@id/title_address" />
 
