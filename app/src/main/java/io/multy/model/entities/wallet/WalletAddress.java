@@ -12,9 +12,14 @@ import com.google.gson.annotations.SerializedName;
 import io.multy.model.entities.Output;
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+import io.realm.annotations.Required;
 
 public class WalletAddress extends RealmObject {
 
+    @PrimaryKey
+    @Required
+    private String id;
     @SerializedName("addressindex")
     private int index;
     @SerializedName("address")
@@ -68,5 +73,12 @@ public class WalletAddress extends RealmObject {
 
     public long getDate() {
         return date;
+    }
+
+    public void buildId(int currencyId, int networkId) {
+        id = address == null ? "" : address + String.valueOf(currencyId) + String.valueOf(networkId);
+    }
+
+    public static String getAddressId(String address, int currencyId, int networkId) {return address + String.valueOf(currencyId) + String.valueOf(networkId);
     }
 }

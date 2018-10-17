@@ -33,10 +33,11 @@ public class MultyRealmMigration implements io.realm.RealmMigration {
                 final RealmObjectSchema ethWalletSchema = schema.get(EthWallet.class.getSimpleName());
                 ethWalletSchema.addField(EthWallet.PENDING_BALANCE, String.class);
             }
-            case 2:
+            case 2: {
                 final RealmObjectSchema addressSchema = schema.get(WalletAddress.class.getSimpleName());
                 addressSchema.removeField("amount");
                 addressSchema.addField("amount", String.class);
+            }
             case 3: {
                 final RealmObjectSchema walletSchema = schema.get(Wallet.class.getSimpleName());
                 walletSchema.addField("syncing", boolean.class);
@@ -98,16 +99,20 @@ public class MultyRealmMigration implements io.realm.RealmMigration {
                 walletSchema.addRealmObjectField("eosWallet", eosWalletSchema);
                 walletSchema.addRealmObjectField("multisigWallet", multisigWalletSchema);
             }
-            case 7:
+            case 7: {
                 RealmObjectSchema walletPrivateKeySchema = schema.create("WalletPrivateKey");
-                walletPrivateKeySchema.addField("walletAddress", String.class, FieldAttribute.PRIMARY_KEY);
+                walletPrivateKeySchema.addField("id", String.class, FieldAttribute.PRIMARY_KEY);
+                walletPrivateKeySchema.addField("walletAddress", String.class);
                 walletPrivateKeySchema.addField("privateKey", String.class);
                 walletPrivateKeySchema.addField("currencyId", int.class);
                 walletPrivateKeySchema.addField("networkId", int.class);
+                RealmObjectSchema addressSchema = schema.get(WalletAddress.class.getSimpleName());
+                addressSchema.addField("id", String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.REQUIRED);
                 RealmObjectSchema walletSchema = schema.get(Wallet.class.getSimpleName());
                 walletSchema.addField("visible", boolean.class);
                 walletSchema.addField("brokenStatus", int.class);
                 Prefs.putBoolean(Constants.PREF_DETECT_BROKEN, true);
+            }
         }
     }
 

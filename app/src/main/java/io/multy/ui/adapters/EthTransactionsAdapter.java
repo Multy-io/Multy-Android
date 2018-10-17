@@ -209,9 +209,9 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 Constants.MULTISIG_OWNER_STATUS_DECLINED : Constants.MULTISIG_OWNER_STATUS_WAITING;
     }
 
-    private boolean isVotedByMe(ArrayList<TransactionOwner> owners) {
+    private boolean isVotedByMe(ArrayList<TransactionOwner> owners, int currencyId, int networkId) {
         for (TransactionOwner owner : owners) {
-            if (RealmManager.getAssetsDao().getWalletAddress(owner.getAddress()).size() > 0) {
+            if (RealmManager.getAssetsDao().getWalletAddress(owner.getAddress(), currencyId, networkId).size() > 0) {
                 return owner.getConfirmationStatus() == Constants.MULTISIG_OWNER_STATUS_CONFIRMED ||
                         owner.getConfirmationStatus() == Constants.MULTISIG_OWNER_STATUS_DECLINED;
             }
@@ -296,7 +296,7 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             dateText = holder.textDate.getContext().getString(R.string.rejected);
             holder.textDate.setText(dateText);
             holder.textDate.setTextColor(ContextCompat.getColor(holder.textDate.getContext(), R.color.blue_light));
-        } else if (!isVotedByMe(owners)) {
+        } else if (!isVotedByMe(owners, wallet.getCurrencyId(), wallet.getNetworkId())) {
             dateText = holder.textDate.getContext().getString(R.string.waiting_your_confirmation);
             holder.textDate.setText(dateText);
             holder.textDate.setTextColor(ContextCompat.getColor(holder.textDate.getContext(), R.color.red_warn));

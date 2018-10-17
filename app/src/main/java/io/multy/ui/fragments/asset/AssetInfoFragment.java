@@ -265,7 +265,7 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
             };
             if (linkedIndex < 0) {
                 MultyApi.INSTANCE.getWalletVerbose(linkedWallet.getActiveAddress().getAddress(),
-                        currencyId, networkId, Constants.ASSET_TYPE_ADDRESS_MULTY).enqueue(verboseCallback);
+                        currencyId, networkId, Constants.ASSET_TYPE_ADDRESS_IMPORTED).enqueue(verboseCallback);
             } else {
                 MultyApi.INSTANCE.getWalletVerbose(linkedIndex, currencyId, networkId, Constants.ASSET_TYPE_ADDRESS_MULTY)
                         .enqueue(verboseCallback);
