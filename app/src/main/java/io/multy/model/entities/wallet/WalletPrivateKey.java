@@ -18,6 +18,7 @@ public class WalletPrivateKey extends RealmObject {
     public static final String NETWORK_ID = "networkId";
 
     @PrimaryKey
+    private String id;
     private String walletAddress;
     private String privateKey;
     private int currencyId;
@@ -26,6 +27,7 @@ public class WalletPrivateKey extends RealmObject {
     public WalletPrivateKey() {}
 
     public WalletPrivateKey(String walletAddress, String privateKey, int currencyId, int networkId) {
+        this.id = buildId(walletAddress, currencyId, networkId);
         this.walletAddress = walletAddress;
         this.privateKey = privateKey;
         this.currencyId = currencyId;
@@ -62,5 +64,9 @@ public class WalletPrivateKey extends RealmObject {
 
     public void setNetworkId(int networkId) {
         this.networkId = networkId;
+    }
+
+    private static String buildId(String walletAddress, int currencyId, int networkId) {
+        return walletAddress.concat(String.valueOf(currencyId)).concat(String.valueOf(networkId));
     }
 }

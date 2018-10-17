@@ -96,7 +96,7 @@ public class AssetsDao {
     }
 
     private void saveSingleWallet(Wallet wallet) {
-        if (wallet.shouldUseExternalKey() && getPrivateKey(wallet.getActiveAddress().getAddress(),
+        if (wallet.getIndex() < 0 && getPrivateKey(wallet.getActiveAddress().getAddress(),
                 wallet.getCurrencyId(), wallet.getNetworkId()) == null) {
             wallet.setVisible(false);
         }
@@ -121,7 +121,6 @@ public class AssetsDao {
 //            savedWallet.setBalance(String.valueOf(savedWallet.getBtcWallet().calculateBalance()));
             wallet.setAvailableBalance(String.valueOf(wallet.getBtcWallet().calculateAvailableBalance()));
 //            savedWallet.setAvailableBalance(String.valueOf(savedWallet.getBtcWallet().calculateAvailableBalance()));
-
         } else if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.EOS.getValue()) {
 //            savedWallet.setEosWallet(wallet.getEosWallet().asRealmObject(realm));
             String eosBalance = wallet.getEosWallet().getBalance();
@@ -138,7 +137,6 @@ public class AssetsDao {
 //            savedWallet.setBalance(eosBalance);
             wallet.setAvailableBalance(eosBalance);
 //            savedWallet.setAvailableBalance(eosBalance);
-
         } else {
             if (wallet.getMultisigWallet() != null) {
 //                savedWallet.setMultisigWallet(Objects.requireNonNull(wallet.getMultisigWallet()).asRealmObject(realm));
@@ -152,7 +150,6 @@ public class AssetsDao {
                     }
                 }
             }
-
 //            savedWallet.setEthWallet(Objects.requireNonNull(wallet.getEthWallet()).asRealmObject(realm));
             final String ethBalance = wallet.getEthWallet().getBalance();
 //            final String ethBalance = savedWallet.getEthWallet().getBalance();
@@ -165,9 +162,15 @@ public class AssetsDao {
             wallet.setAvailableBalance(ethAvailableBalance);
 //            savedWallet.setAvailableBalance(ethAvailableBalance);
         }
-
+        generateAddressesIds(wallet.getAddresses(), wallet.getCurrencyId(), wallet.getNetworkId());
         realm.insertOrUpdate(wallet);
 //        realm.insertOrUpdate(savedWallet);
+    }
+
+    private void generateAddressesIds(List<WalletAddress> addresses, int currencyId, int networkId) {
+        for (WalletAddress address : addresses) {
+            address.buildId(currencyId, networkId);
+        }
     }
 
     public RealmResults<Wallet> getWallets() {
@@ -264,6 +267,7 @@ public class AssetsDao {
     public void saveBtcAddress(long id, WalletAddress address) {
         realm.executeTransaction(realm -> {
             Wallet wallet = getWalletById(id);
+            address.buildId(wallet.getCurrencyId(), wallet.getNetworkId());
             wallet.getBtcWallet().getAddresses().add(realm.copyToRealm(address));
             realm.insertOrUpdate(wallet);
         });
@@ -302,8 +306,10 @@ public class AssetsDao {
         });
     }
 
-    public RealmResults<WalletAddress> getWalletAddress(String address) {
-        return realm.where(WalletAddress.class).equalTo("address", address).findAll();
+    public RealmResults<WalletAddress> getWalletAddress(String address, int currencyId, int networkId) {
+        final String id = WalletAddress.getAddressId(address, currencyId, networkId);
+        return realm.where(WalletAddress.class).equalTo("id", id).findAll();
+//        return realm.where(WalletAddress.class).equalTo("address", address).findAll();
     }
 
     public void saveRecentAddress(RecentAddress recentAddress) {
