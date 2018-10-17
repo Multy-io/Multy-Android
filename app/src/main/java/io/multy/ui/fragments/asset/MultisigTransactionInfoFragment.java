@@ -411,6 +411,9 @@ public class MultisigTransactionInfoFragment extends BaseFragment {
             @Override
             public void onAnimationEnd(Animator animation) {
                 setVisibilityConfirmButtons(View.GONE);
+                if (getActivity() != null) {
+                    getActivity().onBackPressed();
+                }
             }
         });
         hideAnimator.start();
