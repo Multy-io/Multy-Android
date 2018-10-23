@@ -10,6 +10,7 @@ import android.annotation.SuppressLint;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.Group;
@@ -94,22 +95,22 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 //        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         View view = inflater.inflate(R.layout.fragment_amount_chooser, container, false);
         ButterKnife.bind(this, view);
-        viewModel = ViewModelProviders.of(getActivity()).get(AssetSendViewModel.class);
+        viewModel = ViewModelProviders.of(requireActivity()).get(AssetSendViewModel.class);
         setBaseViewModel(viewModel);
         currenciesRate = RealmManager.getSettingsDao().getCurrenciesRate();
 
-        subscribeToUpdates();
         setupSwitcher();
+        subscribeToUpdates();
         setupInputOriginal();
         setupInputCurrency();
         setAmountTotalWithFee();
         initSpendable();
-        viewModel.setPayForCommission(switcher.isChecked());
-        if (!viewModel.isAmountScanned()) {
+//        viewModel.setPayForCommission(switcher.isChecked());
+        if (!viewModel.isAmountScanned() && viewModel.getAmount() == 0) {
             Analytics.getInstance(getActivity()).logSendChooseAmountLaunch(viewModel.getChainId());
         } else {
             inputOriginal.setText(viewModel.getAmount() > 0 ? CryptoFormatUtils.FORMAT_BTC.format(viewModel.getAmount()) : "");
@@ -165,6 +166,10 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
     }
 
     private void initSpendable() {
+        initSpendable(false);
+    }
+
+    private void initSpendable(boolean isAmountSwapped) {
         spendableSatoshi = 0;
 
         for (WalletAddress walletAddress : viewModel.getWallet().getBtcWallet().getAddresses()) {
@@ -174,7 +179,9 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
                 }
             }
         }
-        textSpendable.setText(String.format(getString(R.string.available_amount), CryptoFormatUtils.satoshiToBtc(spendableSatoshi)) + "BTC");
+        textSpendable.setText(String.format(getString(R.string.available_amount), isAmountSwapped ?
+                CryptoFormatUtils.btcToUsd(Double.parseDouble(CryptoFormatUtils.satoshiToBtc(spendableSatoshi))) + " " + CurrencyCode.USD.name() :
+                (CryptoFormatUtils.satoshiToBtc(spendableSatoshi)) + " " + CurrencyCode.BTC.name()));
     }
 
     @OnClick(R.id.button_next)
@@ -301,6 +308,7 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
                 buttonClearOriginal.setVisibility(View.VISIBLE);
                 buttonClearCurrency.setVisibility(View.GONE);
             }
+            initSpendable(!hasFocus);
         });
 
         inputOriginal.addTextChangedListener(new TextWatcher() {
@@ -401,7 +409,7 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
                         inputOriginal.getText().clear();
 //                        textTotal.getEditableText().clear();
                     }
-                    inputCurrency.setSelection(inputCurrency.length());
+                    inputCurrency.setSelection(inputCurrency.getText().toString().trim().length());
                 }
             }
 
@@ -434,6 +442,7 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
             }
             setTotalAmountForInput();
         });
+        switcher.setChecked(viewModel.isPayForCommission());
     }
 
     /**
@@ -461,7 +470,7 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
                     } else {                                        // if pay for commission is unchecked we add just value from input to total amount
                         total = NumberFormatter.getFiatInstance().format(Double.parseDouble(inputCurrency.getText().toString()));
                     }
-                    if (CryptoFormatUtils.btcToSatoshi(total) > Long.parseLong(viewModel.getWallet().getAvailableBalance())) {
+                    if (CryptoFormatUtils.btcToSatoshi(CryptoFormatUtils.usdToBtc(Double.parseDouble(total))) > Long.parseLong(viewModel.getWallet().getAvailableBalance())) {
                         int substringCount = inputCurrency.getText().length() - 1;
                         inputCurrency.setText(inputCurrency.getText().subSequence(0, substringCount < 0 ? 0 : substringCount));
                         inputCurrency.setSelection(inputCurrency.getText().length());
@@ -527,7 +536,7 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
                 textTotal.append(Constants.SPACE);
                 textTotal.append(CurrencyCode.BTC.name());
             }
-        } else {
+        } else if (textTotal.getEditableText() != null ) {
             textTotal.getEditableText().clear();
         }
     }
@@ -547,7 +556,9 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
         } else {
             inputOriginal.setText("");
             inputCurrency.setText("");
-            textTotal.getEditableText().clear();
+            if (textTotal.getEditableText() != null) {
+                textTotal.getEditableText().clear();
+            }
         }
     }
 
@@ -556,7 +567,7 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
         if (!TextUtils.isEmpty(input) && input.length() == 1 && input.contains(".")) {
             String result = input.replaceAll(".", "0.");
             inputView.setText(result);
-            inputView.setSelection(result.length());
+            inputView.setSelection(inputView.getText().toString().trim().length());
         } else if (!TextUtils.isEmpty(input) && input.startsWith("0") &&
                 !input.startsWith("0.") && input.length() > 1) {
             inputView.setText(input.substring(1, input.length()));
