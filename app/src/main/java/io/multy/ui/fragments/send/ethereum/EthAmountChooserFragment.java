@@ -112,15 +112,15 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
                     .getWalletById(getActivity().getIntent().getExtras().getLong(Constants.EXTRA_WALLET_ID, -1)));
         }
 
+        setupSwitcher();
         initWatchers();
         subscribeToUpdates();
-        setupSwitcher();
         initSpendable();
         initTransactionPrice();
         setupInputEth();
         setupInputFiat();
 
-        if (!viewModel.isAmountScanned()) {
+        if (!viewModel.isAmountScanned() && viewModel.getAmount() == 0) {
             Analytics.getInstance(getActivity()).logSendChooseAmountLaunch(viewModel.getChainId());
         } else {
             inputOriginal.setText(viewModel.getAmount() > 0 ? String.valueOf(viewModel.getAmount()) : "");
@@ -183,12 +183,17 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
     }
 
     private double initSpendable() {
+        return initSpendable(false);
+    }
+
+    private double initSpendable(boolean isAmountSwapped) {
         String spendableWeiString = viewModel.getWallet().getActiveAddress().getAmountString();
         spendableWei = new BigDecimal(spendableWeiString);
         final double balanceEth = CryptoFormatUtils.weiToEth(spendableWeiString);
         double spendableEth = /*switcher.isChecked() ? (balanceEth - transactionPriceEth) : */balanceEth;
 
-        textSpendable.setText(String.format(getString(R.string.available_amount), CryptoFormatUtils.FORMAT_ETH.format(spendableEth) + " ETH"));
+        textSpendable.setText(String.format(getString(R.string.available_amount), isAmountSwapped ? CryptoFormatUtils.ethToUsd(spendableEth) + " " + CurrencyCode.USD :
+        (CryptoFormatUtils.FORMAT_ETH.format(spendableEth) + " " + CurrencyCode.ETH)));
         return spendableEth;
     }
 
@@ -311,7 +316,7 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
             } else {
                 //CASE FOR FIAT SELECTED
                 if (switcher.isChecked()) {
-                    sum = String.valueOf(Double.parseDouble(sum) + Double.parseDouble(CryptoFormatUtils.ethToUsd(transactionPriceEth)));
+                    sum = CryptoFormatUtils.FORMAT_USD.format(Double.parseDouble(sum) + Double.parseDouble(CryptoFormatUtils.ethToUsd(transactionPriceEth)));
                 }
                 if (new BigDecimal(sum).compareTo(new BigDecimal(CryptoFormatUtils.ethToUsd(CryptoFormatUtils.weiToEth(viewModel.getWallet().getAvailableBalance())))) > 0) {
                     return false;
@@ -322,7 +327,7 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
         textTotal.setText(sum);
         textTotal.append(Constants.SPACE);
         textTotal.append(isAmountSwapped ? CurrencyCode.USD.name() : CurrencyCode.ETH.name());
-        viewModel.setAmount(Double.parseDouble(sum));
+//        viewModel.setAmount(Double.parseDouble(sum));
         return true;
     }
 
@@ -437,6 +442,7 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
                 buttonClearOriginal.setVisibility(View.VISIBLE);
                 buttonClearCurrency.setVisibility(View.GONE);
             }
+            initSpendable(!hasFocus);
         });
 
         inputOriginal.addTextChangedListener(textWatcherOriginal);
