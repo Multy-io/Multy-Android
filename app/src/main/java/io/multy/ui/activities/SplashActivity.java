@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -29,6 +30,7 @@ import android.widget.Toast;
 import com.samwolfand.oneprefs.Prefs;
 
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONObject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -128,7 +130,7 @@ public class SplashActivity extends AppCompatActivity {
 
         MultyApi.INSTANCE.getServerConfig().enqueue(new Callback<ServerConfigResponse>() {
             @Override
-            public void onResponse(Call<ServerConfigResponse> call, Response<ServerConfigResponse> response) {
+            public void onResponse(@NonNull Call<ServerConfigResponse> call, @NonNull Response<ServerConfigResponse> response) {
                 if (response.isSuccessful()) {
                     ServerConfigResponse configResponse = response.body();
                     ServerConfigResponse.AndroidConfig androidConfig = configResponse.getAndroidConfig();
@@ -246,18 +248,38 @@ public class SplashActivity extends AppCompatActivity {
         Branch branch = Branch.getInstance(getApplicationContext());
         branch.initSession((referringParams, error) -> {
             if (error == null) {
-                String address = referringParams.optString(Constants.DEEP_LINK_ADDRESS);
-                String amount = referringParams.optString(Constants.DEEP_LINK_AMOUNT);
-                if (!TextUtils.isEmpty(address)) {
-                    SplashActivity.this.getIntent().putExtra(Constants.EXTRA_ADDRESS, address);
-                }
-                if (!TextUtils.isEmpty(amount)) {
-                    SplashActivity.this.getIntent().putExtra(Constants.EXTRA_AMOUNT, amount);
-                }
+                parseAddressFromLink(referringParams);
+                parseUrlFromLink(referringParams);
             } else {
                 Timber.i(error.getMessage());
             }
         }, this.getIntent().getData(), this);
+    }
+
+    private void parseAddressFromLink(JSONObject referringParams) {
+        String address = referringParams.optString(Constants.DEEP_LINK_ADDRESS);
+        String amount = referringParams.optString(Constants.DEEP_LINK_AMOUNT);
+        if (!TextUtils.isEmpty(address)) {
+            SplashActivity.this.getIntent().putExtra(Constants.EXTRA_ADDRESS, address);
+        }
+        if (!TextUtils.isEmpty(amount)) {
+            SplashActivity.this.getIntent().putExtra(Constants.EXTRA_AMOUNT, amount);
+        }
+    }
+
+    private void parseUrlFromLink(JSONObject referringParams) {
+        String url = referringParams.optString(Constants.DEEP_LINK_URL);
+        int currencyId = referringParams.optInt(Constants.DEEP_LINK_CURRENCY_ID, -1);
+        int networkId = referringParams.optInt(Constants.DEEP_LINK_NETWORK_ID, -1);
+        if (!TextUtils.isEmpty(url)) {
+            getIntent().putExtra(Constants.DEEP_LINK_URL, url);
+        }
+        if (currencyId != -1) {
+            getIntent().putExtra(Constants.DEEP_LINK_CURRENCY_ID, currencyId);
+        }
+        if (networkId != -1) {
+            getIntent().putExtra(Constants.DEEP_LINK_NETWORK_ID, networkId);
+        }
     }
 
     private void addDeepLinkExtra(Intent intent) {
@@ -266,6 +288,15 @@ public class SplashActivity extends AppCompatActivity {
         }
         if (getIntent().hasExtra(Constants.EXTRA_AMOUNT)) {
             intent.putExtra(Constants.EXTRA_AMOUNT, getIntent().getStringExtra(Constants.EXTRA_AMOUNT));
+        }
+        if (getIntent().hasExtra(Constants.DEEP_LINK_URL)) {
+            intent.putExtra(Constants.EXTRA_URL, getIntent().getStringExtra(Constants.DEEP_LINK_URL));
+        }
+        if (getIntent().hasExtra(Constants.DEEP_LINK_CURRENCY_ID)) {
+            intent.putExtra(Constants.EXTRA_CURRENCY_ID, getIntent().getIntExtra(Constants.DEEP_LINK_CURRENCY_ID, -1));
+        }
+        if (getIntent().hasExtra(Constants.DEEP_LINK_NETWORK_ID)) {
+            intent.putExtra(Constants.EXTRA_NETWORK_ID, getIntent().getIntExtra(Constants.DEEP_LINK_NETWORK_ID, -1));
         }
     }
 

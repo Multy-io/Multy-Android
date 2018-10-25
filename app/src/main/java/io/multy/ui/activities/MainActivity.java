@@ -70,7 +70,12 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         ButterKnife.bind(this);
         setupFooter();
         onTabSelected(tabLayout.getTabAt(0));
-
+        if (getIntent().hasExtra(Constants.EXTRA_URL)) {
+            TabLayout.Tab tab = tabLayout.getTabAt(1);
+            if (tab != null) {
+                tab.select();
+            }
+        }
         subscribeToPushNotifications();
 
         if (Prefs.getBoolean(Constants.PREF_LOCK)) {
@@ -91,7 +96,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         setOnLockCLoseListener(this);
         overridePendingTransition(0, 0);
 
-        if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
+        if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED) || getIntent().hasExtra(Constants.EXTRA_URL)) {
             tabLayout.getLayoutParams().height = getResources().getDimensionPixelSize(R.dimen.tab_layout_height);
             if (!super.isLockVisible()) {
                 buttonOperations.setVisibility(View.VISIBLE);
@@ -221,7 +226,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private void disableEmptyLabItem() {
+    private void disableEmptyTabItem() {
         ViewGroup container = (ViewGroup) tabLayout.getChildAt(0);
         if (container == null) {
             return;
@@ -280,7 +285,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
 
     private void setupFooter() {
         tabLayout.addOnTabSelectedListener(this);
-        disableEmptyLabItem();
+        disableEmptyTabItem();
     }
 
     /**

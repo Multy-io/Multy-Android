@@ -82,10 +82,16 @@ public final class Constants {
     public static final String EXTRA_INVITE_CODE = "EXTRA_INVITE_CODE";
     public static final String EXTRA_SCAN = "EXTRA_SCAN";
     public static final String EXTRA_CREATE = "EXTRA_CREATE";
+    public static final String EXTRA_URL = "EXTRA_URL";
+    public static final String EXTRA_CURRENCY_ID = "EXTRA_CURRENCY_ID";
+    public static final String EXTRA_NETWORK_ID = "EXTRA_NETWORK_ID";
 
     public static final String DEEP_LINK_QR_CODE = "QR_CODE";
     public static final String DEEP_LINK_ADDRESS = "address";
     public static final String DEEP_LINK_AMOUNT = "amount";
+    public static final String DEEP_LINK_URL = "dappURL";
+    public static final String DEEP_LINK_CURRENCY_ID = "chainID";
+    public static final String DEEP_LINK_NETWORK_ID = "chainType";
 
     public final static String BTC = "BTC";
     public final static String ETH = "ETH";
