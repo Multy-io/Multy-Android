@@ -15,10 +15,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.greenrobot.eventbus.EventBus;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.multy.Multy;
 import io.multy.R;
+import io.multy.model.entities.OpenDragonsEvent;
 import io.multy.ui.fragments.dialogs.DonateDialog;
 import io.multy.util.Constants;
 
@@ -28,13 +31,10 @@ import io.multy.util.Constants;
 
 public class PortfoliosAdapter extends PagerAdapter {
 
-    @BindView(R.id.image_background)
-    ImageView imageBackground;
-    @BindView(R.id.text_donate)
-    TextView textDonate;
 
     private FragmentManager fragmentManager;
-    private String[] itemsName = new String[] {
+    private String[] itemsName = new String[]{
+            "",
             Multy.getContext().getString(R.string.crypto_portfolio),
             Multy.getContext().getString(R.string.currency_charts)
     };
@@ -56,23 +56,42 @@ public class PortfoliosAdapter extends PagerAdapter {
     @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
-        View layout = LayoutInflater.from(container.getContext())
-                .inflate(R.layout.item_portfolio, container, false);
-        container.addView(layout);
-        ButterKnife.bind(this, layout);
-        textDonate.setText(itemsName[position]);
-        int donationCode;
+        View layout;
+
         if (position == 0) {
-            imageBackground.setImageResource(R.drawable.portfolio_donation_image);
-            donationCode = Constants.DONATE_ADDING_PORTFOLIO;
+            layout = LayoutInflater.from(container.getContext()).inflate(R.layout.item_dragons, container, false);
         } else {
-            imageBackground.setImageResource(R.drawable.charts_donation_image);
-            donationCode = Constants.DONATE_ADDING_CHARTS;
+            layout = LayoutInflater.from(container.getContext()).inflate(R.layout.item_portfolio, container, false);
         }
+        container.addView(layout);
+        ImageView imageBackground = layout.findViewById(R.id.image_background);
+        TextView textDonate = layout.findViewById(R.id.text_donate);
+
+        int donationCode = 0;
+        switch (position) {
+            case 0:
+                break;
+            case 1:
+                imageBackground.setImageResource(R.drawable.portfolio_donation_image);
+                donationCode = Constants.DONATE_ADDING_PORTFOLIO;
+                textDonate.setText(itemsName[position]);
+                break;
+            case 2:
+                imageBackground.setImageResource(R.drawable.charts_donation_image);
+                donationCode = Constants.DONATE_ADDING_CHARTS;
+                textDonate.setText(itemsName[position]);
+                break;
+        }
+        layout.setTag(donationCode);
         layout.setOnClickListener(v -> {
             v.setEnabled(false);
             v.postDelayed(() -> v.setEnabled(true), 500);
-            DonateDialog.getInstance(donationCode).show(fragmentManager, DonateDialog.TAG);
+            if (position == 0) {
+                EventBus.getDefault().post(new OpenDragonsEvent());
+            } else {
+                DonateDialog.getInstance((Integer) v.getTag()).show(fragmentManager, DonateDialog.TAG);
+            }
+
         });
         return layout;
     }

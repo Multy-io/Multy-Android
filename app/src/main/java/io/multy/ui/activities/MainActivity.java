@@ -29,11 +29,17 @@ import android.widget.TextView;
 
 import com.samwolfand.oneprefs.Prefs;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
+import io.multy.model.entities.OpenDragonsEvent;
 import io.multy.storage.RealmManager;
+import io.multy.ui.fragments.Web3Fragment;
 import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
 import io.multy.ui.fragments.main.AssetsFragment;
 import io.multy.ui.fragments.main.FastOperationsFragment;
@@ -71,10 +77,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         setupFooter();
         onTabSelected(tabLayout.getTabAt(0));
         if (getIntent().hasExtra(Constants.EXTRA_URL)) {
-            TabLayout.Tab tab = tabLayout.getTabAt(1);
-            if (tab != null) {
-                tab.select();
-            }
+            selectBrowserTab();
         }
         subscribeToPushNotifications();
 
@@ -84,10 +87,23 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         logFirstLaunch();
     }
 
+    @Subscribe()
+    public void onMessageEvent(OpenDragonsEvent event) {
+        selectBrowserTab();
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
         checkContactAction();
+        EventBus.getDefault().register(this);
+    }
+
+    public void selectBrowserTab() {
+        TabLayout.Tab tab = tabLayout.getTabAt(1);
+        if (tab != null) {
+            tab.select();
+        }
     }
 
     @Override
@@ -128,6 +144,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
     public void onStop() {
         setOnLockCLoseListener(null);
         super.onStop();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -144,7 +161,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
                 break;
             case Constants.POSITION_FEED:
                 Analytics.getInstance(this).logMain(AnalyticsConstants.TAB_ACTIVITY);
-                setFragment(R.id.container_frame, FeedFragment.newInstance());
+                setFragment(R.id.container_frame, Web3Fragment.newInstance());
                 break;
             case Constants.POSITION_CONTACTS:
                 Analytics.getInstance(this).logMain(AnalyticsConstants.TAB_CONTACTS);
@@ -189,6 +206,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
                         .putExtra(Constants.EXTRA_AMOUNT, data.getStringExtra(Constants.EXTRA_AMOUNT)));
             }
         }
+
         super.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -197,10 +215,10 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container_frame);
 
         //TODO
-//        if (fragment instanceof Web3Fragment) {
-//            ((Web3Fragment) fragment).onBackPressed();
-//            return;
-//        }
+        if (fragment instanceof Web3Fragment) {
+            ((Web3Fragment) fragment).onBackPressed();
+            return;
+        }
 
 
         FastOperationsFragment operationsFragment = (FastOperationsFragment) getSupportFragmentManager().findFragmentByTag(FastOperationsFragment.TAG);

@@ -4,4 +4,7 @@
  * See LICENSE for details
  */
 
-include ':app', ':lib'
+package io.multy.model.entities;
+
+public class OpenDragonsEvent {
+}
