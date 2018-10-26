@@ -17,6 +17,9 @@ public class ServerConfigResponse {
     @SerializedName("android")
     private AndroidConfig androidConfig;
 
+    @SerializedName("browserdefault")
+    private BrowserDefault brouserDefault;
+
     @SerializedName("donate")
     private List<Donate> donates;
 
@@ -33,6 +36,10 @@ public class ServerConfigResponse {
 
     public List<Donate> getDonates() {
         return donates;
+    }
+
+    public BrowserDefault getBrouserDefault() {
+        return brouserDefault;
     }
 
     public class AndroidConfig {
@@ -55,6 +62,27 @@ public class ServerConfigResponse {
 
         public long getServerTime() {
             return serverTime;
+        }
+    }
+
+    public class BrowserDefault {
+        @SerializedName("url")
+        private String url;
+        @SerializedName("currencyid")
+        private int currencyId = -1;
+        @SerializedName("networkid")
+        private int networkId = -1;
+
+        public String getUrl() {
+            return url;
+        }
+
+        public int getCurrencyId() {
+            return currencyId;
+        }
+
+        public int getNetworkId() {
+            return networkId;
         }
     }
 
