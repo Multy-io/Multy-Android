@@ -268,7 +268,7 @@ public class Web3Fragment extends BaseFragment {
                 dialog = WalletChooserDialogFragment.getInstance(currencyId, networkId);
             } else if (dappUrl.equals(Prefs.getString(Constants.PREF_DRAGONS_URL, "no value")) &&
                     Prefs.getInt(Constants.PREF_URL_CURRENCY_ID, -1) != -1 &&
-                    Prefs.getInt(Constants.PREF_URL_NETWORK_ID, -1) != -1)  {
+                    Prefs.getInt(Constants.PREF_URL_NETWORK_ID, -1) != -1) {
                 dialog = WalletChooserDialogFragment.getInstance(Prefs.getInt(Constants.PREF_URL_CURRENCY_ID), Prefs.getInt(Constants.PREF_URL_NETWORK_ID));
             } else if (currencyId != -1) {
                 dialog = WalletChooserDialogFragment.getInstance(currencyId);
@@ -391,6 +391,8 @@ public class Web3Fragment extends BaseFragment {
         Wallet wallet = viewModel.getWallet(walletId);
         fillWalletInfo(wallet);
         webView.setWalletAddress(new Address(wallet.getActiveAddress().getAddress()));
+        webView.setRpcUrl(wallet.getNetworkId() == NativeDataHelper.NetworkId.TEST_NET.getValue() ?
+                "https://rinkeby.infura.io/v3/78ae782ed28e48c0b3f74ca69c4f7ca8" : "https://mainnet.infura.io/v3/78ae782ed28e48c0b3f74ca69c4f7ca8");
         webView.setChainId(wallet.getNetworkId());
     }
 

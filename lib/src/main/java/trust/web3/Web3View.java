@@ -69,7 +69,7 @@ public class Web3View extends WebView {
         webViewClient = new Web3ViewClient(jsInjectorClient, new UrlHandlerManager());
         WebSettings webSettings = super.getSettings();
         webSettings.setJavaScriptEnabled(true);
-        webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
+        webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
         webSettings.setBuiltInZoomControls(true);
         webSettings.setDisplayZoomControls(false);
         webSettings.setUseWideViewPort(true);
