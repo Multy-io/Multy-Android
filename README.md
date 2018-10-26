@@ -2,13 +2,13 @@
 
 Multy - cryptocurrency and assets open-source wallet
 
-To conrtibute please check **Build instruction
+To conrtibute please check **Build instructions
 
 [Multy](http://multy.io)
 
 
 
-## Build instraction
+## Build instructions
 
 1. Clone master branch of the Multy-android project
 ```
