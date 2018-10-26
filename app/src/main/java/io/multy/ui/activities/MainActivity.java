@@ -22,6 +22,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -31,7 +32,6 @@ import com.samwolfand.oneprefs.Prefs;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -76,9 +76,6 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         ButterKnife.bind(this);
         setupFooter();
         onTabSelected(tabLayout.getTabAt(0));
-        if (getIntent().hasExtra(Constants.EXTRA_URL)) {
-            selectBrowserTab();
-        }
         subscribeToPushNotifications();
 
         if (Prefs.getBoolean(Constants.PREF_LOCK)) {
@@ -97,13 +94,6 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         super.onStart();
         checkContactAction();
         EventBus.getDefault().register(this);
-    }
-
-    public void selectBrowserTab() {
-        TabLayout.Tab tab = tabLayout.getTabAt(1);
-        if (tab != null) {
-            tab.select();
-        }
     }
 
     @Override
@@ -340,20 +330,45 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
     }
 
     private void checkDeepLink(Intent intent) {
-        if (!super.isLockVisible()
-                && Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)
-                && RealmManager.getAssetsDao().getWallets().size() > 0) {
-            if (intent.hasExtra(Constants.EXTRA_ADDRESS)) {
-                String addressUri = intent.getStringExtra(Constants.EXTRA_ADDRESS);
-                Intent sendLauncher = new Intent(this, AssetSendActivity.class);
-                sendLauncher.putExtra(Constants.EXTRA_ADDRESS, addressUri.substring(addressUri.indexOf(":") + 1, addressUri.length()));
-                if (intent.hasExtra(Constants.EXTRA_AMOUNT)) {
-                    sendLauncher.putExtra(Constants.EXTRA_AMOUNT, intent.getStringExtra(Constants.EXTRA_AMOUNT));
-                    intent.removeExtra(Constants.EXTRA_AMOUNT);
-                }
-                intent.removeExtra(Constants.EXTRA_ADDRESS);
-                startActivity(sendLauncher);
+        if (!super.isLockVisible() && (checkSenderDeepLink(intent) || checkBrowserDeepLink(intent))) {
+            Log.i(getClass().getSimpleName(), "Deep Link detected!");
+        }
+    }
+
+    private boolean checkSenderDeepLink(Intent intent) {
+        if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED) &&
+            RealmManager.getAssetsDao().getWallets().size() > 0 && intent.hasExtra(Constants.EXTRA_ADDRESS)) {
+            String addressUri = intent.getStringExtra(Constants.EXTRA_ADDRESS);
+            Intent sendLauncher = new Intent(this, AssetSendActivity.class);
+            sendLauncher.putExtra(Constants.EXTRA_ADDRESS, addressUri.substring(addressUri.indexOf(":") + 1, addressUri.length()));
+            if (intent.hasExtra(Constants.EXTRA_AMOUNT)) {
+                sendLauncher.putExtra(Constants.EXTRA_AMOUNT, intent.getStringExtra(Constants.EXTRA_AMOUNT));
+                intent.removeExtra(Constants.EXTRA_AMOUNT);
             }
+            intent.removeExtra(Constants.EXTRA_ADDRESS);
+            startActivity(sendLauncher);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean checkBrowserDeepLink(Intent intent) {
+        if (intent.hasExtra(Constants.EXTRA_URL)) {
+            selectBrowserTab();
+            intent.removeExtra(Constants.EXTRA_URL);
+            return true;
+        }
+        return false;
+    }
+
+    private void selectBrowserTab() {
+        TabLayout.Tab mainTab = tabLayout.getTabAt(0);
+        TabLayout.Tab browserTab = tabLayout.getTabAt(1);
+        if (browserTab != null) {
+            if (browserTab.isSelected() && mainTab != null) {
+                mainTab.select();
+            }
+            browserTab.select();
         }
     }
 
@@ -397,6 +412,13 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
             }
             updateAssets();
         });
+    }
+
+    public void showAssetsScreen() {
+        TabLayout.Tab tab = tabLayout.getTabAt(0);
+        if (tab != null) {
+            tab.select();
+        }
     }
 
     public void showScanScreen() {

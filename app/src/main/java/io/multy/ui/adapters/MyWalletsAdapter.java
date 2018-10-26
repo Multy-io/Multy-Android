@@ -47,7 +47,10 @@ public class MyWalletsAdapter extends RecyclerView.Adapter<MyWalletsAdapter.Hold
     @Override
     public void onBindViewHolder(@NonNull Holder holder, int position) {
         Wallet wallet = data.get(position);
-
+        holder.itemView.setOnClickListener(view -> listener.onWalletClick(wallet));
+        if (!wallet.isValid()) {
+            return;
+        }
         holder.name.setText(wallet.getWalletName());
 
         if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.ETH.getValue() && wallet.isPending()) {
@@ -59,8 +62,6 @@ public class MyWalletsAdapter extends RecyclerView.Adapter<MyWalletsAdapter.Hold
         }
 
         holder.imageChain.setImageResource(wallet.getIconResourceId());
-        holder.itemView.setOnClickListener(view -> listener.onWalletClick(wallet));
-
         holder.imageChevron.setVisibility(wallet.getMultisigWallet() != null && wallet.getMultisigWallet().isHavePaymentRequests() ||
                 wallet.isSyncing() ? View.INVISIBLE : View.VISIBLE);
         holder.imageWaiting.setVisibility(wallet.isMultisig() &&

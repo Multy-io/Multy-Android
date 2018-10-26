@@ -60,6 +60,9 @@ public final class Constants {
     public static final String PREF_IS_PUSH_ENABLED = "PREF_IS_PUSH_ENABLED";
     public static final String PREF_TERMS_ACCEPTED = "TERMS_TERMS_ACCEPTED";
     public static final String PREF_DETECT_BROKEN = "PREF_DETECT_BROKEN";
+    public static final String PREF_DRAGONS_URL = "PREF_DRAGONS_URL";
+    public static final String PREF_URL_CURRENCY_ID = "PREF_URL_CURRENCY_ID";
+    public static final String PREF_URL_NETWORK_ID = "PREF_URL_NETWORK_ID";
 
     public static final int REQUEST_CODE_SET_CHAIN = 560;
     public static final int REQUEST_CODE_SET_GAS = 560;

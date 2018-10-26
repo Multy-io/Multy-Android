@@ -147,7 +147,14 @@ public class SplashActivity extends AppCompatActivity {
                         } else {
                             showMainActivity();
                         }
-
+                        if (configResponse.getBrouserDefault() != null &&
+                                !TextUtils.isEmpty(configResponse.getBrouserDefault().getUrl()) &&
+                                configResponse.getBrouserDefault().getCurrencyId() != -1 &&
+                                configResponse.getBrouserDefault().getNetworkId() != -1) {
+                            Prefs.putString(Constants.PREF_DRAGONS_URL, configResponse.getBrouserDefault().getUrl());
+                            Prefs.putInt(Constants.PREF_URL_CURRENCY_ID, configResponse.getBrouserDefault().getCurrencyId());
+                            Prefs.putInt(Constants.PREF_URL_NETWORK_ID, configResponse.getBrouserDefault().getNetworkId());
+                        }
                         if (configResponse.getDonates() != null) {
                             EventBus.getDefault().postSticky(configResponse);
                         }
@@ -291,6 +298,7 @@ public class SplashActivity extends AppCompatActivity {
         }
         if (getIntent().hasExtra(Constants.DEEP_LINK_URL)) {
             intent.putExtra(Constants.EXTRA_URL, getIntent().getStringExtra(Constants.DEEP_LINK_URL));
+//            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         }
         if (getIntent().hasExtra(Constants.DEEP_LINK_CURRENCY_ID)) {
             intent.putExtra(Constants.EXTRA_CURRENCY_ID, getIntent().getIntExtra(Constants.DEEP_LINK_CURRENCY_ID, -1));
