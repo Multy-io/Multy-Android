@@ -400,6 +400,7 @@ public class WalletViewModel extends BaseViewModel {
                             blockchain.getValue(), blockchain.getValue() == NativeDataHelper.Blockchain.ETH.getValue() ?
                                     NativeDataHelper.NetworkId.ETH_MAIN_NET.getValue() : NativeDataHelper.NetworkId.MAIN_NET.getValue());
                     Response<ResponseBody> response = MultyApi.INSTANCE.addWallet(Multy.getContext(), createdWallet).execute();
+                    Thread.sleep(1000);
                     if (response.isSuccessful() && !result) {
                         result = true;
                     }

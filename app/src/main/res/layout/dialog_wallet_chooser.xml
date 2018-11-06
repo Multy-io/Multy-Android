@@ -23,11 +23,11 @@
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:lineSpacingExtra="10sp"
         android:padding="16dp"
         android:text="@string/wallet"
         android:textColor="@color/black"
         android:textSize="18sp"
-        android:lineSpacingExtra="10sp"
         app:layout_constraintLeft_toRightOf="@id/button_back" />
 
     <TextView
@@ -42,6 +42,19 @@
         android:textSize="14sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/title" />
+
+    <TextView
+        android:id="@+id/text_not_available"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:text="@string/no_available_wallets"
+        android:textSize="16sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_select_wallet" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"

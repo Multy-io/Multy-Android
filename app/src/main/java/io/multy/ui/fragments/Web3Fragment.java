@@ -72,7 +72,7 @@ public class Web3Fragment extends BaseFragment {
     @BindView(R.id.text_address)
     TextView textAddress;
 
-    private String dappUrl = "https://dragonereum-alpha-test.firebaseapp.com/";
+    private String dappUrl = "https://kyber.network/swap";
     private WalletViewModel viewModel;
 
     public static Web3Fragment newInstance() {
@@ -93,6 +93,7 @@ public class Web3Fragment extends BaseFragment {
         View convertView = inflater.inflate(R.layout.fragment_web_dapps, container, false);
         ButterKnife.bind(this, convertView);
         initRedirect();
+        initState();
         refreshLayout.setOnRefreshListener(() -> webView.postDelayed(() -> {
             webView.reload();
             refreshLayout.setRefreshing(false);
@@ -115,12 +116,7 @@ public class Web3Fragment extends BaseFragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK && data != null) {
             requireActivity().getIntent().putExtra(Constants.EXTRA_WALLET_ID, data.getLongExtra(Constants.EXTRA_WALLET_ID, 0));
-            if (viewModel.getWalletLive().getValue() == null) {
-                setWallet(data.getLongExtra(Constants.EXTRA_WALLET_ID, -1));
-                initState();
-            } else {
-                setWallet(data.getLongExtra(Constants.EXTRA_WALLET_ID, -1));
-            }
+            setWallet(data.getLongExtra(Constants.EXTRA_WALLET_ID, -1));
             loadUrl();
 //            final WalletAddress walletAddress = selectedWallet.getActiveAddress();
 //            if (walletAddress.getAmount() > 5000) {
@@ -171,6 +167,7 @@ public class Web3Fragment extends BaseFragment {
                     showChooser(Prefs.getInt(Constants.PREF_URL_CURRENCY_ID), Prefs.getInt(Constants.PREF_URL_NETWORK_ID));
                 }*/
             } else {
+                showChooser(NativeDataHelper.Blockchain.ETH.getValue(), NativeDataHelper.NetworkId.ETH_MAIN_NET.getValue());
                 loadUrl(); //todo load url if wallet is not needed
             }
         }
@@ -292,7 +289,9 @@ public class Web3Fragment extends BaseFragment {
     }
 
     private void initState() {
-        webView.setRpcUrl("https://rinkeby.infura.io/v3/78ae782ed28e48c0b3f74ca69c4f7ca8");
+//        webView.setRpcUrl("https://rinkeby.infura.io/v3/78ae782ed28e48c0b3f74ca69c4f7ca8");
+        webView.setRpcUrl("https://mainnet.infura.io/v3/78ae782ed28e48c0b3f74ca69c4f7ca8");
+        webView.setChainId(NativeDataHelper.NetworkId.ETH_MAIN_NET.getValue());
         webView.requestFocus();
         webView.setOnSignMessageListener(message -> {
             Timber.d("onSignMessage:" + message.value);
@@ -350,6 +349,7 @@ public class Web3Fragment extends BaseFragment {
                             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                                 if (response.isSuccessful()) {
                                     Timber.i("BUYING SUCCESS");
+                                    webView.postDelayed(() -> webView.onSignTransactionSuccessful(transaction, hex), 30000);
                                 } else {
                                     Timber.i("BUYING FAIL");
                                     webView.onSignError(transaction, response.message());
@@ -391,9 +391,8 @@ public class Web3Fragment extends BaseFragment {
         Wallet wallet = viewModel.getWallet(walletId);
         fillWalletInfo(wallet);
         webView.setWalletAddress(new Address(wallet.getActiveAddress().getAddress()));
-        webView.setRpcUrl(wallet.getNetworkId() == NativeDataHelper.NetworkId.TEST_NET.getValue() ?
-                "https://rinkeby.infura.io/v3/78ae782ed28e48c0b3f74ca69c4f7ca8" : "https://mainnet.infura.io/v3/78ae782ed28e48c0b3f74ca69c4f7ca8");
-        webView.setChainId(wallet.getNetworkId());
+//        webView.setRpcUrl(wallet.getNetworkId() == NativeDataHelper.NetworkId.TEST_NET.getValue() ?
+//                "https://rinkeby.infura.io/v3/78ae782ed28e48c0b3f74ca69c4f7ca8" : "https://mainnet.infura.io/v3/78ae782ed28e48c0b3f74ca69c4f7ca8");
     }
 
     private void fillWalletInfo(Wallet wallet) {

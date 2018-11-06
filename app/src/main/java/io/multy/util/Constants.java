@@ -88,6 +88,11 @@ public final class Constants {
     public static final String EXTRA_URL = "EXTRA_URL";
     public static final String EXTRA_CURRENCY_ID = "EXTRA_CURRENCY_ID";
     public static final String EXTRA_NETWORK_ID = "EXTRA_NETWORK_ID";
+    public static final String EXTRA_WALLET_NAME = "EXTRA_WALLET_NAME";
+    public static final String EXTRA_BLOCK_CHAIN = "EXTRA_BLOCK_CHAIN";
+    public static final String EXTRA_DEEP_MAGIC = "EXTRA_DEEP_MAGIC";
+    public static final String EXTRA_DEEP_BROWSER = "EXTRA_DEEP_BROWSER";
+    public static final String EXTRA_DEEP_SEND = "EXTRA_DEEP_SEND";
 
     public static final String DEEP_LINK_QR_CODE = "QR_CODE";
     public static final String DEEP_LINK_ADDRESS = "address";
@@ -174,7 +179,7 @@ public final class Constants {
     public static final int EVENT_TYPE_NOTIFY_SUBMITED_TX = 14;
 
     public static final int ASSET_TYPE_ADDRESS_MULTY = 0;
-    public static final int ASSET_TYPE_ADDRESS_MULTISIG= 1;
+    public static final int ASSET_TYPE_ADDRESS_MULTISIG = 1;
     public static final int ASSET_TYPE_ADDRESS_IMPORTED = 2;
 
     public static final String[] rootFiles = {

@@ -14,9 +14,9 @@ android {
     defaultConfig {
         vectorDrawables.useSupportLibrary = true
         applicationId "io.multy"
-        minSdkVersion 21
+        minSdkVersion 22
         targetSdkVersion 28
-        versionCode 22
+        versionCode 23
         versionName "1.3.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         
@@ -53,7 +53,6 @@ android {
             }
         }
         debug {
-            applicationIdSuffix ".debug"
             resValue "string", "account_name", "Multy.io.debug"
             resValue "string", "account_type", "io.multy.debug"
         }

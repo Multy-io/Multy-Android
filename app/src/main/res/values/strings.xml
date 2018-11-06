@@ -390,4 +390,6 @@
     <string name="about_imported">Please note that imported wallets can\'t be restored from seed phrase on other device. You should backup your private key in order to secure your funds, so you can import it later on other device.</string>
     <string name="enter_sum_too_much">You trying to enter sum more then you have</string>
     <string name="browser">Browser</string>
+    <string name="no_available_wallets">There are no available wallets</string>
+    <string name="show_tokens">Show tokens</string>
 </resources>

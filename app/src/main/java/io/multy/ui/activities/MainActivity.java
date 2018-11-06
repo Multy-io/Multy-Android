@@ -38,6 +38,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.model.entities.OpenDragonsEvent;
+import io.multy.model.entities.wallet.Wallet;
 import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.Web3Fragment;
 import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
@@ -330,14 +331,73 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
     }
 
     private void checkDeepLink(Intent intent) {
-        if (!super.isLockVisible() && (checkSenderDeepLink(intent) || checkBrowserDeepLink(intent))) {
+        if (!super.isLockVisible() && (checkSenderDeepLink(intent) || checkBrowserDeepLink(intent)) || checkDeepMagic()) {
             Log.i(getClass().getSimpleName(), "Deep Link detected!");
         }
     }
 
+    private boolean checkDeepMagic() {
+        if (getIntent().hasExtra(Constants.EXTRA_DEEP_MAGIC)) {
+            final String amount = getIntent().getStringExtra(Constants.EXTRA_AMOUNT);
+            final String walletName = getIntent().getStringExtra(Constants.EXTRA_WALLET_NAME);
+            final int blockChain = getIntent().getIntExtra(Constants.EXTRA_BLOCK_CHAIN, 0);
+            final int networkId = getIntent().getIntExtra(Constants.EXTRA_NETWORK_ID, 0);
+
+            showProgressDialog();
+
+            Wallet wallet = new Wallet();
+            wallet.setWalletName(walletName);
+            wallet.setCurrencyId(blockChain);
+            wallet.setNetworkId(networkId);
+
+            AssetsFragment fragment = (AssetsFragment) getSupportFragmentManager().findFragmentById(R.id.container_frame);
+
+            if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
+                Wallet foundWallet = RealmManager.getAssetsDao().getWalletByNameExt(blockChain, networkId, walletName);
+                if (foundWallet == null) {
+                    fragment.setDeepMagicWallet(wallet);
+                } else {
+                    getIntent().putExtra(Constants.EXTRA_ADDRESS, foundWallet.getActiveAddress().getAddress());
+                    getIntent().putExtra(Constants.EXTRA_WALLET_ID, foundWallet.getId());
+                    fragment.startMagicReceive();
+                }
+            } else {
+                WalletViewModel viewModel = ViewModelProviders.of(this).get(WalletViewModel.class);
+                viewModel.createFirstWallets(() -> {
+                    if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED, false)) {
+                        subscribeToPushNotifications();
+                    } else {
+                        SimpleDialogFragment.newInstanceNegative(R.string.error, R.string.something_went_wrong, v -> {
+                            //todo should we clear database here for don't get realm exception when we will want open it?
+//                    startActivity(new Intent(this, SplashActivity.class).putExtra(SplashActivity.RESET_FLAG, true));
+                        }).show(getSupportFragmentManager(), "");
+                    }
+                    if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
+                        tabLayout.getLayoutParams().height = getResources().getDimensionPixelSize(R.dimen.tab_layout_height);
+                        buttonOperations.setVisibility(View.VISIBLE);
+                    }
+
+                    AssetsFragment assetsFragment = AssetsFragment.newInstance();
+                    assetsFragment.setDeepMagicWallet(wallet);
+                    setFragment(R.id.container_frame, assetsFragment);
+                });
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
     private boolean checkSenderDeepLink(Intent intent) {
         if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED) &&
-            RealmManager.getAssetsDao().getWallets().size() > 0 && intent.hasExtra(Constants.EXTRA_ADDRESS)) {
+                RealmManager.getAssetsDao().getWallets().size() > 0 && intent.hasExtra(Constants.EXTRA_ADDRESS)) {
+
+            if (getIntent().hasExtra(Constants.EXTRA_DEEP_BROWSER) ||
+                    getIntent().hasExtra(Constants.EXTRA_DEEP_MAGIC)) {
+                return false;
+            }
+
             String addressUri = intent.getStringExtra(Constants.EXTRA_ADDRESS);
             Intent sendLauncher = new Intent(this, AssetSendActivity.class);
             sendLauncher.putExtra(Constants.EXTRA_ADDRESS, addressUri.substring(addressUri.indexOf(":") + 1, addressUri.length()));
@@ -353,7 +413,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
     }
 
     private boolean checkBrowserDeepLink(Intent intent) {
-        if (intent.hasExtra(Constants.EXTRA_URL)) {
+        if (intent.hasExtra(Constants.EXTRA_URL) && intent.hasExtra(Constants.EXTRA_DEEP_BROWSER)) {
             selectBrowserTab();
             intent.removeExtra(Constants.EXTRA_URL);
             return true;

@@ -48,6 +48,7 @@ import io.multy.model.socket.ReceiveMessage;
 import io.multy.storage.RealmManager;
 import io.multy.storage.SettingsDao;
 import io.multy.ui.Hash2PicView;
+import io.multy.ui.activities.MainActivity;
 import io.multy.ui.fragments.dialogs.CompleteDialogFragment;
 import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
@@ -138,7 +139,7 @@ public class MagicReceiveFragment extends BaseFragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_BLUETOOTH && resultCode != Activity.RESULT_OK && getActivity() != null) {
-            getActivity().finish();
+            close();
         }
     }
 
@@ -147,7 +148,7 @@ public class MagicReceiveFragment extends BaseFragment {
             socketManager.connect();
             socketManager.getSocket().on(EVENT_PAY_RECEIVE, args -> {
                 getActivity().setResult(Activity.RESULT_OK);
-                getActivity().finish();
+                close();
             });
             final double amount = viewModel.getAmount();
             final int currencyId = viewModel.getWallet().getCurrencyId();
@@ -293,7 +294,15 @@ public class MagicReceiveFragment extends BaseFragment {
     public void onClickCancel() {
         disconnect();
         getActivity().setResult(Activity.RESULT_CANCELED);
-        getActivity().finish();
+        close();
+    }
+
+    public void close() {
+        if (getActivity().getIntent().hasExtra(Constants.EXTRA_DEEP_MAGIC)) {
+            startActivity(new Intent(Multy.getContext(), MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+        } else {
+            getActivity().finish();
+        }
     }
 
     private class Callback extends AdvertiseCallback {

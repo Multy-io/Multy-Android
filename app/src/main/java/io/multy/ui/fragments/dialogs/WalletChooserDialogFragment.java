@@ -20,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -115,6 +116,10 @@ public class WalletChooserDialogFragment extends DialogFragment {
         if (getActivity() != null && !getActivity().getIntent().hasExtra(Constants.EXTRA_WALLET_ID)) {
             Analytics.getInstance(getActivity()).logSendFromLaunch();
         }
+
+        TextView textAvailable = view.findViewById(R.id.text_not_available);
+        textAvailable.setVisibility(recyclerView.getAdapter().getItemCount() == 0 ? View.VISIBLE : View.GONE);
+
         return view;
     }
 

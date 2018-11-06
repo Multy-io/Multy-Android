@@ -34,7 +34,6 @@ public class PortfoliosAdapter extends PagerAdapter {
 
     private FragmentManager fragmentManager;
     private String[] itemsName = new String[]{
-            "",
             Multy.getContext().getString(R.string.crypto_portfolio),
             Multy.getContext().getString(R.string.currency_charts)
     };
@@ -58,11 +57,11 @@ public class PortfoliosAdapter extends PagerAdapter {
     public Object instantiateItem(@NonNull ViewGroup container, int position) {
         View layout;
 
-        if (position == 0) {
-            layout = LayoutInflater.from(container.getContext()).inflate(R.layout.item_dragons, container, false);
-        } else {
+//        if (position == 0) {
+//            layout = LayoutInflater.from(container.getContext()).inflate(R.layout.item_dragons, container, false);
+//        } else {
             layout = LayoutInflater.from(container.getContext()).inflate(R.layout.item_portfolio, container, false);
-        }
+//        }
         container.addView(layout);
         ImageView imageBackground = layout.findViewById(R.id.image_background);
         TextView textDonate = layout.findViewById(R.id.text_donate);
