@@ -420,6 +420,7 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
                                     getActivity().getIntent().putExtra(Constants.EXTRA_WALLET_ID, wallet.getId());
                                     Log.i("wise", "putting id " + wallet.getId());
                                     ((BaseActivity) getActivity()).dismissProgressDialog();
+                                    deepMagicWallet = null;
                                     startMagicReceive();
                                     return;
                                 }

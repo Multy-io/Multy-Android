@@ -299,7 +299,10 @@ public class MagicReceiveFragment extends BaseFragment {
 
     public void close() {
         if (getActivity().getIntent().hasExtra(Constants.EXTRA_DEEP_MAGIC)) {
-            startActivity(new Intent(Multy.getContext(), MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+            Intent intent = new Intent(Multy.getContext(), MainActivity.class);
+            intent.removeExtra(Constants.EXTRA_DEEP_MAGIC);
+            startActivity(intent);
+            getActivity().finish();
         } else {
             getActivity().finish();
         }
