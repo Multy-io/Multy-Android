@@ -182,20 +182,6 @@ public final class Constants {
     public static final int ASSET_TYPE_ADDRESS_MULTISIG = 1;
     public static final int ASSET_TYPE_ADDRESS_IMPORTED = 2;
 
-    public static final String[] rootFiles = {
-            "init.magisk.rc",
-            "magisk",
-            "Superuser.apk",
-            "daemonsu",
-            "su",
-            "frida",
-            "frida-server",
-            "fridaserver",
-            "magisk.log",
-            "last_magisk.log",
-            "superuser"
-    };
-
     public static final String[] rootApplications = {
             "com.saurik.substrate",
             "com.topjohnwu.magisk",
@@ -223,5 +209,19 @@ public final class Constants {
             "/system/bin/",
             "/sbin/",
             "/system/bin/.ext/"
+    };
+
+    public static final String[] rootFiles = {
+            "init.magisk.rc",
+            "magisk",
+            "Superuser.apk",
+            "daemonsu",
+            "su",
+            "frida",
+            "frida-server",
+            "fridaserver",
+            "magisk.log",
+            "last_magisk.log",
+            "superuser"
     };
 }

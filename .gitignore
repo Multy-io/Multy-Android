@@ -17,10 +17,15 @@ local.properties
 
 /*/build/
 .signing/
+/debug
+/stage
+/prod
 gradle/wrapper/gradle-wrapper.properties
 gradle/wrapper/gradle-wrapper.jar
 gradlew
 gradlew.bat
 Project.xml
 /.idea/caches/build_file_checksums.ser
-/app/constants.gradle
+constants.gradle
+google-services.json
+

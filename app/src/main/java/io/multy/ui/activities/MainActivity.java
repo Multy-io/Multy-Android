@@ -211,7 +211,6 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
             return;
         }
 
-
         FastOperationsFragment operationsFragment = (FastOperationsFragment) getSupportFragmentManager().findFragmentByTag(FastOperationsFragment.TAG);
         if (operationsFragment != null && !operationsFragment.isCanceling()) {
             operationsFragment.cancel();
