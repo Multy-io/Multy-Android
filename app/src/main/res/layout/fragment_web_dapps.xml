@@ -26,14 +26,22 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginEnd="16dp"
+        android:background="?selectableItemBackground"
         android:clickable="true"
         android:focusable="true"
-        android:background="?selectableItemBackground"
         android:gravity="center"
         app:layout_constraintBottom_toBottomOf="@id/image_coin"
         app:layout_constraintLeft_toRightOf="@id/image_coin"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="@id/image_coin" />
+
+    <EditText
+        android:id="@+id/input_address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:imeOptions="actionSearch"
+        android:inputType="textUri"
+        app:layout_constraintTop_toBottomOf="@id/text_address" />
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh_layout"
@@ -41,7 +49,7 @@
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_address">
+        app:layout_constraintTop_toBottomOf="@id/input_address">
 
         <io.multy.ui.MyWebView
             android:id="@+id/web_view"

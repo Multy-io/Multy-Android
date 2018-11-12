@@ -136,7 +136,7 @@ public class Web3View extends WebView {
     public void setOnSignPersonalMessageListener(@Nullable OnSignPersonalMessageListener onSignPersonalMessageListener) {
         this.onSignPersonalMessageListener = onSignPersonalMessageListener;
     }
-    
+
     public void setOnSignTypedMessageListener(@Nullable OnSignTypedMessageListener onSignTypedMessageListener) {
         this.onSignTypedMessageListener = onSignTypedMessageListener;
     }
@@ -224,17 +224,17 @@ public class Web3View extends WebView {
             this.jsInjectorClient = jsInjectorClient;
         }
 
-        @Override
-        public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            return externalClient.shouldOverrideUrlLoading(view, url)
-                    || internalClient.shouldOverrideUrlLoading(view, url);
-        }
+//        @Override
+//        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+//            return externalClient.shouldOverrideUrlLoading(view, url)
+//                    || internalClient.shouldOverrideUrlLoading(view, url);
+//        }
 
-        @RequiresApi(api = Build.VERSION_CODES.N)
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-            return externalClient.shouldOverrideUrlLoading(view, request)
-                    || internalClient.shouldOverrideUrlLoading(view, request);
+            return
+//                    externalClient.shouldOverrideUrlLoading(view, request) ||
+                    internalClient.shouldOverrideUrlLoading(view, request);
         }
 
         @Override
