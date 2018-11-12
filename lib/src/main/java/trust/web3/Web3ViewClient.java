@@ -1,6 +1,8 @@
 package trust.web3;
 
+import android.content.DialogInterface;
 import android.net.http.SslError;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.webkit.SslErrorHandler;
@@ -81,10 +83,10 @@ public class Web3ViewClient extends WebViewClient {
             return null;
         }
         if (!request.getMethod().equalsIgnoreCase("GET") || !request.isForMainFrame()) {
-             if (request.getMethod().equalsIgnoreCase("GET")
-                     && (request.getUrl().toString().contains(".js")
-                        || request.getUrl().toString().contains("json")
-                        || request.getUrl().toString().contains("css"))) {
+            if (request.getMethod().equalsIgnoreCase("GET")
+                    && (request.getUrl().toString().contains(".js")
+                    || request.getUrl().toString().contains("json")
+                    || request.getUrl().toString().contains("css"))) {
                 synchronized (lock) {
                     if (!isInjected) {
                         injectScriptFile(view);
@@ -135,9 +137,38 @@ public class Web3ViewClient extends WebViewClient {
                 "})()"));
     }
 
+    /**
+     * https://stackoverflow.com/questions/35720753/android-google-play-warning-ssl-error-handler-vulnerability
+     *
+     * @param view
+     * @param handler
+     * @param error
+     */
     @Override
-    public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-        handler.proceed();
+    public void onReceivedSslError(WebView view, final SslErrorHandler handler, SslError error) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+        String message = "SSL Certificate error.";
+        switch (error.getPrimaryError()) {
+            case SslError.SSL_UNTRUSTED:
+                message = "The certificate authority is not trusted.";
+                break;
+            case SslError.SSL_EXPIRED:
+                message = "The certificate has expired.";
+                break;
+            case SslError.SSL_IDMISMATCH:
+                message = "The certificate Hostname mismatch.";
+                break;
+            case SslError.SSL_NOTYETVALID:
+                message = "The certificate is not yet valid.";
+                break;
+        }
+        message += " Do you want to continue anyway?";
+        builder.setTitle("SSL Certificate Error");
+        builder.setMessage(message);
+        builder.setPositiveButton("continue", (dialog, which) -> handler.proceed());
+        builder.setNegativeButton("cancel", (dialog, which) -> handler.cancel());
+        final AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     public void onReload() {
