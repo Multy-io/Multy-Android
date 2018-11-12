@@ -20,6 +20,10 @@ local.properties
 /debug
 /stage
 /prod
+/app/debug
+/app/stage
+/app/prod
+/app/src/debug
 gradle/wrapper/gradle-wrapper.properties
 gradle/wrapper/gradle-wrapper.jar
 gradlew
