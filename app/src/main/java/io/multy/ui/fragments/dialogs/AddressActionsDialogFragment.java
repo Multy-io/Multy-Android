@@ -32,6 +32,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -47,7 +48,10 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.storage.RealmManager;
+import io.multy.ui.activities.BaseActivity;
+import io.multy.ui.fragments.WebFragment;
 import io.multy.ui.fragments.asset.AssetInfoFragment;
+import io.multy.ui.fragments.asset.TransactionInfoFragment;
 import io.multy.ui.fragments.main.contacts.ContactsFragment;
 import io.multy.util.Constants;
 import io.multy.util.ContactUtils;
@@ -90,6 +94,8 @@ public class AddressActionsDialogFragment extends BottomSheetDialogFragment
     TextView textAddress;
     @BindView(R.id.button_add_to_contact)
     View buttonContact;
+    @BindView(R.id.button_tokens)
+    TextView buttonTokens;
 
     private String address;
     private CompositeDisposable disposables;
@@ -194,7 +200,7 @@ public class AddressActionsDialogFragment extends BottomSheetDialogFragment
                             Analytics.getInstance(getContext()).logContactAddressAdded();
                         } else {
                             long multyRowId = ContactUtils.addContact(getContext(), contactCursor, String.valueOf(parentRowId),
-                                    null,null, null, null);
+                                    null, null, null, null);
                             if (multyRowId != -1) {
                                 ContactUtils.createLocalContact(multyRowId, parentRowId, contactCursor);
                             }
@@ -238,7 +244,8 @@ public class AddressActionsDialogFragment extends BottomSheetDialogFragment
             }
 
             @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) { }
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+            }
         };
     }
 
@@ -251,6 +258,9 @@ public class AddressActionsDialogFragment extends BottomSheetDialogFragment
         this.currencyId = getArguments().getInt(EXTRA_CURRENCY_ID);
         this.networkId = getArguments().getInt(EXTRA_NETWORK_ID);
         this.resImgId = getArguments().getInt(EXTRA_RESOURCE_IMG_ID);
+
+        buttonTokens.setVisibility(currencyId == NativeDataHelper.Blockchain.ETH.getValue() ? View.VISIBLE : View.GONE);
+
         if (RealmManager.getSettingsDao().isAddressInContact(address) || !getArguments().getBoolean(EXTRA_SHOW_CONTACT)) {
             buttonContact.setVisibility(View.GONE);
         }
@@ -258,9 +268,9 @@ public class AddressActionsDialogFragment extends BottomSheetDialogFragment
         textTitle.setText(String.format(getString(R.string.address_formatted), NativeDataHelper.Blockchain.valueOf(currencyId).name()));
         generateQr(address, getResources().getColor(android.R.color.black),
                 getResources().getColor(android.R.color.white), qrBitmap -> {
-            imageQr.setImageBitmap(qrBitmap);
-            progressBar.setVisibility(View.GONE);
-            }, throwable -> dismiss());
+                    imageQr.setImageBitmap(qrBitmap);
+                    progressBar.setVisibility(View.GONE);
+                }, throwable -> dismiss());
     }
 
     private void copyToClipboard() {
@@ -287,7 +297,7 @@ public class AddressActionsDialogFragment extends BottomSheetDialogFragment
     }
 
     private void generateQr(String strQr, int colorDark, int colorLight,
-                           Consumer<Bitmap> consumerNext, Consumer<Throwable> consumerError) {
+                            Consumer<Bitmap> consumerNext, Consumer<Throwable> consumerError) {
         Disposable disposable = Observable.create((ObservableOnSubscribe<Bitmap>) e -> {
             try {
                 Bitmap bitmap = generateQr(strQr, colorDark, colorLight);
@@ -359,6 +369,16 @@ public class AddressActionsDialogFragment extends BottomSheetDialogFragment
 
     public void setListener(Callback listener) {
         this.listener = listener;
+    }
+
+    @OnClick(R.id.button_tokens)
+    public void onClickTokens() {
+        dismiss();
+        final String url = "https://etherscan.io/address/" + address + "#tokentxns";
+        getActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container_full, WebFragment.newInstance(url))
+                .addToBackStack(TransactionInfoFragment.TAG)
+                .commit();
     }
 
     @OnClick({R.id.button_copy, R.id.button_share, R.id.button_cancel})

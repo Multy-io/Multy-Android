@@ -9,6 +9,7 @@ package io.multy.ui.fragments.main;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
@@ -31,6 +32,7 @@ import com.samwolfand.oneprefs.Prefs;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONObject;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -43,6 +45,8 @@ import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.api.socket.SocketManager;
 import io.multy.model.entities.BrokenAddresses;
+import io.multy.model.entities.wallet.BtcWallet;
+import io.multy.model.entities.wallet.EthWallet;
 import io.multy.model.entities.wallet.MultisigWallet;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.entities.wallet.WalletAddress;
@@ -54,6 +58,7 @@ import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetActivity;
 import io.multy.ui.activities.BaseActivity;
 import io.multy.ui.activities.CreateMultiSigActivity;
+import io.multy.ui.activities.FastReceiveActivity;
 import io.multy.ui.activities.MainActivity;
 import io.multy.ui.activities.SeedActivity;
 import io.multy.ui.adapters.MyWalletsAdapter;
@@ -67,6 +72,7 @@ import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.AssetsViewModel;
 import io.multy.viewmodels.WalletViewModel;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -108,6 +114,7 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
     private MyWalletsAdapter walletsAdapter;
     private boolean isViewsScroll = false;
     private SocketManager socketManager;
+    private Wallet deepMagicWallet = null;
 
     public static AssetsFragment newInstance() {
         return new AssetsFragment();
@@ -276,11 +283,11 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
     private void checkMultisigWallets() {
         RealmResults<Wallet> wallets = RealmManager.getAssetsDao().getMultisigWallets();
         if (wallets.size() > 0) {
-            subsribeSocketUpdates();
+            subscribeSocketsUpdate();
         }
     }
 
-    private void subsribeSocketUpdates() {
+    private void subscribeSocketsUpdate() {
         try {
             if (socketManager == null) {
                 socketManager = new SocketManager();
@@ -298,7 +305,6 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
             @Override
             public void onResponse(@NonNull Call<WalletsResponse> call, @NonNull Response<WalletsResponse> response) {
                 if (response.body() != null) {
-                    //TODO COMPARE WALLET CURRENCY ID AND TOP INDEX CURRENCY ID
                     response.body().saveTopIndexes();
                     AssetsDao assetsDao = RealmManager.getAssetsDao();
                     if (response.body().getWallets() != null && response.body().getWallets().size() != 0) {
@@ -314,6 +320,8 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
                         groupCreateDescription.setVisibility(View.VISIBLE);
                         recyclerView.setVisibility(View.GONE);
                     }
+
+                    createDeepMagicWallet();
                     detectBrokenWallets();
                 }
                 refreshLayout.setRefreshing(false);
@@ -324,6 +332,118 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
                 t.printStackTrace();
             }
         });
+    }
+
+    private void createDeepMagicWallet() {
+        if (deepMagicWallet != null) {
+            final int blockChainId = deepMagicWallet.getCurrencyId();
+            final int networkId = deepMagicWallet.getNetworkId();
+
+            final int topIndex = blockChainId == NativeDataHelper.Blockchain.BTC.getValue() ?
+                    Prefs.getInt(Constants.PREF_WALLET_TOP_INDEX_BTC + networkId, 0) :
+                    Prefs.getInt(Constants.PREF_WALLET_TOP_INDEX_ETH + networkId, 0);
+
+            String creationAddress = null;
+            try {
+                creationAddress = NativeDataHelper.makeAccountAddress(RealmManager.getSettingsDao().getSeed().getSeed(), topIndex, 0, blockChainId, networkId);
+            } catch (JniException e) {
+                getActivity().finish();
+                e.printStackTrace();
+            }
+
+            Wallet walletRealmObject = new Wallet();
+            walletRealmObject.setWalletName(deepMagicWallet.getWalletName());
+
+            RealmList<WalletAddress> addresses = new RealmList<>();
+            addresses.add(new WalletAddress(0, creationAddress));
+
+            switch (NativeDataHelper.Blockchain.valueOf(blockChainId)) {
+                case BTC:
+                    walletRealmObject.setBtcWallet(new BtcWallet());
+                    walletRealmObject.getBtcWallet().setAddresses(addresses);
+                    break;
+                case ETH:
+                    walletRealmObject.setEthWallet(new EthWallet());
+                    walletRealmObject.getEthWallet().setAddresses(addresses);
+                    break;
+            }
+
+            walletRealmObject.setCurrencyId(blockChainId);
+            walletRealmObject.setNetworkId(networkId);
+            walletRealmObject.setCreationAddress(creationAddress);
+            walletRealmObject.setIndex(topIndex);
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    MultyApi.INSTANCE.addWallet(getActivity(), walletRealmObject).enqueue(new Callback<ResponseBody>() {
+                        @Override
+                        public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                            if (response.isSuccessful()) {
+                                try {
+                                    String body = response.body().string();
+                                    long dateOfCreation = new JSONObject(body).getLong("time");
+                                    walletRealmObject.setDateOfCreation(dateOfCreation);
+                                    RealmManager.getAssetsDao().saveWallet(walletRealmObject);
+                                    Log.i("wise", "DDOS with id " + dateOfCreation);
+                                    Log.i("wise", "wallet pre-id " + walletRealmObject.getId());
+                                    ddosTrueResponse(topIndex);
+                                } catch (Throwable t) {
+                                    t.printStackTrace();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseBody> call, Throwable t) {
+                            t.printStackTrace();
+                        }
+                    });
+                }
+            }, 1000);
+        }
+    }
+
+    private void ddosTrueResponse(final int index) {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                MultyApi.INSTANCE.getWalletsVerbose().enqueue(new Callback<WalletsResponse>() {
+                    @Override
+                    public void onResponse(Call<WalletsResponse> call, Response<WalletsResponse> response) {
+                        if (response.isSuccessful()) {
+                            for (Wallet wallet : response.body().getWallets()) {
+                                if (wallet.getNetworkId() == deepMagicWallet.getNetworkId() &&
+                                        wallet.getCurrencyId() == deepMagicWallet.getCurrencyId() &&
+                                        wallet.getIndex() == index) {
+                                    getActivity().getIntent().putExtra(Constants.EXTRA_ADDRESS, wallet.getActiveAddress().getAddress());
+                                    getActivity().getIntent().putExtra(Constants.EXTRA_WALLET_ID, wallet.getId());
+                                    Log.i("wise", "putting id " + wallet.getId());
+                                    ((BaseActivity) getActivity()).dismissProgressDialog();
+                                    deepMagicWallet = null;
+                                    startMagicReceive();
+                                    return;
+                                }
+                            }
+                        }
+
+                        ddosTrueResponse(index);
+                    }
+
+                    @Override
+                    public void onFailure(Call<WalletsResponse> call, Throwable t) {
+                        t.printStackTrace();
+                    }
+                });
+            }
+        }, 4000);
+    }
+
+    public void startMagicReceive() {
+        Intent intent = new Intent(getActivity(), FastReceiveActivity.class);
+        intent.putExtras(getActivity().getIntent());
+        startActivity(intent);
+        getActivity().finish();
     }
 
     private void detectBrokenWallets() {
@@ -384,6 +504,10 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(walletsAdapter);
 //        walletsAdapter.setData(viewModel.getWalletsFromDB());
+    }
+
+    public void setDeepMagicWallet(Wallet wallet) {
+        deepMagicWallet = wallet;
     }
 
     @OnClick(R.id.button_add)

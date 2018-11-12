@@ -16,15 +16,18 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import io.multy.R;
+import io.multy.model.entities.wallet.Wallet;
 import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.MagicReceiveFragment;
 import io.multy.ui.fragments.receive.AmountChooserFragment;
 import io.multy.util.Constants;
+import io.multy.util.CryptoFormatUtils;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.AssetRequestViewModel;
@@ -42,10 +45,19 @@ public class FastReceiveActivity extends BaseActivity {
         setContentView(R.layout.activity_fast_receive);
         viewModel = ViewModelProviders.of(this).get(AssetRequestViewModel.class);
 
-        long id = getIntent().getExtras().getLong(Constants.EXTRA_WALLET_ID);
-        double amount = getIntent().getExtras().getDouble(Constants.EXTRA_AMOUNT);
+        double amount;
 
-        viewModel.setWallet(RealmManager.getAssetsDao().getWalletById(id));
+        if (!getIntent().hasExtra(Constants.EXTRA_DEEP_MAGIC)) {
+            amount = getIntent().getExtras().getDouble(Constants.EXTRA_AMOUNT);
+            long id = getIntent().getExtras().getLong(Constants.EXTRA_WALLET_ID, -1);
+            viewModel.setWallet(RealmManager.getAssetsDao().getWalletById(id));
+        } else {
+            String weiAmount = getIntent().getExtras().getString(Constants.EXTRA_AMOUNT);
+            amount = CryptoFormatUtils.weiToEth(weiAmount);
+            final String walletName = getIntent().getExtras().getString(Constants.EXTRA_WALLET_NAME);
+            viewModel.setWallet(RealmManager.getAssetsDao().getWalletByName(walletName));
+        }
+
         viewModel.setAmount(amount);
         Analytics.getInstance(this).logActivityLaunch(FastReceiveActivity.class.getSimpleName());
     }

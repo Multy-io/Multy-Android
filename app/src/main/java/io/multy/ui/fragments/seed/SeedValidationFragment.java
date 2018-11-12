@@ -278,11 +278,10 @@ public class SeedValidationFragment extends BaseSeedFragment {
                         }
                         settingsDao.saveMultisigFactory(serverConfig.getMultisigFactory());
                         RealmManager.close();
-
                         Prefs.putString(Constants.PREF_AUTH, response.body().getToken());
                         seedModel.isLoading.setValue(false);
                         seedModel.failed.setValue(false);
-                        Prefs.putBoolean(Constants.PREF_DETECT_BROKEN, true);
+//                        Prefs.putBoolean(Constants.PREF_DETECT_BROKEN, true);
                         callback.run();
                     } else {
                         onSeedRestoreFailure(callback);

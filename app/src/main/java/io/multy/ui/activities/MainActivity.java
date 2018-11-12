@@ -22,6 +22,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -29,11 +30,17 @@ import android.widget.TextView;
 
 import com.samwolfand.oneprefs.Prefs;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
+import io.multy.model.entities.OpenDragonsEvent;
+import io.multy.model.entities.wallet.Wallet;
 import io.multy.storage.RealmManager;
+import io.multy.ui.fragments.Web3Fragment;
 import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
 import io.multy.ui.fragments.main.AssetsFragment;
 import io.multy.ui.fragments.main.FastOperationsFragment;
@@ -70,12 +77,6 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         ButterKnife.bind(this);
         setupFooter();
         onTabSelected(tabLayout.getTabAt(0));
-        if (getIntent().hasExtra(Constants.EXTRA_URL)) {
-            TabLayout.Tab tab = tabLayout.getTabAt(1);
-            if (tab != null) {
-                tab.select();
-            }
-        }
         subscribeToPushNotifications();
 
         if (Prefs.getBoolean(Constants.PREF_LOCK)) {
@@ -84,10 +85,16 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         logFirstLaunch();
     }
 
+    @Subscribe()
+    public void onMessageEvent(OpenDragonsEvent event) {
+        selectBrowserTab();
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
         checkContactAction();
+        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -128,6 +135,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
     public void onStop() {
         setOnLockCLoseListener(null);
         super.onStop();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -144,7 +152,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
                 break;
             case Constants.POSITION_FEED:
                 Analytics.getInstance(this).logMain(AnalyticsConstants.TAB_ACTIVITY);
-                setFragment(R.id.container_frame, FeedFragment.newInstance());
+                setFragment(R.id.container_frame, Web3Fragment.newInstance());
                 break;
             case Constants.POSITION_CONTACTS:
                 Analytics.getInstance(this).logMain(AnalyticsConstants.TAB_CONTACTS);
@@ -189,6 +197,7 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
                         .putExtra(Constants.EXTRA_AMOUNT, data.getStringExtra(Constants.EXTRA_AMOUNT)));
             }
         }
+
         super.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -197,11 +206,10 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.container_frame);
 
         //TODO
-//        if (fragment instanceof Web3Fragment) {
-//            ((Web3Fragment) fragment).onBackPressed();
-//            return;
-//        }
-
+        if (fragment instanceof Web3Fragment) {
+            ((Web3Fragment) fragment).onBackPressed();
+            return;
+        }
 
         FastOperationsFragment operationsFragment = (FastOperationsFragment) getSupportFragmentManager().findFragmentByTag(FastOperationsFragment.TAG);
         if (operationsFragment != null && !operationsFragment.isCanceling()) {
@@ -322,20 +330,104 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
     }
 
     private void checkDeepLink(Intent intent) {
-        if (!super.isLockVisible()
-                && Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)
-                && RealmManager.getAssetsDao().getWallets().size() > 0) {
-            if (intent.hasExtra(Constants.EXTRA_ADDRESS)) {
-                String addressUri = intent.getStringExtra(Constants.EXTRA_ADDRESS);
-                Intent sendLauncher = new Intent(this, AssetSendActivity.class);
-                sendLauncher.putExtra(Constants.EXTRA_ADDRESS, addressUri.substring(addressUri.indexOf(":") + 1, addressUri.length()));
-                if (intent.hasExtra(Constants.EXTRA_AMOUNT)) {
-                    sendLauncher.putExtra(Constants.EXTRA_AMOUNT, intent.getStringExtra(Constants.EXTRA_AMOUNT));
-                    intent.removeExtra(Constants.EXTRA_AMOUNT);
+        if (!super.isLockVisible() && (checkSenderDeepLink(intent) || checkBrowserDeepLink(intent)) || checkDeepMagic()) {
+            Log.i(getClass().getSimpleName(), "Deep Link detected!");
+        }
+    }
+
+    private boolean checkDeepMagic() {
+        if (getIntent().hasExtra(Constants.EXTRA_DEEP_MAGIC)) {
+            final String amount = getIntent().getStringExtra(Constants.EXTRA_AMOUNT);
+            final String walletName = getIntent().getStringExtra(Constants.EXTRA_WALLET_NAME);
+            final int blockChain = getIntent().getIntExtra(Constants.EXTRA_BLOCK_CHAIN, 0);
+            final int networkId = getIntent().getIntExtra(Constants.EXTRA_NETWORK_ID, 0);
+
+            showProgressDialog();
+
+            Wallet wallet = new Wallet();
+            wallet.setWalletName(walletName);
+            wallet.setCurrencyId(blockChain);
+            wallet.setNetworkId(networkId);
+
+            AssetsFragment fragment = (AssetsFragment) getSupportFragmentManager().findFragmentById(R.id.container_frame);
+
+            if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
+                Wallet foundWallet = RealmManager.getAssetsDao().getWalletByNameExt(blockChain, networkId, walletName);
+                if (foundWallet == null) {
+                    fragment.setDeepMagicWallet(wallet);
+                } else {
+                    getIntent().putExtra(Constants.EXTRA_ADDRESS, foundWallet.getActiveAddress().getAddress());
+                    getIntent().putExtra(Constants.EXTRA_WALLET_ID, foundWallet.getId());
+                    fragment.startMagicReceive();
                 }
-                intent.removeExtra(Constants.EXTRA_ADDRESS);
-                startActivity(sendLauncher);
+            } else {
+                WalletViewModel viewModel = ViewModelProviders.of(this).get(WalletViewModel.class);
+                viewModel.createFirstWallets(() -> {
+                    if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED, false)) {
+                        subscribeToPushNotifications();
+                    } else {
+                        SimpleDialogFragment.newInstanceNegative(R.string.error, R.string.something_went_wrong, v -> {
+                            //todo should we clear database here for don't get realm exception when we will want open it?
+//                    startActivity(new Intent(this, SplashActivity.class).putExtra(SplashActivity.RESET_FLAG, true));
+                        }).show(getSupportFragmentManager(), "");
+                    }
+                    if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
+                        tabLayout.getLayoutParams().height = getResources().getDimensionPixelSize(R.dimen.tab_layout_height);
+                        buttonOperations.setVisibility(View.VISIBLE);
+                    }
+
+                    AssetsFragment assetsFragment = AssetsFragment.newInstance();
+                    assetsFragment.setDeepMagicWallet(wallet);
+                    setFragment(R.id.container_frame, assetsFragment);
+                });
             }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean checkSenderDeepLink(Intent intent) {
+        if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED) &&
+                RealmManager.getAssetsDao().getWallets().size() > 0 && intent.hasExtra(Constants.EXTRA_ADDRESS)) {
+
+            if (getIntent().hasExtra(Constants.EXTRA_DEEP_BROWSER) ||
+                    getIntent().hasExtra(Constants.EXTRA_DEEP_MAGIC)) {
+                return false;
+            }
+
+            String addressUri = intent.getStringExtra(Constants.EXTRA_ADDRESS);
+            Intent sendLauncher = new Intent(this, AssetSendActivity.class);
+            sendLauncher.putExtra(Constants.EXTRA_ADDRESS, addressUri.substring(addressUri.indexOf(":") + 1, addressUri.length()));
+            if (intent.hasExtra(Constants.EXTRA_AMOUNT)) {
+                sendLauncher.putExtra(Constants.EXTRA_AMOUNT, intent.getStringExtra(Constants.EXTRA_AMOUNT));
+                intent.removeExtra(Constants.EXTRA_AMOUNT);
+            }
+            intent.removeExtra(Constants.EXTRA_ADDRESS);
+            startActivity(sendLauncher);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean checkBrowserDeepLink(Intent intent) {
+        if (intent.hasExtra(Constants.EXTRA_URL) && intent.hasExtra(Constants.EXTRA_DEEP_BROWSER)) {
+            selectBrowserTab();
+            intent.removeExtra(Constants.EXTRA_URL);
+            return true;
+        }
+        return false;
+    }
+
+    private void selectBrowserTab() {
+        TabLayout.Tab mainTab = tabLayout.getTabAt(0);
+        TabLayout.Tab browserTab = tabLayout.getTabAt(1);
+        if (browserTab != null) {
+            if (browserTab.isSelected() && mainTab != null) {
+                mainTab.select();
+            }
+            browserTab.select();
         }
     }
 
@@ -379,6 +471,13 @@ public class MainActivity extends BaseActivity implements TabLayout.OnTabSelecte
             }
             updateAssets();
         });
+    }
+
+    public void showAssetsScreen() {
+        TabLayout.Tab tab = tabLayout.getTabAt(0);
+        if (tab != null) {
+            tab.select();
+        }
     }
 
     public void showScanScreen() {

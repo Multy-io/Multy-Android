@@ -177,6 +177,20 @@ public class AssetsDao {
         return realm.where(Wallet.class).equalTo("visible", true).sort("lastActionTime", Sort.DESCENDING).findAll();
     }
 
+    public Wallet getWalletByNameExt(int blockChain, int networkId, String name) {
+        return realm.where(Wallet.class)
+                .equalTo("currencyId", blockChain)
+                .equalTo("networkId", networkId)
+                .equalTo("walletName", name)
+                .findFirst();
+    }
+
+    public Wallet getWalletByName(String name) {
+        return realm.where(Wallet.class)
+                .equalTo("walletName", name)
+                .findFirst();
+    }
+
     public RealmResults<Wallet> getAvailableWallets() {
         return realm.where(Wallet.class)
                 .equalTo("visible", true)
@@ -284,6 +298,12 @@ public class AssetsDao {
             realm.where(EthWallet.class).findAll().deleteAllFromRealm();
             realm.where(WalletAddress.class).findAll().deleteAllFromRealm();
             realm.where(MultisigWallet.class).findAll().deleteAllFromRealm();
+        });
+    }
+
+    public void deleteAllAddresses() {
+        realm.executeTransaction(realm -> {
+            realm.where(WalletAddress.class).findAll().deleteAllFromRealm();
         });
     }
 

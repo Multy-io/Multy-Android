@@ -60,6 +60,9 @@ public final class Constants {
     public static final String PREF_IS_PUSH_ENABLED = "PREF_IS_PUSH_ENABLED";
     public static final String PREF_TERMS_ACCEPTED = "TERMS_TERMS_ACCEPTED";
     public static final String PREF_DETECT_BROKEN = "PREF_DETECT_BROKEN";
+    public static final String PREF_DRAGONS_URL = "PREF_DRAGONS_URL";
+    public static final String PREF_URL_CURRENCY_ID = "PREF_URL_CURRENCY_ID";
+    public static final String PREF_URL_NETWORK_ID = "PREF_URL_NETWORK_ID";
 
     public static final int REQUEST_CODE_SET_CHAIN = 560;
     public static final int REQUEST_CODE_SET_GAS = 560;
@@ -85,6 +88,11 @@ public final class Constants {
     public static final String EXTRA_URL = "EXTRA_URL";
     public static final String EXTRA_CURRENCY_ID = "EXTRA_CURRENCY_ID";
     public static final String EXTRA_NETWORK_ID = "EXTRA_NETWORK_ID";
+    public static final String EXTRA_WALLET_NAME = "EXTRA_WALLET_NAME";
+    public static final String EXTRA_BLOCK_CHAIN = "EXTRA_BLOCK_CHAIN";
+    public static final String EXTRA_DEEP_MAGIC = "EXTRA_DEEP_MAGIC";
+    public static final String EXTRA_DEEP_BROWSER = "EXTRA_DEEP_BROWSER";
+    public static final String EXTRA_DEEP_SEND = "EXTRA_DEEP_SEND";
 
     public static final String DEEP_LINK_QR_CODE = "QR_CODE";
     public static final String DEEP_LINK_ADDRESS = "address";
@@ -171,22 +179,8 @@ public final class Constants {
     public static final int EVENT_TYPE_NOTIFY_SUBMITED_TX = 14;
 
     public static final int ASSET_TYPE_ADDRESS_MULTY = 0;
-    public static final int ASSET_TYPE_ADDRESS_MULTISIG= 1;
+    public static final int ASSET_TYPE_ADDRESS_MULTISIG = 1;
     public static final int ASSET_TYPE_ADDRESS_IMPORTED = 2;
-
-    public static final String[] rootFiles = {
-            "init.magisk.rc",
-            "magisk",
-            "Superuser.apk",
-            "daemonsu",
-            "su",
-            "frida",
-            "frida-server",
-            "fridaserver",
-            "magisk.log",
-            "last_magisk.log",
-            "superuser"
-    };
 
     public static final String[] rootApplications = {
             "com.saurik.substrate",
@@ -215,5 +209,19 @@ public final class Constants {
             "/system/bin/",
             "/sbin/",
             "/system/bin/.ext/"
+    };
+
+    public static final String[] rootFiles = {
+            "init.magisk.rc",
+            "magisk",
+            "Superuser.apk",
+            "daemonsu",
+            "su",
+            "frida",
+            "frida-server",
+            "fridaserver",
+            "magisk.log",
+            "last_magisk.log",
+            "superuser"
     };
 }

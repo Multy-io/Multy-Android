@@ -4,4 +4,4 @@
  * See LICENSE for details
  */
 
-include ':app'
+include ':app', ':lib'

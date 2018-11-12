@@ -147,7 +147,14 @@ public class SplashActivity extends AppCompatActivity {
                         } else {
                             showMainActivity();
                         }
-
+                        if (configResponse.getBrouserDefault() != null &&
+                                !TextUtils.isEmpty(configResponse.getBrouserDefault().getUrl()) &&
+                                configResponse.getBrouserDefault().getCurrencyId() != -1 &&
+                                configResponse.getBrouserDefault().getNetworkId() != -1) {
+                            Prefs.putString(Constants.PREF_DRAGONS_URL, configResponse.getBrouserDefault().getUrl());
+                            Prefs.putInt(Constants.PREF_URL_CURRENCY_ID, configResponse.getBrouserDefault().getCurrencyId());
+                            Prefs.putInt(Constants.PREF_URL_NETWORK_ID, configResponse.getBrouserDefault().getNetworkId());
+                        }
                         if (configResponse.getDonates() != null) {
                             EventBus.getDefault().postSticky(configResponse);
                         }
@@ -226,6 +233,7 @@ public class SplashActivity extends AppCompatActivity {
                         Intent mainActivityIntent = new Intent(SplashActivity.this, MainActivity.class)
                                 .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                         mainActivityIntent.putExtra(MainActivity.IS_ANIMATION_MUST_SHOW, true);
+                        mainActivityIntent.putExtras(getIntent());
                         addDeepLinkExtra(mainActivityIntent);
                         checkForContactAction(mainActivityIntent);
                         startActivity(mainActivityIntent);
@@ -248,12 +256,42 @@ public class SplashActivity extends AppCompatActivity {
         Branch branch = Branch.getInstance(getApplicationContext());
         branch.initSession((referringParams, error) -> {
             if (error == null) {
-                parseAddressFromLink(referringParams);
-                parseUrlFromLink(referringParams);
+                final String deepString = referringParams.optString("deepLinkIDstring");
+
+                if (deepString.equals("magicReceive")) {
+                    if (parseMagicFromLink(referringParams)) {
+                        getIntent().putExtra(Constants.EXTRA_DEEP_MAGIC, true);
+                        return;
+                    }
+                } else if (deepString.equals("Dragonereum")) {
+                    parseUrlFromLink(referringParams);
+                    getIntent().putExtra(Constants.EXTRA_DEEP_BROWSER, true);
+                } else {
+                    parseAddressFromLink(referringParams);
+                }
+
             } else {
                 Timber.i(error.getMessage());
             }
         }, this.getIntent().getData(), this);
+    }
+
+    private boolean parseMagicFromLink(JSONObject referringParams) {
+        String amount = referringParams.optString("amount");
+        String walletName = referringParams.optString("walletName");
+        int chainType = referringParams.optInt("chainType");
+        int chainId = referringParams.optInt("chainID");
+
+        if (!TextUtils.isEmpty(amount)) {
+            getIntent().putExtra(Constants.EXTRA_DEEP_MAGIC, true);
+            getIntent().putExtra(Constants.EXTRA_AMOUNT, amount);
+            getIntent().putExtra(Constants.EXTRA_WALLET_NAME, walletName);
+            getIntent().putExtra(Constants.EXTRA_NETWORK_ID, chainType);
+            getIntent().putExtra(Constants.EXTRA_BLOCK_CHAIN, chainId);
+            return true;
+        }
+
+        return false;
     }
 
     private void parseAddressFromLink(JSONObject referringParams) {
@@ -291,6 +329,7 @@ public class SplashActivity extends AppCompatActivity {
         }
         if (getIntent().hasExtra(Constants.DEEP_LINK_URL)) {
             intent.putExtra(Constants.EXTRA_URL, getIntent().getStringExtra(Constants.DEEP_LINK_URL));
+//            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         }
         if (getIntent().hasExtra(Constants.DEEP_LINK_CURRENCY_ID)) {
             intent.putExtra(Constants.EXTRA_CURRENCY_ID, getIntent().getIntExtra(Constants.DEEP_LINK_CURRENCY_ID, -1));

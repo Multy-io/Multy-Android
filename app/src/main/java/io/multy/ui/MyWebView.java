@@ -17,10 +17,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import timber.log.Timber;
 import trust.web3.Web3View;
 
 public class MyWebView extends Web3View {
@@ -38,6 +40,20 @@ public class MyWebView extends Web3View {
     public MyWebView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         setWebViewClient();
+    }
+
+    private void enableHTML5AppCache() {
+//        getSettings().setDomStorageEnabled(true);
+//
+//        // Set cache size to 8 mb by default. should be more than enough
+//        getSettings().setAppCacheMaxSize(1024 * 1024 * 8);
+
+        // This next one is crazy. It's the DEFAULT location for your app's cache
+        // But it didn't work for me without this line
+        getSettings().setAppCachePath("/data/data/" + getContext().getPackageName() + "/cache");
+        getSettings().setAllowFileAccess(true);
+        getSettings().setAppCacheEnabled(true);
+        getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
     }
 
     @Override
@@ -70,10 +86,13 @@ public class MyWebView extends Web3View {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 loadUrl(url);
+                Timber.v("URL=" + url);
+//                loadData(url, "text/html", "UTF-8");
                 return true;
             }
 
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+                Timber.e("ERROR " + errorCode + " " + description);
                 Toast.makeText(getContext(), description, Toast.LENGTH_SHORT).show();
             }
 
@@ -102,11 +121,13 @@ public class MyWebView extends Web3View {
 
             @Override
             public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
+                Timber.i("JS Alert " + message + " " + result.toString());
                 result.confirm();
                 return true;
             }
         });
 
+        enableHTML5AppCache();
         return true;
     }
 }
