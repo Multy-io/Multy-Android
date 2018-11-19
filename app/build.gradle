@@ -102,11 +102,11 @@ dependencies {
     implementation 'com.jakewharton.timber:timber:4.6.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     implementation 'com.google.android.gms:play-services-gcm:16.0.0'
-    implementation 'com.google.firebase:firebase-core:16.0.4'
+    implementation 'com.google.firebase:firebase-core:16.0.5'
     implementation('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
         transitive = true
     }
-    implementation 'com.google.firebase:firebase-core:16.0.4'
+    implementation 'com.google.firebase:firebase-core:16.0.5'
     implementation 'com.google.firebase:firebase-messaging:17.3.4'
     implementation 'android.arch.lifecycle:extensions:1.1.1'
     testImplementation 'android.arch.core:core-testing:1.1.1'
