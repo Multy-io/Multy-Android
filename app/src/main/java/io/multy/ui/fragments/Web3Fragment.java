@@ -21,6 +21,9 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.webkit.WebChromeClient;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -71,6 +74,8 @@ public class Web3Fragment extends BaseFragment {
     ImageView imageCoin;
     @BindView(R.id.text_address)
     TextView textAddress;
+    @BindView(R.id.input_address)
+    EditText inputAddress;
 
     private String dappUrl = "https://kyber.network/swap";
     private WalletViewModel viewModel;
@@ -94,12 +99,25 @@ public class Web3Fragment extends BaseFragment {
         ButterKnife.bind(this, convertView);
         initRedirect();
         initState();
+        initInput();
+
         refreshLayout.setOnRefreshListener(() -> webView.postDelayed(() -> {
             webView.reload();
             refreshLayout.setRefreshing(false);
         }, 3000));
 
         return convertView;
+    }
+
+    private void initInput() {
+        inputAddress.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_GO || actionId == EditorInfo.IME_ACTION_SEARCH) {
+                webView.loadUrl(inputAddress.getText().toString());
+                hideKeyboard(getActivity());
+                return true;
+            }
+            return false;
+        });
     }
 
     @Override
@@ -290,6 +308,8 @@ public class Web3Fragment extends BaseFragment {
 
     private void initState() {
 //        webView.setRpcUrl("https://rinkeby.infura.io/v3/78ae782ed28e48c0b3f74ca69c4f7ca8");
+        webView.setWebChromeClient(new WebChromeClient() {
+        });
         webView.setRpcUrl("https://mainnet.infura.io/v3/78ae782ed28e48c0b3f74ca69c4f7ca8");
         webView.setChainId(NativeDataHelper.NetworkId.ETH_MAIN_NET.getValue());
         webView.requestFocus();
@@ -404,6 +424,7 @@ public class Web3Fragment extends BaseFragment {
         if (getActivity() != null) {
             webView.loadUrl("about:blank");
             webView.loadUrl(dappUrl);
+            inputAddress.setText(dappUrl);
         }
     }
 

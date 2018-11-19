@@ -43,6 +43,7 @@ import io.multy.util.CryptoFormatUtils;
 import io.multy.util.DateHelper;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
+import timber.log.Timber;
 
 import static io.multy.ui.fragments.asset.EthTransactionInfoFragment.MODE_RECEIVE;
 import static io.multy.ui.fragments.asset.EthTransactionInfoFragment.MODE_SEND;
@@ -90,8 +91,8 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 return new MultisigHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.view_transaction_item_blocked_ms, parent, false));
             case TYPE_CONFIRMED:
                 return new Holder(LayoutInflater.from(parent.getContext()).inflate(R.layout.view_transaction_item, parent, false));
-                default:
-                    return new RejectedHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.view_transaction_item_rejected, parent, false));
+            default:
+                return new RejectedHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.view_transaction_item_rejected, parent, false));
         }
     }
 
@@ -210,6 +211,10 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     }
 
     private boolean isVotedByMe(ArrayList<TransactionOwner> owners, int currencyId, int networkId) {
+        if (owners == null) {
+            return false;
+        }
+
         for (TransactionOwner owner : owners) {
             if (RealmManager.getAssetsDao().getWalletAddress(owner.getAddress(), currencyId, networkId).size() > 0) {
                 return owner.getConfirmationStatus() == Constants.MULTISIG_OWNER_STATUS_CONFIRMED ||
@@ -276,13 +281,21 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         final String amount = CryptoFormatUtils.FORMAT_ETH.format(CryptoFormatUtils.weiToEth(entity.getTxOutAmount()));
         final String amountFiat = getFiatAmount(entity, CryptoFormatUtils.weiToEth(entity.getTxOutAmount()));
         ArrayList<TransactionOwner> owners = entity.getMultisigInfo().getOwners();
-        final int ownersStatus = getOwnersVoteStatus(wallet.getMultisigWallet().getConfirmations(), owners);
+
+        int ownersStatus = Constants.MULTISIG_OWNER_STATUS_WAITING;
+        if (owners != null) {
+            ownersStatus = getOwnersVoteStatus(wallet.getMultisigWallet().getConfirmations(), owners);
+        } else {
+            Timber.e("TX STATUS NULL! " + entity.getTxHash() + " " + entity.getTxId());
+        }
+
         int operationImage = entity.getMultisigInfo().isConfirmed() ? isIncoming ? R.drawable.ic_receive : R.drawable.ic_send :
                 ownersStatus == Constants.MULTISIG_OWNER_STATUS_DECLINED ? R.drawable.ic_arrow_declined : R.drawable.ic_arrow_waiting;
         holder.imageOperation.setImageResource(operationImage);
         holder.textAddress.setText(isIncoming ? entity.getFrom() : entity.getTo());
         holder.textAmount.setText(String.format("%s ETH", amount));
         holder.textFiat.setText(String.format("%s USD", amountFiat));
+
         String dateText;
         if (entity.getMultisigInfo().isConfirmed()) {
             dateText = DateHelper.DATE_FORMAT_HISTORY.format(entity.getBlockTime() * 1000);
@@ -305,17 +318,19 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
             holder.textDate.setText(dateText);
             holder.textDate.setTextColor(ContextCompat.getColor(holder.textDate.getContext(), R.color.black_light));
         }
-        int confirms = calculateStatus(owners, MULTISIG_OWNER_STATUS_CONFIRMED);
+
+        int confirms = owners == null ? -1 : calculateStatus(owners, MULTISIG_OWNER_STATUS_CONFIRMED);
         holder.textConfirmations.setText(String.format(holder.itemView.getContext()
                 .getString(R.string.confirmations_of), confirms, wallet.getMultisigWallet().getConfirmations()));
-        int counter = calculateStatus(owners, MULTISIG_OWNER_STATUS_CONFIRMED);
+        int counter = owners == null ? -1 : calculateStatus(owners, MULTISIG_OWNER_STATUS_CONFIRMED);
         holder.textConfirmCount.setVisibility(counter > 0 ? View.VISIBLE : View.GONE);
         holder.textConfirmCount.setText(String.valueOf(counter));
-        counter = calculateStatus(owners, MULTISIG_OWNER_STATUS_DECLINED);
+
+        counter = owners == null ? -1 : calculateStatus(owners, MULTISIG_OWNER_STATUS_DECLINED);
         holder.textRejectCount.setVisibility(counter > 0 ? View.VISIBLE : View.GONE);
         holder.textRejectCount.setText(String.valueOf(counter));
 //        counter = calculateViewCount(owners);
-        counter = calculateStatus(owners, Constants.MULTISIG_OWNER_STATUS_SEEN);
+        counter = owners == null ? -1 : calculateStatus(owners, Constants.MULTISIG_OWNER_STATUS_SEEN);
         holder.textViewCount.setVisibility(counter > 0 ? View.VISIBLE : View.GONE);
         holder.textViewCount.setText(String.valueOf(counter));
         setItemClickListener(holder.itemView, isIncoming, true, position);

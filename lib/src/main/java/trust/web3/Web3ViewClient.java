@@ -5,6 +5,7 @@ import android.net.http.SslError;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Base64;
+import android.util.Log;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
@@ -63,7 +64,7 @@ public class Web3ViewClient extends WebViewClient {
             isInjected = false;
         }
         String urlToOpen = urlHandlerManager.handle(url);
-        if (!url.startsWith("http")) {
+        if (!url.startsWith("http") && !url.startsWith("blob")) {
             result = true;
         }
         if (isMainFrame && isRedirect) {
