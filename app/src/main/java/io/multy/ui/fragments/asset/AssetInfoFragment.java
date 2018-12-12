@@ -6,6 +6,7 @@
 
 package io.multy.ui.fragments.asset;
 
+import android.annotation.SuppressLint;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -21,6 +22,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.ToggleGroup;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,15 +41,19 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.api.MultyApi;
+import io.multy.api.explorer.ExplorerApi;
+import io.multy.model.entities.Erc20Balance;
 import io.multy.model.entities.TransactionHistory;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.events.TransactionUpdateEvent;
+import io.multy.model.responses.EthplorerResponse;
 import io.multy.model.responses.SingleWalletResponse;
 import io.multy.storage.AssetsDao;
 import io.multy.storage.RealmManager;
@@ -57,6 +63,7 @@ import io.multy.ui.activities.AssetSendActivity;
 import io.multy.ui.activities.SeedActivity;
 import io.multy.ui.adapters.AssetTransactionsAdapter;
 import io.multy.ui.adapters.EthTransactionsAdapter;
+import io.multy.ui.adapters.PlorerTokensAdapter;
 import io.multy.ui.fragments.AddressesFragment;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.MultisigSettingsFragment;
@@ -68,9 +75,11 @@ import io.multy.util.NativeDataHelper;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.WalletViewModel;
+import io.realm.RealmList;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import timber.log.Timber;
 
 public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOffsetChangedListener {
 
@@ -114,13 +123,18 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     @BindView(R.id.container_dummy)
     View containerDummy;
 
+    @BindView(R.id.toggle_group)
+    ToggleGroup toggleGroup;
+
+    private EthTransactionsAdapter ethTransactionsAdapter = new EthTransactionsAdapter();
+    private PlorerTokensAdapter tokensAdapter = new PlorerTokensAdapter();
     private WalletViewModel viewModel;
     private SharingBroadcastReceiver receiver = new SharingBroadcastReceiver();
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View convertView = inflater.inflate(R.layout.fragment_asset_info, container, false);
+        View convertView = inflater.inflate(R.layout.fragment_asset_info_eth, container, false);
         ButterKnife.bind(this, convertView);
 
         viewModel = ViewModelProviders.of(getActivity()).get(WalletViewModel.class);
@@ -134,8 +148,75 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         setButtonWarnVisibility();
 //        setTransactionsState();
 
+        initToggle();
+        toggleAdapterInfo();
+
         Analytics.getInstance(getActivity()).logWalletLaunch(AnalyticsConstants.WALLET_SCREEN, viewModel.getChainId());
         return convertView;
+    }
+
+    private void initToggle() {
+        List<Erc20Balance> tokenBalances = viewModel.getWalletLive().getValue().getActiveAddress().getErc20Balance();
+        if (tokenBalances != null && tokenBalances.size() > 0) {
+            toggleGroup.setVisibility(View.VISIBLE);
+            toggleGroup.setOnCheckedChangeListener((group, checkedId) -> toggleAdapterInfo());
+        } else {
+            toggleGroup.setVisibility(View.GONE);
+        }
+    }
+
+    private void toggleAdapterInfo() {
+        final boolean tokensSelected = toggleGroup.getCheckedId() == R.id.tokens_overview;
+        if (tokensSelected) {
+            recyclerView.setAdapter(tokensAdapter);
+        } else {
+            recyclerView.setAdapter(ethTransactionsAdapter);
+        }
+    }
+
+    @SuppressLint("CheckResult")
+    private void initTokensInfo() {
+        if (viewModel.getWalletLive().getValue().getCurrencyId() != NativeDataHelper.Blockchain.ETH.getValue()) {
+            return;
+        }
+
+        ExplorerApi.INSTANCE.fetchTokens(viewModel.getWalletLive().getValue().getActiveAddress().getAddress()).enqueue(new Callback<EthplorerResponse>() {
+            @Override
+            public void onResponse(Call<EthplorerResponse> call, Response<EthplorerResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().getTokens() != null) {
+                    tokensAdapter.setData(response.body().getTokens());
+                    tokensAdapter.setEthereum(textBalance.getText().toString(), textBalanceFiat.getText().toString());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<EthplorerResponse> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
+
+//        List<Erc20Balance> tokenBalance = RealmManager.get().copyFromRealm(viewModel.getWalletLive().getValue().getActiveAddress().getErc20Balance());
+//
+//        Observable.fromIterable(tokenBalance)
+//                .filter(erc20Balance -> RealmManager.getSettingsDao().getErc20TokenInfo(erc20Balance.getAddress()) != null)
+//                .flatMap((Function<Erc20Balance, ObservableSource<Erc20Balance>>) erc20Balance -> {
+//                    Erc20Token token = RealmManager.getSettingsDao().getErc20TokenInfo(erc20Balance.getAddress());
+//                    Timber.i("taking info for token " + erc20Balance.getAddress() + " " + token.getName());
+//                    Erc20Token finalToken = RealmManager.get().copyFromRealm(token);
+//                    finalToken.setTokenInfo(ExplorerApi.INSTANCE.getContractInfo(erc20Balance.getAddress()).execute().body());
+//                    return Observable.just(erc20Balance);
+//                })
+//                .delay(2, TimeUnit.SECONDS)
+//                .toList()
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .doOnError(Throwable::printStackTrace)
+//                .subscribe(erc20Balances -> {
+//                    Timber.i("Final list " + erc20Balances.size());
+//                    tokensAdapter = new Erc20TokensAdapter(erc20Balances);
+//                    initToggle(erc20Balances.size());
+//                    toggleAdapterInfo();
+//                });
     }
 
     private void setButtonWarnVisibility() {
@@ -207,7 +288,16 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
             textBalanceFiat.setText(wallet.getFiatBalanceLabel());
 
             containerPending.collapse();
+
+            if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.ETH.getValue() &&
+                    wallet.getActiveAddress().getErc20Balance() != null && wallet.getActiveAddress().getErc20Balance().size() > 0) {
+                checkForErc20TokensBalance(wallet.getActiveAddress().getErc20Balance());
+            }
         }
+    }
+
+    private void checkForErc20TokensBalance(RealmList<Erc20Balance> tokens) {
+        Timber.i("TOKENS " + tokens.size());
     }
 
     private void refreshWallet() {
@@ -312,8 +402,8 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
                 } else if (currencyId == NativeDataHelper.Blockchain.EOS.getValue()) {
 //                        recyclerView.setAdapter(new EosTransactionsAdapter(transactions, walletId));
                 } else {
-                    recyclerView.setAdapter(new EthTransactionsAdapter(transactions, walletId));
-
+                    ethTransactionsAdapter.setTransactions(transactions, walletId);
+                    initTokensInfo();
                 }
             } catch (Exception e) {
                 e.printStackTrace();

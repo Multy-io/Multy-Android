@@ -207,6 +207,11 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
         }
     }
 
+    public boolean isMainNetwork() {
+        return currencyId == NativeDataHelper.Blockchain.BTC.getValue() && networkId == NativeDataHelper.NetworkId.MAIN_NET.getValue() ||
+                currencyId == NativeDataHelper.Blockchain.ETH.getValue() && networkId == NativeDataHelper.NetworkId.ETH_MAIN_NET.getValue();
+    }
+
     public String getFiatBalanceLabel(CurrenciesRate currenciesRate) {
         //TODO support different fiat currencies here
         switch (NativeDataHelper.Blockchain.valueOf(currencyId)) {
@@ -359,7 +364,7 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
             case EOS:
                 return NumberFormatter.getFiatInstance().format(getEosValue().multiply(new BigDecimal(currenciesRate.getEosToUsd()))) + getFiatString();
             default:
-                return "unsupported";
+                return "0";
         }
     }
 

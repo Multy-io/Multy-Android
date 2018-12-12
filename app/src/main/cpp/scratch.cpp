@@ -21,6 +21,7 @@
 #include <multy_core/src/api/big_int_impl.h>
 #include <multy_core/big_int.h>
 #include <multy_core/src/ethereum/ethereum_transaction.h>
+#include <multy_core/json_api.h>
 #include "multy_core/sha3.h"
 #include "multy_core/src/transaction_base.h"
 #include "multy_core/properties.h"
@@ -50,30 +51,25 @@ JNIEnv *getEnv() {
 extern "C" {
 #endif
 
-class JniString
-{
+class JniString {
     JNIEnv *m_env;
     jstring m_jstring;
-    const char* m_object;
+    const char *m_object;
 public:
-    JniString(JNIEnv *env, jstring input_str):
-    m_env(env),
-    m_jstring(input_str),
-    m_object(env->GetStringUTFChars(m_jstring, nullptr))
-    {
+    JniString(JNIEnv *env, jstring input_str) :
+            m_env(env),
+            m_jstring(input_str),
+            m_object(env->GetStringUTFChars(m_jstring, nullptr)) {
     }
 
-    const char* c_str() const
-    {
+    const char *c_str() const {
         return m_object;
     }
 
-    ~JniString()
-    {
+    ~JniString() {
         m_env->ReleaseStringUTFChars(m_jstring, m_object);
     }
 };
-
 
 
 static int pfd[2];
@@ -314,7 +310,8 @@ Java_io_multy_util_NativeDataHelper_getMyPrivateKey(JNIEnv *env, jclass type_, j
 }
 
 JNIEXPORT jstring JNICALL
-Java_io_multy_util_NativeDataHelper_ethereumPersonalSign(JNIEnv *env, jclass type_, jstring key, jstring message) {
+Java_io_multy_util_NativeDataHelper_ethereumPersonalSign(JNIEnv *env, jclass type_, jstring key,
+                                                         jstring message) {
 
     using namespace multy_core::internal;
     JniString keyStr(env, key);
@@ -331,10 +328,10 @@ Java_io_multy_util_NativeDataHelper_ethereumPersonalSign(JNIEnv *env, jclass typ
 
 JNIEXPORT jstring JNICALL
 Java_io_multy_util_NativeDataHelper_bruteForceAddress(JNIEnv *jniEnv, jobject obj,
-                                                          jbyteArray jSeed,
-                                                          jint jWalletIndex, jint jAddressIndex,
-                                                          jint blockchain, jint netType,
-                                                          jstring jAddress) {
+                                                      jbyteArray jSeed,
+                                                      jint jWalletIndex, jint jAddressIndex,
+                                                      jint blockchain, jint netType,
+                                                      jstring jAddress) {
     const jstring defaultResult{};
     using namespace multy_core::internal;
 
@@ -501,8 +498,10 @@ Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *jniEnv, jobject obj,
                                              reinterpret_cast<Key **>(&private_key_ptr)));
 
                 PrivateKeyPtr private_key(private_key_ptr);
-                HANDLE_ERROR(make_binary_data_from_hex(hashString.c_str(), reset_sp(binaryDataTxHash)));
-                HANDLE_ERROR(make_binary_data_from_hex(keyString.c_str(), reset_sp(binaryDataPubKey)));
+                HANDLE_ERROR(
+                        make_binary_data_from_hex(hashString.c_str(), reset_sp(binaryDataTxHash)));
+                HANDLE_ERROR(
+                        make_binary_data_from_hex(keyString.c_str(), reset_sp(binaryDataPubKey)));
                 HANDLE_ERROR(make_big_int(amountString.c_str(), reset_sp(amount)));
 
                 HANDLE_ERROR(big_int_add(&sum, amount.get()));
@@ -537,7 +536,8 @@ Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *jniEnv, jobject obj,
             Properties *donation = nullptr;
             HANDLE_ERROR(transaction_add_destination(transaction.get(), &donation));
             HANDLE_ERROR(properties_set_big_int_value(donation, "amount", &donationAmount));
-            HANDLE_ERROR(properties_set_string_value(donation, "address", donationAddressStr.c_str()));
+            HANDLE_ERROR(
+                    properties_set_string_value(donation, "address", donationAddressStr.c_str()));
         }
 
 // SET DESTINATION AND CHANGE ADDRESS
@@ -682,6 +682,21 @@ Java_io_multy_util_NativeDataHelper_getPublicKey(JNIEnv *env, jclass type_,
 
 
     return env->NewStringUTF(pubKeyStr.get());
+}
+
+JNIEXPORT jstring JNICALL
+Java_io_multy_util_NativeDataHelper_makeTransactionJSONAPI(JNIEnv *env, jclass type_,
+                                                           jstring jTransactionData) {
+
+    using namespace multy_core::internal;
+    const jstring defaultResult{};
+
+    JniString txDataStr(env, jTransactionData);
+    ConstCharPtr result;
+
+    HANDLE_ERROR(make_transaction_from_json(txDataStr.c_str(), reset_sp(result)));
+
+    return env->NewStringUTF(result.get());
 }
 
 JNIEXPORT jbyteArray JNICALL
@@ -1139,7 +1154,8 @@ Java_io_multy_util_NativeDataHelper_sendEOS(JNIEnv *env, jclass type_,
         BigIntPtr amount;
         HANDLE_ERROR(make_big_int(sendAmountStr.c_str(), reset_sp(amount)));
         HANDLE_ERROR(properties_set_big_int_value(destination, "amount", amount.get()));
-        HANDLE_ERROR(properties_set_string_value(destination, "address", receiverAddressStr.c_str()));
+        HANDLE_ERROR(
+                properties_set_string_value(destination, "address", receiverAddressStr.c_str()));
     }
 
     ConstCharPtr signatures;
@@ -1477,55 +1493,55 @@ Java_io_multy_util_NativeDataHelper_makeTransactionMultisigETHFromKey(JNIEnv *en
     try {
         AccountPtr account;
         HANDLE_ERROR(make_account(BlockchainType{(Blockchain) chainId, (size_t) networkId},
-                              ACCOUNT_TYPE_DEFAULT,
+                                  ACCOUNT_TYPE_DEFAULT,
                                   privateKey.c_str(),
-                              reset_sp(account)));
+                                  reset_sp(account)));
 
         TransactionBuilderPtr builder;
         HANDLE_ERROR(
-                    make_transaction_builder(
-                            account.get(),
-                            ETHEREUM_TRANSACTION_BUILDER_MULTISIG,
-                            "new_request",
-                            reset_sp(builder)));
+                make_transaction_builder(
+                        account.get(),
+                        ETHEREUM_TRANSACTION_BUILDER_MULTISIG,
+                        "new_request",
+                        reset_sp(builder)));
         {
-        Properties* builder_propertie;
-        BigIntPtr amount;
-        BigIntPtr balance;
-        HANDLE_ERROR(make_big_int(balanceStr.c_str(), reset_sp(balance)));
-        HANDLE_ERROR(make_big_int(amountStr.c_str(), reset_sp(amount)));
-        HANDLE_ERROR(transaction_builder_get_properties(builder.get(), &builder_propertie));
-        HANDLE_ERROR(transaction_builder_get_properties(builder.get(), &builder_propertie));
-        HANDLE_ERROR(properties_set_big_int_value(builder_propertie, "balance", balance.get()));
-        HANDLE_ERROR(properties_set_string_value(builder_propertie, "wallet_address",
-                                                 msWalletAddressStr.c_str()));
-        HANDLE_ERROR(properties_set_string_value(builder_propertie, "dest_address",
-                                                 destionationAddressStr.c_str()));
-        HANDLE_ERROR(properties_set_big_int_value(builder_propertie, "amount", amount.get()));
+            Properties *builder_propertie;
+            BigIntPtr amount;
+            BigIntPtr balance;
+            HANDLE_ERROR(make_big_int(balanceStr.c_str(), reset_sp(balance)));
+            HANDLE_ERROR(make_big_int(amountStr.c_str(), reset_sp(amount)));
+            HANDLE_ERROR(transaction_builder_get_properties(builder.get(), &builder_propertie));
+            HANDLE_ERROR(transaction_builder_get_properties(builder.get(), &builder_propertie));
+            HANDLE_ERROR(properties_set_big_int_value(builder_propertie, "balance", balance.get()));
+            HANDLE_ERROR(properties_set_string_value(builder_propertie, "wallet_address",
+                                                     msWalletAddressStr.c_str()));
+            HANDLE_ERROR(properties_set_string_value(builder_propertie, "dest_address",
+                                                     destionationAddressStr.c_str()));
+            HANDLE_ERROR(properties_set_big_int_value(builder_propertie, "amount", amount.get()));
         }
 
         TransactionPtr transaction;
         transaction_builder_make_transaction(builder.get(), reset_sp(transaction));
 
         {
-        Properties *properties = nullptr;
-        BigIntPtr nonce;
-        HANDLE_ERROR(make_big_int(nonceStr.c_str(), reset_sp(nonce)));
-        HANDLE_ERROR(transaction_get_properties(transaction.get(), &properties));
-        HANDLE_ERROR(properties_set_big_int_value(properties, "nonce", nonce.get()));
+            Properties *properties = nullptr;
+            BigIntPtr nonce;
+            HANDLE_ERROR(make_big_int(nonceStr.c_str(), reset_sp(nonce)));
+            HANDLE_ERROR(transaction_get_properties(transaction.get(), &properties));
+            HANDLE_ERROR(properties_set_big_int_value(properties, "nonce", nonce.get()));
         }
 
         {
-        Properties *fee = nullptr;
-        HANDLE_ERROR(transaction_get_fee(transaction.get(), &fee));
+            Properties *fee = nullptr;
+            HANDLE_ERROR(transaction_get_fee(transaction.get(), &fee));
 
-        BigIntPtr amount_gas_price;
-        HANDLE_ERROR(make_big_int(gasPriceStr.c_str(), reset_sp(amount_gas_price)));
-        HANDLE_ERROR(properties_set_big_int_value(fee, "gas_price", amount_gas_price.get()));
+            BigIntPtr amount_gas_price;
+            HANDLE_ERROR(make_big_int(gasPriceStr.c_str(), reset_sp(amount_gas_price)));
+            HANDLE_ERROR(properties_set_big_int_value(fee, "gas_price", amount_gas_price.get()));
 
-        BigIntPtr amount_gas_limit;
-        HANDLE_ERROR(make_big_int(gasLimitStr.c_str(), reset_sp(amount_gas_limit)));
-        HANDLE_ERROR(properties_set_big_int_value(fee, "gas_limit", amount_gas_limit.get()));
+            BigIntPtr amount_gas_limit;
+            HANDLE_ERROR(make_big_int(gasLimitStr.c_str(), reset_sp(amount_gas_limit)));
+            HANDLE_ERROR(properties_set_big_int_value(fee, "gas_limit", amount_gas_limit.get()));
         }
 
         BinaryDataPtr serialized;
@@ -1536,7 +1552,7 @@ Java_io_multy_util_NativeDataHelper_makeTransactionMultisigETHFromKey(JNIEnv *en
 
         jbyteArray resultArray = env->NewByteArray(serialized.get()->len);
         env->SetByteArrayRegion(resultArray, 0, serialized.get()->len,
-        reinterpret_cast<const jbyte *>(serialized->data));
+                                reinterpret_cast<const jbyte *>(serialized->data));
 
         return resultArray;
     } catch (std::exception const &e) {
@@ -1654,7 +1670,8 @@ Java_io_multy_util_NativeDataHelper_confirmTransactionMultisigETHFromKey(JNIEnv 
             HANDLE_ERROR(properties_set_string_value(builder_propertie, "wallet_address",
                                                      multisigWalletAddressStr.c_str()));
             HANDLE_ERROR(properties_set_string_value(builder_propertie, "action", "confirm"));
-            HANDLE_ERROR(properties_set_big_int_value(builder_propertie, "request_id", request.get()));
+            HANDLE_ERROR(
+                    properties_set_big_int_value(builder_propertie, "request_id", request.get()));
 
         }
 

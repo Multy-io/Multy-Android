@@ -24,10 +24,10 @@ import io.multy.model.entities.wallet.Wallet;
 import io.multy.storage.RealmManager;
 import io.multy.util.NativeDataHelper;
 import io.realm.RealmResults;
+import timber.log.Timber;
 
 public class MyWalletsAdapter extends RecyclerView.Adapter<MyWalletsAdapter.Holder> {
 
-    //    private final static DecimalFormat format = new DecimalFormat("#.##");
     private List<Wallet> data;
     private CurrenciesRate rates;
     private OnWalletClickListener listener;
@@ -47,11 +47,17 @@ public class MyWalletsAdapter extends RecyclerView.Adapter<MyWalletsAdapter.Hold
     @Override
     public void onBindViewHolder(@NonNull Holder holder, int position) {
         Wallet wallet = data.get(position);
-        holder.itemView.setOnClickListener(view -> listener.onWalletClick(wallet));
+        holder.itemView.setOnClickListener(view -> {
+            if (listener != null) {
+                listener.onWalletClick(wallet);
+            } else {
+                Timber.e("Forgot to set listener?");
+            }
+        });
+
         if (!wallet.isValid()) {
             return;
         }
-        holder.name.setText(wallet.getWalletName());
 
         if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.ETH.getValue() && wallet.isPending()) {
             holder.amount.setText(wallet.getEthWallet().getPendingBalanceLabel());
@@ -61,11 +67,10 @@ public class MyWalletsAdapter extends RecyclerView.Adapter<MyWalletsAdapter.Hold
             holder.amountFiat.setText(wallet.getFiatBalanceLabel(rates));
         }
 
+        holder.name.setText(wallet.getWalletName());
         holder.imageChain.setImageResource(wallet.getIconResourceId());
-        holder.imageChevron.setVisibility(wallet.getMultisigWallet() != null && wallet.getMultisigWallet().isHavePaymentRequests() ||
-                wallet.isSyncing() ? View.INVISIBLE : View.VISIBLE);
-        holder.imageWaiting.setVisibility(wallet.isMultisig() &&
-                wallet.getMultisigWallet().isHavePaymentRequests() ? View.VISIBLE : View.GONE);
+        holder.imageChevron.setVisibility(wallet.getMultisigWallet() != null && wallet.getMultisigWallet().isHavePaymentRequests() || wallet.isSyncing() ? View.INVISIBLE : View.VISIBLE);
+        holder.imageWaiting.setVisibility(wallet.isMultisig() && wallet.getMultisigWallet().isHavePaymentRequests() ? View.VISIBLE : View.GONE);
         holder.resync.setVisibility(wallet.isSyncing() ? View.VISIBLE : View.GONE);
         holder.imagePending.setVisibility(wallet.isPending() ? View.VISIBLE : View.GONE);
     }

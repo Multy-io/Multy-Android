@@ -35,56 +35,74 @@
                 android:paddingTop="10dp"
                 tools:showIn="io.multy.android.MainActivity">
 
-                <android.support.constraint.ConstraintLayout
+                <android.support.v7.widget.CardView
                     android:id="@+id/button_warn"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
-                    android:layout_marginEnd="16dp"
                     android:layout_marginStart="16dp"
-                    android:background="@drawable/shape_warn"
-                    android:clickable="true"
-                    android:elevation="4dp"
-                    android:focusable="true"
-                    android:foreground="?attr/selectableItemBackground"
-                    android:paddingBottom="8dp"
+                    android:layout_marginEnd="16dp"
                     android:paddingLeft="12dp"
-                    android:paddingRight="12dp"
                     android:paddingTop="8dp"
+                    android:paddingRight="12dp"
+                    android:paddingBottom="8dp"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="6dp"
+                    app:cardPreventCornerOverlap="true"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:visibility="visible">
 
-                    <ImageView
-                        android:id="@+id/image_warn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/ic_warninng_big"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        android:layout_width="0dp"
+                    <android.support.constraint.ConstraintLayout
+                        android:id="@+id/button_backup"
+                        android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginRight="8dp"
-                        android:gravity="center_vertical"
-                        android:letterSpacing="-0.02"
-                        android:text="@string/backup_is_not_executed"
-                        android:textColor="@android:color/white"
-                        app:layout_constraintLeft_toRightOf="@id/image_warn"
-                        app:layout_constraintRight_toLeftOf="@id/image_chevron" />
+                        android:background="@color/red_warn"
+                        android:clickable="true"
+                        android:elevation="4dp"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"
+                        android:paddingLeft="12dp"
+                        android:paddingTop="8dp"
+                        android:paddingRight="12dp"
+                        android:paddingBottom="8dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:visibility="visible">
 
-                    <ImageView
-                        android:id="@+id/image_chevron"
-                        android:layout_width="14dp"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/ic_chevron_white"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintRight_toRightOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        <ImageView
+                            android:id="@+id/image_warn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_warninng_big"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
 
-                </android.support.constraint.ConstraintLayout>
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="8dp"
+                            android:layout_marginRight="8dp"
+                            android:gravity="center_vertical"
+                            android:letterSpacing="-0.02"
+                            android:text="@string/backup_is_not_executed"
+                            android:textColor="@android:color/white"
+                            app:layout_constraintLeft_toRightOf="@id/image_warn"
+                            app:layout_constraintRight_toLeftOf="@id/image_chevron" />
+
+                        <ImageView
+                            android:id="@+id/image_chevron"
+                            android:layout_width="14dp"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_chevron_white"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                    </android.support.constraint.ConstraintLayout>
+
+                </android.support.v7.widget.CardView>
 
                 <ImageView
                     android:id="@+id/logo"
@@ -115,11 +133,11 @@
                     android:id="@+id/view_pager"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    android:layout_marginBottom="8dp"
                     android:layout_marginTop="2dp"
+                    android:layout_marginBottom="8dp"
                     android:clipToPadding="false"
-                    android:paddingEnd="16dp"
                     android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
                     app:layout_constraintBottom_toTopOf="@id/image_plus"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -142,8 +160,8 @@
                     android:id="@+id/image_dot_portfolio"
                     android:layout_width="8dp"
                     android:layout_height="8dp"
-                    android:layout_marginBottom="14dp"
                     android:layout_marginStart="12dp"
+                    android:layout_marginBottom="14dp"
                     app:layout_constraintBottom_toTopOf="@id/divider_gray"
                     app:layout_constraintEnd_toStartOf="@+id/image_dot_chart"
                     app:layout_constraintHorizontal_bias="0.5"
@@ -154,8 +172,8 @@
                     android:id="@+id/image_dot_chart"
                     android:layout_width="8dp"
                     android:layout_height="8dp"
-                    android:layout_marginBottom="14dp"
                     android:layout_marginStart="12dp"
+                    android:layout_marginBottom="14dp"
                     android:alpha="0.3"
                     app:layout_constraintBottom_toTopOf="@id/divider_gray"
                     app:layout_constraintEnd_toStartOf="@+id/image_plus"
@@ -167,8 +185,8 @@
                     android:id="@+id/image_plus"
                     android:layout_width="8dp"
                     android:layout_height="8dp"
-                    android:layout_marginBottom="14dp"
                     android:layout_marginStart="12dp"
+                    android:layout_marginBottom="14dp"
                     android:scaleType="center"
                     android:visibility="invisible"
                     app:layout_constraintBottom_toTopOf="@id/divider_gray"
@@ -181,8 +199,8 @@
                     android:id="@+id/divider_gray"
                     android:layout_width="0dp"
                     android:layout_height="0.5dp"
-                    android:layout_marginBottom="30dp"
                     android:layout_marginTop="30dp"
+                    android:layout_marginBottom="30dp"
                     android:background="@color/gray_divider"
                     app:layout_constraintTop_toBottomOf="@+id/logo_title" />
 
@@ -190,15 +208,15 @@
                     android:id="@+id/text_wallets"
                     android:layout_width="wrap_content"
                     android:layout_height="41dp"
-                    android:layout_marginEnd="221dp"
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="8dp"
+                    android:layout_marginEnd="221dp"
                     android:fontFamily="@font/montserrat"
                     android:gravity="center_vertical"
+                    android:lineSpacingExtra="25sp"
                     android:text="@string/my_wallets"
                     android:textColor="#87a1c5"
                     android:textSize="16sp"
-                    android:lineSpacingExtra="25sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
@@ -221,8 +239,8 @@
                 <include
                     android:id="@+id/container_create_restore"
                     layout="@layout/first_launch_create_restore"
-                    android:layout_width="@dimen/dp0"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
                     android:layout_marginTop="16dp"
                     android:visibility="gone"
                     app:layout_constraintLeft_toLeftOf="parent"
@@ -269,15 +287,15 @@
                     android:id="@+id/group_multy_logo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    tools:visibility="visible"
-                    app:constraint_referenced_ids="logo_title,logo" />
+                    app:constraint_referenced_ids="logo_title,logo"
+                    tools:visibility="visible" />
 
                 <android.support.constraint.Group
                     android:id="@+id/group_portfolio"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    tools:visibility="visible"
-                    app:constraint_referenced_ids="view_pager,image_dot_chart,image_dot_portfolio" />
+                    app:constraint_referenced_ids="view_pager,image_dot_chart,image_dot_portfolio"
+                    tools:visibility="visible" />
 
             </android.support.constraint.ConstraintLayout>
 
@@ -285,11 +303,11 @@
                 android:id="@+id/recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginBottom="8dp"
                 android:layout_marginTop="6dp"
-                tools:listitem="@layout/item_wallet"
+                android:layout_marginBottom="8dp"
+                android:overScrollMode="never"
                 tools:itemCount="3"
-                android:overScrollMode="never" />
+                tools:listitem="@layout/item_wallet" />
 
         </LinearLayout>
 

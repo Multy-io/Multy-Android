@@ -6,6 +6,7 @@
 
 package io.multy.ui.fragments.main;
 
+import android.annotation.SuppressLint;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
@@ -46,12 +47,14 @@ import io.multy.api.MultyApi;
 import io.multy.api.socket.SocketManager;
 import io.multy.model.entities.BrokenAddresses;
 import io.multy.model.entities.wallet.BtcWallet;
+import io.multy.model.entities.wallet.DiscoverableWalletInfo;
 import io.multy.model.entities.wallet.EthWallet;
 import io.multy.model.entities.wallet.MultisigWallet;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.entities.wallet.WalletPrivateKey;
 import io.multy.model.events.TransactionUpdateEvent;
+import io.multy.model.requests.DiscoverWalletRequest;
 import io.multy.model.responses.WalletsResponse;
 import io.multy.storage.AssetsDao;
 import io.multy.storage.RealmManager;
@@ -78,6 +81,9 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import timber.log.Timber;
+
+import static android.app.Activity.RESULT_OK;
 
 public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnWalletClickListener {
 
@@ -112,9 +118,11 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
 
     private AssetsViewModel viewModel;
     private MyWalletsAdapter walletsAdapter;
-    private boolean isViewsScroll = false;
     private SocketManager socketManager;
     private Wallet deepMagicWallet = null;
+    private PortfoliosAdapter portfoliosAdapter;
+    private boolean isViewsScroll = false;
+    private boolean checkMetamask = false;
 
     public static AssetsFragment newInstance() {
         return new AssetsFragment();
@@ -131,6 +139,7 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
         if (!viewModel.isFirstStart()) {
             Analytics.getInstance(getActivity()).logMainLaunch();
         }
+
         return view;
     }
 
@@ -167,12 +176,41 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == Constants.REQUEST_CODE_METAMUSK && resultCode == RESULT_OK) {
+            checkMetamask = true;
+        }
+
 //        if ((requestCode == Constants.REQUEST_CODE_RESTORE || requestCode == Constants.REQUEST_CODE_CREATE) && resultCode == Activity.RESULT_OK) {
         checkViewsVisibility();
         initialize();
         ((BaseActivity) getActivity()).subscribeToPushNotifications();
 //        }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void discoverWallets() {
+        List<DiscoverableWalletInfo> walletsToDiscover = new ArrayList<>(10);
+        for (int i = 0; i < 9; i++) {
+            try {
+                walletsToDiscover.add(new DiscoverableWalletInfo(0, i, NativeDataHelper.makeAccountAddress(RealmManager.getSettingsDao().getSeed().getSeed(),
+                        0, i, NativeDataHelper.Blockchain.ETH.getValue(), NativeDataHelper.NetworkId.ETH_MAIN_NET.getValue()), "Account " + i));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        MultyApi.INSTANCE.discoverWallets(new DiscoverWalletRequest(walletsToDiscover, NativeDataHelper.Blockchain.ETH.getValue(), NativeDataHelper.NetworkId.ETH_MAIN_NET.getValue())).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Timber.i("wallets discover " + response.isSuccessful());
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Timber.i("wallets discover " + t.getLocalizedMessage());
+                t.printStackTrace();
+            }
+        });
     }
 
     @Override
@@ -206,13 +244,20 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
         updateWallets();
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void initialize() {
+        portfoliosAdapter = new PortfoliosAdapter(getChildFragmentManager());
+
         if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
             if (RealmManager.getSettingsDao().getUserId() != null) {
                 viewModel.rates.observe(this, currenciesRate -> {
                     RealmManager.getSettingsDao().saveCurrenciesRate(currenciesRate, () -> {
                         if (walletsAdapter != null && !isViewsScroll) {
                             walletsAdapter.updateRates(currenciesRate);
+                        }
+
+                        if (portfoliosAdapter != null) {
+                            portfoliosAdapter.notifyDataSetChanged();
                         }
                     });
                 });
@@ -223,7 +268,7 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
             }
         }
         recyclerView.setNestedScrollingEnabled(false);
-        viewPager.setAdapter(new PortfoliosAdapter(getChildFragmentManager()));
+        viewPager.setAdapter(portfoliosAdapter);
         viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
@@ -250,12 +295,9 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
 
         if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
             WalletViewModel.saveDonateAddresses();
-            refreshLayout.setOnRefreshListener(() -> {
-                updateWallets();
-            });
+            refreshLayout.setOnRefreshListener(this::updateWallets);
         }
         refreshLayout.setOnChildScrollUpCallback((parent, child) -> recyclerView.getVisibility() != View.VISIBLE);
-
     }
 
     private void checkViewsVisibility() {
@@ -301,6 +343,7 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
     }
 
     private void updateWallets() {
+        viewModel.isLoading.setValue(true);
         MultyApi.INSTANCE.getWalletsVerbose().enqueue(new Callback<WalletsResponse>() {
             @Override
             public void onResponse(@NonNull Call<WalletsResponse> call, @NonNull Response<WalletsResponse> response) {
@@ -323,13 +366,19 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
 
                     createDeepMagicWallet();
                     detectBrokenWallets();
+                    if (checkMetamask) {
+                        checkMetamask = false;
+                        discoverWallets();
+                    }
                 }
                 refreshLayout.setRefreshing(false);
+                viewModel.isLoading.setValue(false);
             }
 
             @Override
             public void onFailure(Call<WalletsResponse> call, Throwable t) {
                 t.printStackTrace();
+                viewModel.isLoading.setValue(false);
             }
         });
     }
@@ -418,7 +467,6 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
                                         wallet.getIndex() == index) {
                                     getActivity().getIntent().putExtra(Constants.EXTRA_ADDRESS, wallet.getActiveAddress().getAddress());
                                     getActivity().getIntent().putExtra(Constants.EXTRA_WALLET_ID, wallet.getId());
-                                    Log.i("wise", "putting id " + wallet.getId());
                                     ((BaseActivity) getActivity()).dismissProgressDialog();
                                     deepMagicWallet = null;
                                     startMagicReceive();
@@ -536,7 +584,15 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
         startActivityForResult(new Intent(getActivity(), SeedActivity.class).addCategory(Constants.EXTRA_RESTORE), Constants.REQUEST_CODE_RESTORE);
     }
 
-    @OnClick(R.id.button_warn)
+    @OnClick(R.id.button_metamask)
+    void onClickMetamusk() {
+        Intent intent = new Intent(getActivity(), SeedActivity.class);
+        intent.addCategory(Constants.EXTRA_RESTORE);
+        intent.putExtra(Constants.EXTRA_METAMUSK, true);
+        startActivityForResult(intent, Constants.REQUEST_CODE_METAMUSK);
+    }
+
+    @OnClick(R.id.button_backup)
     void onClickWarn() {
         Analytics.getInstance(getActivity()).logMain(AnalyticsConstants.MAIN_BACKUP_SEED);
         startActivity(new Intent(getActivity(), SeedActivity.class));

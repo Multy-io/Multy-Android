@@ -7,12 +7,16 @@
 package io.multy.api;
 
 
+import java.util.List;
+
 import io.multy.model.entities.AuthEntity;
 import io.multy.model.entities.BrokenAddresses;
 import io.multy.model.entities.Estimation;
 import io.multy.model.entities.TransactionRequestEntity;
+import io.multy.model.entities.wallet.DiscoverableWalletInfo;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.requests.AddWalletAddressRequest;
+import io.multy.model.requests.DiscoverWalletRequest;
 import io.multy.model.requests.HdTransactionRequestEntity;
 import io.multy.model.requests.UpdateWalletNameRequest;
 import io.multy.model.requests.WalletRequest;
@@ -21,6 +25,7 @@ import io.multy.model.responses.AddressBalanceResponse;
 import io.multy.model.responses.AuthResponse;
 import io.multy.model.responses.ChainInfoResponse;
 import io.multy.model.responses.FeeRateResponse;
+import io.multy.model.responses.MessageResponse;
 import io.multy.model.responses.ServerConfigResponse;
 import io.multy.model.responses.SingleWalletResponse;
 import io.multy.model.responses.TestWalletResponse;
@@ -81,7 +86,7 @@ public interface ApiServiceInterface {
     Call<ResponseBody> sendRawTransaction(@Body TransactionRequestEntity transactionRequestEntity, @Path("currencyId") int currencyId);
 
     @POST("/api/v1/transaction/send")
-    Call<ResponseBody> sendHdTransaction(@Body HdTransactionRequestEntity transactionRequestEntity);
+    Call<MessageResponse> sendHdTransaction(@Body HdTransactionRequestEntity transactionRequestEntity);
 
     @GET("/api/v1/address/balance/{currencyId}/{address}")
     Call<AddressBalanceResponse> getBalanceByAddress(@Path("currencyId") int currencyId, @Path("address") String address);
@@ -133,4 +138,7 @@ public interface ApiServiceInterface {
 
     @POST("/api/v1/wallet/convert/broken")
     Call<ResponseBody> makeBroken(@Body BrokenAddresses brokenAddresses);
+
+    @POST("/api/v1/discover/wallets")
+    Call<ResponseBody> discoverWallets(@Body DiscoverWalletRequest request);
 }

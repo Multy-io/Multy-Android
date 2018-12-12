@@ -29,6 +29,9 @@ public final class Constants {
     public static final int POSITION_CONTACTS = 3;
     public static final int POSITION_SETTINGS = 4;
 
+    public static final int SEED_WORDS_DEFAULT = 15;
+    public static final int SEED_WORDS_METAMUSK = 12;
+
     public static final String SPAN_DIVIDER = ",";
     public static final String SPACE = " ";
     public static final String NEW_LINE = "\n";
@@ -63,6 +66,7 @@ public final class Constants {
     public static final String PREF_DRAGONS_URL = "PREF_DRAGONS_URL";
     public static final String PREF_URL_CURRENCY_ID = "PREF_URL_CURRENCY_ID";
     public static final String PREF_URL_NETWORK_ID = "PREF_URL_NETWORK_ID";
+    public static final String PREF_METAMASK_MODE = "PREF_METAMASK_MODE";
 
     public static final int REQUEST_CODE_SET_CHAIN = 560;
     public static final int REQUEST_CODE_SET_GAS = 560;
@@ -93,6 +97,7 @@ public final class Constants {
     public static final String EXTRA_DEEP_MAGIC = "EXTRA_DEEP_MAGIC";
     public static final String EXTRA_DEEP_BROWSER = "EXTRA_DEEP_BROWSER";
     public static final String EXTRA_DEEP_SEND = "EXTRA_DEEP_SEND";
+    public static final String EXTRA_METAMUSK = "EXTRA_METAMUSK";
 
     public static final String DEEP_LINK_QR_CODE = "QR_CODE";
     public static final String DEEP_LINK_ADDRESS = "address";
@@ -119,6 +124,7 @@ public final class Constants {
 
     public static final int REQUEST_CODE_RESTORE = 22;
     public static final int REQUEST_CODE_CREATE = 22;
+    public static final int REQUEST_CODE_METAMUSK = 911;
 
     public static final String BLOCKCHAIN_TEST_INFO_PATH = "https://testnet.blockchain.info/tx/";
     public static final String BLOCKCHAIN_MAIN_INFO_PATH = "https://blockchain.info/tx/";
@@ -224,4 +230,7 @@ public final class Constants {
             "last_magisk.log",
             "superuser"
     };
+    public static final String SEED_TYPE = "SEED_TYPE";
+    public static final int SEED_TYPE_MULTY = 0;
+    public static final int SEED_TYPE_METAMASK = 1;
 }

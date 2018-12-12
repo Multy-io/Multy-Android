@@ -43,6 +43,7 @@ import io.multy.model.entities.wallet.Owner;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.entities.wallet.WalletPrivateKey;
 import io.multy.model.requests.HdTransactionRequestEntity;
+import io.multy.model.responses.MessageResponse;
 import io.multy.storage.RealmManager;
 import io.multy.ui.adapters.OwnersAdapter;
 import io.multy.ui.fragments.MultisigSettingsFragment;
@@ -401,9 +402,9 @@ public class CreateMultiSigActivity extends BaseActivity {
 
                 Timber.i("hex=%s", hex);
                 showProgressDialog();
-                MultyApi.INSTANCE.sendHdTransaction(entity).enqueue(new Callback<ResponseBody>() {
+                MultyApi.INSTANCE.sendHdTransaction(entity).enqueue(new Callback<MessageResponse>() {
                     @Override
-                    public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                    public void onResponse(@NonNull Call<MessageResponse> call, @NonNull Response<MessageResponse> response) {
                         dismissProgressDialog();
                         if (response.isSuccessful()) {
                             CompleteDialogFragment.newInstance(multisigWallet.getCurrencyId()).show(getSupportFragmentManager(), "");
@@ -422,7 +423,7 @@ public class CreateMultiSigActivity extends BaseActivity {
                     }
 
                     @Override
-                    public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                    public void onFailure(@NonNull Call<MessageResponse> call, @NonNull Throwable t) {
                         dismissProgressDialog();
                         t.printStackTrace();
                         onError(getString(R.string.something_went_wrong));

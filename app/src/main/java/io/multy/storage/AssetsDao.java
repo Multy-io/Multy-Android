@@ -53,6 +53,10 @@ public class AssetsDao {
                             if (walletAddress.getOutputs() != null) {
                                 walletAddress.getOutputs().deleteAllFromRealm();
                             }
+
+                            if (walletAddress.getErc20Balance() != null) {
+                                walletAddress.getErc20Balance().deleteAllFromRealm();
+                            }
                         }
 
                         ((RealmList<WalletAddress>) toDelete.getAddresses()).deleteAllFromRealm();

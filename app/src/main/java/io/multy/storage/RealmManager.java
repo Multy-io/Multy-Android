@@ -42,6 +42,10 @@ public class RealmManager {
         }
     }
 
+    public static Realm get() {
+        return realm;
+    }
+
     public static AssetsDao getAssetsDao() {
         isRealmAvailable();
         return new AssetsDao(realm);

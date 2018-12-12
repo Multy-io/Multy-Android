@@ -9,6 +9,7 @@ package io.multy.model.entities.wallet;
 
 import com.google.gson.annotations.SerializedName;
 
+import io.multy.model.entities.Erc20Balance;
 import io.multy.model.entities.Output;
 import io.realm.RealmList;
 import io.realm.RealmObject;
@@ -29,6 +30,8 @@ public class WalletAddress extends RealmObject {
     private RealmList<Output> outputs;
     @SerializedName("lastactiontime")
     private long date;
+    @SerializedName("erc20balances")
+    private RealmList<Erc20Balance> erc20Balance;
 
     public WalletAddress() {
     }
@@ -36,6 +39,14 @@ public class WalletAddress extends RealmObject {
     public WalletAddress(int index, String address) {
         this.index = index;
         this.address = address;
+    }
+
+    public RealmList<Erc20Balance> getErc20Balance() {
+        return erc20Balance;
+    }
+
+    public void setErc20Balance(RealmList<Erc20Balance> erc20Balance) {
+        this.erc20Balance = erc20Balance;
     }
 
     public int getIndex() {
@@ -78,6 +89,7 @@ public class WalletAddress extends RealmObject {
         id = address == null ? "" : address + String.valueOf(currencyId) + String.valueOf(networkId);
     }
 
-    public static String getAddressId(String address, int currencyId, int networkId) {return address + String.valueOf(currencyId) + String.valueOf(networkId);
+    public static String getAddressId(String address, int currencyId, int networkId) {
+        return address + String.valueOf(currencyId) + String.valueOf(networkId);
     }
 }

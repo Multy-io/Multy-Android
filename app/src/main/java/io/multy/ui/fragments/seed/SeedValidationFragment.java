@@ -63,21 +63,16 @@ public class SeedValidationFragment extends BaseSeedFragment {
 
     @BindView(R.id.input_word)
     EditText inputWord;
-
     @BindView(R.id.button_next)
     TextView buttonNext;
-
     @BindView(R.id.text_counter)
     TextView textViewCounter;
-
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
-
     @BindView(R.id.text_title)
     TextView textViewTitle;
 
     private String[] seedWords;
-
     private SeedViewModel seedModel;
     private StringBuilder phrase = new StringBuilder();
     private int count = 1;
@@ -105,10 +100,10 @@ public class SeedValidationFragment extends BaseSeedFragment {
             maxCount = seedModel.phrase.getValue().size() * 3;
             refreshCounter();
         } else {
-            maxCount = 15;
+            maxCount = getActivity().getIntent().hasExtra(Constants.EXTRA_METAMUSK) ? Constants.SEED_WORDS_METAMUSK : Constants.SEED_WORDS_DEFAULT;
             count = 1;
             phrase.setLength(0);
-            textViewTitle.setText(R.string.restore_multy);
+            textViewTitle.setText(getActivity().getIntent().hasExtra(Constants.EXTRA_METAMUSK) ? R.string.import_meta_mask : R.string.restore_multy);
             refreshCounter();
         }
         inputWord.requestFocus();
@@ -275,6 +270,9 @@ public class SeedValidationFragment extends BaseSeedFragment {
                         ServerConfigResponse serverConfig = EventBus.getDefault().removeStickyEvent(ServerConfigResponse.class);
                         if (serverConfig != null) {
                             settingsDao.saveDonation(serverConfig.getDonates());
+                            settingsDao.saveDonation(serverConfig.getDonates());
+                            settingsDao.saveMultisigFactory(serverConfig.getMultisigFactory());
+//                            settingsDao.saveErc20Tokens(serverConfig.getTokenList());
                         }
                         settingsDao.saveMultisigFactory(serverConfig.getMultisigFactory());
                         RealmManager.close();

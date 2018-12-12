@@ -10,38 +10,40 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
+    <ImageButton
         android:id="@+id/image_coin"
         android:layout_width="36dp"
         android:layout_height="36dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        app:layout_constraintLeft_toLeftOf="parent"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:src="@drawable/ic_eth_medium_icon" />
 
-    <TextView
-        android:id="@+id/text_address"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginEnd="16dp"
-        android:background="?selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true"
-        android:gravity="center"
-        app:layout_constraintBottom_toBottomOf="@id/image_coin"
-        app:layout_constraintLeft_toRightOf="@id/image_coin"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@id/image_coin" />
-
     <EditText
         android:id="@+id/input_address"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:imeOptions="actionSearch"
         android:inputType="textUri"
+        app:layout_constraintLeft_toRightOf="@id/image_back"
+        app:layout_constraintRight_toLeftOf="@id/image_coin"
         app:layout_constraintTop_toBottomOf="@id/text_address" />
+
+    <ImageButton
+        android:id="@+id/image_back"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="?attr/selectableItemBackground"
+        android:src="@drawable/ic_back_arrow_left"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh_layout"

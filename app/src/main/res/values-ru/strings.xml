@@ -316,4 +316,11 @@
     <string name="about_imported">Обратите внимание, что импортированные кошельки нельзя восстановить из seed фразы на другом устройстве. Вы должны сделать резервную копию своего личного ключа, чтобы защитить свои средства, поэтому вы можете импортировать его позже на другое устройство.</string>
     <string name="enter_sum_too_much">Вы пытаетесь ввести сумму больше, чем у вас есть на счету</string>
     <string name="browser">Браузер</string>
+    <string name="show_tokens">Показать токены</string>
+    <string name="import_meta_mask">Войти в Metamask</string>
+    <string name="transaction_history">История транзакций</string>
+    <string name="tokens_overview">Токены</string>
+    <string name="metamask_phrase">Введите вашу seed-фразу (12 слов), чтобы использовать ваши кошельки Metamask с Multy.</string>
+    <string name="import_meta_mask_description">Мы не храним вашу фразу в виде обычного текста и не передаем его, ни каких-либо частных и публичных ключей ваших кошельков в любом месте, они остаются на устройстве зашифрованными и безопасными и используются только для подписания транзакций, которые вы явно запрашиваете Multy для выполнения.</string>
+
 </resources>

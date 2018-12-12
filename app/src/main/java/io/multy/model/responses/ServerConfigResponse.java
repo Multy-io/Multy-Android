@@ -26,6 +26,10 @@ public class ServerConfigResponse {
     @SerializedName("multisigfactory")
     private MultisigFactory multisigFactory;
 
+//    @SerializedName("erc20tokenlist")
+//    private ArrayList<Erc20Token> tokens;
+
+
     public MultisigFactory getMultisigFactory() {
         return multisigFactory;
     }
@@ -41,6 +45,10 @@ public class ServerConfigResponse {
     public BrowserDefault getBrouserDefault() {
         return brouserDefault;
     }
+
+//    public ArrayList<Erc20Token> getTokenList() {
+//        return tokens;
+//    }
 
     public class AndroidConfig {
         @SerializedName("hard")

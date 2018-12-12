@@ -9,13 +9,12 @@ package io.multy.util;
 import com.samwolfand.oneprefs.Prefs;
 
 import io.multy.api.socket.CurrenciesRate;
+import io.multy.model.entities.Erc20Balance;
 import io.multy.model.entities.wallet.EthWallet;
 import io.multy.model.entities.wallet.RecentAddress;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.entities.wallet.WalletAddress;
-import io.multy.storage.RealmManager;
 import io.realm.DynamicRealm;
-import io.realm.DynamicRealmObject;
 import io.realm.FieldAttribute;
 import io.realm.RealmObjectSchema;
 import io.realm.RealmSchema;
@@ -117,6 +116,26 @@ public class MultyRealmMigration implements io.realm.RealmMigration {
                 walletSchema.addField("visible", boolean.class);
                 walletSchema.addField("brokenStatus", int.class);
                 Prefs.putBoolean(Constants.PREF_DETECT_BROKEN, true);
+            }
+            case 8: {
+//                - Class 'Erc20Balance' has been added.
+//                2018-12-03 16:04:31.599 12293-12293/io.multy.debug W/System.err: - Property 'WalletAddress.erc20Balance' has been added.
+                RealmObjectSchema erc20Balance = schema.create("Erc20Balance");
+                erc20Balance.addField("address", String.class, FieldAttribute.PRIMARY_KEY);
+                erc20Balance.addField("balance", String.class);
+                RealmObjectSchema walletAddress = schema.get("WalletAddress");
+                walletAddress.addRealmListField("erc20Balance", erc20Balance);
+
+//                RealmObjectSchema erc20schema = schema.create(Erc20Balance.class.getSimpleName());
+//                erc20schema.addField("address", String.class, FieldAttribute.PRIMARY_KEY);
+//                erc20schema.addField("balance", String.class);
+//                RealmObjectSchema erc20token = schema.create(Erc20Token.class.getSimpleName());
+//                erc20schema.addField("contractAddress", String.class, FieldAttribute.PRIMARY_KEY);
+//                erc20schema.addField("ticker", String.class);
+//                erc20schema.addField("name", String.class);
+//
+//                RealmObjectSchema walletAddressSchema = schema.get(WalletAddress.class.getSimpleName());
+//                walletAddressSchema.addRealmListField("erc20Balance", erc20schema);
             }
         }
     }

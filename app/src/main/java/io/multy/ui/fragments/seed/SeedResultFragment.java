@@ -74,6 +74,10 @@ public class SeedResultFragment extends BaseSeedFragment {
             Analytics.getInstance(getActivity()).logSeedSuccessLaunch();
             if (getActivity().getIntent().hasCategory(Constants.EXTRA_RESTORE)) {
                 textViewTitle.setText(R.string.seed_congrats_restore);
+                if (getActivity().getIntent().hasExtra(Constants.EXTRA_METAMUSK)) {
+                    Prefs.putBoolean(Constants.PREF_METAMASK_MODE, true);
+                    Prefs.putInt(Constants.SEED_TYPE, Constants.SEED_TYPE_METAMASK);
+                }
                 if (!Prefs.getBoolean(Constants.PREF_BACKUP_SEED)) {
                     Prefs.putBoolean(Constants.PREF_BACKUP_SEED, true);
                 }

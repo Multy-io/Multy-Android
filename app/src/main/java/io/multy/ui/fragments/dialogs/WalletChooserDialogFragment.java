@@ -150,13 +150,13 @@ public class WalletChooserDialogFragment extends DialogFragment {
                 if (walletRealmObject.isMultisig()) {
                     continue;
                 }
+
                 if (walletRealmObject.isPayable() &&
                         Long.valueOf(walletRealmObject.getAvailableBalance()) > 150 &&
                         walletRealmObject.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()) {
                     if (isMainNet) {
                         if (walletRealmObject.getNetworkId() == NativeDataHelper.NetworkId.MAIN_NET.getValue()) {
                             wallets.add(walletRealmObject);
-
                         }
                     } else {
                         wallets.add(walletRealmObject);

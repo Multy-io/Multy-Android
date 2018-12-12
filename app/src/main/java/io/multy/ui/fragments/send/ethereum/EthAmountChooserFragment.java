@@ -192,8 +192,8 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
         final double balanceEth = CryptoFormatUtils.weiToEth(spendableWeiString);
         double spendableEth = /*switcher.isChecked() ? (balanceEth - transactionPriceEth) : */balanceEth;
 
-        textSpendable.setText(String.format(getString(R.string.available_amount), isAmountSwapped ? CryptoFormatUtils.ethToUsd(spendableEth) + " " + CurrencyCode.USD :
-        (CryptoFormatUtils.FORMAT_ETH.format(spendableEth) + " " + CurrencyCode.ETH)));
+        textSpendable.setText(String.format(getString(R.string.available_amount), isAmountSwapped ?
+                CryptoFormatUtils.ethToUsd(spendableEth) + " " + CurrencyCode.USD : (CryptoFormatUtils.FORMAT_ETH.format(spendableEth) + " " + CurrencyCode.ETH)));
         return spendableEth;
     }
 

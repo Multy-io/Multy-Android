@@ -9,10 +9,14 @@ package io.multy.api;
 
 import android.content.Context;
 
+import java.util.List;
+
 import io.multy.model.entities.BrokenAddresses;
 import io.multy.model.entities.Estimation;
+import io.multy.model.entities.wallet.DiscoverableWalletInfo;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.requests.AddWalletAddressRequest;
+import io.multy.model.requests.DiscoverWalletRequest;
 import io.multy.model.requests.HdTransactionRequestEntity;
 import io.multy.model.requests.UpdateWalletNameRequest;
 import io.multy.model.requests.WalletRequest;
@@ -20,6 +24,7 @@ import io.multy.model.responses.AccountsResponse;
 import io.multy.model.responses.AuthResponse;
 import io.multy.model.responses.ChainInfoResponse;
 import io.multy.model.responses.FeeRateResponse;
+import io.multy.model.responses.MessageResponse;
 import io.multy.model.responses.ServerConfigResponse;
 import io.multy.model.responses.SingleWalletResponse;
 import io.multy.model.responses.TestWalletResponse;
@@ -29,6 +34,7 @@ import io.multy.model.responses.WalletsResponse;
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.http.Body;
 
 public interface MultyApiInterface {
 
@@ -78,7 +84,7 @@ public interface MultyApiInterface {
 
     Call<Estimation> getEstimations(String msWalletAddress);
 
-    Call<ResponseBody> sendHdTransaction(HdTransactionRequestEntity transactionRequestEntity);
+    Call<MessageResponse> sendHdTransaction(HdTransactionRequestEntity transactionRequestEntity);
 
     Call<TestWalletResponse> testWalletVerbose();
 
@@ -89,4 +95,6 @@ public interface MultyApiInterface {
     Call<ResponseBody> resyncWallet(int currencyId, int networkId, int walletIndex, int assetType);
 
     Call<ResponseBody> makeBroken(BrokenAddresses brokenAddresses);
+
+    Call<ResponseBody> discoverWallets(DiscoverWalletRequest walletInfoList);
 }
