@@ -34,6 +34,7 @@ import io.multy.model.entities.TransactionHistory;
 import io.multy.model.entities.TransactionOwner;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.entities.wallet.WalletAddress;
+import io.multy.model.responses.EthplorerResponse;
 import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.asset.EthTransactionInfoFragment;
 import io.multy.ui.fragments.asset.MultisigTransactionInfoFragment;
@@ -446,8 +447,20 @@ public class EthTransactionsAdapter extends RecyclerView.Adapter<RecyclerView.Vi
     }
 
     public void setTransactions(List<TransactionHistory> transactions) {
+        Collections.sort(transactions, (transactionHistory, t1) -> Long.compare(t1.getMempoolTime(), transactionHistory.getMempoolTime()));
         this.transactionHistoryList = transactions;
+        Collections.sort(this.transactionHistoryList, (history1, history2) -> {
+            long compareTime1 = history1.getBlockTime() < 1 ? history1.getMempoolTime() : history1.getBlockTime();
+            long compareTime2 = history2.getBlockTime() < 1 ? history2.getMempoolTime() : history2.getBlockTime();
+            return Long.compare(compareTime2, compareTime1);
+        });
+
         notifyDataSetChanged();
+    }
+
+    public void setTransactions(List<TransactionHistory> transactions, long walletId) {
+        this.walletId = walletId;
+        setTransactions(transactions);
     }
 
     static class Holder extends RecyclerView.ViewHolder {

@@ -9,6 +9,8 @@ package io.multy.util;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 
+import com.samwolfand.oneprefs.Prefs;
+
 public class DeviceInfoHelper {
 
 //    private static String getSystemProperty(String name) throws Exception {
@@ -32,5 +34,9 @@ public class DeviceInfoHelper {
 
     public static boolean isVersionDebug(Context context) {
         return (context.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
+    }
+
+    public static int getSeedPhraseType() {
+        return Prefs.getInt(Constants.SEED_TYPE, Constants.SEED_TYPE_MULTY);
     }
 }

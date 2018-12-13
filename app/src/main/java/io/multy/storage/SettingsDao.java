@@ -252,4 +252,16 @@ public class SettingsDao {
                         realm.where(ContactAddress.class).equalTo(ContactAddress.ADDRESS, address).findAll().deleteAllFromRealm(),
                 onSuccess, Throwable::printStackTrace);
     }
+
+//    public void saveErc20Tokens(ArrayList<Erc20Token> tokens) {
+//        realm.executeTransactionAsync(realm -> {
+//            realm.where(Erc20Token.class).findAll().deleteAllFromRealm();
+//            realm.insertOrUpdate(tokens);
+//        });
+//    }
+//
+//    @Nullable
+//    public Erc20Token getErc20TokenInfo(String contractAddress) {
+//        return realm.where(Erc20Token.class).equalTo("contractAddress", contractAddress).findFirst();
+//    }
 }

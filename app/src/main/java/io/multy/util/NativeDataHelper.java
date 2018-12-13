@@ -43,6 +43,19 @@ public class NativeDataHelper {
             return value;
         }
 
+        public String getName() {
+            switch (getValue()) {
+                case 0:
+                    return "Bitcoin";
+                case 60:
+                    return "Ethereum";
+                case 194:
+                    return "EOS";
+                default:
+                    return "Unknown";
+            }
+        }
+
         private static Map map = new HashMap<>();
 
         static {
@@ -172,4 +185,6 @@ public class NativeDataHelper {
     public static native String bruteForceAddress(byte[] seed, int walletIndex, int adressIndex, int blockChain, int networkType, String address);
 
     public static native String ethereumPersonalSign(String key, String message);
+
+    public static native String makeTransactionJSONAPI(String json);
 }

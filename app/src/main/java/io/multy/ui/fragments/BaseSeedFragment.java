@@ -20,6 +20,7 @@ import io.multy.ui.fragments.seed.SeedFragment;
 import io.multy.ui.fragments.seed.SeedResultFragment;
 import io.multy.ui.fragments.seed.SeedValidationFragment;
 import io.multy.util.BrickView;
+import io.multy.util.Constants;
 import io.multy.util.RandomSpanWidthLookup;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
@@ -27,7 +28,7 @@ import io.multy.util.analytics.AnalyticsConstants;
 
 public class BaseSeedFragment extends BaseFragment {
 
-//    private static final String TAG = BaseSeedFragment.class.getSimpleName();
+    //    private static final String TAG = BaseSeedFragment.class.getSimpleName();
     public static final int BRICK_BLUE = 0;
     public static final int BRICK_RED = 1;
     public static final int BRICK_GREEN = 2;
@@ -41,7 +42,8 @@ public class BaseSeedFragment extends BaseFragment {
         final int spanCount = 16 * 8; //total cell count * span per item
         layoutManager = new GridLayoutManager(getActivity(), spanCount);
         layoutManager.setSpanSizeLookup(new RandomSpanWidthLookup(spanCount));
-        adapter = new BricksAdapter();
+        int count = getActivity().getIntent().hasExtra(Constants.EXTRA_METAMUSK) ? Constants.SEED_WORDS_METAMUSK : Constants.SEED_WORDS_DEFAULT;
+        adapter = new BricksAdapter(count);
 
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);

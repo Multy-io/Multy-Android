@@ -66,6 +66,7 @@ import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.entities.wallet.WalletPrivateKey;
 import io.multy.model.requests.HdTransactionRequestEntity;
 import io.multy.model.responses.FeeRateResponse;
+import io.multy.model.responses.MessageResponse;
 import io.multy.model.responses.WalletsResponse;
 import io.multy.storage.RealmManager;
 import io.multy.ui.adapters.MyWalletPagerAdapter;
@@ -490,7 +491,7 @@ public class MagicSendActivity extends BaseActivity {
         handler.postDelayed(updateReceiversAction, UPDATE_PERIOD / 5);
     }
 
-    private boolean send(Wallet wallet, String gasPrice, @Nullable String estimation) throws JniException {
+    private boolean send(Wallet wallet, String feeRate, @Nullable String estimation) throws JniException {
         final byte[] seed = RealmManager.getSettingsDao().getSeed().getSeed();
         FastReceiver receiver = receiversPagerAdapter.getReceiver(pagerRequests.getCurrentItem());
         String changeAddress = "";
@@ -509,7 +510,7 @@ public class MagicSendActivity extends BaseActivity {
                         seed,
                         wallet.getIndex(),
                         receiver.getAmount(),
-                        "10",
+                        feeRate,
                         "0",
                         receiver.getAddress(),
                         changeAddress,
@@ -531,7 +532,7 @@ public class MagicSendActivity extends BaseActivity {
                                 wallet.getActiveAddress().getAddress(),
                                 receiver.getAmount(),
                                 receiver.getAddress(),
-                                estimation, gasPrice, linkedWallet.getEthWallet().getNonce());
+                                estimation, feeRate, linkedWallet.getEthWallet().getNonce());
                     } else {
                         transaction = NativeDataHelper.makeTransactionMultisigETH(
                                 seed,
@@ -544,7 +545,7 @@ public class MagicSendActivity extends BaseActivity {
                                 receiver.getAmount(),
                                 receiver.getAddress(),
                                 estimation,
-                                gasPrice,
+                                feeRate,
                                 linkedWallet.getEthWallet().getNonce());
                     }
                 } else {
@@ -559,7 +560,7 @@ public class MagicSendActivity extends BaseActivity {
                                 receiver.getAmount(),
                                 receiver.getAddress(),
                                 estimation == null ? Constants.GAS_LIMIT_DEFAULT : estimation,
-                                gasPrice,
+                                feeRate,
                                 wallet.getEthWallet().getNonce());
                     } else {
                         transaction = NativeDataHelper.makeTransactionETH(
@@ -572,7 +573,7 @@ public class MagicSendActivity extends BaseActivity {
                                 receiver.getAmount(),
                                 receiver.getAddress(),
                                 estimation == null ? Constants.GAS_LIMIT_DEFAULT : estimation,
-                                gasPrice,
+                                feeRate,
                                 wallet.getEthWallet().getNonce());
                     }
                 }
@@ -593,9 +594,9 @@ public class MagicSendActivity extends BaseActivity {
 
         Timber.i("hex=%s", hex);
         Timber.i("change address=%s", changeAddress);
-        MultyApi.INSTANCE.sendHdTransaction(entity).enqueue(new Callback<ResponseBody>() {
+        MultyApi.INSTANCE.sendHdTransaction(entity).enqueue(new Callback<MessageResponse>() {
             @Override
-            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+            public void onResponse(@NonNull Call<MessageResponse> call, @NonNull Response<MessageResponse> response) {
                 if (response.isSuccessful()) {
                     showSuccess();
                 } else {
@@ -612,7 +613,7 @@ public class MagicSendActivity extends BaseActivity {
             }
 
             @Override
-            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<MessageResponse> call, @NonNull Throwable t) {
                 t.printStackTrace();
                 showError((Exception) t);
             }

@@ -43,6 +43,7 @@ import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.requests.HdTransactionRequestEntity;
 import io.multy.model.responses.FeeRateResponse;
+import io.multy.model.responses.MessageResponse;
 import io.multy.storage.RealmManager;
 import io.multy.ui.adapters.MyFeeAdapter;
 import io.multy.ui.fragments.dialogs.CompleteDialogFragment;
@@ -274,9 +275,9 @@ public class DonationFragment extends BaseFragment {
                     fee, "0", receiverAddress, changeAddress, donationAddress, false);
 
             MultyApi.INSTANCE.sendHdTransaction(new HdTransactionRequestEntity(wallet.getCurrencyId(), wallet.getNetworkId(),
-                    new HdTransactionRequestEntity.Payload(changeAddress, addressesSize, wallet.getIndex(), byteArrayToHex(transactionHex)))).enqueue(new Callback<ResponseBody>() {
+                    new HdTransactionRequestEntity.Payload(changeAddress, addressesSize, wallet.getIndex(), byteArrayToHex(transactionHex)))).enqueue(new Callback<MessageResponse>() {
                 @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                public void onResponse(Call<MessageResponse> call, Response<MessageResponse> response) {
                     if (response.isSuccessful()) {
                         viewModel.isLoading.postValue(false);
                         CompleteDialogFragment completeDialog = new CompleteDialogFragment();
@@ -293,7 +294,7 @@ public class DonationFragment extends BaseFragment {
                 }
 
                 @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                public void onFailure(Call<MessageResponse> call, Throwable t) {
                     viewModel.isLoading.postValue(false);
                     t.printStackTrace();
                     showError();

@@ -11,7 +11,6 @@ import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.OnLifecycleEvent;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -25,7 +24,6 @@ import android.view.inputmethod.EditorInfo;
 import android.webkit.WebChromeClient;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
@@ -41,11 +39,13 @@ import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.requests.HdTransactionRequestEntity;
+import io.multy.model.responses.MessageResponse;
 import io.multy.model.responses.WalletsResponse;
 import io.multy.storage.RealmManager;
 import io.multy.ui.MyWebView;
 import io.multy.ui.activities.MainActivity;
 import io.multy.ui.fragments.dialogs.WalletChooserDialogFragment;
+import io.multy.ui.fragments.dialogs.WalletSelectorDialog;
 import io.multy.ui.fragments.send.SendSummaryFragment;
 import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
@@ -72,12 +72,10 @@ public class Web3Fragment extends BaseFragment {
     SwipeRefreshLayout refreshLayout;
     @BindView(R.id.image_coin)
     ImageView imageCoin;
-    @BindView(R.id.text_address)
-    TextView textAddress;
     @BindView(R.id.input_address)
     EditText inputAddress;
 
-    private String dappUrl = "https://kyber.network/swap";
+    private String dappUrl = "https://kyber.network/swap/";
     private WalletViewModel viewModel;
 
     public static Web3Fragment newInstance() {
@@ -278,20 +276,18 @@ public class Web3Fragment extends BaseFragment {
 
     private void showChooser(final int currencyId, final int networkId) {
         if (getFragmentManager() != null) {
-            WalletChooserDialogFragment dialog;
-            if (currencyId != -1 && networkId != -1) {
-                dialog = WalletChooserDialogFragment.getInstance(currencyId, networkId);
-            } else if (dappUrl.equals(Prefs.getString(Constants.PREF_DRAGONS_URL, "no value")) &&
-                    Prefs.getInt(Constants.PREF_URL_CURRENCY_ID, -1) != -1 &&
-                    Prefs.getInt(Constants.PREF_URL_NETWORK_ID, -1) != -1) {
-                dialog = WalletChooserDialogFragment.getInstance(Prefs.getInt(Constants.PREF_URL_CURRENCY_ID), Prefs.getInt(Constants.PREF_URL_NETWORK_ID));
-            } else if (currencyId != -1) {
-                dialog = WalletChooserDialogFragment.getInstance(currencyId);
-            } else {
-                dialog = WalletChooserDialogFragment.getInstance();
-            }
-            dialog.exceptMultisig(true);
-            dialog.setMainNet(true);
+            WalletSelectorDialog dialog = new WalletSelectorDialog.WalletSelectorDialogBuilder()
+                    .setBlockChainId(currencyId)
+//                    .setNetworkId(networkId)
+                    .setExceptMultisig(true)
+                    .setOnlyPayableWallets(false)
+                    .setIsMainNetworkOnly(false)
+                    .setListener(wallet -> {
+                        Timber.i("Wallet selected. Is valid? " + wallet.isValid());
+                        setWallet(wallet.getId());
+                        loadUrl();
+                    })
+                    .create();
             dialog.getLifecycle().addObserver(new LifecycleObserver() {
                 @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
                 void onDestroy() {
@@ -301,7 +297,7 @@ public class Web3Fragment extends BaseFragment {
                     }
                 }
             });
-            dialog.setTargetFragment(this, WalletChooserDialogFragment.REQUEST_WALLET_ID);
+            Timber.i("Showing selector dialog");
             dialog.show(getFragmentManager(), WalletChooserDialogFragment.TAG);
         }
     }
@@ -362,14 +358,17 @@ public class Web3Fragment extends BaseFragment {
 
                         Timber.i("hex=%s", hex);
 
-                        webView.onSignTransactionSuccessful(transaction, hex);
+//                        webView.onSignTransactionSuccessful(transaction, hex);
 
-                        MultyApi.INSTANCE.sendHdTransaction(entity).enqueue(new Callback<ResponseBody>() {
+                        MultyApi.INSTANCE.sendHdTransaction(entity).enqueue(new Callback<MessageResponse>() {
                             @Override
-                            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                            public void onResponse(@NonNull Call<MessageResponse> call, @NonNull Response<MessageResponse> response) {
                                 if (response.isSuccessful()) {
                                     Timber.i("BUYING SUCCESS");
-                                    webView.postDelayed(() -> webView.onSignTransactionSuccessful(transaction, hex), 30000);
+                                    webView.postDelayed(() -> webView.onSignTransactionSuccessful(transaction, hex), 1000);
+                                    webView.postDelayed(() -> {
+                                        webView.getTransactionReceiptMined(response.body().getMessage(), 500);
+                                    }, 1500);
                                 } else {
                                     Timber.i("BUYING FAIL");
                                     webView.onSignError(transaction, response.message());
@@ -377,7 +376,7 @@ public class Web3Fragment extends BaseFragment {
                             }
 
                             @Override
-                            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                            public void onFailure(@NonNull Call<MessageResponse> call, @NonNull Throwable t) {
                                 t.printStackTrace();
                                 Timber.i("BUYING FAIL");
                                 webView.onSignError(transaction, t.getMessage());
@@ -389,12 +388,7 @@ public class Web3Fragment extends BaseFragment {
                         webView.onSignError(transaction, e.getMessage());
                     }
                 });
-                alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Deny", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        webView.onSignError(transaction, "Canceled");
-                    }
-                });
+                alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Deny", (dialog, which) -> webView.onSignError(transaction, "Canceled"));
                 alertDialog.setCancelable(false);
                 alertDialog.setCanceledOnTouchOutside(false);
                 alertDialog.show();
@@ -411,12 +405,15 @@ public class Web3Fragment extends BaseFragment {
         Wallet wallet = viewModel.getWallet(walletId);
         fillWalletInfo(wallet);
         webView.setWalletAddress(new Address(wallet.getActiveAddress().getAddress()));
-//        webView.setRpcUrl(wallet.getNetworkId() == NativeDataHelper.NetworkId.TEST_NET.getValue() ?
-//                "https://rinkeby.infura.io/v3/78ae782ed28e48c0b3f74ca69c4f7ca8" : "https://mainnet.infura.io/v3/78ae782ed28e48c0b3f74ca69c4f7ca8");
+        webView.setRpcUrl(wallet.getNetworkId() == NativeDataHelper.NetworkId.ETH_MAIN_NET.getValue() ?
+                "https://mainnet.infura.io/v3/78ae782ed28e48c0b3f74ca69c4f7ca8" : "https://rinkeby.infura.io/v3/78ae782ed28e48c0b3f74ca69c4f7ca8");
+        webView.setChainId(wallet.getNetworkId());
+
+        Timber.i("SET WALLET: net=" + webView.getChainId() + " wallet=" + wallet.getWalletName() + " rpcURL= " + webView.getRpcUrl());
     }
 
     private void fillWalletInfo(Wallet wallet) {
-        textAddress.setText(wallet.getActiveAddress().getAddress());
+//        textAddress.setText(wallet.getActiveAddress().getAddress());
         imageCoin.setImageResource(wallet.getIconResourceId());
     }
 
@@ -466,10 +463,15 @@ public class Web3Fragment extends BaseFragment {
         }
     }
 
-    @OnClick(R.id.text_address)
+    @OnClick(R.id.image_coin)
     public void onClickAddress() {
         final int currencyId = getActivity().getIntent().getIntExtra(Constants.EXTRA_CURRENCY_ID, -1);
         final int networkId = getActivity().getIntent().getIntExtra(Constants.EXTRA_NETWORK_ID, -1);
-        showChooser(currencyId, networkId);
+        showChooser(currencyId, -1);
+    }
+
+    @OnClick(R.id.image_back)
+    public void onClickBack() {
+        onBackPressed();
     }
 }

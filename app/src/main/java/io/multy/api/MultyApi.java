@@ -15,6 +15,7 @@ import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.samwolfand.oneprefs.Prefs;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
@@ -25,8 +26,10 @@ import io.multy.model.entities.BrokenAddresses;
 import io.multy.model.entities.Estimation;
 import io.multy.model.entities.TransactionRequestEntity;
 import io.multy.model.entities.UserId;
+import io.multy.model.entities.wallet.DiscoverableWalletInfo;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.requests.AddWalletAddressRequest;
+import io.multy.model.requests.DiscoverWalletRequest;
 import io.multy.model.requests.HdTransactionRequestEntity;
 import io.multy.model.requests.UpdateWalletNameRequest;
 import io.multy.model.requests.WalletRequest;
@@ -34,6 +37,7 @@ import io.multy.model.responses.AccountsResponse;
 import io.multy.model.responses.AuthResponse;
 import io.multy.model.responses.ChainInfoResponse;
 import io.multy.model.responses.FeeRateResponse;
+import io.multy.model.responses.MessageResponse;
 import io.multy.model.responses.ServerConfigResponse;
 import io.multy.model.responses.SingleWalletResponse;
 import io.multy.model.responses.TestWalletResponse;
@@ -42,6 +46,7 @@ import io.multy.model.responses.UserAssetsResponse;
 import io.multy.model.responses.WalletsResponse;
 import io.multy.storage.SettingsDao;
 import io.multy.util.Constants;
+import io.multy.util.DeviceInfoHelper;
 import io.reactivex.Observable;
 import io.realm.Realm;
 import okhttp3.Authenticator;
@@ -88,7 +93,7 @@ public enum MultyApi implements MultyApiInterface {
                                 final String userId = userIdEntity == null ? "" : userIdEntity.getUserId();
                                 final String pushToken = FirebaseInstanceId.getInstance().getToken() == null ? "noPushToken" : FirebaseInstanceId.getInstance().getToken();
 
-                                Call<AuthResponse> responseCall = api.auth(new AuthEntity(userId, Constants.DEVICE_NAME, pushToken, 2));
+                                Call<AuthResponse> responseCall = api.auth(new AuthEntity(userId, Constants.DEVICE_NAME, pushToken, 2, DeviceInfoHelper.getSeedPhraseType()));
                                 AuthResponse body = responseCall.execute().body();
 
                                 if (body != null) {
@@ -106,7 +111,7 @@ public enum MultyApi implements MultyApiInterface {
         @Override
         public Call<AuthResponse> auth(String userId) {
             final String pushToken = FirebaseInstanceId.getInstance().getToken() == null ? "noPushToken" : FirebaseInstanceId.getInstance().getToken();
-            return api.auth(new AuthEntity(userId, Constants.DEVICE_NAME, pushToken, 2));
+            return api.auth(new AuthEntity(userId, Constants.DEVICE_NAME, pushToken, 2, DeviceInfoHelper.getSeedPhraseType()));
         }
 
         @Override
@@ -226,7 +231,7 @@ public enum MultyApi implements MultyApiInterface {
         }
 
         @Override
-        public Call<ResponseBody> sendHdTransaction(HdTransactionRequestEntity transactionRequestEntity) {
+        public Call<MessageResponse> sendHdTransaction(HdTransactionRequestEntity transactionRequestEntity) {
             return api.sendHdTransaction(transactionRequestEntity);
         }
 
@@ -253,6 +258,11 @@ public enum MultyApi implements MultyApiInterface {
         @Override
         public Call<ResponseBody> makeBroken(BrokenAddresses brokenAddresses) {
             return api.makeBroken(brokenAddresses);
+        }
+
+        @Override
+        public Call<ResponseBody> discoverWallets(DiscoverWalletRequest request) {
+            return api.discoverWallets(request);
         }
     }
 }

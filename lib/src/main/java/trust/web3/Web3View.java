@@ -27,6 +27,9 @@ import trust.core.entity.TypedData;
 public class Web3View extends WebView {
     private static final String JS_PROTOCOL_CANCELLED = "cancelled";
     private static final String JS_PROTOCOL_ON_SUCCESSFUL = "onSignSuccessful(%1$s, \"%2$s\")";
+    // add ne private static
+    // func name is getTransactionReceiptMined
+    private static final String JS_PROTOCOL_RECEIPT = "getTransactionReceiptMined(\"%1$s\", %1$s)";
     private static final String JS_PROTOCOL_ON_FAILURE = "onSignError(%1$s, \"%2$s\")";
     @Nullable
     private OnSignTransactionListener onSignTransactionListener;
@@ -146,6 +149,11 @@ public class Web3View extends WebView {
         callbackToJS(callbackId, JS_PROTOCOL_ON_SUCCESSFUL, signHex);
     }
 
+    public void getTransactionReceiptMined(String txHash, int interval) {
+        getReceiptJS(JS_PROTOCOL_RECEIPT, txHash, interval);
+    }
+
+
     public void onSignMessageSuccessful(Message message, String signHex) {
         long callbackId = message.leafPosition;
         callbackToJS(callbackId, JS_PROTOCOL_ON_SUCCESSFUL, signHex);
@@ -178,6 +186,11 @@ public class Web3View extends WebView {
 
     private void callbackToJS(long callbackId, String function, String param) {
         String callback = String.format(function, callbackId, param);
+        post(() -> evaluateJavascript(callback, value -> Log.d("WEB_VIEW", value)));
+    }
+
+    private void getReceiptJS(String function, String txHash, int interval) {
+        String callback = String.format(function, txHash, interval);
         post(() -> evaluateJavascript(callback, value -> Log.d("WEB_VIEW", value)));
     }
 

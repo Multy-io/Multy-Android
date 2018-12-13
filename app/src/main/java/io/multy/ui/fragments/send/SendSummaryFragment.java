@@ -40,6 +40,7 @@ import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.model.entities.wallet.RecentAddress;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.requests.HdTransactionRequestEntity;
+import io.multy.model.responses.MessageResponse;
 import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.dialogs.CompleteDialogFragment;
@@ -192,9 +193,9 @@ public class SendSummaryFragment extends BaseFragment {
             Timber.i("hex=%s", hex);
             Timber.i("change address=%s", changeAddress);
             MultyApi.INSTANCE.sendHdTransaction(new HdTransactionRequestEntity(currencyId, networkId,
-                    new HdTransactionRequestEntity.Payload(changeAddress, addressesSize, viewModel.getWallet().getIndex(), hex))).enqueue(new Callback<ResponseBody>() {
+                    new HdTransactionRequestEntity.Payload(changeAddress, addressesSize, viewModel.getWallet().getIndex(), hex))).enqueue(new Callback<MessageResponse>() {
                 @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                public void onResponse(Call<MessageResponse> call, Response<MessageResponse> response) {
                     if (response.isSuccessful()) {
                         viewModel.isLoading.postValue(false);
                         long uniqueId = RecentAddress.stringToId(addressTo);
@@ -218,7 +219,7 @@ public class SendSummaryFragment extends BaseFragment {
                 }
 
                 @Override
-                public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                public void onFailure(@NonNull Call<MessageResponse> call, @NonNull Throwable t) {
                     t.printStackTrace();
                     showError(t);
                 }

@@ -13,15 +13,16 @@ import android.view.ViewGroup;
 
 import io.multy.R;
 import io.multy.util.BrickView;
+import io.multy.util.Constants;
 
 public class BricksAdapter extends RecyclerView.Adapter<BricksAdapter.ViewHolder> {
 
-    private static final int COUNT = 15;
-
     private int brickBackgroundResId = -1;
     private boolean isGreenMode = false;
+    private int count;
 
-    public BricksAdapter() {
+    public BricksAdapter(int count) {
+        this.count = count;
     }
 
     @Override
@@ -43,7 +44,7 @@ public class BricksAdapter extends RecyclerView.Adapter<BricksAdapter.ViewHolder
 
     @Override
     public int getItemCount() {
-        return COUNT;
+        return count;
     }
 
     public void setBrickBackgroundResId(int brickBackgroundResId) {

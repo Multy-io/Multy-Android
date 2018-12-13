@@ -50,6 +50,7 @@ import io.multy.model.entities.wallet.WalletPrivateKey;
 import io.multy.model.requests.HdTransactionRequestEntity;
 import io.multy.model.requests.UpdateWalletNameRequest;
 import io.multy.model.responses.FeeRateResponse;
+import io.multy.model.responses.MessageResponse;
 import io.multy.model.responses.ServerConfigResponse;
 import io.multy.model.responses.TransactionHistoryResponse;
 import io.multy.model.responses.WalletsResponse;
@@ -142,8 +143,9 @@ public class WalletViewModel extends BaseViewModel {
 
     public static void saveDonateAddresses() {
         ServerConfigResponse serverConfig = EventBus.getDefault().removeStickyEvent(ServerConfigResponse.class);
-        if (serverConfig != null) {
+        if (serverConfig != null && serverConfig.getMultisigFactory() != null && serverConfig.getDonates() != null) {
             RealmManager.getSettingsDao().saveDonation(serverConfig.getDonates());
+//            RealmManager.getSettingsDao().saveErc20Tokens(serverConfig.getTokenList());
             RealmManager.getSettingsDao().saveMultisigFactory(serverConfig.getMultisigFactory());
         }
     }
@@ -166,20 +168,27 @@ public class WalletViewModel extends BaseViewModel {
             }
 
             final int topIndex = blockChainId == NativeDataHelper.Blockchain.BTC.getValue() ?
-                    Prefs.getInt(Constants.PREF_WALLET_TOP_INDEX_BTC + networkId, 0) :
-                    Prefs.getInt(Constants.PREF_WALLET_TOP_INDEX_ETH + networkId, 0);
+                    Prefs.getInt(Constants.PREF_WALLET_TOP_INDEX_BTC + networkId, 0) : Prefs.getInt(Constants.PREF_WALLET_TOP_INDEX_ETH + networkId, 0);
+//                    Prefs.getBoolean(Constants.PREF_METAMASK_MODE, false) ? 0 : Prefs.getInt(Constants.PREF_WALLET_TOP_INDEX_ETH + networkId, 0);
 
 //            if (!Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
 //                FirstLaunchHelper.setCredentials("");
 //            }
 
+            int addressIndex = 0;
+
+            //some sh8t happened. our back end will have wrong derivations pathes
+//            if (Prefs.getBoolean(Constants.PREF_METAMASK_MODE, false) && blockChainId == NativeDataHelper.Blockchain.ETH.getValue()) {
+//                addressIndex = getMaxEthAddressIndex() + 1;
+//            }
+
             String creationAddress = NativeDataHelper.makeAccountAddress(RealmManager.getSettingsDao().getSeed().getSeed(),
-                    topIndex, 0, blockChainId, networkId);
+                    topIndex, addressIndex, blockChainId, networkId);
             walletRealmObject = new Wallet();
             walletRealmObject.setWalletName(walletName);
 
             RealmList<WalletAddress> addresses = new RealmList<>();
-            addresses.add(new WalletAddress(0, creationAddress));
+            addresses.add(new WalletAddress(addressIndex, creationAddress));
 
             switch (NativeDataHelper.Blockchain.valueOf(blockChainId)) {
                 case BTC:
@@ -207,6 +216,18 @@ public class WalletViewModel extends BaseViewModel {
         return walletRealmObject;
     }
 
+    private int getMaxEthAddressIndex() {
+        List<Wallet> wallets = RealmManager.getAssetsDao().getWallets();
+        int index = 0;
+        for (Wallet wallet : wallets) {
+            if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.ETH.getValue() || wallet.getActiveAddress().getIndex() > index) {
+                index = wallet.getActiveAddress().getIndex();
+            }
+        }
+
+        return index;
+    }
+
     public MutableLiveData<ArrayList<TransactionHistory>> getTransactionsHistory(final int currencyId, final int networkId, final int walletIndex) {
         isLoading.postValue(true);
         MultyApi.INSTANCE.getTransactionHistory(currencyId, networkId, walletIndex).enqueue(new Callback<TransactionHistoryResponse>() {
@@ -231,20 +252,20 @@ public class WalletViewModel extends BaseViewModel {
         isLoading.postValue(true);
         MultyApi.INSTANCE.getMultisigTransactionHistory(currencyId, networkId, address, assetType)
                 .enqueue(new Callback<TransactionHistoryResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<TransactionHistoryResponse> call, @NonNull Response<TransactionHistoryResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    transactions.setValue(response.body().getHistories());
-                }
-                isLoading.setValue(false);
-            }
+                    @Override
+                    public void onResponse(@NonNull Call<TransactionHistoryResponse> call, @NonNull Response<TransactionHistoryResponse> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            transactions.setValue(response.body().getHistories());
+                        }
+                        isLoading.setValue(false);
+                    }
 
-            @Override
-            public void onFailure(@NonNull Call<TransactionHistoryResponse> call, @NonNull Throwable t) {
-                t.printStackTrace();
-                isLoading.setValue(false);
-            }
-        });
+                    @Override
+                    public void onFailure(@NonNull Call<TransactionHistoryResponse> call, @NonNull Throwable t) {
+                        t.printStackTrace();
+                        isLoading.setValue(false);
+                    }
+                });
         return transactions;
     }
 
@@ -464,7 +485,7 @@ public class WalletViewModel extends BaseViewModel {
         final int networkId = linkedWallet.getNetworkId();
         final int walletIndex = linkedWallet.shouldUseExternalKey() ? -1 : linkedWallet.getIndex();
         final String linkedAddress = linkedWallet.getActiveAddress().getAddress();
-        final String amount =linkedWallet.getActiveAddress().getAmountString();
+        final String amount = linkedWallet.getActiveAddress().getAmountString();
         final String nonce = linkedWallet.getEthWallet().getNonce();
         final byte[] seed = RealmManager.getSettingsDao().getSeed().getSeed();
         Disposable disposable = Observable.create((ObservableOnSubscribe<Boolean>) e -> {
@@ -498,7 +519,7 @@ public class WalletViewModel extends BaseViewModel {
                         nonce);
             }
             Timber.i(getClass().getSimpleName(), SendSummaryFragment.byteArrayToHex(tx));
-            Response<ResponseBody> response = MultyApi.INSTANCE.sendHdTransaction(new HdTransactionRequestEntity(currencyId, networkId,
+            Response<MessageResponse> response = MultyApi.INSTANCE.sendHdTransaction(new HdTransactionRequestEntity(currencyId, networkId,
                     new HdTransactionRequestEntity.Payload("", 0, walletIndex,
                             "0x" + EthSendSummaryFragment.byteArrayToHex(tx), false))).execute();
             if (!response.isSuccessful()) {

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2018 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/text_metamask"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="@string/import_meta_mask"
+        android:textSize="20sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/button_cancel"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_margin="8dp"
+        android:background="?selectableItemBackgroundBorderless"
+        android:padding="4dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_cancel_blue"
+        app:layout_constraintBottom_toBottomOf="@id/text_metamask"
+        app:layout_constraintLeft_toRightOf="@id/text_metamask"
+        app:layout_constraintTop_toTopOf="@id/text_metamask" />
+
+    <ImageView
+        android:id="@+id/image_metamask"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="32dp"
+        android:src="@drawable/ic_metamask_huge"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/image_plus"
+        app:layout_constraintTop_toBottomOf="@id/text_metamask" />
+
+    <ImageView
+        android:id="@+id/image_plus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="24dp"
+        android:src="@drawable/ic_plus_light"
+        app:layout_constraintBottom_toBottomOf="@id/image_metamask"
+        app:layout_constraintLeft_toRightOf="@id/image_metamask"
+        app:layout_constraintRight_toLeftOf="@id/image_multy"
+        app:layout_constraintTop_toTopOf="@id/image_metamask" />
+
+    <ImageView
+        android:id="@+id/image_multy"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/ic_multy_huge"
+        app:layout_constraintBottom_toBottomOf="@id/image_metamask"
+        app:layout_constraintLeft_toRightOf="@id/image_plus"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/image_metamask" />
+
+    <TextView
+        android:id="@+id/text_phrase"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:lineSpacingMultiplier="1.3"
+        android:padding="16dp"
+        android:text="@string/metamask_phrase"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/image_metamask" />
+
+    <TextView
+        android:id="@+id/text_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:lineSpacingMultiplier="1.2"
+        android:padding="16dp"
+        android:text="@string/import_meta_mask_description"
+        android:textSize="16sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_phrase" />
+
+    <Button
+        android:id="@+id/button_next"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/selector_primary_dark_blue"
+        android:padding="16dp"
+        android:text="@string/next"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</android.support.constraint.ConstraintLayout>

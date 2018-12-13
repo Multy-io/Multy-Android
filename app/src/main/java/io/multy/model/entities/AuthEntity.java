@@ -22,14 +22,23 @@ public class AuthEntity {
     private int deviceType;
     @SerializedName("appVersion")
     private String appVersion = BuildConfig.VERSION_NAME;
+    @SerializedName("seedPhraseType")
+    private int seedPhraseType;
 
-
-    public AuthEntity(String userId, String deviceId, String token, int deviceType) {
+    public AuthEntity(String userId, String deviceId, String token, int deviceType, int seedPhraseType) {
         this.userId = userId;
         this.deviceId = deviceId;
         this.token = token;
         this.deviceType = deviceType;
+        this.seedPhraseType = seedPhraseType;
     }
+
+//    public AuthEntity(String userId, String deviceId, String token, int deviceType) {
+//        this.userId = userId;
+//        this.deviceId = deviceId;
+//        this.token = token;
+//        this.deviceType = deviceType;
+//    }
 
     public String getUserId() {
         return userId;
@@ -61,5 +70,13 @@ public class AuthEntity {
 
     public void setDeviceType(int deviceType) {
         this.deviceType = deviceType;
+    }
+
+    public String getAppVersion() {
+        return appVersion;
+    }
+
+    public void setAppVersion(String appVersion) {
+        this.appVersion = appVersion;
     }
 }

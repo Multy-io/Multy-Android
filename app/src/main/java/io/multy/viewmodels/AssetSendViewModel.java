@@ -12,12 +12,21 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import com.google.gson.Gson;
+import com.samwolfand.oneprefs.Prefs;
+
 import java.math.BigDecimal;
 
 import io.multy.Multy;
 import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.api.socket.CurrenciesRate;
+import io.multy.model.core.Account;
+import io.multy.model.core.Builder;
+import io.multy.model.core.Payload;
+import io.multy.model.core.Transaction;
+import io.multy.model.core.TransactionBuilder;
+import io.multy.model.core.TransactionResponse;
 import io.multy.model.entities.Estimation;
 import io.multy.model.entities.Fee;
 import io.multy.model.entities.wallet.EthWallet;
@@ -34,6 +43,7 @@ import io.multy.util.SingleLiveEvent;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import timber.log.Timber;
 
 public class AssetSendViewModel extends BaseViewModel {
 
@@ -263,6 +273,7 @@ public class AssetSendViewModel extends BaseViewModel {
             }
 //            Log.i("wise", getWallet().getId() + " " + getWallet().getNetworkId() + " " + amount + " " + getFee().getAmount() + " " + getDonationSatoshi() + " " + isPayForCommission);
             byte[] tx;
+            TransactionResponse txResult = null;
             if (wallet.getValue().isMultisig()) {
                 Wallet linkedWallet = RealmManager.getAssetsDao().getMultisigLinkedWallet(wallet.getValue().getMultisigWallet().getOwners());
                 double price = EthWallet.getTransactionMultisigPrice(getFee().getAmount(), Long.parseLong(estimation.getValue().getSubmitTransaction()));
@@ -312,20 +323,47 @@ public class AssetSendViewModel extends BaseViewModel {
                         String.valueOf(fee.getValue().getAmount()),
                         getWallet().getEthWallet().getNonce());
             } else {
-                tx = NativeDataHelper.makeTransactionETH(
-                        RealmManager.getSettingsDao().getSeed().getSeed(),
-                        getWallet().getIndex(),
-                        0,
-                        wallet.getValue().getCurrencyId(),
-                        wallet.getValue().getNetworkId(),
-                        getWallet().getActiveAddress().getAmountString(),
-                        signAmount,
-                        getReceiverAddress().getValue(),
-                        gasLimit.getValue(),
-                        String.valueOf(fee.getValue().getAmount()),
-                        getWallet().getEthWallet().getNonce());
+                //now see some true magic. lost two days for that sh8t
+                final int walletIndex = Prefs.getBoolean(Constants.PREF_METAMASK_MODE, false) ? getWallet().getActiveAddress().getIndex() : getWallet().getIndex();
+                final int addressIndex = Prefs.getBoolean(Constants.PREF_METAMASK_MODE, false) ? getWallet().getIndex() : getWallet().getActiveAddress().getIndex();
+
+                final String key = NativeDataHelper.getMyPrivateKey(RealmManager.getSettingsDao().getSeed().getSeed(), walletIndex, addressIndex,
+                        NativeDataHelper.Blockchain.ETH.getValue(), Prefs.getBoolean(Constants.PREF_METAMASK_MODE, false) ? NativeDataHelper.NetworkId.ETH_MAIN_NET.getValue() : wallet.getValue().getNetworkId());
+
+//                final String key2 = NativeDataHelper.getMyPrivateKey(RealmManager.getSettingsDao().getSeed().getSeed(), getWallet().getIndex(),
+//                        getWallet().getNetworkId(), NativeDataHelper.Blockchain.ETH.getValue(), wallet.getValue().getNetworkId());
+
+                TransactionBuilder builder =
+                        new TransactionBuilder(
+                                NativeDataHelper.Blockchain.ETH.getName(),
+                                getWallet().getNetworkId(),
+                                new Account(Account.ACCOUNT_TYPE_DEFAULT, key),
+                                new Builder(Builder.TYPE_BASIC,
+                                        new Payload(getWallet().getActiveAddress().getAmountString(),
+                                                getReceiverAddress().getValue(), signAmount)), new Transaction(getWallet().getEthWallet().getNonce(),
+                                new io.multy.model.core.Fee(
+                                        String.valueOf(fee.getValue().getAmount()), gasLimit.getValue()))
+                        );
+
+                String json = new Gson().toJson(builder);
+                tx = null;
+                txResult = new Gson().fromJson(NativeDataHelper.makeTransactionJSONAPI(json), TransactionResponse.class);
+
+
+//                tx = NativeDataHelper.makeTransactionETH(
+//                        RealmManager.getSettingsDao().getSeed().getSeed(),
+//                        getWallet().getIndex(),
+//                        0,
+//                        wallet.getValue().getCurrencyId(),
+//                        Prefs.getBoolean(Constants.PREF_METAMASK_MODE, false) ? NativeDataHelper.NetworkId.ETH_MAIN_NET.getValue() : wallet.getValue().getNetworkId(),
+//                        getWallet().getActiveAddress().getAmountString(),
+//                        signAmount,
+//                        getReceiverAddress().getValue(),
+//                        gasLimit.getValue(),
+//                        String.valueOf(fee.getValue().getAmount()),
+//                        getWallet().getEthWallet().getNonce());
             }
-            transaction.setValue(byteArrayToHex(tx));
+            transaction.setValue(tx == null ? txResult.getTransactionHex() : byteArrayToHex(tx));
         } catch (JniException e) {
             errorMessage.setValue(Multy.getContext().getString(R.string.invalid_entered_sum));
             e.printStackTrace();

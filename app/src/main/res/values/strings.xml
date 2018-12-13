@@ -392,4 +392,10 @@
     <string name="browser">Browser</string>
     <string name="no_available_wallets">There are no available wallets</string>
     <string name="show_tokens">Show tokens</string>
+    <string name="import_meta_mask">Login with MetaMask</string>
+    <string name="transaction_history">Transaction History</string>
+    <string name="tokens_overview">Tokens Overview</string>
+    <string name="total_balance">Total Balance</string>
+    <string name="metamask_phrase">Enter your seed phrase (12 fancy words) to restore your Metamask wallets</string>
+    <string name="import_meta_mask_description">We do not store your seed in plain text and do not transfer it, nor any private and public keys of your wallets anywhere, they stay on the device encrypted and safe and only used to sign transactions you explicitly request Multy to perform</string>
 </resources>

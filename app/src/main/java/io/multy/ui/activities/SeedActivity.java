@@ -13,6 +13,7 @@ import android.view.WindowManager;
 import butterknife.ButterKnife;
 import io.multy.R;
 import io.multy.ui.fragments.BaseSeedFragment;
+import io.multy.ui.fragments.seed.HelloMetamaskFragment;
 import io.multy.ui.fragments.seed.HelloSeedFragment;
 import io.multy.ui.fragments.seed.SeedValidationFragment;
 import io.multy.util.Constants;
@@ -27,14 +28,16 @@ public class SeedActivity extends BaseActivity {
         setContentView(R.layout.activity_seed);
         ButterKnife.bind(this);
 
-        if (getIntent().hasCategory(Constants.EXTRA_RESTORE)) {
+        if (getIntent().hasExtra(Constants.EXTRA_METAMUSK)) {
+            setFragment(new HelloMetamaskFragment());
+        } else if (getIntent().hasCategory(Constants.EXTRA_RESTORE)) {
             setFragment(new SeedValidationFragment());
         } else {
             setFragment(new HelloSeedFragment());
         }
     }
 
-    private void setFragment(BaseSeedFragment fragment){
+    private void setFragment(BaseSeedFragment fragment) {
         getSupportFragmentManager()
                 .beginTransaction()
                 .add(R.id.container_main, fragment, fragment.getClass().getSimpleName())

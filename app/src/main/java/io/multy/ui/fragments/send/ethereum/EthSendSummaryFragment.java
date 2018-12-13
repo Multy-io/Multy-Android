@@ -39,6 +39,7 @@ import io.multy.model.entities.wallet.EthWallet;
 import io.multy.model.entities.wallet.RecentAddress;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.requests.HdTransactionRequestEntity;
+import io.multy.model.responses.MessageResponse;
 import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.dialogs.CompleteDialogFragment;
@@ -52,6 +53,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import timber.log.Timber;
 
 public class EthSendSummaryFragment extends BaseFragment {
 
@@ -181,11 +183,12 @@ public class EthSendSummaryFragment extends BaseFragment {
                 RealmManager.getAssetsDao().getMultisigLinkedWallet(viewModel.getWallet().getMultisigWallet().getOwners()) : viewModel.getWallet();
 
         try {
+            final String txHex = viewModel.transaction.getValue();
             viewModel.isLoading.setValue(true);
             MultyApi.INSTANCE.sendHdTransaction(new HdTransactionRequestEntity(wallet.getCurrencyId(), wallet.getNetworkId(),
-                    new HdTransactionRequestEntity.Payload("", 0, wallet.getIndex(), "0x" + viewModel.transaction.getValue(), false))).enqueue(new Callback<ResponseBody>() {
+                    new HdTransactionRequestEntity.Payload("", 0, wallet.getIndex(), txHex.startsWith("0x") ? txHex : "0x" + txHex, false))).enqueue(new Callback<MessageResponse>() {
                 @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                public void onResponse(Call<MessageResponse> call, Response<MessageResponse> response) {
                     if (response.isSuccessful()) {
                         viewModel.isLoading.postValue(false);
                         long uniqueId = RecentAddress.stringToId(addressTo);
@@ -208,7 +211,7 @@ public class EthSendSummaryFragment extends BaseFragment {
                 }
 
                 @Override
-                public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                public void onFailure(@NonNull Call<MessageResponse> call, @NonNull Throwable t) {
                     t.printStackTrace();
                     showError(t);
                 }
