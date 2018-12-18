@@ -111,8 +111,8 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
     ViewPager viewPager;
     @BindView(R.id.image_dot_portfolio)
     ImageView imageDotPortfolio;
-    @BindView(R.id.image_dot_chart)
-    ImageView imageDotChart;
+    @BindView(R.id.image_dot_multireceiver)
+    ImageView imageDotMultireceiver;
     @BindView(R.id.swipe_refresh_layout)
     SwipeRefreshLayout refreshLayout;
 
@@ -274,10 +274,10 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
             public void onPageSelected(int position) {
                 if (position == 0) {
                     imageDotPortfolio.setAlpha(1f);
-                    imageDotChart.setAlpha(0.3f);
+                    imageDotMultireceiver.setAlpha(0.3f);
                 } else {
                     imageDotPortfolio.setAlpha(0.3f);
-                    imageDotChart.setAlpha(1f);
+                    imageDotMultireceiver.setAlpha(1f);
                 }
                 scrollView.fling(0);
                 scrollView.fullScroll(View.FOCUS_UP);
