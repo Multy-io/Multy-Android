@@ -300,7 +300,9 @@ public class AssetSendViewModel extends BaseViewModel {
                             getWallet().getActiveAddress().getAddress(),
                             signAmount,
                             receiverAddress.getValue(),
-                            estimation.getValue().getSubmitTransaction(),
+                            //TODO please test this solution!
+//                            estimation.getValue().getSubmitTransaction(),
+                            String.valueOf(fee.getValue().getGasLimit()),
                             String.valueOf(fee.getValue().getAmount()),
                             linkedWallet.getEthWallet().getNonce());
                 } else {
@@ -314,7 +316,9 @@ public class AssetSendViewModel extends BaseViewModel {
                             getWallet().getActiveAddress().getAddress(),
                             signAmount,
                             getReceiverAddress().getValue(),
-                            estimation.getValue().getSubmitTransaction(),
+                            //TODO please test this solution!
+//                            estimation.getValue().getSubmitTransaction(),
+                            String.valueOf(fee.getValue().getGasLimit()),
                             String.valueOf(fee.getValue().getAmount()),
                             linkedWallet.getEthWallet().getNonce());
                 }
@@ -327,7 +331,9 @@ public class AssetSendViewModel extends BaseViewModel {
                         getWallet().getNetworkId(),
                         getWallet().getActiveAddress().getAmountString(),
                         signAmount, getReceiverAddress().getValue(),
-                        gasLimit.getValue(),
+                        //TODO please test this solution
+//                        gasLimit.getValue(),
+                        String.valueOf(fee.getValue().getGasLimit()),
                         String.valueOf(fee.getValue().getAmount()),
                         getWallet().getEthWallet().getNonce());
             } else {
@@ -350,7 +356,9 @@ public class AssetSendViewModel extends BaseViewModel {
                                         new Payload(getWallet().getActiveAddress().getAmountString(),
                                                 getReceiverAddress().getValue(), signAmount)), new Transaction(getWallet().getEthWallet().getNonce(),
                                 new io.multy.model.core.Fee(
-                                        String.valueOf(fee.getValue().getAmount()), gasLimit.getValue()))
+                                        //TODO please test this solution
+//                                        String.valueOf(fee.getValue().getAmount()), gasLimit.getValue()))
+                                        String.valueOf(fee.getValue().getAmount()), String.valueOf(fee.getValue().getGasLimit())))
                         );
 
                 String json = new Gson().toJson(builder);

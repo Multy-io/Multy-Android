@@ -151,7 +151,7 @@ public class DonationFragment extends BaseFragment {
             }
 
             @Override
-            public void onClickCustomFee(long currentValue) {
+            public void onClickCustomFee(long currentValue, long limit) {
                 showCustomFeeDialog(currentValue);
                 logTransactionFee(5);
             }
@@ -184,7 +184,7 @@ public class DonationFragment extends BaseFragment {
 
         dialogBuilder.setTitle(R.string.custom_fee);
         dialogBuilder.setPositiveButton(R.string.done, (dialog, whichButton) -> {
-            ((MyFeeAdapter) recyclerView.getAdapter()).setCustomFee(Long.valueOf(input.getText().toString()));
+            ((MyFeeAdapter) recyclerView.getAdapter()).setCustomFee(Long.valueOf(input.getText().toString()), 0);
 //            Analytics.getInstance(getActivity()).logTransactionFee(AnalyticsConstants.TRANSACTION_FEE_CUSTOM_SET, viewModel.getChainId());
         });
         dialogBuilder.setNegativeButton(R.string.cancel, (dialog, whichButton) -> {

@@ -188,7 +188,7 @@ public class TransactionFeeFragment extends BaseFragment implements MyFeeAdapter
                 Toast.makeText(getActivity(), "Fee can't be less than 2 Sat/B", Toast.LENGTH_SHORT).show();
             }
 
-            ((MyFeeAdapter) recyclerView.getAdapter()).setCustomFee(satoshi);
+            ((MyFeeAdapter) recyclerView.getAdapter()).setCustomFee(satoshi, 0);
             Analytics.getInstance(getActivity()).logTransactionFee(AnalyticsConstants.TRANSACTION_FEE_CUSTOM_SET, viewModel.getChainId());
             input.clearFocus();
             hideKeyboard(getActivity());
@@ -208,7 +208,7 @@ public class TransactionFeeFragment extends BaseFragment implements MyFeeAdapter
     }
 
     @Override
-    public void onClickCustomFee(long currentValue) {
+    public void onClickCustomFee(long currentValue, long limit) {
         showCustomFeeDialog(currentValue);
         logTransactionFee(5);
     }
