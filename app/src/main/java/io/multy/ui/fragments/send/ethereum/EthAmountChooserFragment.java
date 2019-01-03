@@ -420,7 +420,7 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
     @SuppressLint("ClickableViewAccessibility")
     private void setupInputEth() {
         if (viewModel.getAmount() != 0) {
-            inputOriginal.setText(NumberFormatter.getInstance().format(viewModel.getAmount()));
+            inputOriginal.setText(NumberFormatter.getInstance().format(new BigDecimal(viewModel.getAmount())));
         }
 
         inputOriginal.setOnTouchListener((v, event) -> {

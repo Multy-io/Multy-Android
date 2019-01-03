@@ -14,7 +14,7 @@ import retrofit2.http.Path;
 
 public interface ExplorerServiceInterface {
 
-    @GET("getAddressInfo/{address}?apiKey=freekey")
+    @GET("getAddressInfo/{address}?apiKey=ykt4368BFCHH77")
     Call<EthplorerResponse> fetchTokens(@Path("address") String address);
 
 }

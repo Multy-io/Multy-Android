@@ -225,7 +225,7 @@ public class EthSendSummaryFragment extends BaseFragment {
 
     private void setInfo() {
         CurrenciesRate currenciesRate = RealmManager.getSettingsDao().getCurrenciesRate();
-        textReceiverBalanceOriginal.setText(NumberFormatter.getInstance().format(viewModel.getAmount()));
+        textReceiverBalanceOriginal.setText(NumberFormatter.getInstance().format(viewModel.getAmountFull()));
         textReceiverBalanceOriginal.append(Constants.SPACE);
         textReceiverBalanceOriginal.append(CurrencyCode.ETH.name());
         textReceiverBalanceCurrency.setText(NumberFormatter.getFiatInstance().format(viewModel.getAmount() * currenciesRate.getEthToUsd()));

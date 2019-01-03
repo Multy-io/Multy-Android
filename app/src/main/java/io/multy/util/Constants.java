@@ -98,6 +98,10 @@ public final class Constants {
     public static final String EXTRA_DEEP_BROWSER = "EXTRA_DEEP_BROWSER";
     public static final String EXTRA_DEEP_SEND = "EXTRA_DEEP_SEND";
     public static final String EXTRA_METAMUSK = "EXTRA_METAMUSK";
+    public static final String EXTRA_CONTRACT_ADDRESS = "EXTRA_CONTRACT_ADDRESS";
+    public static final String EXTRA_TOKEN_BALANCE = "EXTRA_TOKEN_BALANCE";
+    public static final String EXTRA_TOKEN_CODE = "EXTRA_TOKEN_CODE";
+    public static final String EXTRA_TOKEN_DECIMALS = "EXTRA_TOKEN_DECIMALS";
 
     public static final String DEEP_LINK_QR_CODE = "QR_CODE";
     public static final String DEEP_LINK_ADDRESS = "address";
