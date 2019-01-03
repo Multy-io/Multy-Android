@@ -19,7 +19,7 @@ git clone https://github.com/Appscrunch/Multy-android.git
 
 3. Clone master branch of the Multy-Core project
 ```
-git clone https://github.com/Appscrunch/Multy-Core.git
+git clone https://github.com/Multy-io/Multy-Core
 ```
 4. Checkout master branch of the Multy-Core project
 ```
