@@ -6,14 +6,12 @@
 
 package io.multy.ui.fragments.asset;
 
-import android.annotation.SuppressLint;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
@@ -22,7 +20,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.ToggleGroup;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,39 +28,27 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.samwolfand.oneprefs.Prefs;
-
-import net.cachapa.expandablelayout.ExpandableLayout;
-
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
-import io.multy.api.MultyApi;
-import io.multy.api.explorer.ExplorerApi;
-import io.multy.model.entities.Erc20Balance;
 import io.multy.model.entities.TransactionHistory;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.events.TransactionUpdateEvent;
-import io.multy.model.responses.EthplorerResponse;
-import io.multy.model.responses.SingleWalletResponse;
-import io.multy.storage.AssetsDao;
 import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetActivity;
 import io.multy.ui.activities.AssetRequestActivity;
-import io.multy.ui.activities.AssetSendActivity;
 import io.multy.ui.activities.SeedActivity;
+import io.multy.ui.activities.TokenSendActivity;
 import io.multy.ui.adapters.AssetTransactionsAdapter;
 import io.multy.ui.adapters.EthTransactionsAdapter;
-import io.multy.ui.adapters.PlorerTokensAdapter;
 import io.multy.ui.fragments.AddressesFragment;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.MultisigSettingsFragment;
@@ -75,15 +60,15 @@ import io.multy.util.NativeDataHelper;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.WalletViewModel;
-import io.realm.RealmList;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import timber.log.Timber;
 
-public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOffsetChangedListener, PlorerTokensAdapter.OnTokenClickListener {
+public class TokenInfoFragment extends BaseFragment implements AppBarLayout.OnOffsetChangedListener {
 
-    public static final String TAG = AssetInfoFragment.class.getSimpleName();
+    public static final String TAG = TokenInfoFragment.class.getSimpleName();
+    public static final String ARG_NAME = "ARG_NAME";
+    public static final String ARG_BALANCE = "ARG_BALANCE";
+    public static final String ARG_BALANCE_FIAT = "ARG_BALANCE_FIAT";
+    public static final String ARG_ADDRESS = "ARG_ADDRESS";
+    public static final String ARG_DECIMALS = "ARG_DECIMALS";
 
     @BindView(R.id.collapsing_toolbar)
     CollapsingToolbarLayout collapsingToolbarLayout;
@@ -102,13 +87,7 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     TextView textBalance;
     @BindView(R.id.text_balance_fiat)
     TextView textBalanceFiat;
-    @BindView(R.id.text_pending_balance)
-    TextView textPendingBalance;
-    @BindView(R.id.text_pending_balance_fiat)
-    TextView textPendingBalanceFiat;
 
-    @BindView(R.id.container_pending)
-    ExpandableLayout containerPending;
     @BindView(R.id.appbar_layout)
     AppBarLayout appBarLayout;
 
@@ -123,255 +102,50 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     @BindView(R.id.container_dummy)
     View containerDummy;
 
-    @BindView(R.id.toggle_group)
-    ToggleGroup toggleGroup;
-
     private EthTransactionsAdapter ethTransactionsAdapter = new EthTransactionsAdapter();
-    private PlorerTokensAdapter tokensAdapter = new PlorerTokensAdapter(this);
     private WalletViewModel viewModel;
     private SharingBroadcastReceiver receiver = new SharingBroadcastReceiver();
+
+    public static TokenInfoFragment newInstance(String name, String address, String balance, String balanceFiat, int decimals) {
+        TokenInfoFragment tokenInfoFragment = new TokenInfoFragment();
+        Bundle arguments = new Bundle();
+        arguments.putString(ARG_NAME, name);
+        arguments.putString(ARG_ADDRESS, address);
+        arguments.putString(ARG_BALANCE, balance);
+        arguments.putString(ARG_BALANCE_FIAT, balanceFiat);
+        arguments.putInt(ARG_DECIMALS, decimals);
+        tokenInfoFragment.setArguments(arguments);
+        return tokenInfoFragment;
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View convertView = inflater.inflate(R.layout.fragment_asset_info_eth, container, false);
+        View convertView = inflater.inflate(R.layout.fragment_token_info_eth, container, false);
         ButterKnife.bind(this, convertView);
 
         viewModel = ViewModelProviders.of(getActivity()).get(WalletViewModel.class);
-        Wallet wallet = viewModel.getWallet(getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, -1));
         setBaseViewModel(viewModel);
+        showInfo();
 
-        subscribeWalletUpdates();
-        showWalletInfo(wallet);
-        setAddressesVisibility(wallet.getCurrencyId());
-        initSwipeRefresh();
-        setButtonWarnVisibility();
-//        setTransactionsState();
-
-        initToggle();
-        toggleAdapterInfo();
 
         Analytics.getInstance(getActivity()).logWalletLaunch(AnalyticsConstants.WALLET_SCREEN, viewModel.getChainId());
         return convertView;
     }
 
-    private void initToggle() {
-        List<Erc20Balance> tokenBalances = viewModel.getWalletLive().getValue().getActiveAddress().getErc20Balance();
+    private void showInfo() {
+        Bundle args = getArguments();
+        final String name = args.getString(ARG_NAME, "");
+        final String address = args.getString(ARG_ADDRESS, "");
+        final String balance = args.getString(ARG_BALANCE, "");
+        final String balanceFiat = args.getString(ARG_BALANCE_FIAT, "");
 
-        if (tokenBalances != null && tokenBalances.size() > 0) {
-            toggleGroup.setVisibility(View.VISIBLE);
-            toggleGroup.setOnCheckedChangeListener((group, checkedId) -> toggleAdapterInfo());
-        } else {
-            toggleGroup.setVisibility(View.GONE);
-        }
+        textBalance.setText(balance);
+        textBalanceFiat.setText(balanceFiat);
+        textAddress.setText(address);
+        textWalletName.setText(name);
     }
 
-    private void toggleAdapterInfo() {
-        final boolean tokensSelected = toggleGroup.getCheckedId() == R.id.tokens_overview;
-        if (tokensSelected) {
-            recyclerView.setAdapter(tokensAdapter);
-        } else {
-            recyclerView.setAdapter(ethTransactionsAdapter);
-        }
-    }
-
-    @SuppressLint("CheckResult")
-    private void initTokensInfo() {
-        if (viewModel.getWalletLive().getValue().getCurrencyId() != NativeDataHelper.Blockchain.ETH.getValue()) {
-            return;
-        }
-
-        ExplorerApi.INSTANCE.fetchTokens(viewModel.getWalletLive().getValue().getActiveAddress().getAddress()).enqueue(new Callback<EthplorerResponse>() {
-            @Override
-            public void onResponse(Call<EthplorerResponse> call, Response<EthplorerResponse> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().getTokens() != null) {
-                    tokensAdapter.setData(response.body().getTokens());
-                    tokensAdapter.setEthereum(textBalance.getText().toString(), textBalanceFiat.getText().toString());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<EthplorerResponse> call, Throwable t) {
-                t.printStackTrace();
-            }
-        });
-
-//        List<Erc20Balance> tokenBalance = RealmManager.get().copyFromRealm(viewModel.getWalletLive().getValue().getActiveAddress().getErc20Balance());
-//
-//        Observable.fromIterable(tokenBalance)
-//                .filter(erc20Balance -> RealmManager.getSettingsDao().getErc20TokenInfo(erc20Balance.getAddress()) != null)
-//                .flatMap((Function<Erc20Balance, ObservableSource<Erc20Balance>>) erc20Balance -> {
-//                    Erc20Token token = RealmManager.getSettingsDao().getErc20TokenInfo(erc20Balance.getAddress());
-//                    Timber.i("taking info for token " + erc20Balance.getAddress() + " " + token.getName());
-//                    Erc20Token finalToken = RealmManager.get().copyFromRealm(token);
-//                    finalToken.setTokenInfo(ExplorerApi.INSTANCE.getContractInfo(erc20Balance.getAddress()).execute().body());
-//                    return Observable.just(erc20Balance);
-//                })
-//                .delay(2, TimeUnit.SECONDS)
-//                .toList()
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .doOnError(Throwable::printStackTrace)
-//                .subscribe(erc20Balances -> {
-//                    Timber.i("Final list " + erc20Balances.size());
-//                    tokensAdapter = new Erc20TokensAdapter(erc20Balances);
-//                    initToggle(erc20Balances.size());
-//                    toggleAdapterInfo();
-//                });
-    }
-
-    private void setButtonWarnVisibility() {
-        if (Prefs.getBoolean(Constants.PREF_BACKUP_SEED)) {
-            buttonWarn.setVisibility(View.GONE);
-            buttonWarn.getLayoutParams().height = 0;
-
-//            buttonWarn.post(() -> {
-//                ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) recyclerView.getLayoutParams();
-//                final int margin = ((ConstraintLayout.LayoutParams) buttonWarn.getLayoutParams()).topMargin * 2;
-//                params.topMargin = buttonWarn.getMeasuredHeight() + margin;
-//                recyclerView.setLayoutParams(params);
-//            });
-        }
-    }
-
-    private void initSwipeRefresh() {
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_PULL, viewModel.getChainId());
-            refreshWallet();
-        });
-    }
-
-    private void setAddressesVisibility(int chainId) {
-        buttonAddresses.setVisibility(chainId == NativeDataHelper.Blockchain.BTC.getValue() ? View.VISIBLE : View.GONE);
-    }
-
-    private void subscribeWalletUpdates() {
-        viewModel.rates.observe(this, currenciesRate -> updateBalanceViews());
-        viewModel.transactionUpdate.observe(this, transactionUpdateEntity -> {
-            new Handler().postDelayed(this::refreshWallet, 300);
-        });
-    }
-
-    private void showWalletInfo(Wallet wallet) {
-        textWalletName.setText(wallet.getWalletName());
-        textAddress.setText(wallet.getActiveAddress().getAddress());
-        updateBalanceViews();
-    }
-
-    private void updateBalanceViews() {
-        Wallet wallet = viewModel.getWalletLive().getValue();
-        if (wallet == null || !wallet.isValid()) {
-            return;
-        }
-        if (wallet.isPending()) {
-//            textBalance.setText(wallet.getAvailableBalanceLabel());
-//            textBalanceFiat.setText(wallet.getAvailableFiatBalanceLabel());
-
-            if (wallet.isIncoming()) {
-                textBalance.setText(wallet.getAvailableBalanceLabel());
-                textBalanceFiat.setText(wallet.getAvailableFiatBalanceLabel());
-            } else {
-                textBalance.setText(String.format("%d %s", 0, wallet.getCurrencyName()));
-                textBalanceFiat.setText(String.format("%d %s", 0, wallet.getFiatString()));
-            }
-
-            containerPending.expand();
-            if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()) {
-                textPendingBalance.setText(String.format("%s BTC", CryptoFormatUtils.satoshiToBtc(wallet.getBalanceNumeric().longValue())));
-                textPendingBalanceFiat.setText(wallet.getFiatString() + CryptoFormatUtils.satoshiToUsd(wallet.getBalanceNumeric().longValue()));
-            } else {
-                textPendingBalance.setText(wallet.getEthWallet().getPendingBalanceLabel());
-                textPendingBalanceFiat.setText(wallet.getEthWallet().getFiatPendingBalanceLabel());
-                textPendingBalanceFiat.append(wallet.getFiatString());
-            }
-        } else {
-            textBalance.setText(wallet.getBalanceLabel());
-            textBalanceFiat.setText(wallet.getFiatBalanceLabel());
-
-            containerPending.collapse();
-
-            if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.ETH.getValue() &&
-                    wallet.getActiveAddress().getErc20Balance() != null && wallet.getActiveAddress().getErc20Balance().size() > 0) {
-                checkForErc20TokensBalance(wallet.getActiveAddress().getErc20Balance());
-            }
-        }
-    }
-
-    private void checkForErc20TokensBalance(RealmList<Erc20Balance> tokens) {
-        Timber.i("TOKENS " + tokens.size());
-    }
-
-    private void refreshWallet() {
-        swipeRefreshLayout.setRefreshing(false);
-//        viewModel.isLoading.postValue(true);
-
-        if (!viewModel.getWalletLive().getValue().isValid()) {
-            viewModel.getWallet(getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0));
-        }
-        final int currencyId = viewModel.getWalletLive().getValue().getCurrencyId();
-        final int networkId = viewModel.getWalletLive().getValue().getNetworkId();
-        final long walletId = viewModel.getWalletLive().getValue().getId();
-
-        Callback<SingleWalletResponse> callback = new Callback<SingleWalletResponse>() {
-            @Override
-            public void onResponse(Call<SingleWalletResponse> call, Response<SingleWalletResponse> response) {
-                viewModel.isLoading.postValue(false);
-                SingleWalletResponse body = response.body();
-                if (response.isSuccessful() && body != null && body.getWallets() != null && body.getWallets().size() > 0) {
-                    AssetsDao assetsDao = RealmManager.getAssetsDao();
-                    assetsDao.saveWallet(body.getWallets().get(0));
-                    viewModel.wallet.setValue(assetsDao.getWalletById(walletId));
-                }
-                Wallet wallet = viewModel.wallet.getValue();
-                showWalletInfo(wallet);
-                requestTransactions(wallet.getCurrencyId(), wallet.getNetworkId(), wallet.getIndex());
-            }
-
-            @Override
-            public void onFailure(Call<SingleWalletResponse> call, Throwable t) {
-                viewModel.isLoading.setValue(false);
-                t.printStackTrace();
-            }
-        };
-        if (viewModel.getWalletLive().getValue().isMultisig()) {
-            final String inviteCode = viewModel.getWalletLive().getValue().getMultisigWallet().getInviteCode().toLowerCase();
-            Wallet linkedWallet = RealmManager.getAssetsDao()
-                    .getMultisigLinkedWallet(viewModel.getWalletLive().getValue().getMultisigWallet().getOwners());
-            int linkedIndex = linkedWallet.getIndex();
-            MultyApi.INSTANCE.getMultisigWalletVerbose(inviteCode, currencyId, networkId, Constants.ASSET_TYPE_ADDRESS_MULTISIG)
-                    .enqueue(callback);
-            Callback<SingleWalletResponse> verboseCallback = new Callback<SingleWalletResponse>() {
-                @Override
-                public void onResponse(@NonNull Call<SingleWalletResponse> call, @NonNull Response<SingleWalletResponse> response) {
-                    SingleWalletResponse body = response.body();
-                    if (response.isSuccessful() && body != null && body.getWallets() != null && body.getWallets().size() > 0) {
-                        RealmManager.getAssetsDao().saveWallet(body.getWallets().get(0));
-                    }
-                }
-
-                @Override
-                public void onFailure(@NonNull Call<SingleWalletResponse> call, @NonNull Throwable t) {
-                    t.printStackTrace();
-                }
-            };
-            if (linkedIndex < 0) {
-                MultyApi.INSTANCE.getWalletVerbose(linkedWallet.getActiveAddress().getAddress(),
-                        currencyId, networkId, Constants.ASSET_TYPE_ADDRESS_IMPORTED).enqueue(verboseCallback);
-            } else {
-                MultyApi.INSTANCE.getWalletVerbose(linkedIndex, currencyId, networkId, Constants.ASSET_TYPE_ADDRESS_MULTY)
-                        .enqueue(verboseCallback);
-            }
-        } else {
-            final int walletIndex = viewModel.getWalletLive().getValue().getIndex();
-            if (walletIndex < 0) {
-                MultyApi.INSTANCE.getWalletVerbose(viewModel.getWalletLive().getValue().getActiveAddress().getAddress(),
-                        currencyId, networkId, Constants.ASSET_TYPE_ADDRESS_IMPORTED).enqueue(callback);
-            } else {
-                MultyApi.INSTANCE.getWalletVerbose(walletIndex, currencyId, networkId, Constants.ASSET_TYPE_ADDRESS_MULTY)
-                        .enqueue(callback);
-            }
-        }
-    }
 
     public void setWalletName(String name) {
         textWalletName.setText(name);
@@ -404,7 +178,6 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
 //                        recyclerView.setAdapter(new EosTransactionsAdapter(transactions, walletId));
                 } else {
                     ethTransactionsAdapter.setTransactions(transactions, walletId);
-                    initTokensInfo();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -506,6 +279,7 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
             Toast.makeText(getActivity(), R.string.no_balance, Toast.LENGTH_SHORT).show();
             return;
         }
+
         if (wallet.isMultisig()) {
             Wallet linked = RealmManager.getAssetsDao().getMultisigLinkedWallet(wallet.getMultisigWallet().getOwners());
             if (linked == null || linked.getAvailableBalanceNumeric()
@@ -518,8 +292,14 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
             return;
         }
 
-        startActivity(new Intent(getActivity(), AssetSendActivity.class)
+        final String[] balance = textBalance.getText().toString().split(" ");
+
+        startActivity(new Intent(getActivity(), TokenSendActivity.class)
                 .addCategory(Constants.EXTRA_SENDER_ADDRESS)
+                .putExtra(Constants.EXTRA_TOKEN_BALANCE, balance[0])
+                .putExtra(Constants.EXTRA_TOKEN_CODE, balance[1])
+                .putExtra(Constants.EXTRA_TOKEN_DECIMALS, getArguments().getInt(ARG_DECIMALS))
+                .putExtra(Constants.EXTRA_CONTRACT_ADDRESS, textAddress.getText().toString())
                 .putExtra(Constants.EXTRA_WALLET_ID, getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0)));
     }
 
@@ -590,15 +370,6 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     public void onClickWarn() {
         Analytics.getInstance(getActivity()).logWalletBackup(AnalyticsConstants.WALLET_BACKUP_SEED);
         startActivity(new Intent(getActivity(), SeedActivity.class));
-    }
-
-    @Override
-    public void onTokenClick(String name, String address, String balance, String balanceFiat, int decimals) {
-        getActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .addToBackStack("")
-                .replace(R.id.frame_container, TokenInfoFragment.newInstance(name, address, balance, balanceFiat, decimals))
-                .commit();
     }
 
     public static class SharingBroadcastReceiver extends BroadcastReceiver {

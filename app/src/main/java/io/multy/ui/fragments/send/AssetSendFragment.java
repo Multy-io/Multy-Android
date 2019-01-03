@@ -32,6 +32,7 @@ import io.multy.model.entities.wallet.RecentAddress;
 import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetSendActivity;
 import io.multy.ui.activities.MagicSendActivity;
+import io.multy.ui.activities.TokenSendActivity;
 import io.multy.ui.adapters.RecentAddressesAdapter;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.dialogs.AddressActionsDialogFragment;
@@ -247,6 +248,12 @@ public class AssetSendFragment extends BaseFragment implements RecentAddressesAd
         viewModel.setReceiverAddress(inputAddress.getText().toString());
         viewModel.thoseAddress.setValue(inputAddress.getText().toString());
 //        ((AssetSendActivity) getActivity()).setFragment(R.string.send_from, R.id.container, WalletChooserFragment.newInstance(blockchainId, networkId));
+
+        if (getActivity() instanceof TokenSendActivity) {
+            ((TokenSendActivity) getActivity()).setFragment(R.string.transaction_fee, R.id.container, EthTransactionFeeFragment.newInstance());
+            return;
+        }
+
         if (getActivity().getIntent().hasCategory(Constants.EXTRA_SENDER_ADDRESS)) {
             RealmManager.getAssetsDao().getWalletById(getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0));
             if (viewModel.getWallet().getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()) {

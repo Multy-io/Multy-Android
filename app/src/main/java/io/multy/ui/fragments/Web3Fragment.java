@@ -458,16 +458,14 @@ public class Web3Fragment extends BaseFragment {
     public void onBackPressed() {
         if (webView != null && webView.canGoBack()) {
             webView.goBack();
-        } else {
-            getActivity().finish();
         }
     }
 
     @OnClick(R.id.image_coin)
     public void onClickAddress() {
-        final int currencyId = getActivity().getIntent().getIntExtra(Constants.EXTRA_CURRENCY_ID, -1);
-        final int networkId = getActivity().getIntent().getIntExtra(Constants.EXTRA_NETWORK_ID, -1);
-        showChooser(currencyId, -1);
+//        final int currencyId = getActivity().getIntent().getIntExtra(Constants.EXTRA_CURRENCY_ID, -1);
+//        final int networkId = getActivity().getIntent().getIntExtra(Constants.EXTRA_NETWORK_ID, -1);
+        showChooser(NativeDataHelper.Blockchain.ETH.getValue(), -1);
     }
 
     @OnClick(R.id.image_back)

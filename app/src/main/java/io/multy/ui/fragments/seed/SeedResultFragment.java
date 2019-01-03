@@ -77,7 +77,10 @@ public class SeedResultFragment extends BaseSeedFragment {
                 if (getActivity().getIntent().hasExtra(Constants.EXTRA_METAMUSK)) {
                     Prefs.putBoolean(Constants.PREF_METAMASK_MODE, true);
                     Prefs.putInt(Constants.SEED_TYPE, Constants.SEED_TYPE_METAMASK);
+                } else {
+                    Prefs.putBoolean(Constants.PREF_DETECT_BROKEN, true);
                 }
+
                 if (!Prefs.getBoolean(Constants.PREF_BACKUP_SEED)) {
                     Prefs.putBoolean(Constants.PREF_BACKUP_SEED, true);
                 }

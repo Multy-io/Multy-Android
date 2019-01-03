@@ -35,6 +35,7 @@ import butterknife.OnClick;
 import io.multy.R;
 import io.multy.model.entities.Fee;
 import io.multy.ui.activities.AssetSendActivity;
+import io.multy.ui.activities.TokenSendActivity;
 import io.multy.ui.adapters.MyFeeAdapter;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
@@ -184,9 +185,7 @@ public class EthTransactionFeeFragment extends BaseFragment
         dialogBuilder.setNegativeButton(R.string.cancel, (dialog, whichButton) -> {
             Analytics.getInstance(getActivity()).logTransactionFee(AnalyticsConstants.TRANSACTION_FEE_CUSTOM_CANCEL, viewModel.getChainId());
         });
-        dialogBuilder.setOnDismissListener(dialog -> {
-            hideKeyboard(getActivity());
-        });
+        dialogBuilder.setOnDismissListener(dialog -> hideKeyboard(getActivity()));
         dialogBuilder.create().show();
     }
 
@@ -231,7 +230,12 @@ public class EthTransactionFeeFragment extends BaseFragment
 
         if (selectedFee != null) {
             viewModel.setFee(selectedFee);
-            ((AssetSendActivity) getActivity()).setFragment(R.string.send_amount, R.id.container, EthAmountChooserFragment.newInstance());
+            if (getActivity() instanceof TokenSendActivity) {
+                ((TokenSendActivity) getActivity()).setFragment(R.string.send_amount, R.id.container, TokenAmountChooserFragment.newInstance());
+            } else {
+                ((AssetSendActivity) getActivity()).setFragment(R.string.send_amount, R.id.container, EthAmountChooserFragment.newInstance());
+            }
+
         } else {
             Toast.makeText(getActivity(), R.string.choose_transaction_speed, Toast.LENGTH_SHORT).show();
         }

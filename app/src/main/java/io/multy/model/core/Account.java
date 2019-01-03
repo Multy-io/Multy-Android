@@ -7,6 +7,12 @@
 package io.multy.model.core;
 
 import com.google.gson.annotations.SerializedName;
+import com.samwolfand.oneprefs.Prefs;
+
+import io.multy.storage.RealmManager;
+import io.multy.util.Constants;
+import io.multy.util.JniException;
+import io.multy.util.NativeDataHelper;
 
 public class Account {
 
@@ -23,6 +29,17 @@ public class Account {
     }
 
     public Account() {
+    }
+
+    public static Account getAccount(int walletIndex, int addressIndex, int networkId) {
+        try {
+            final String key = NativeDataHelper.getMyPrivateKey(RealmManager.getSettingsDao().getSeed().getSeed(), walletIndex, addressIndex,
+                    NativeDataHelper.Blockchain.ETH.getValue(), Prefs.getBoolean(Constants.PREF_METAMASK_MODE, false) ? NativeDataHelper.NetworkId.ETH_MAIN_NET.getValue() : networkId);
+            return new Account(ACCOUNT_TYPE_DEFAULT, key);
+        } catch (JniException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public void setType(int type) {

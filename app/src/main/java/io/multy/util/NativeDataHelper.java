@@ -186,5 +186,5 @@ public class NativeDataHelper {
 
     public static native String ethereumPersonalSign(String key, String message);
 
-    public static native String makeTransactionJSONAPI(String json);
+    public static native String makeTransactionJSONAPI(String json) throws JniException;
 }

@@ -30,11 +30,17 @@ import io.multy.util.RoundedImageTransformation;
 
 public class PlorerTokensAdapter extends RecyclerView.Adapter<PlorerTokensAdapter.ViewHolder> {
 
+    public interface OnTokenClickListener {
+        void onTokenClick(String name, String address, String balance, String balanceFiat, int decimals);
+    }
+
     private List<EthplorerResponse.PlorerToken> tokens = new ArrayList<>();
     private String ethBalance;
     private String ethFiatBalance;
+    private OnTokenClickListener listener;
 
-    public PlorerTokensAdapter() {
+    public PlorerTokensAdapter(OnTokenClickListener listener) {
+        this.listener = listener;
     }
 
     public void setData(List<EthplorerResponse.PlorerToken> tokens) {
@@ -71,7 +77,14 @@ public class PlorerTokensAdapter extends RecyclerView.Adapter<PlorerTokensAdapte
             holder.textPrice.setText(token.getTokenInfo().getPrice() == null ? "" : getTokenPrice(token.getBalance(), tokenInfo.getPrice().getRate(), tokenInfo.getDecimals()));
             holder.textPrice.setVisibility(token.getTokenInfo().getPrice() == null ? View.GONE : View.VISIBLE);
             holder.textName.setText(token.getTokenInfo().getName());
+            holder.parent.setOnClickListener(v -> listener.onTokenClick(
+                    holder.textName.getText().toString(),
+                    tokenInfo.getContractAddress(),
+                    holder.textBalance.getText().toString(),
+                    holder.textPrice.getText().toString(),
+                    tokenInfo.getDecimals()));
         } else {
+            holder.parent.setOnClickListener(null);
             holder.textBalance.setText(ethBalance);
             holder.textPrice.setText(ethFiatBalance);
             holder.textName.setText(NativeDataHelper.Blockchain.ETH.getName());
@@ -107,6 +120,8 @@ public class PlorerTokensAdapter extends RecyclerView.Adapter<PlorerTokensAdapte
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
+        @BindView(R.id.parent)
+        View parent;
         @BindView(R.id.image)
         ImageView image;
         @BindView(R.id.text_name)
