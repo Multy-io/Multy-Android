@@ -60,6 +60,7 @@ import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetActivity;
 import io.multy.ui.activities.AssetRequestActivity;
 import io.multy.ui.activities.AssetSendActivity;
+import io.multy.ui.activities.ExchangeActivity;
 import io.multy.ui.activities.SeedActivity;
 import io.multy.ui.adapters.AssetTransactionsAdapter;
 import io.multy.ui.adapters.EthTransactionsAdapter;
@@ -532,10 +533,41 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
 
     @OnClick(R.id.button_exchange)
     void onClickExchange() {
-        Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_EXCHANGE, viewModel.getChainId());
-//        Toast.makeText(this, R.string.not_implemented, Toast.LENGTH_SHORT).show();
-//        DonationActivity.showDonation(this, Constants.DONATE_ADDING_EXCHANGE);
-        DonateDialog.getInstance(Constants.DONATE_ADDING_EXCHANGE).show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
+        //new implementation
+
+        //TODO need to test this checks
+        Wallet wallet = viewModel.getWalletLive().getValue();
+        if (wallet != null && wallet.getAvailableBalanceNumeric().compareTo(BigDecimal.ZERO) <= 0) {
+            Toast.makeText(getActivity(), R.string.no_balance, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (wallet.isMultisig()) {
+            Wallet linked = RealmManager.getAssetsDao().getMultisigLinkedWallet(wallet.getMultisigWallet().getOwners());
+            if (linked == null || linked.getAvailableBalanceNumeric()
+                    .compareTo(new BigDecimal(CryptoFormatUtils.ethToWei(String.valueOf("0.0001")))) <= 0) {
+                viewModel.errorMessage.setValue(getString(R.string.not_enough_linked_balance));
+                return;
+            }
+        }
+        if (wallet.isPending()) {
+            return;
+        }
+
+        startActivity(new Intent(getActivity(), ExchangeActivity.class)
+                .addCategory(Constants.EXTRA_SENDER_ADDRESS)
+                .putExtra(Constants.EXTRA_WALLET_ID, getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0)));
+
+
+        //THIS is old implementations
+//        Analytics.getInstance(this).logWallet(AnalyticsConstants.WALLET_EXCHANGE, viewModel.getChainId());
+////        Toast.makeText(this, R.string.not_implemented, Toast.LENGTH_SHORT).show();
+////        DonationActivity.showDonation(this, Constants.DONATE_ADDING_EXCHANGE);
+//        DonateDialog.getInstance(Constants.DONATE_ADDING_EXCHANGE).show(getSupportFragmentManager(), DonateDialog.TAG);
+
+
+        //Old implementation
+//        Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_EXCHANGE, viewModel.getChainId());
+//        DonateDialog.getInstance(Constants.DONATE_ADDING_EXCHANGE).show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
     }
 
     @OnClick(R.id.button_addresses)
