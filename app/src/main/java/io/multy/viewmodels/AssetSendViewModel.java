@@ -59,7 +59,10 @@ public class AssetSendViewModel extends BaseViewModel {
     public MutableLiveData<String> contractAddress = new MutableLiveData<>();
     public MutableLiveData<String> tokenBalance = new MutableLiveData<>();
     public MutableLiveData<String> tokenCode = new MutableLiveData<>();
-    public MutableLiveData<Integer> decimals = new MutableLiveData<Integer>();
+    public MutableLiveData<Integer> decimals = new MutableLiveData<>();
+    public MutableLiveData<String> tokensAmount = new MutableLiveData<>();
+    public MutableLiveData<String> imageUrl = new MutableLiveData<>();
+    public MutableLiveData<String> tokenPrice = new MutableLiveData<>();
     private double amount;
     private boolean isPayForCommission = true;
     private String donationAmount = "0";

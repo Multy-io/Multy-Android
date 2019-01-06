@@ -69,6 +69,8 @@ public class TokenInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     public static final String ARG_BALANCE_FIAT = "ARG_BALANCE_FIAT";
     public static final String ARG_ADDRESS = "ARG_ADDRESS";
     public static final String ARG_DECIMALS = "ARG_DECIMALS";
+    public static final String ARG_IMAGE_URL = "ARG_IMAGE_URL";
+    public static final String ARG_TOKEN_RATE = "ARG_TOKEN_RATE";
 
     @BindView(R.id.collapsing_toolbar)
     CollapsingToolbarLayout collapsingToolbarLayout;
@@ -106,7 +108,7 @@ public class TokenInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     private WalletViewModel viewModel;
     private SharingBroadcastReceiver receiver = new SharingBroadcastReceiver();
 
-    public static TokenInfoFragment newInstance(String name, String address, String balance, String balanceFiat, int decimals) {
+    public static TokenInfoFragment newInstance(String name, String address, String balance, String balanceFiat, int decimals, String imageUrl, String tokenRate) {
         TokenInfoFragment tokenInfoFragment = new TokenInfoFragment();
         Bundle arguments = new Bundle();
         arguments.putString(ARG_NAME, name);
@@ -114,6 +116,8 @@ public class TokenInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         arguments.putString(ARG_BALANCE, balance);
         arguments.putString(ARG_BALANCE_FIAT, balanceFiat);
         arguments.putInt(ARG_DECIMALS, decimals);
+        arguments.putString(ARG_IMAGE_URL, imageUrl);
+        arguments.putString(ARG_TOKEN_RATE, tokenRate);
         tokenInfoFragment.setArguments(arguments);
         return tokenInfoFragment;
     }
@@ -299,6 +303,8 @@ public class TokenInfoFragment extends BaseFragment implements AppBarLayout.OnOf
                 .putExtra(Constants.EXTRA_TOKEN_BALANCE, balance[0])
                 .putExtra(Constants.EXTRA_TOKEN_CODE, balance[1])
                 .putExtra(Constants.EXTRA_TOKEN_DECIMALS, getArguments().getInt(ARG_DECIMALS))
+                .putExtra(Constants.EXTRA_TOKEN_IMAGE_URL, getArguments().getString(ARG_IMAGE_URL))
+                .putExtra(Constants.EXTRA_TOKEN_RATE, getArguments().getString(ARG_TOKEN_RATE))
                 .putExtra(Constants.EXTRA_CONTRACT_ADDRESS, textAddress.getText().toString())
                 .putExtra(Constants.EXTRA_WALLET_ID, getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0)));
     }

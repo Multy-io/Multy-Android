@@ -31,7 +31,7 @@ import io.multy.util.RoundedImageTransformation;
 public class PlorerTokensAdapter extends RecyclerView.Adapter<PlorerTokensAdapter.ViewHolder> {
 
     public interface OnTokenClickListener {
-        void onTokenClick(String name, String address, String balance, String balanceFiat, int decimals);
+        void onTokenClick(String name, String address, String balance, String balanceFiat, int decimals, String imageUrl, String tokenRate);
     }
 
     private List<EthplorerResponse.PlorerToken> tokens = new ArrayList<>();
@@ -67,8 +67,9 @@ public class PlorerTokensAdapter extends RecyclerView.Adapter<PlorerTokensAdapte
 
         if (token != null) {
             final EthplorerResponse.PlorerTokenInfo tokenInfo = token.getTokenInfo();
+            final String imageUrl = "https://raw.githubusercontent.com/TrustWallet/tokens/master/images/" + token.getTokenInfo().getContractAddress() + ".png";
             Picasso.get()
-                    .load("https://raw.githubusercontent.com/TrustWallet/tokens/master/images/" + token.getTokenInfo().getContractAddress() + ".png")
+                    .load(imageUrl)
                     .error(R.drawable.chain_eth)
                     .transform(new RoundedImageTransformation())
                     .into(holder.image);
@@ -82,7 +83,9 @@ public class PlorerTokensAdapter extends RecyclerView.Adapter<PlorerTokensAdapte
                     tokenInfo.getContractAddress(),
                     holder.textBalance.getText().toString(),
                     holder.textPrice.getText().toString(),
-                    tokenInfo.getDecimals()));
+                    tokenInfo.getDecimals(),
+                    imageUrl,
+                    token.getTokenInfo().getPrice().getRate()));
         } else {
             holder.parent.setOnClickListener(null);
             holder.textBalance.setText(ethBalance);
