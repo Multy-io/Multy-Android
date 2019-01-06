@@ -102,6 +102,8 @@ public final class Constants {
     public static final String EXTRA_TOKEN_BALANCE = "EXTRA_TOKEN_BALANCE";
     public static final String EXTRA_TOKEN_CODE = "EXTRA_TOKEN_CODE";
     public static final String EXTRA_TOKEN_DECIMALS = "EXTRA_TOKEN_DECIMALS";
+    public static final String EXTRA_TOKEN_IMAGE_URL = "EXTRA_TOKEN_IMAGE_URL";
+    public static final String EXTRA_TOKEN_RATE = "EXTRA_TOKEN_RATE";
 
     public static final String DEEP_LINK_QR_CODE = "QR_CODE";
     public static final String DEEP_LINK_ADDRESS = "address";
@@ -154,6 +156,7 @@ public final class Constants {
 
     public static final int MIN_SATOSHI = 546;
     public static final String GAS_LIMIT_DEFAULT = "21000";
+    public static final String GAS_LIMIT_TOKEN_TANSFER = "250000";
 
     public static final String DEFAULT_IMPORT_WALLET_NAME = "Imported";
     public static final String DEFAULT_IMPORT_MULTISIG_NAME = "Imported Multisig";

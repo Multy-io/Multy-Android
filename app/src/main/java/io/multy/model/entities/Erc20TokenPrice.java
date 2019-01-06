@@ -29,8 +29,6 @@ public class Erc20TokenPrice {
     @SerializedName("ts")
     private String timestamp;
 
-
-
     public String getRate() {
         return rate;
     }

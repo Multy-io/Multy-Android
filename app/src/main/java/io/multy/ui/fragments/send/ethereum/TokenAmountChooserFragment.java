@@ -160,6 +160,7 @@ public class TokenAmountChooserFragment extends BaseFragment {
         Wallet wallet = viewModel.getWallet();
         BigDecimal amount = new BigDecimal(inputOriginal.getText().toString()).multiply(new BigDecimal(Math.pow(10, viewModel.decimals.getValue())));
         BigDecimal balance = new BigDecimal(viewModel.tokenBalance.getValue()).multiply(new BigDecimal(Math.pow(10, viewModel.decimals.getValue())));
+        viewModel.tokensAmount.setValue(inputOriginal.getText().toString());
 
         Payload payload = new Payload(wallet.getActiveAddress().getAmountString(),
                 viewModel.contractAddress.getValue(),
@@ -170,7 +171,7 @@ public class TokenAmountChooserFragment extends BaseFragment {
         Builder builder = new Builder(Builder.TYPE_ERC20, Builder.ACTION_TRANSFER, payload);
 
         Transaction transaction = new Transaction(wallet.getEthWallet().getNonce(), new io.multy.model.core.Fee(
-                String.valueOf(viewModel.getFee().getAmount()), viewModel.gasLimit.getValue()));
+                String.valueOf(viewModel.getFee().getAmount()), Constants.GAS_LIMIT_TOKEN_TANSFER));
 
         TransactionBuilder transactionBuilder = new TransactionBuilder(
                 NativeDataHelper.Blockchain.ETH.getName(),
@@ -208,7 +209,7 @@ public class TokenAmountChooserFragment extends BaseFragment {
     }
 
     private void subscribeToUpdates() {
-        viewModel.transaction.observe(this, s -> ((TokenSendActivity) getActivity()).setFragment(R.string.send_summary, R.id.container, EthSendSummaryFragment.newInstance()));
+        viewModel.transaction.observe(this, s -> ((TokenSendActivity) getActivity()).setFragment(R.string.send_summary, R.id.container, TokenSendSummaryFragment.newInstance()));
     }
 
     @OnClick(R.id.button_clear_original)

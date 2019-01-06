@@ -71,6 +71,8 @@ public class TokenSendActivity extends BaseActivity {
         viewModel.contractAddress.setValue(getIntent().getExtras().getString(Constants.EXTRA_CONTRACT_ADDRESS, ""));
         viewModel.tokenCode.setValue(getIntent().getExtras().getString(Constants.EXTRA_TOKEN_CODE, ""));
         viewModel.decimals.setValue(getIntent().getExtras().getInt(Constants.EXTRA_TOKEN_DECIMALS, 0));
+        viewModel.imageUrl.setValue(getIntent().getExtras().getString(Constants.EXTRA_TOKEN_IMAGE_URL, ""));
+        viewModel.tokenPrice.setValue(getIntent().getExtras().getString(Constants.EXTRA_TOKEN_RATE, ""));
 
         startFlow();
     }
