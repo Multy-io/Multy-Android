@@ -98,6 +98,8 @@ public final class Constants {
     public static final String EXTRA_DEEP_BROWSER = "EXTRA_DEEP_BROWSER";
     public static final String EXTRA_DEEP_SEND = "EXTRA_DEEP_SEND";
     public static final String EXTRA_METAMUSK = "EXTRA_METAMUSK";
+    public static final String EXTRA_USER_ID = "EXTRA_USER_ID";
+    public static final String EXTRA_USER_CODE = "EXTRA_USER_CODE";
 
     public static final String DEEP_LINK_QR_CODE = "QR_CODE";
     public static final String DEEP_LINK_ADDRESS = "address";
@@ -233,4 +235,17 @@ public final class Constants {
     public static final String SEED_TYPE = "SEED_TYPE";
     public static final int SEED_TYPE_MULTY = 0;
     public static final int SEED_TYPE_METAMASK = 1;
+
+    public static final String START_SERVICE = "START_SERVICE";
+    public static final String START_BROADCAST = "START_BROADCAST";
+    public static final String START_SCAN = "START_SCAN";
+    public static final String START_SCAN_AND_BROADCAST = "START_SCAN_AND_BROADCAST";
+    public static final String STOP_SERVICE = "STOP_SERVICE";
+    public static final String STOP_ACTION = "STOP_ACTION";
+
+    public static final String BLUETOOTH_SERVICE_NOTIFICATION_CHANNEL_ID = "BLE_CHANNEL_ID";
+    public static final int BLUETOOTH_SERVICE_NOTIFICATION_ID = 10001;
+    public static final int SOCKET_SERVICE_NOTIFICATION_ID = 10002;
+
+    public static final String BLE_SERVICE_UUID_PREFIX = "8c0d3334-7711-44e3-b5c4-28b2";
 }
