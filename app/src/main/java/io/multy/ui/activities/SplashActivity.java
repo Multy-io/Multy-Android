@@ -39,6 +39,7 @@ import io.multy.BuildConfig;
 import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.model.responses.ServerConfigResponse;
+import io.multy.service.BluetoothService;
 import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.dialogs.SimpleDialogFragment;
 import io.multy.ui.fragments.dialogs.TermsDialogFragment;
@@ -96,6 +97,7 @@ public class SplashActivity extends AppCompatActivity {
             public void onAnimationEnd(Animation animation) {
                 if (Prefs.getBoolean(Constants.PREF_TERMS_ACCEPTED, false)) {
                     getServerConfig();
+                    startBluetoothService();
                 } else {
                     showTerms();
                 }
@@ -121,6 +123,12 @@ public class SplashActivity extends AppCompatActivity {
                 Toast.makeText(SplashActivity.this, R.string.terms_please, Toast.LENGTH_LONG).show();
             }
         }).show(getSupportFragmentManager(), "");
+    }
+
+    private void startBluetoothService() {
+        Intent intent = new Intent(this, BluetoothService.class);
+        intent.setAction(Constants.START_SERVICE);
+        startService(intent);
     }
 
     private void getServerConfig() {
