@@ -15,6 +15,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.Group;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -65,8 +68,9 @@ import io.multy.ui.activities.FastReceiveActivity;
 import io.multy.ui.activities.MainActivity;
 import io.multy.ui.activities.SeedActivity;
 import io.multy.ui.adapters.MyWalletsAdapter;
-import io.multy.ui.adapters.PortfoliosAdapter;
 import io.multy.ui.fragments.BaseFragment;
+import io.multy.ui.fragments.MultireceiverFragment;
+import io.multy.ui.fragments.TotalBalanceFragment;
 import io.multy.ui.fragments.dialogs.AssetActionsDialogFragment;
 import io.multy.util.Constants;
 import io.multy.util.JniException;
@@ -120,9 +124,12 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
     private MyWalletsAdapter walletsAdapter;
     private SocketManager socketManager;
     private Wallet deepMagicWallet = null;
-    private PortfoliosAdapter portfoliosAdapter;
     private boolean isViewsScroll = false;
     private boolean checkMetamask = false;
+    private static int BANNERS_COUNT = 2;
+    private BannersPagerAdapter bannersAdapter;
+    private TotalBalanceFragment totalBalanceFragment;
+    private MultireceiverFragment multireceiverFragment;
 
     public static AssetsFragment newInstance() {
         return new AssetsFragment();
@@ -246,7 +253,7 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
 
     @SuppressLint("ClickableViewAccessibility")
     private void initialize() {
-        portfoliosAdapter = new PortfoliosAdapter(getChildFragmentManager());
+        bannersAdapter = new BannersPagerAdapter(getChildFragmentManager());
 
         if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
             if (RealmManager.getSettingsDao().getUserId() != null) {
@@ -254,21 +261,19 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
                     RealmManager.getSettingsDao().saveCurrenciesRate(currenciesRate, () -> {
                         if (walletsAdapter != null && !isViewsScroll) {
                             walletsAdapter.updateRates(currenciesRate);
-                        }
-
-                        if (portfoliosAdapter != null) {
-                            portfoliosAdapter.notifyDataSetChanged();
+                         //   totalBalanceFragment.updateBalanceView();
                         }
                     });
                 });
                 viewModel.transactionUpdate.observe(this, transactionUpdateEntity -> {
                     updateWallets();
+                 //   totalBalanceFragment.updateBalanceView();
                 });
                 viewModel.init(getLifecycle());
             }
         }
         recyclerView.setNestedScrollingEnabled(false);
-        viewPager.setAdapter(portfoliosAdapter);
+        viewPager.setAdapter(bannersAdapter);
         viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
@@ -278,6 +283,7 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
                 } else {
                     imageDotPortfolio.setAlpha(0.3f);
                     imageDotMultireceiver.setAlpha(1f);
+                    multireceiverFragment.updateMultireceiverView();
                 }
                 scrollView.fling(0);
                 scrollView.fullScroll(View.FOCUS_UP);
@@ -601,5 +607,46 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
     @OnClick(R.id.logo)
     void onClickLogo() {
         Analytics.getInstance(getActivity()).logMain(AnalyticsConstants.MAIN_LOGO);
+    }
+
+    private class BannersPagerAdapter extends FragmentStatePagerAdapter {
+
+        public BannersPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            switch (position) {
+                case 0:
+                    return new TotalBalanceFragment();
+
+                case 1:
+                    return  new MultireceiverFragment();
+
+                default:
+                    return  null;
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return BANNERS_COUNT;
+        }
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            Fragment result = (Fragment) super.instantiateItem(container, position);
+            switch (position) {
+                case 0:
+                    totalBalanceFragment = (TotalBalanceFragment) result;
+                    break;
+
+                case 1:
+                    multireceiverFragment = (MultireceiverFragment) result;
+                    break;
+            }
+            return result;
+        }
     }
 }

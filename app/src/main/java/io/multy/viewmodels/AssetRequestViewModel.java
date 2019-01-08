@@ -15,11 +15,13 @@ import com.google.zxing.common.BitMatrix;
 
 import java.util.List;
 
+import io.multy.Multy;
 import io.multy.api.MultyApi;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.requests.AddWalletAddressRequest;
 import io.multy.storage.RealmManager;
+import io.multy.storage.SettingsDao;
 import io.multy.util.CryptoFormatUtils;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
@@ -29,6 +31,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
+import io.realm.Realm;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -70,6 +73,24 @@ public class AssetRequestViewModel extends BaseViewModel {
 
     public double getAmount() {
         return amount;
+    }
+
+    public String getAmountInMinimalUnits() {
+        String result = "";
+        switch (NativeDataHelper.Blockchain.valueOf(getChainId())) {
+            case BTC:
+                result = CryptoFormatUtils.btcToSatoshiString(amount);
+                break;
+            case ETH:
+                result = CryptoFormatUtils.ethToWei(String.valueOf(amount));
+                break;
+        }
+        return result;
+    }
+
+    public String getUserId() {
+        Realm realm = Realm.getInstance(Multy.getRealmConfiguration());
+        return new SettingsDao(realm).getUserId().getUserId();
     }
 
     public Wallet getWallet(long id) {
@@ -185,5 +206,9 @@ public class AssetRequestViewModel extends BaseViewModel {
 
     public int getChainId() {
         return wallet != null ? wallet.getCurrencyId() : 0;
+    }
+
+    public int getNetworkId() {
+        return wallet != null ? wallet.getNetworkId() : 0;
     }
 }
