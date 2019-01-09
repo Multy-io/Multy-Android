@@ -12,16 +12,23 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -52,6 +59,54 @@ public class ExchangeFragment extends BaseFragment {
 
     public static final int REQUEST_CONTACT = 1101;
 
+    @BindView(R.id.tv_exchange_summery_from_wallet)
+    TextView tvPayFromWallet;
+    @BindView(R.id.ib_exchange_from_icon)
+    ImageButton ibPayFromWalletLogo;
+    @BindView(R.id.til_exchange_from_crypto)
+    TextInputLayout inputFromCryptoLayout;
+    @BindView(R.id.tie_exchange_from_crypto)
+    TextInputEditText inputFromCrypto;
+    @BindView(R.id.tv_exchange_summery_crypto_amount)
+    TextView tvSummeryCrypto;
+    @BindView(R.id.iv_summery_from_logo)
+    ImageView ivSummeryFromLogo;
+    @BindView(R.id.tv_exchange_summery_fiat_amount)
+    TextView tvSummeryFromFiat;
+    @BindView(R.id.button_max)
+    TextView buttonMax;
+    @BindView(R.id.tv_exchange_rate)
+    TextView tvExchangeRate;
+    @BindView(R.id.tv_exchange_min_rate)
+    TextView tvExchangeMin;
+    @BindView(R.id.tv_exchange_select_asset)
+    TextView tvExchangeTap;
+    @BindView(R.id.til_exchange_to_crtypo)
+    TextInputLayout tilExchangeToCryptoLayout;
+    @BindView(R.id.tie_exchange_to_crypto)
+    TextInputEditText inputToCrypto;
+    @BindView(R.id.til_exchange_to_fiat)
+    TextInputLayout tilExchangeToFiatLayout;
+    @BindView(R.id.tv_exchange_summery_receive_wallet)
+    TextView tvSummeryToWallet;
+    @BindView(R.id.tv_exchange_summery_receive_crypto_amount)
+    TextView tvSummeryReceiveCrypto;
+    @BindView(R.id.tv_exchange_summery_receive_fiat_amount)
+    TextView tvSummeryReceiveFiat;
+    @BindView(R.id.iv_summery_to_logo)
+    ImageView ivSummeryToLogo;
+    @BindView(R.id.tv_exchange_summery_receive)
+    TextView tvSummeryToTitle;
+
+    @BindView(R.id.ib_receive)
+    ImageButton ibReceiveToLogo;
+
+    @OnClick(R.id.ib_receive)
+    void onClickReceiveLogo(){
+        Log.d("EXCHANGE FR", "LOGO TAPPED");
+        viewModel.changeFragment(2);
+    }
+
 //    @BindView(R.id.input_address)
 //    EditText inputAddress;
 //    @BindView(R.id.button_next)
@@ -74,6 +129,9 @@ public class ExchangeFragment extends BaseFragment {
         this.unbinder = ButterKnife.bind(this, view);
         viewModel = ViewModelProviders.of(requireActivity()).get(ExchangeViewModel.class);
         setBaseViewModel(viewModel);
+
+        setupPayFromWallet();
+
 //        viewModel.getReceiverAddress().observe(this, s -> {
 //            inputAddress.setText(s);
 //            inputAddress.setSelection(inputAddress.length());
@@ -191,6 +249,34 @@ public class ExchangeFragment extends BaseFragment {
 //            });
 //        }
 //    }
+
+
+    private void setupPayFromWallet(){
+        viewModel.getPayFromWallet().observe(this, wallet -> {
+            if (wallet != null){
+                tvPayFromWallet.setText(wallet.getWalletName());
+                ibPayFromWalletLogo.setImageResource(wallet.getIconResourceId());
+                inputFromCryptoLayout.setHint(wallet.getCurrencyName());
+                tvSummeryCrypto.setText(wallet.getCurrencyName());
+                ivSummeryFromLogo.setImageResource(wallet.getIconResourceId());
+                tvSummeryFromFiat.setText("$ 0.0");
+                buttonMax.setVisibility(View.INVISIBLE);
+                tvExchangeRate.setVisibility(View.INVISIBLE);
+                tvExchangeMin.setVisibility(View.INVISIBLE);
+
+                //TODO add additional check for that
+                tvExchangeTap.setVisibility(View.VISIBLE);
+                tilExchangeToCryptoLayout.setVisibility(View.INVISIBLE);
+                tilExchangeToFiatLayout.setVisibility(View.INVISIBLE);
+                tvSummeryToWallet.setVisibility(View.INVISIBLE);
+                tvSummeryReceiveCrypto.setVisibility(View.INVISIBLE);
+                tvSummeryReceiveFiat.setVisibility(View.INVISIBLE);
+                ivSummeryToLogo.setVisibility(View.INVISIBLE);
+                tvSummeryToTitle.setVisibility(View.INVISIBLE);
+            }
+//            Log.d("EXCHANGE FRAGMENT", "GOT WALLET NAME:"+wallet.getCurrencyId() + " CURRENCIE ID:"+ wallet.getCurrencyName());
+        });
+    }
 
     private boolean checkAddressForValidation(String address) {
         for (NativeDataHelper.Blockchain blockchain : NativeDataHelper.Blockchain.values()) {

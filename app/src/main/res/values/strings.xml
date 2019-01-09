@@ -58,6 +58,7 @@
     <string name="more_options">More \nOptions</string>
     <string name="slide_to_send">Slide to Send</string>
     <string name="slide_to_exchange">Slide to Exchange</string>
+    <string name="exchange_tap">Tap to select asset you want to receive</string>
     <string name="sending_from">Sending From</string>
     <string name="hint_add_note">+ Add Note</string>
     <string name="recent_addresses">Recent Addresses</string>

@@ -6,6 +6,7 @@
 
 package io.multy.ui.activities;
 
+import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
@@ -54,6 +55,8 @@ public class ExchangeActivity extends BaseActivity {
     private boolean isFirstFragmentCreation;
     private ExchangeViewModel viewModel;
 
+    private MutableLiveData<Integer> fragmentIDHolder = new MutableLiveData<>();
+
     //TODO check if SocketManager is needed here
     private SocketManager socketManager;
 
@@ -69,13 +72,32 @@ public class ExchangeActivity extends BaseActivity {
         isFirstFragmentCreation = true;
         viewModel = ViewModelProviders.of(this).get(ExchangeViewModel.class);
 
+        startFlow();
+
+        viewModel.setFragmentHolder(fragmentIDHolder);
+        fragmentIDHolder.observe(this, id ->{
+            switch (id){
+                case 0:
+                    setFragment(R.string.exchanging, R.id.container, ExchangeFragment.newInstance());
+                    break;
+                case 1:
+                    //TODO Open Select Pairs Fragment
+                    setFragment(R.string.exchanging, R.id.container, ExchangeFragment.newInstance());
+                    break;
+                case 2:
+                    //TODO open select wallet fragment
+                    setFragment(R.string.select_walet, R.id.container, WalletChooserFragment.newInstance(0,1));
+            }
+        });
+
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
 
-        startFlow();
+
+
     }
 
     @Override
@@ -155,16 +177,19 @@ public class ExchangeActivity extends BaseActivity {
             //this is case of crash
 
             long walletID = getIntent().getExtras().getLong(Constants.EXTRA_WALLET_ID);
-
-            //TODO WTF?! REALM IN ACTIVITYT!??!?!?!
-//            viewModel.setWallet(RealmManager.getAssetsDao().getWalletById(getIntent().getExtras().getLong(Constants.EXTRA_WALLET_ID, -1)));
-
-            viewModel.setWalletById(walletID);
+            viewModel.setPayFromWalletById(walletID);
 
 
         }
 
-        setFragment(R.string.exchanging, R.id.container, ExchangeFragment.newInstance());
+
+
+        //TODO remove this test calls
+       testAPIcallse();
+
+    }
+
+    private void testAPIcallse(){
         viewModel.getAssetsList();
 
         //TODO this is hardoded pair
@@ -175,9 +200,7 @@ public class ExchangeActivity extends BaseActivity {
 
 
         pair.setReceivingToAddress("0xDFb0f70764847b3a2016D5F5912e7977E5eEA0C5");
-//        pair.setPayingFromAddress("0xDFb0f70764847b3a2016D5F5912e7977E5eEA0C5");
         viewModel.getPayToAddress(pair);
-
     }
 
     private void getAddressIds(final String address, int[] addressIdsHolder) {
