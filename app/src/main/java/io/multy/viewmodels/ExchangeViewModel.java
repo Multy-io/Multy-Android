@@ -11,11 +11,14 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.samwolfand.oneprefs.Prefs;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import io.multy.Multy;
 import io.multy.R;
@@ -28,10 +31,13 @@ import io.multy.model.core.Transaction;
 import io.multy.model.core.TransactionBuilder;
 import io.multy.model.core.TransactionResponse;
 import io.multy.model.entities.Estimation;
+import io.multy.model.entities.ExchangePair;
 import io.multy.model.entities.Fee;
 import io.multy.model.entities.wallet.EthWallet;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.entities.wallet.WalletPrivateKey;
+import io.multy.model.responses.ExchangeCurrenciesListResponse;
+import io.multy.model.responses.ExchangePairResponse;
 import io.multy.model.responses.FeeRateResponse;
 import io.multy.model.responses.WalletsResponse;
 import io.multy.storage.RealmManager;
@@ -48,6 +54,9 @@ import timber.log.Timber;
 public class ExchangeViewModel extends BaseViewModel {
 
     private MutableLiveData<Wallet> wallet = new MutableLiveData<>();
+    private MutableLiveData<List<String>> assetsList = new MutableLiveData<>();
+
+
     public MutableLiveData<FeeRateResponse.Speeds> speeds = new MutableLiveData<>();
     public MutableLiveData<Estimation> estimation = new MutableLiveData<>();
     public MutableLiveData<Fee> fee = new MutableLiveData<>();
@@ -75,6 +84,94 @@ public class ExchangeViewModel extends BaseViewModel {
 
     public ExchangeViewModel() {
         currenciesRate = RealmManager.getSettingsDao().getCurrenciesRate();
+    }
+
+
+    public void getAssetsList(){
+//        if (assetsList == null){
+//            assetsList = new MutableLiveData<>();
+//            assetsList.setValue(new ArrayList<String>() {
+//            });
+//        }
+        MultyApi.INSTANCE.getExchangeList().enqueue(new Callback<ExchangeCurrenciesListResponse>() {
+            @Override
+            public void onResponse(Call<ExchangeCurrenciesListResponse> call, Response<ExchangeCurrenciesListResponse> response) {
+                assetsList.setValue(response.body().getAssets());
+//                for ( String asset : assetsList.getValue()){
+//                    Log.d("EXCHANGE VM", "Got Asset to exchange :"+ asset);
+//                }
+            }
+
+            @Override
+            public void onFailure(Call<ExchangeCurrenciesListResponse> call, Throwable t) {
+
+            }
+        });
+
+
+//        MultyApi.INSTANCE.getAccounts(currencyId, networkId, publicKey).enqueue(new Callback<AccountsResponse>() {
+//            @Override
+//            public void onResponse(Call<AccountsResponse> call, Response<AccountsResponse> response) {
+//                final int responseCode = response.body().getCode();
+//                if (responseCode == 200) {
+//                    showAccounts(response.body().getAccounts());
+//                } else {
+//                    Toast.makeText(ImportWalletActivity.this, response.body().getMessage(), Toast.LENGTH_LONG).show();
+//                }
+//
+//                hideProgressDialog();
+//            }
+//
+//            @Override
+//            public void onFailure(Call<AccountsResponse> call, Throwable t) {
+//                Toast.makeText(ImportWalletActivity.this, R.string.something_went_wrong, Toast.LENGTH_LONG).show();
+//                hideProgressDialog();
+//            }
+//        });
+    }
+
+    public void getExchangePair(ExchangePair pair){
+        MultyApi.INSTANCE.getExchangePair(pair).enqueue(new Callback<ExchangePairResponse>() {
+            @Override
+            public void onResponse(Call<ExchangePairResponse> call, Response<ExchangePairResponse> response) {
+                Log.d("EXCHANGE VM", "PAIR from:" + pair.getFromAsset() + " to:" + pair.getToAsset() + " amount:"+ response.body().getAmount());
+            }
+
+            @Override
+            public void onFailure(Call<ExchangePairResponse> call, Throwable t) {
+
+            }
+        });
+    }
+
+
+    public void getMinExchangeValue(ExchangePair pair){
+        MultyApi.INSTANCE.getMinExchangeValue(pair).enqueue(new Callback<ExchangePairResponse>() {
+            @Override
+            public void onResponse(Call<ExchangePairResponse> call, Response<ExchangePairResponse> response) {
+                Log.d("EXCHANGE VM", "GOTED MIN VALUE:"+ response.body().getAmount());
+            }
+
+            @Override
+            public void onFailure(Call<ExchangePairResponse> call, Throwable t) {
+
+            }
+        });
+    }
+
+    public void getPayToAddress(ExchangePair pair){
+        MultyApi.INSTANCE.getPayToAddress(pair).enqueue(new Callback<ExchangePairResponse>() {
+            @Override
+            public void onResponse(Call<ExchangePairResponse> call, Response<ExchangePairResponse> response) {
+                Log.d("EXCHANGE VM", "GOTED PAYING TO ADDRESS:"+response.body().getPayToAddress());
+                Log.d("EXCHANGE VM", "GOTED RECEIVE TO ADDRESS:"+response.body().getReceiveToAddress());
+            }
+
+            @Override
+            public void onFailure(Call<ExchangePairResponse> call, Throwable t) {
+
+            }
+        });
     }
 
     public CurrenciesRate getCurrenciesRate() {

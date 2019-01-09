@@ -26,6 +26,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.api.socket.SocketManager;
+import io.multy.model.entities.ExchangePair;
 import io.multy.storage.RealmManager;
 import io.multy.ui.fragments.exchange.ExchangeFragment;
 import io.multy.ui.fragments.send.AmountChooserFragment;
@@ -80,6 +81,8 @@ public class ExchangeActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+
 //        try {
 //            if (socketManager == null) {
 //                socketManager = new SocketManager();
@@ -162,6 +165,19 @@ public class ExchangeActivity extends BaseActivity {
         }
 
         setFragment(R.string.exchanging, R.id.container, ExchangeFragment.newInstance());
+        viewModel.getAssetsList();
+
+        //TODO this is hardoded pair
+        ExchangePair pair = new ExchangePair("btc", "eth", 1f);
+        viewModel.getExchangePair(pair);
+
+        viewModel.getMinExchangeValue(pair);
+
+
+        pair.setReceivingToAddress("0xDFb0f70764847b3a2016D5F5912e7977E5eEA0C5");
+//        pair.setPayingFromAddress("0xDFb0f70764847b3a2016D5F5912e7977E5eEA0C5");
+        viewModel.getPayToAddress(pair);
+
     }
 
     private void getAddressIds(final String address, int[] addressIdsHolder) {
