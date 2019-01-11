@@ -6,13 +6,18 @@
 
 package io.multy.viewmodels;
 
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.OnLifecycleEvent;
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
 
+import java.net.URISyntaxException;
 import java.util.List;
 
 import io.multy.Multy;
@@ -20,6 +25,7 @@ import io.multy.api.MultyApi;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.requests.AddWalletAddressRequest;
+import io.multy.service.BluetoothService;
 import io.multy.storage.RealmManager;
 import io.multy.storage.SettingsDao;
 import io.multy.util.CryptoFormatUtils;
@@ -44,8 +50,15 @@ public class AssetRequestViewModel extends BaseViewModel {
     private long walletId = 0;
     private MutableLiveData<String> address = new MutableLiveData<>();
     private MutableLiveData<Wallet> walletLive = new MutableLiveData<>();
+    private MutableLiveData<BluetoothService.BluetoothServiceMode> modeChangingLiveData = new MutableLiveData<>();
+    private static final char[] HEX_CHARS = "0123456789ABCDEF".toCharArray();
 
     public AssetRequestViewModel() {
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    void onCreate() {
+
     }
 
     public Double getExchangePrice() {
@@ -73,6 +86,10 @@ public class AssetRequestViewModel extends BaseViewModel {
 
     public double getAmount() {
         return amount;
+    }
+
+    public MutableLiveData<BluetoothService.BluetoothServiceMode> getModeChangingLiveData() {
+        return modeChangingLiveData;
     }
 
     public String getAmountInMinimalUnits() {
@@ -210,5 +227,18 @@ public class AssetRequestViewModel extends BaseViewModel {
 
     public int getNetworkId() {
         return wallet != null ? wallet.getNetworkId() : 0;
+    }
+
+    public String getUserCode() {
+        return stringToHex(getAddress().getValue().substring(0, 4).getBytes());
+    }
+
+    private String stringToHex(byte[] buf) {
+        char[] chars = new char[2 * buf.length];
+        for (int i = 0; i < buf.length; ++i) {
+            chars[2 * i] = HEX_CHARS[(buf[i] & 0xF0) >>> 4];
+            chars[2 * i + 1] = HEX_CHARS[buf[i] & 0x0F];
+        }
+        return new String(chars);
     }
 }

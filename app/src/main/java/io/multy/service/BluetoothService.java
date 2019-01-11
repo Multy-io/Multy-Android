@@ -11,86 +11,60 @@ import android.bluetooth.le.AdvertiseCallback;
 import android.bluetooth.le.AdvertiseData;
 import android.bluetooth.le.AdvertiseSettings;
 import android.bluetooth.le.BluetoothLeAdvertiser;
-import android.content.BroadcastReceiver;
-import android.content.Context;
+import android.bluetooth.le.BluetoothLeScanner;
+import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanFilter;
+import android.bluetooth.le.ScanResult;
+import android.bluetooth.le.ScanSettings;
 import android.content.Intent;
+import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.ParcelUuid;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import io.multy.R;
-import io.multy.ui.activities.SplashActivity;
 
-import static io.multy.util.Constants.BLE_SERVICE_UUID_PREFIX;
+import static io.multy.util.Constants.MULTY_UUID_PREFIX;
 import static io.multy.util.Constants.BLUETOOTH_SERVICE_NOTIFICATION_CHANNEL_ID;
 import static io.multy.util.Constants.BLUETOOTH_SERVICE_NOTIFICATION_ID;
-import static io.multy.util.Constants.EXTRA_USER_CODE;
-import static io.multy.util.Constants.START_BROADCAST;
-import static io.multy.util.Constants.START_SCAN;
-import static io.multy.util.Constants.START_SCAN_AND_BROADCAST;
 import static io.multy.util.Constants.START_SERVICE;
-import static io.multy.util.Constants.STOP_ACTION;
-import static io.multy.util.Constants.STOP_SERVICE;
+
 
 public class BluetoothService extends Service {
 
     public enum BluetoothServiceMode { STOPPED, STARTED, SCANNER, BROADCASTER, HYBRID /* scanner + broadcaster */}
-
     public boolean isBluetoothTransportReachable() {
         return BluetoothAdapter.getDefaultAdapter().isEnabled();
     }
-
-    private MutableLiveData<Boolean> reachabilityLiveData = new MutableLiveData<>();
-    private MutableLiveData<BluetoothServiceMode> modeChangingLiveData = new MutableLiveData<>();
-
     public BluetoothServiceMode serviceMode = BluetoothServiceMode.STOPPED;
 
+    private IBinder mBinder = new BluetoothBinder();
+    private MutableLiveData<BluetoothServiceMode> modeChangingLiveData;
+    private MutableLiveData<ArrayList<String>> userCodesLiveData;
+    private ArrayList<String> userCodes = new ArrayList<>();
     private UserCodeAdvertiseCallback userCodeAdvertiseCallback;
+    private UserCodeScanCallback userCodeScanCallback;
 
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-
-            if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
-                onReachabilityChanged();
-            }
-        }
-    };
+    @Override
+    public void onCreate() {}
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         final String action = intent.getAction();
 
-        final String userCode = intent.getStringExtra(EXTRA_USER_CODE);
+        if (action != null) {
+            switch (action) {
+                case START_SERVICE:
+                    startForegroundService();
+                    break;
 
-        switch (action) {
-            case START_SERVICE:
-                startForegroundService();
-                break;
-
-            case START_BROADCAST:
-                startAdvertise(userCode);
-                break;
-
-            case START_SCAN:
-
-                break;
-
-            case START_SCAN_AND_BROADCAST:
-
-                break;
-
-            case STOP_ACTION:
-                stopAction();
-                break;
-
-            case STOP_SERVICE:
-                stopForegroundService();
-                break;
+            }
         }
 
         return super.onStartCommand(intent, flags, startId);
@@ -98,21 +72,13 @@ public class BluetoothService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return mBinder;
     }
 
-    public void listenReachability(MutableLiveData<Boolean> reachabilityLiveData) {
-        this.reachabilityLiveData = reachabilityLiveData;
-    }
-
-    public void listenModeChangingLiveData(MutableLiveData<BluetoothServiceMode> modeChangingLiveData) {
-        this.modeChangingLiveData = modeChangingLiveData;
-    }
-
-    private void onReachabilityChanged() {
-        if (reachabilityLiveData != null) {
-            reachabilityLiveData.postValue(isBluetoothTransportReachable());
-        }
+    @Override
+    public void onDestroy() {
+        Log.d("MAGIC_TEST", "SERVICE DESTROYED");
+        super.onDestroy();
     }
 
     private void startForegroundService(){
@@ -128,7 +94,7 @@ public class BluetoothService extends Service {
                 .setContentIntent(pendingIntent).build();
 
         startForeground(BLUETOOTH_SERVICE_NOTIFICATION_ID, notification);
-        serviceMode = BluetoothServiceMode.STARTED;
+        setServiceMode(BluetoothServiceMode.STARTED);
     }
 
     private void createNotificationChannel() {
@@ -143,7 +109,7 @@ public class BluetoothService extends Service {
         }
     }
 
-    private void startAdvertise(String userCode) {
+    public void startAdvertise(String userCode) {
         if (isBluetoothTransportReachable()) {
             userCodeAdvertiseCallback = new UserCodeAdvertiseCallback();
             userCodeAdvertiseCallback.setUserCode(userCode);
@@ -156,47 +122,48 @@ public class BluetoothService extends Service {
         }
     }
 
-    private void stopAction() {
-        switch (serviceMode) {
-            case STARTED:
-                break;
-
-            case STOPPED:
-                return;
-
-            case SCANNER:
-                break;
-
-            case BROADCASTER:
-                stopAdvertise();
-                break;
-
-            case HYBRID:
-                break;
-        }
-
-        serviceMode = BluetoothServiceMode.STARTED;
-        modeChangingLiveData.postValue(serviceMode);
-    }
-
-    private void stopAdvertise() {
+    public void stopAdvertise() {
         if (serviceMode == BluetoothServiceMode.BROADCASTER) {
             BluetoothLeAdvertiser advertiser = BluetoothAdapter.getDefaultAdapter().getBluetoothLeAdvertiser();
             advertiser.stopAdvertising(userCodeAdvertiseCallback);
             userCodeAdvertiseCallback = null;
+            setServiceMode(BluetoothServiceMode.STARTED);
+        }
+    }
+
+    public void startScan() {
+        if (isBluetoothTransportReachable()) {
+            userCodeScanCallback = new UserCodeScanCallback();
+            ScanSettings settings = buildScanSettings();
+            List<ScanFilter> filters = new ArrayList<>();
+
+            BluetoothLeScanner scanner = BluetoothAdapter.getDefaultAdapter().getBluetoothLeScanner();
+            scanner.startScan(filters, settings, userCodeScanCallback);
+            setServiceMode(BluetoothServiceMode.SCANNER);
+        }
+    }
+
+    public void stopScan() {
+        if (serviceMode) {
+            BluetoothLeScanner scanner = BluetoothAdapter.getDefaultAdapter().getBluetoothLeScanner();
+            scanner.stopScan(userCodeScanCallback);
+            setServiceMode(BluetoothServiceMode.SCANNER);
         }
     }
 
     private void stopForegroundService()
     {
         stopForeground(true);
-
         stopSelf();
+    }
+
+    public void listenModeChanging(MutableLiveData<BluetoothServiceMode> modeChangingLiveData) {
+        this.modeChangingLiveData = modeChangingLiveData;
     }
 
     private AdvertiseSettings buildAdvertiseSettings() {
         AdvertiseSettings.Builder settingsBuilder = new AdvertiseSettings.Builder();
-        settingsBuilder.setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY);
+        settingsBuilder.setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_POWER);
         settingsBuilder.setTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_HIGH);
         settingsBuilder.setConnectable(false);
         return settingsBuilder.build();
@@ -204,10 +171,33 @@ public class BluetoothService extends Service {
 
     private AdvertiseData buildAdvertiseData(String code) {
         AdvertiseData.Builder dataBuilder = new AdvertiseData.Builder();
-        ParcelUuid pUuid = new ParcelUuid(UUID.fromString(BLE_SERVICE_UUID_PREFIX + code));
+        ParcelUuid pUuid = new ParcelUuid(UUID.fromString(MULTY_UUID_PREFIX + code));
         dataBuilder.setIncludeTxPowerLevel(true);
         dataBuilder.addServiceUuid(pUuid);
         return dataBuilder.build();
+    }
+
+    private ScanSettings buildScanSettings() {
+        ScanSettings result = new ScanSettings.Builder()
+                .setScanMode(ScanSettings.SCAN_MODE_LOW_POWER)
+                .build();
+        return result;
+    }
+
+    public class BluetoothBinder extends Binder {
+        public  BluetoothService getService() {
+            return BluetoothService.this;
+        }
+    }
+
+    private void setServiceMode(BluetoothServiceMode serviceMode) {
+        if (this.serviceMode != serviceMode) {
+            this.serviceMode = serviceMode;
+
+            if (modeChangingLiveData != null) {
+                modeChangingLiveData.postValue(serviceMode);
+            }
+        }
     }
 
     private class UserCodeAdvertiseCallback extends AdvertiseCallback {
@@ -216,8 +206,7 @@ public class BluetoothService extends Service {
 
         @Override
         public void onStartSuccess(AdvertiseSettings settingsInEffect) {
-            serviceMode = BluetoothServiceMode.BROADCASTER;
-            modeChangingLiveData.postValue(serviceMode);
+            setServiceMode(BluetoothServiceMode.BROADCASTER);
         }
 
         @Override
@@ -229,6 +218,48 @@ public class BluetoothService extends Service {
 
         public String getUserCode() {
             return userCode;
+        }
+    }
+
+    private class UserCodeScanCallback extends ScanCallback {
+        @Override
+        public void onScanResult(int callbackType, ScanResult result) {
+            super.onScanResult(callbackType, result);
+            List<ParcelUuid> ids = result.getScanRecord().getServiceUuids();
+
+            if (ids != null && ids.size() > 0) {
+                for (ParcelUuid uuid : ids) {
+                    if (isServiceUuidValid(uuid)) {
+                        String sendUUID = uuid.getUuid().toString();
+
+                        String userCode = sendUUID.substring(sendUUID.length() - 8).toUpperCase();
+
+                        if (userCode.length() > 0 && !userCodes.contains(userCode)) {
+                            userCodes.add(userCode);
+                            userCodesLiveData.postValue(userCodes);
+                        }
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void onScanFailed(int errorCode) {
+            if (serviceMode == BluetoothServiceMode.SCANNER) {
+                setServiceMode(BluetoothServiceMode.STARTED);
+            }
+        }
+
+
+        private boolean isServiceUuidValid(ParcelUuid uuid) {
+            boolean result = false;
+            String uuidString = uuid.toString();
+            String uuidPrefix = uuidString.substring(0, uuidString.length() - 9);
+            if (uuidPrefix == MULTY_UUID_PREFIX) {
+                result = true;
+            }
+
+            return result;
         }
     }
 }

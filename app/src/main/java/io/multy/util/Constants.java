@@ -247,5 +247,5 @@ public final class Constants {
     public static final int BLUETOOTH_SERVICE_NOTIFICATION_ID = 10001;
     public static final int SOCKET_SERVICE_NOTIFICATION_ID = 10002;
 
-    public static final String BLE_SERVICE_UUID_PREFIX = "8c0d3334-7711-44e3-b5c4-28b2";
+    public static final String MULTY_UUID_PREFIX = "8c0d3334-7711-44e3-b5c4-28b2";
 }
