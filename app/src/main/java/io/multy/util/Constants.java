@@ -138,6 +138,7 @@ public final class Constants {
     public static final String MULTY_IO_URL = "http://multy.io";
     public static final String CHAIN_ID = "CHAIN_ID";
     public static final String FEATURE_ID = "FEATURE_ID";
+    public static final String TOKEN_BASE_LOGO_URL = "https://raw.githubusercontent.com/Multy-io/tokens/master/images/";
 
     public static final int DONATE_WITH_TRANSACTION = 10000;
     public static final int DONATE_ADDING_ACTIVITY = 10200;

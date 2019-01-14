@@ -31,6 +31,7 @@ import io.multy.model.core.Transaction;
 import io.multy.model.core.TransactionBuilder;
 import io.multy.model.core.TransactionResponse;
 import io.multy.model.entities.Estimation;
+import io.multy.model.entities.ExchangeAsset;
 import io.multy.model.entities.ExchangePair;
 import io.multy.model.entities.Fee;
 import io.multy.model.entities.wallet.EthWallet;
@@ -39,6 +40,7 @@ import io.multy.model.entities.wallet.WalletPrivateKey;
 import io.multy.model.responses.ExchangeCurrenciesListResponse;
 import io.multy.model.responses.ExchangePairResponse;
 import io.multy.model.responses.FeeRateResponse;
+import io.multy.model.responses.ServerConfigResponse;
 import io.multy.model.responses.WalletsResponse;
 import io.multy.storage.RealmManager;
 import io.multy.util.Constants;
@@ -54,8 +56,13 @@ import timber.log.Timber;
 public class ExchangeViewModel extends BaseViewModel {
 
     private MutableLiveData<Wallet> payFromWallet = new MutableLiveData<>();
+    private MutableLiveData<Wallet> receiveToWallet = new MutableLiveData<>();
     private MutableLiveData<List<String>> assetsList = new MutableLiveData<>();
     private MutableLiveData<Integer> fragmentHolder = new MutableLiveData<>();
+    private MutableLiveData<List<ExchangeAsset>> assets  = new MutableLiveData<>();
+    private MutableLiveData<ExchangeAsset> assetExchangeTo = new MutableLiveData<>();
+    private MutableLiveData<Float> exchangeRate = new MutableLiveData<>();
+    private MutableLiveData<List<ServerConfigResponse.ERC20TokenSupport>> supportTokens = new MutableLiveData<>();
 
 
     //TODO Check if this data is needed
@@ -87,22 +94,89 @@ public class ExchangeViewModel extends BaseViewModel {
 
     public ExchangeViewModel() {
         currenciesRate = RealmManager.getSettingsDao().getCurrenciesRate();
+        fragmentHolder.setValue(0);
+        getSupportTokens();
+    }
+
+    private void mapAssets(){
+        List<ExchangeAsset> assetsFull = new ArrayList<>();
+
+        List<ServerConfigResponse.ERC20TokenSupport> tokens = supportTokens.getValue();
+        List<String> rawAssets = assetsList.getValue();
+
+
+        String fromWalletChain = payFromWallet.getValue().getCurrencyName().toLowerCase();
+
+
+        for (String asset : rawAssets){
+
+            //We don't have Bitcoin and Ethereum in support Currencies, so we need to add them manually
+            if (asset.toLowerCase().equals(Constants.BTC.toLowerCase()) && !fromWalletChain.equals(asset.toLowerCase())){
+                ExchangeAsset exchangeAsset = new ExchangeAsset(Constants.BTC, "Bitcoin", 0, String.valueOf(R.drawable.ic_bitcoin));
+                assetsFull.add(exchangeAsset);
+            }
+            if (asset.toLowerCase().equals(Constants.ETH.toLowerCase()) && !fromWalletChain.equals(asset.toLowerCase())){
+                ExchangeAsset exchangeAsset = new ExchangeAsset(Constants.ETH, "Ethereum", 60, String.valueOf(R.drawable.ic_ethereum));
+                assetsFull.add(exchangeAsset);
+            }
+
+            //Now we can make simple iteration beetween supported assets and available exchange assets to fit the in one array
+            for(ServerConfigResponse.ERC20TokenSupport token : tokens){
+                if (asset.toLowerCase().equals(token.getName().toLowerCase())){
+                    if (!token.getSmartContractAddress().isEmpty()){
+                        String url = Constants.TOKEN_BASE_LOGO_URL + token.getSmartContractAddress().toLowerCase() + ".png";
+                        ExchangeAsset exchangeAsset = new ExchangeAsset(token.getName(), token.getFullName(), 60, url);
+                        assetsFull.add(exchangeAsset);
+                    }
+                }
+            }
+        }
+
+//        for(ServerConfigResponse.ERC20TokenSupport token : tokens){
+//            for (String asset : rawAssets){
+//                if (asset.toLowerCase().equals(token.getName().toLowerCase())){
+//                    if (!token.getSmartContractAddress().isEmpty()){
+//
+//                        String url = "https://raw.githubusercontent.com/Multy-io/tokens/master/images/"+ token.getSmartContractAddress().toLowerCase() + ".png";
+//
+//                        ExchangeAsset exchangeAsset = new ExchangeAsset(token.getName(), token.getFullName(), 60, url);
+//                        assetsFull.add(exchangeAsset);
+//                    }
+//
+//                }
+//            }
+//        }
+        assets.setValue(assetsFull);
     }
 
 
+    private void getSupportTokens(){
+        MultyApi.INSTANCE.getServerConfig().enqueue(new Callback<ServerConfigResponse>() {
+            @Override
+            public void onResponse(Call<ServerConfigResponse> call, Response<ServerConfigResponse> response) {
+                //TODO check respone code
+                if (response.isSuccessful() && response.body() != null) {
+                    supportTokens.setValue(response.body().getSupportTokens());
+                    getAssetsList();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ServerConfigResponse> call, Throwable t) {
+
+            }
+        });
+    }
+
     public void getAssetsList(){
-//        if (assetsList == null){
-//            assetsList = new MutableLiveData<>();
-//            assetsList.setValue(new ArrayList<String>() {
-//            });
-//        }
         MultyApi.INSTANCE.getExchangeList().enqueue(new Callback<ExchangeCurrenciesListResponse>() {
             @Override
             public void onResponse(Call<ExchangeCurrenciesListResponse> call, Response<ExchangeCurrenciesListResponse> response) {
-                assetsList.setValue(response.body().getAssets());
-//                for ( String asset : assetsList.getValue()){
-//                    Log.d("EXCHANGE VM", "Got Asset to exchange :"+ asset);
-//                }
+                //TODO check respone code
+                if (response.isSuccessful() && response.body() != null) {
+                    assetsList.setValue(response.body().getAssets());
+                    mapAssets();
+                }
             }
 
             @Override
@@ -110,34 +184,19 @@ public class ExchangeViewModel extends BaseViewModel {
 
             }
         });
-
-
-//        MultyApi.INSTANCE.getAccounts(currencyId, networkId, publicKey).enqueue(new Callback<AccountsResponse>() {
-//            @Override
-//            public void onResponse(Call<AccountsResponse> call, Response<AccountsResponse> response) {
-//                final int responseCode = response.body().getCode();
-//                if (responseCode == 200) {
-//                    showAccounts(response.body().getAccounts());
-//                } else {
-//                    Toast.makeText(ImportWalletActivity.this, response.body().getMessage(), Toast.LENGTH_LONG).show();
-//                }
-//
-//                hideProgressDialog();
-//            }
-//
-//            @Override
-//            public void onFailure(Call<AccountsResponse> call, Throwable t) {
-//                Toast.makeText(ImportWalletActivity.this, R.string.something_went_wrong, Toast.LENGTH_LONG).show();
-//                hideProgressDialog();
-//            }
-//        });
     }
+
+    public MutableLiveData<Float> getExchangeRate() {return this.exchangeRate;}
 
     public void getExchangePair(ExchangePair pair){
         MultyApi.INSTANCE.getExchangePair(pair).enqueue(new Callback<ExchangePairResponse>() {
             @Override
             public void onResponse(Call<ExchangePairResponse> call, Response<ExchangePairResponse> response) {
-                Log.d("EXCHANGE VM", "PAIR from:" + pair.getFromAsset() + " to:" + pair.getToAsset() + " amount:"+ response.body().getAmount());
+                if (response.isSuccessful() && response.body() != null) {
+                    //TODO check respone code
+                    Log.d("EXCHANGE VM", "PAIR from:" + pair.getFromAsset() + " to:" + pair.getToAsset() + " amount:" + response.body().getAmount());
+                    exchangeRate.setValue(response.body().getAmount());
+                }
             }
 
             @Override
@@ -152,7 +211,9 @@ public class ExchangeViewModel extends BaseViewModel {
         MultyApi.INSTANCE.getMinExchangeValue(pair).enqueue(new Callback<ExchangePairResponse>() {
             @Override
             public void onResponse(Call<ExchangePairResponse> call, Response<ExchangePairResponse> response) {
-                Log.d("EXCHANGE VM", "GOTED MIN VALUE:"+ response.body().getAmount());
+                if (response.isSuccessful() && response.body() != null) {
+                    Log.d("EXCHANGE VM", "GOTED MIN VALUE:" + response.body().getAmount());
+                }
             }
 
             @Override
@@ -166,8 +227,10 @@ public class ExchangeViewModel extends BaseViewModel {
         MultyApi.INSTANCE.getPayToAddress(pair).enqueue(new Callback<ExchangePairResponse>() {
             @Override
             public void onResponse(Call<ExchangePairResponse> call, Response<ExchangePairResponse> response) {
-                Log.d("EXCHANGE VM", "GOTED PAYING TO ADDRESS:"+response.body().getPayToAddress());
-                Log.d("EXCHANGE VM", "GOTED RECEIVE TO ADDRESS:"+response.body().getReceiveToAddress());
+                if (response.isSuccessful() && response.body() != null) {
+                    Log.d("EXCHANGE VM", "GOTED PAYING TO ADDRESS:" + response.body().getPayToAddress());
+                    Log.d("EXCHANGE VM", "GOTED RECEIVE TO ADDRESS:" + response.body().getReceiveToAddress());
+                }
             }
 
             @Override
@@ -177,6 +240,9 @@ public class ExchangeViewModel extends BaseViewModel {
         });
     }
 
+    public MutableLiveData<List<ExchangeAsset>>  getAssets(){
+        return this.assets;
+    }
 
     public void setFragmentHolder(MutableLiveData<Integer> fragmentIDHolder){
         this.fragmentHolder = fragmentIDHolder;
@@ -194,6 +260,35 @@ public class ExchangeViewModel extends BaseViewModel {
         return currenciesRate;
     }
 
+    public void setSelectedAsset(ExchangeAsset asset){
+        assetExchangeTo.setValue(asset);
+
+        String from = payFromWallet.getValue().getCurrencyName();
+        String to = asset.getName();
+        getExchangePair(new ExchangePair(from, to, 1f));
+
+        //TODO check if walletExchangeTo was selected Before and
+
+        if (receiveToWallet.getValue() == null|| receiveToWallet.getValue().getCurrencyId() != asset.getChainId()){
+            //TODO launch select wallet fragment
+            fragmentHolder.setValue(2);
+        } else {
+            fragmentHolder.setValue(0);
+        }
+
+    }
+
+    public MutableLiveData<Wallet> getReceiveToWallet(){ return  this.receiveToWallet;}
+
+    public void setReceiveToWallet(Wallet wallet){
+        this.receiveToWallet.setValue(wallet);
+        fragmentHolder.setValue(0);
+    }
+
+
+    public MutableLiveData<ExchangeAsset> getSelectedAsset(){
+        return this.assetExchangeTo;
+    }
 
     public void setPayFromWalletById(long walletId){
         this.payFromWalletId = walletId;

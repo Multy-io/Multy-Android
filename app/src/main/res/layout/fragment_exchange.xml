@@ -140,10 +140,11 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center_horizontal"
-                            android:textColorHighlight="@color/grey_blue"
                             android:inputType="numberDecimal"
                             android:minWidth="@dimen/dimen_60dp"
-                            android:textAppearance="@style/HintInputAppearance" />
+                            android:text="0"
+                            android:textAppearance="@style/HintInputAppearance"
+                            android:textColorHighlight="@color/grey_blue" />
                     </android.support.design.widget.TextInputLayout>
 
                     <android.support.design.widget.TextInputLayout
@@ -161,11 +162,12 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center_horizontal"
-                            android:textColorHighlight="@color/grey_blue"
                             android:hint="USD"
                             android:inputType="numberDecimal"
                             android:minWidth="@dimen/dimen_60dp"
-                            android:textAppearance="@style/HintInputAppearance" />
+                            android:text="0"
+                            android:textAppearance="@style/HintInputAppearance"
+                            android:textColorHighlight="@color/grey_blue" />
                     </android.support.design.widget.TextInputLayout>
 
                 </android.support.constraint.ConstraintLayout>

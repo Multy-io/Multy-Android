@@ -27,9 +27,12 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.api.socket.SocketManager;
+import io.multy.model.entities.ExchangeAsset;
 import io.multy.model.entities.ExchangePair;
 import io.multy.storage.RealmManager;
+import io.multy.ui.fragments.exchange.ChooserExchangePairFragment;
 import io.multy.ui.fragments.exchange.ExchangeFragment;
+import io.multy.ui.fragments.exchange.ExchangeWalletChooserFragment;
 import io.multy.ui.fragments.send.AmountChooserFragment;
 import io.multy.ui.fragments.send.AssetSendFragment;
 import io.multy.ui.fragments.send.SendSummaryFragment;
@@ -42,7 +45,6 @@ import io.multy.util.Constants;
 import io.multy.util.NativeDataHelper;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
-import io.multy.viewmodels.AssetSendViewModel;
 import io.multy.viewmodels.ExchangeViewModel;
 import timber.log.Timber;
 
@@ -72,21 +74,32 @@ public class ExchangeActivity extends BaseActivity {
         isFirstFragmentCreation = true;
         viewModel = ViewModelProviders.of(this).get(ExchangeViewModel.class);
 
-        startFlow();
-
         viewModel.setFragmentHolder(fragmentIDHolder);
+
+
+
+
+
         fragmentIDHolder.observe(this, id ->{
             switch (id){
                 case 0:
                     setFragment(R.string.exchanging, R.id.container, ExchangeFragment.newInstance());
                     break;
                 case 1:
-                    //TODO Open Select Pairs Fragment
-                    setFragment(R.string.exchanging, R.id.container, ExchangeFragment.newInstance());
+                    setFragment(R.string.exchanging, R.id.container, ChooserExchangePairFragment.newInstance());
                     break;
                 case 2:
                     //TODO open select wallet fragment
-                    setFragment(R.string.select_walet, R.id.container, WalletChooserFragment.newInstance(0,1));
+                    ExchangeAsset asset = viewModel.getSelectedAsset().getValue();
+                    if (asset != null){
+                        int chainId = 0;
+                        int networdId = 0;
+                        if (asset.getChainId() != chainId){
+                            chainId = 60;
+                            networdId = 1;
+                        }
+                        setFragment(R.string.select_walet, R.id.container, ExchangeWalletChooserFragment.newInstance(chainId,networdId));
+                    }
             }
         });
 
@@ -95,7 +108,7 @@ public class ExchangeActivity extends BaseActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-
+        startFlow();
 
 
     }
@@ -185,12 +198,15 @@ public class ExchangeActivity extends BaseActivity {
 
 
         //TODO remove this test calls
-       testAPIcallse();
+        setFragment(R.string.exchanging, R.id.container, ExchangeFragment.newInstance());
+
+//        viewModel.getAssetsList();
+//       testAPIcallse();
 
     }
 
     private void testAPIcallse(){
-        viewModel.getAssetsList();
+//        viewModel.getAssetsList();
 
         //TODO this is hardoded pair
         ExchangePair pair = new ExchangePair("btc", "eth", 1f);
