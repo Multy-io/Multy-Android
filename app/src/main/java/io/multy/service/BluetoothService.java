@@ -56,16 +56,17 @@ public class BluetoothService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        final String action = intent.getAction();
 
-        if (action != null) {
-            switch (action) {
-                case START_SERVICE:
-                    startForegroundService();
-                    break;
-
-            }
-        }
+        // UNCOMMENT IF FOREGROUND SERVICE NEEDED
+//        final String action = intent.getAction();
+//        if (action != null) {
+//            switch (action) {
+//                case START_SERVICE:
+//                    startForegroundService();
+//                    break;
+//
+//            }
+//        }
 
         return super.onStartCommand(intent, flags, startId);
     }
@@ -81,33 +82,34 @@ public class BluetoothService extends Service {
         super.onDestroy();
     }
 
-    private void startForegroundService(){
-        createNotificationChannel();
-        Intent notificationIntent = new Intent();
-        PendingIntent pendingIntent=PendingIntent.getActivity(this, 0,
-                notificationIntent, 0);
+    // UNCOMMENT IF FOREGROUND SERVICE NEEDED
+//    private void startForegroundService(){
+//        createNotificationChannel();
+//        Intent notificationIntent = new Intent();
+//        PendingIntent pendingIntent=PendingIntent.getActivity(this, 0,
+//                notificationIntent, 0);
+//
+//        Notification notification=new NotificationCompat.Builder(this, BLUETOOTH_SERVICE_NOTIFICATION_CHANNEL_ID)
+//                .setSmallIcon(R.drawable.logo)
+//                .setContentTitle("Bluetooth Service")
+//                .setContentText("Bluetooth Service Description")
+//                .setContentIntent(pendingIntent).build();
+//
+//        startForeground(BLUETOOTH_SERVICE_NOTIFICATION_ID, notification);
+//        setServiceMode(BluetoothServiceMode.STARTED);
+//    }
 
-        Notification notification=new NotificationCompat.Builder(this, BLUETOOTH_SERVICE_NOTIFICATION_CHANNEL_ID)
-                .setSmallIcon(R.drawable.logo)
-                .setContentTitle("Bluetooth Service")
-                .setContentText("Bluetooth Service Description")
-                .setContentIntent(pendingIntent).build();
-
-        startForeground(BLUETOOTH_SERVICE_NOTIFICATION_ID, notification);
-        setServiceMode(BluetoothServiceMode.STARTED);
-    }
-
-    private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "Bluetooth Channel Title";
-            String description = "Bluetooth Channel Text";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(BLUETOOTH_SERVICE_NOTIFICATION_CHANNEL_ID, name, importance);
-            channel.setDescription(description);
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
+//    private void createNotificationChannel() {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            CharSequence name = "Bluetooth Channel Title";
+//            String description = "Bluetooth Channel Text";
+//            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+//            NotificationChannel channel = new NotificationChannel(BLUETOOTH_SERVICE_NOTIFICATION_CHANNEL_ID, name, importance);
+//            channel.setDescription(description);
+//            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+//            notificationManager.createNotificationChannel(channel);
+//        }
+//    }
 
     public void startAdvertise(String userCode) {
         if (isBluetoothTransportReachable()) {
@@ -144,21 +146,28 @@ public class BluetoothService extends Service {
     }
 
     public void stopScan() {
-        if (serviceMode) {
+        if (serviceMode == BluetoothServiceMode.SCANNER) {
             BluetoothLeScanner scanner = BluetoothAdapter.getDefaultAdapter().getBluetoothLeScanner();
             scanner.stopScan(userCodeScanCallback);
-            setServiceMode(BluetoothServiceMode.SCANNER);
+            userCodeScanCallback = null;
+            userCodes.clear();
+            setServiceMode(BluetoothServiceMode.STARTED);
         }
     }
 
     private void stopForegroundService()
     {
-        stopForeground(true);
+        // UNCOMMENT IF FOREGROUND SERVICE NEEDED
+ //       stopForeground(true);
         stopSelf();
     }
 
     public void listenModeChanging(MutableLiveData<BluetoothServiceMode> modeChangingLiveData) {
         this.modeChangingLiveData = modeChangingLiveData;
+    }
+
+    public void listenUserCodes(MutableLiveData<ArrayList<String>> userCodesLiveData) {
+        this.userCodesLiveData = userCodesLiveData;
     }
 
     private AdvertiseSettings buildAdvertiseSettings() {
@@ -254,8 +263,8 @@ public class BluetoothService extends Service {
         private boolean isServiceUuidValid(ParcelUuid uuid) {
             boolean result = false;
             String uuidString = uuid.toString();
-            String uuidPrefix = uuidString.substring(0, uuidString.length() - 9);
-            if (uuidPrefix == MULTY_UUID_PREFIX) {
+            String uuidPrefix = uuidString.substring(0, MULTY_UUID_PREFIX.length());
+            if (uuidPrefix.equals(MULTY_UUID_PREFIX)) {
                 result = true;
             }
 
