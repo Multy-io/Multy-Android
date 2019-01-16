@@ -15,6 +15,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.ColorUtils;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -25,7 +26,10 @@ import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.io.IOException;
+import java.math.BigDecimal;
 
 import butterknife.BindString;
 import butterknife.BindView;
@@ -46,19 +50,18 @@ import io.multy.ui.fragments.dialogs.CompleteDialogFragment;
 import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
 import io.multy.util.NumberFormatter;
+import io.multy.util.RoundedImageTransformation;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.AssetSendViewModel;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import timber.log.Timber;
 
-public class EthSendSummaryFragment extends BaseFragment {
+public class TokenSendSummaryFragment extends BaseFragment {
 
-    private static final String TAG = EthSendSummaryFragment.class.getSimpleName();
-    public static final String TAG_SEND_SUCCESS = EthSendSummaryFragment.class.getSimpleName();
+    private static final String TAG = TokenSendSummaryFragment.class.getSimpleName();
+    public static final String TAG_SEND_SUCCESS = TokenSendSummaryFragment.class.getSimpleName();
 
     @BindView(R.id.text_receiver_balance_original)
     TextView textReceiverBalanceOriginal;
@@ -100,8 +103,8 @@ public class EthSendSummaryFragment extends BaseFragment {
     private ValueAnimator textSmaller;
     private ValueAnimator textAlpha;
 
-    public static EthSendSummaryFragment newInstance() {
-        return new EthSendSummaryFragment();
+    public static TokenSendSummaryFragment newInstance() {
+        return new TokenSendSummaryFragment();
     }
 
     @Nullable
@@ -203,7 +206,8 @@ public class EthSendSummaryFragment extends BaseFragment {
                             showError(new IllegalStateException(errorBody));
                             if (response.code() == 406 && getContext() != null) {
                                 Analytics.getInstance(getContext()).logEvent(TAG, "406", errorBody);
-                            }                        } catch (IOException e) {
+                            }
+                        } catch (IOException e) {
                             e.printStackTrace();
                             showError(new IllegalStateException(""));
                         }
@@ -225,13 +229,13 @@ public class EthSendSummaryFragment extends BaseFragment {
 
     private void setInfo() {
         CurrenciesRate currenciesRate = RealmManager.getSettingsDao().getCurrenciesRate();
-        textReceiverBalanceOriginal.setText(NumberFormatter.getInstance().format(viewModel.getAmountFull()));
+        textReceiverBalanceOriginal.setText(viewModel.tokensAmount.getValue());
         textReceiverBalanceOriginal.append(Constants.SPACE);
-        textReceiverBalanceOriginal.append(CurrencyCode.ETH.name());
-        textReceiverBalanceCurrency.setText(NumberFormatter.getFiatInstance().format(viewModel.getAmount() * currenciesRate.getEthToUsd()));
-        textReceiverBalanceCurrency.append(Constants.SPACE);
-        textReceiverBalanceCurrency.append(CurrencyCode.USD.name());
+        textReceiverBalanceOriginal.append(viewModel.tokenCode.getValue());
 //        textReceiverAddress.setText(viewModel.getReceiverAddress().getValue());
+        if (!TextUtils.isEmpty(viewModel.tokenPrice.getValue())) {
+            textReceiverBalanceCurrency.setText(getTokenPrice(new BigDecimal(viewModel.tokensAmount.getValue()), viewModel.tokenPrice.getValue(), viewModel.decimals.getValue()));
+        }
         textReceiverAddress.setText(viewModel.thoseAddress.getValue());
         textWalletName.setText(viewModel.getWallet().getWalletName());
         textSenderAddress.setText(viewModel.getWallet().getActiveAddress().getAddress());
@@ -243,7 +247,19 @@ public class EthSendSummaryFragment extends BaseFragment {
 
         final double feeETh = EthWallet.getTransactionPrice(viewModel.getFee().getAmount());
         textFeeAmount.setText(String.format("%s ETH / %s USD", CryptoFormatUtils.FORMAT_ETH.format(feeETh), CryptoFormatUtils.ethToUsd(feeETh)));
-        imageLogo.setImageResource(viewModel.getWallet().getIconResourceId());
+//        imageLogo.setImageResource(viewModel.getWallet().getIconResourceId());
+        Picasso.get()
+                .load(viewModel.imageUrl.getValue())
+                .error(R.drawable.chain_eth)
+                .transform(new RoundedImageTransformation())
+                .into(imageLogo);
+    }
+
+    private String getTokenPrice(BigDecimal value, String price, int decimals) {
+        final BigDecimal divisor = new BigDecimal(Math.pow(10, decimals));
+        value = value.divide(divisor);
+        value = value.multiply(new BigDecimal(price));
+        return NumberFormatter.getFiatInstance().format(value) + "$";
     }
 
     private void showError(Throwable throwable) {

@@ -200,26 +200,8 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
     @OnClick(R.id.button_next)
     void onClickNext() {
         if (!TextUtils.isEmpty(inputOriginal.getText()) && isParsable(inputOriginal.getText().toString()) && Double.valueOf(inputOriginal.getText().toString()) != 0) {
-//            boolean invalid;
-//            long inputSatoshi = CryptoFormatUtils.btcToSatoshi(inputOriginal.getText().toString());
-//            if (switcher.isChecked()) {
-//                invalid = getFeePlusDonation() + inputSatoshi > spendableSatoshi;
-//            } else {
-//                if (inputSatoshi == spendableSatoshi) {
-//                    invalid = false;
-//                } else {
-//                    invalid = inputSatoshi - getFeePlusDonation() >= spendableSatoshi;
-//                }
-//            }
-//
-//            if (invalid) {
-//                Toast.makeText(getActivity(), R.string.error_balance, Toast.LENGTH_LONG).show();
-//            } else if (!invalid) {
             viewModel.setAmount(Double.valueOf(inputOriginal.getText().toString()));
             viewModel.signTransactionEth();
-//            }
-//        } else {
-//            Toast.makeText(getActivity(), R.string.choose_amount, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -420,7 +402,7 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
     @SuppressLint("ClickableViewAccessibility")
     private void setupInputEth() {
         if (viewModel.getAmount() != 0) {
-            inputOriginal.setText(NumberFormatter.getInstance().format(viewModel.getAmount()));
+            inputOriginal.setText(NumberFormatter.getInstance().format(new BigDecimal(viewModel.getAmount())));
         }
 
         inputOriginal.setOnTouchListener((v, event) -> {

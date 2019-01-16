@@ -196,6 +196,7 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
     }
 
     private void discoverWallets() {
+        Timber.i("discover wallets called");
         List<DiscoverableWalletInfo> walletsToDiscover = new ArrayList<>(10);
         for (int i = 0; i < 9; i++) {
             try {
@@ -349,7 +350,8 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
     }
 
     private void updateWallets() {
-        viewModel.isLoading.setValue(true);
+        Timber.i("update wallets called");
+//        viewModel.isLoading.setValue(true);
         MultyApi.INSTANCE.getWalletsVerbose().enqueue(new Callback<WalletsResponse>() {
             @Override
             public void onResponse(@NonNull Call<WalletsResponse> call, @NonNull Response<WalletsResponse> response) {
@@ -370,8 +372,9 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
                         recyclerView.setVisibility(View.GONE);
                     }
 
-                    createDeepMagicWallet();
                     detectBrokenWallets();
+                    createDeepMagicWallet();
+                    Timber.i("check meta mask " + checkMetamask);
                     if (checkMetamask) {
                         checkMetamask = false;
                         discoverWallets();
@@ -390,6 +393,7 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
     }
 
     private void createDeepMagicWallet() {
+        Timber.i("create deep magic called " + (deepMagicWallet == null));
         if (deepMagicWallet != null) {
             final int blockChainId = deepMagicWallet.getCurrencyId();
             final int networkId = deepMagicWallet.getNetworkId();
@@ -457,6 +461,7 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
                 }
             }, 1000);
         }
+        Timber.i("create deep wallets ended");
     }
 
     private void ddosTrueResponse(final int index) {
@@ -501,7 +506,9 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
     }
 
     private void detectBrokenWallets() {
-        if (!Prefs.getBoolean(Constants.PREF_DETECT_BROKEN, false)) {
+        Timber.i("broken wallets called");
+        if (!Prefs.getBoolean(Constants.PREF_DETECT_BROKEN, false) || checkMetamask) {
+            Timber.i("broken wallets ended");
             return;
         }
 
@@ -547,7 +554,11 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
                 }
             });
             RealmManager.getAssetsDao().savePrivateKeys(keys);
+        } else {
+            Prefs.putBoolean(Constants.PREF_DETECT_BROKEN, false);
         }
+
+        Timber.i("broken wallets ended");
     }
 
     private void initList() {

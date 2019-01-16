@@ -12,35 +12,32 @@ To conrtibute please check **Build instructions
 
 1. Clone master branch of the Multy-android project
 ```
-git clone https://github.com/Appscrunch/Multy-android.git
+git clone https://github.com/Multy-io/Multy-Android.git
 ```
 
 2. Make shure you have CMake and NDK installed in Android Studio SDK Tools
 
 3. Clone master branch of the Multy-Core project
 ```
-git clone https://github.com/Appscrunch/Multy-Core.git
+git clone https://github.com/Multy-io/Multy-Core
 ```
 4. Checkout master branch of the Multy-Core project
 ```
 git checkout master
 ```
 
-5. Update path in CMakeLists.txt file in Multy-Core project
+5. Update path in constants.gradle file in Multy-Core project
 ```
-add_library(core_jni
-       SHARED
-       "/../Multy-android/app/src/main/cpp/scratch.cpp"
-    )
+ext {
+    DMULTY_ANDROID_PATH_TO_JNI_WRAPPER = '-DMULTY_ANDROID_PATH_TO_JNI_WRAPPER=/UPDATE_THIS_PATH/Multy-Android/app/src/main/cpp/scratch.cpp'
+    CMAKE_PATH = '/UPDATE_THIS_PATH/Multy-Core/CMakeLists.txt'
+}
 
 ```
-6. Update constants.gradle files and paste your pases to cmake and scatch.cpp files
+6. In Android Studio make Gradle sync
 
 ```
-7. In Android Studio make Gradle sync
-
-```
-8. In Android Studio
+7. In Android Studio
 ```
 Build -> Clean Project
 Build -> Refresh Linked C++ Project

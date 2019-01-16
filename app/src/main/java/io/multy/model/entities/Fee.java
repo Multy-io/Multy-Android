@@ -12,6 +12,7 @@ public class Fee {
 //    private String time;
     private String name;
     private long amount;
+    private long gasLimit = 21000l;
 //    private int blockCount;
     private boolean isSelected = false;
 
@@ -46,10 +47,16 @@ public class Fee {
         return amount;
     }
 
+    public long getGasLimit(){ return gasLimit;}
+
     public void setAmount(long amount) {
         this.amount = amount;
     }
 
+    public void setAmountAndLimit(long amount, long limit){
+        this.amount = amount;
+        this.gasLimit = limit;
+    }
 //    public int getBlockCount() {
 //        return blockCount;
 //    }

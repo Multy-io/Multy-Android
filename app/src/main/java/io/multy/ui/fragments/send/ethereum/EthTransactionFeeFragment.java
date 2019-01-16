@@ -24,6 +24,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,6 +36,7 @@ import butterknife.OnClick;
 import io.multy.R;
 import io.multy.model.entities.Fee;
 import io.multy.ui.activities.AssetSendActivity;
+import io.multy.ui.activities.TokenSendActivity;
 import io.multy.ui.adapters.MyFeeAdapter;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
@@ -151,43 +153,127 @@ public class EthTransactionFeeFragment extends BaseFragment
 //        logTransactionFee(position);
 //    }
 
-    public void showCustomFeeDialog(long currentValue) {
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+    public void showCustomFeeDialog(long currentValue, long currentGasLimit) {
+//        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+
+
+//        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity(),android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+
+
+
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity(),android.R.style.Theme_Light_NoTitleBar_Fullscreen);
+
+
         LayoutInflater inflater = this.getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.dialog_custom_eth_fee, null);
         dialogBuilder.setView(dialogView);
 
-        final TextInputEditText input = dialogView.findViewById(R.id.input_custom);
-        String fee = currentValue == -1 ? "1" : String.valueOf(currentValue / Math.pow(10, 9));
-        if (fee.contains(".")) {
-            fee = fee.split("\\.")[0];
+
+        final TextInputEditText inputGasLimit = dialogView.findViewById(R.id.input_gas_limit);
+        String gasLimit = String.valueOf(currentGasLimit);
+        if (gasLimit.contains(".")) {
+            gasLimit = gasLimit.split("\\.")[0];
         }
-        input.setText(fee);
-        input.setSelection(input.getText().length());
+        inputGasLimit.setText(gasLimit);
+        inputGasLimit.setSelection(inputGasLimit.getText().length());
+
+
+
+
+        final TextInputEditText inputGasPrice = dialogView.findViewById(R.id.input_gas_price);
+
+        String fee = "1";
+        if (currentValue % Math.pow(10, 9)== 0){
+            fee = String.valueOf(currentValue / Math.pow(10, 9));
+            if (fee.contains(".")) {
+                fee = fee.split("\\.")[0];
+            }
+        } else {
+            fee = String.valueOf(currentValue / Math.pow(10, 9));
+        }
+
+//        String fee = currentValue == -1 ? "1" : String.valueOf(currentValue / Math.pow(10, 9));
+//        if (fee.contains(".")) {
+//            fee = fee.split("\\.")[0];
+//        }
+        inputGasPrice.setText(fee);
+        inputGasPrice.setSelection(inputGasPrice.getText().length());
 
         final LifecycleObserver lifecycleObserver = new LifecycleObserver() {
             @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
             public void onResume() {
-                input.postDelayed(() -> showKeyboard(getActivity(), input), 150);
+                inputGasPrice.postDelayed(() -> showKeyboard(getActivity(), inputGasPrice), 150);
             }
         };
         getLifecycle().addObserver(lifecycleObserver);
         dialogBuilder.setOnDismissListener(dialog -> getLifecycle().removeObserver(lifecycleObserver));
 
-        dialogBuilder.setTitle(R.string.custom_fee);
+        dialogBuilder.setTitle("");
+
+        final ImageButton backButton = dialogView.findViewById(R.id.but_back_eth_custom_fee);
+
+
         dialogBuilder.setPositiveButton(R.string.done, (dialog, whichButton) -> {
-            if (!input.getText().toString().isEmpty() && Integer.parseInt(input.getText().toString()) >= 1) {
-                ((MyFeeAdapter) recyclerView.getAdapter()).setCustomFee((long) (Long.valueOf(input.getText().toString()) * Math.pow(10, 9)));
-                Analytics.getInstance(getActivity()).logTransactionFee(AnalyticsConstants.TRANSACTION_FEE_CUSTOM_SET, viewModel.getChainId());
+            long customGasLimit = 21000l;
+
+            if (!inputGasLimit.getText().toString().isEmpty() && (long)(Long.parseLong(inputGasLimit.getText().toString())) >= 21000l){
+                customGasLimit = (long) (Long.parseLong(inputGasLimit.getText().toString()));
             }
+
+            String currentGas = inputGasPrice.getText().toString();
+            if (!currentGas.isEmpty() && Double.parseDouble(currentGas)>=1){
+                long gas =(long) (Double.parseDouble(currentGas) * Math.pow(10, 9));
+                ((MyFeeAdapter) recyclerView.getAdapter()).setCustomFee(gas, customGasLimit);
+                Analytics.getInstance(getActivity()).logTransactionFee(AnalyticsConstants.TRANSACTION_FEE_CUSTOM_SET, viewModel.getChainId());
+
+            }
+
+//            if (!inputGasPrice.getText().toString().isEmpty() && Integer.parseInt(inputGasPrice.getText().toString()) >= 1) {
+//                ((MyFeeAdapter) recyclerView.getAdapter()).setCustomFee((long) (Long.valueOf(inputGasPrice.getText().toString()) * Math.pow(10, 9)), customGasLimit);
+//                Analytics.getInstance(getActivity()).logTransactionFee(AnalyticsConstants.TRANSACTION_FEE_CUSTOM_SET, viewModel.getChainId());
+//            }
         });
         dialogBuilder.setNegativeButton(R.string.cancel, (dialog, whichButton) -> {
             Analytics.getInstance(getActivity()).logTransactionFee(AnalyticsConstants.TRANSACTION_FEE_CUSTOM_CANCEL, viewModel.getChainId());
         });
+
         dialogBuilder.setOnDismissListener(dialog -> {
             hideKeyboard(getActivity());
         });
-        dialogBuilder.create().show();
+
+        AlertDialog dialogM = dialogBuilder.create();
+
+
+        backButton.setOnClickListener(view -> {
+            long customGasLimit = 21000l;
+
+            if (!inputGasLimit.getText().toString().isEmpty() && (long)(Long.parseLong(inputGasLimit.getText().toString())) >= 21000l){
+                customGasLimit = (long) (Long.parseLong(inputGasLimit.getText().toString()));
+            }
+
+            String currentGas = inputGasPrice.getText().toString();
+            if (!currentGas.isEmpty() && Double.parseDouble(currentGas)>=1){
+                long gas =(long) (Double.parseDouble(currentGas) * Math.pow(10, 9));
+                ((MyFeeAdapter) recyclerView.getAdapter()).setCustomFee(gas, customGasLimit);
+                Analytics.getInstance(getActivity()).logTransactionFee(AnalyticsConstants.TRANSACTION_FEE_CUSTOM_SET, viewModel.getChainId());
+
+            }
+            dialogM.dismiss();
+//
+//            if (!inputGasPrice.getText().toString().isEmpty() && Integer.parseInt(inputGasPrice.getText().toString()) >= 1) {
+//                ((MyFeeAdapter) recyclerView.getAdapter()).setCustomFee((long) (Long.valueOf(inputGasPrice.getText().toString()) * Math.pow(10, 9)), customGasLimit);
+//                Analytics.getInstance(getActivity()).logTransactionFee(AnalyticsConstants.TRANSACTION_FEE_CUSTOM_SET, viewModel.getChainId());
+//            }
+        });
+
+
+
+
+
+        dialogM.show();
+//        dialogBuilder.create().show();
+
+
     }
 
     @Override
@@ -196,8 +282,8 @@ public class EthTransactionFeeFragment extends BaseFragment
     }
 
     @Override
-    public void onClickCustomFee(long currentValue) {
-        showCustomFeeDialog(currentValue);
+    public void onClickCustomFee(long currentValue, long limit) {
+        showCustomFeeDialog(currentValue, limit);
         logTransactionFee(5);
     }
 
@@ -231,7 +317,12 @@ public class EthTransactionFeeFragment extends BaseFragment
 
         if (selectedFee != null) {
             viewModel.setFee(selectedFee);
-            ((AssetSendActivity) getActivity()).setFragment(R.string.send_amount, R.id.container, EthAmountChooserFragment.newInstance());
+            if (getActivity() instanceof TokenSendActivity) {
+                ((TokenSendActivity) getActivity()).setFragment(R.string.send_amount, R.id.container, TokenAmountChooserFragment.newInstance());
+            } else {
+                ((AssetSendActivity) getActivity()).setFragment(R.string.send_amount, R.id.container, EthAmountChooserFragment.newInstance());
+            }
+
         } else {
             Toast.makeText(getActivity(), R.string.choose_transaction_speed, Toast.LENGTH_SHORT).show();
         }

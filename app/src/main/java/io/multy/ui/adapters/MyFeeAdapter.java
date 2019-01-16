@@ -60,7 +60,7 @@ public class MyFeeAdapter extends RecyclerView.Adapter<MyFeeAdapter.FeeHolder> {
                     holder.divider.setVisibility(View.GONE);
                     holder.imageLogo.setImageResource(R.drawable.ic_custom);
                     holder.textBalanceOriginal.setText(String.format("%s Sat/B", price));
-                    holder.root.setOnClickListener(v -> listener.onClickCustomFee(rate.getAmount()));
+                    holder.root.setOnClickListener(v -> listener.onClickCustomFee(rate.getAmount(), rate.getGasLimit()));
                 } else {
                     holder.imageLogo.setImageResource(getIconResId(position));
                     holder.textName.setText(rate.getName());
@@ -79,7 +79,7 @@ public class MyFeeAdapter extends RecyclerView.Adapter<MyFeeAdapter.FeeHolder> {
                 if (position == rates.size() - 1) {
                     holder.divider.setVisibility(View.GONE);
                     holder.imageLogo.setImageResource(R.drawable.ic_custom);
-                    holder.root.setOnClickListener(v -> listener.onClickCustomFee(rate.getAmount()));
+                    holder.root.setOnClickListener(v -> listener.onClickCustomFee(rate.getAmount(), rate.getGasLimit()));
                 } else {
                     holder.imageLogo.setImageResource(getIconResId(position));
                     holder.root.setOnClickListener(v -> {
@@ -153,8 +153,9 @@ public class MyFeeAdapter extends RecyclerView.Adapter<MyFeeAdapter.FeeHolder> {
         return null;
     }
 
-    public void setCustomFee(long fee) {
-        rates.get(rates.size() - 1).setAmount(fee);
+    public void setCustomFee(long fee, long limit) {
+//        rates.get(rates.size() - 1).setAmount(fee);
+        rates.get(rates.size() -1).setAmountAndLimit(fee, limit);
         setItemSelected(rates.size() - 1);
     }
 
@@ -182,7 +183,7 @@ public class MyFeeAdapter extends RecyclerView.Adapter<MyFeeAdapter.FeeHolder> {
 
     public interface OnCustomFeeClickListener {
         void onClickFee(Fee fee);
-        void onClickCustomFee(long currentValue);
+        void onClickCustomFee(long currentValue, long limit);
         void logTransactionFee(int position);
     }
 }

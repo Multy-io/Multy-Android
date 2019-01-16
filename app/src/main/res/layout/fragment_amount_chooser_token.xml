@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2018 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_main"
+    tools:showIn="io.multy.android.AssetRequestActivity">
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/container_input"
+        android:layout_width="@dimen/dp0"
+        android:layout_height="140dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/container_input_original"
+            android:layout_width="@dimen/dp0"
+            android:layout_height="36dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <android.support.v7.widget.AppCompatEditText
+                android:id="@+id/input_balance_original"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:layout_marginBottom="@dimen/margin_5dp"
+                android:background="@null"
+                android:hint="@integer/zero"
+                android:inputType="numberDecimal"
+                android:letterSpacing="0.01"
+                android:lineSpacingExtra="-13sp"
+                android:maxLength="15"
+                android:minWidth="@dimen/dimen_20dp"
+                android:textAlignment="textEnd"
+                android:textColor="@color/text_main"
+                android:textColorHint="@color/text_grey"
+                android:textSize="24sp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                tools:text="234235 asdf asdf " />
+
+            <TextView
+                android:id="@+id/text_currency_code_original"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_5dp"
+                android:text="@string/eth"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+                android:textColor="@color/text_grey"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="@id/input_balance_original"
+                app:layout_constraintLeft_toRightOf="@id/input_balance_original"
+                app:layout_constraintTop_toTopOf="@id/input_balance_original" />
+
+        </android.support.constraint.ConstraintLayout>
+
+        <ImageView
+            android:id="@+id/button_clear_original"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:paddingLeft="16dp"
+            android:paddingTop="10dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="10dp"
+            app:layout_constraintBottom_toBottomOf="@id/container_input_original"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@id/container_input_original"
+            app:srcCompat="@drawable/ic_clear_input" />
+    </android.support.constraint.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/text_spendable"
+        android:layout_width="@dimen/dp0"
+        android:layout_height="@dimen/spendable_height"
+        android:background="@color/gray_middle"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/activity_horizontal_margin"
+        android:paddingEnd="@dimen/activity_horizontal_margin"
+        android:text="@string/available_amount"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textColor="@color/text_grey"
+        app:layout_constraintBottom_toTopOf="@+id/button_next"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/text_max"
+        android:layout_width="@dimen/dp0"
+        android:layout_height="@dimen/spendable_height"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:gravity="center_vertical"
+        android:lineSpacingExtra="6sp"
+        android:text="@string/max"
+        android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+        android:textColor="@color/colorPrimaryDark"
+        app:layout_constraintBottom_toTopOf="@+id/button_next"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/button_next"
+        style="@style/ButtonNext"
+        android:gravity="center_horizontal"
+        android:letterSpacing="0.01"
+        android:lineSpacingExtra="13sp"
+        android:padding="@dimen/margin_7dp"
+        android:text="@string/next"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <TextView
+        android:id="@+id/text_total"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin_7dp"
+        android:letterSpacing="0.01"
+        android:lineSpacingExtra="13sp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Menu"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="@+id/button_next"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="0.11212" />
+
+    <android.support.constraint.Group
+        android:id="@+id/group_send"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="text_spendable,text_max,switcher,text_fee" />
+
+</android.support.constraint.ConstraintLayout>

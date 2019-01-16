@@ -56,6 +56,13 @@ public class AssetSendViewModel extends BaseViewModel {
     public MutableLiveData<String> thoseAddress = new MutableLiveData<>();
     public static MutableLiveData<Long> transactionPrice = new MutableLiveData<>();
     public SingleLiveEvent<String> transaction = new SingleLiveEvent<>();
+    public MutableLiveData<String> contractAddress = new MutableLiveData<>();
+    public MutableLiveData<String> tokenBalance = new MutableLiveData<>();
+    public MutableLiveData<String> tokenCode = new MutableLiveData<>();
+    public MutableLiveData<Integer> decimals = new MutableLiveData<>();
+    public MutableLiveData<String> tokensAmount = new MutableLiveData<>();
+    public MutableLiveData<String> imageUrl = new MutableLiveData<>();
+    public MutableLiveData<String> tokenPrice = new MutableLiveData<>();
     private double amount;
     private boolean isPayForCommission = true;
     private String donationAmount = "0";
@@ -107,6 +114,10 @@ public class AssetSendViewModel extends BaseViewModel {
 
     public double getAmount() {
         return amount;
+    }
+
+    public BigDecimal getAmountFull() {
+        return new BigDecimal(amount);
     }
 
     public MutableLiveData<String> getReceiverAddress() {
@@ -292,7 +303,9 @@ public class AssetSendViewModel extends BaseViewModel {
                             getWallet().getActiveAddress().getAddress(),
                             signAmount,
                             receiverAddress.getValue(),
-                            estimation.getValue().getSubmitTransaction(),
+                            //TODO please test this solution!
+//                            estimation.getValue().getSubmitTransaction(),
+                            String.valueOf(fee.getValue().getGasLimit()),
                             String.valueOf(fee.getValue().getAmount()),
                             linkedWallet.getEthWallet().getNonce());
                 } else {
@@ -306,7 +319,9 @@ public class AssetSendViewModel extends BaseViewModel {
                             getWallet().getActiveAddress().getAddress(),
                             signAmount,
                             getReceiverAddress().getValue(),
-                            estimation.getValue().getSubmitTransaction(),
+                            //TODO please test this solution!
+//                            estimation.getValue().getSubmitTransaction(),
+                            String.valueOf(fee.getValue().getGasLimit()),
                             String.valueOf(fee.getValue().getAmount()),
                             linkedWallet.getEthWallet().getNonce());
                 }
@@ -319,7 +334,9 @@ public class AssetSendViewModel extends BaseViewModel {
                         getWallet().getNetworkId(),
                         getWallet().getActiveAddress().getAmountString(),
                         signAmount, getReceiverAddress().getValue(),
-                        gasLimit.getValue(),
+                        //TODO please test this solution
+//                        gasLimit.getValue(),
+                        String.valueOf(fee.getValue().getGasLimit()),
                         String.valueOf(fee.getValue().getAmount()),
                         getWallet().getEthWallet().getNonce());
             } else {
@@ -342,7 +359,9 @@ public class AssetSendViewModel extends BaseViewModel {
                                         new Payload(getWallet().getActiveAddress().getAmountString(),
                                                 getReceiverAddress().getValue(), signAmount)), new Transaction(getWallet().getEthWallet().getNonce(),
                                 new io.multy.model.core.Fee(
-                                        String.valueOf(fee.getValue().getAmount()), gasLimit.getValue()))
+                                        //TODO please test this solution
+//                                        String.valueOf(fee.getValue().getAmount()), gasLimit.getValue()))
+                                        String.valueOf(fee.getValue().getAmount()), String.valueOf(fee.getValue().getGasLimit())))
                         );
 
                 String json = new Gson().toJson(builder);

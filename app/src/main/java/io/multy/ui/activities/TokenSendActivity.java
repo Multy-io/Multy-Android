@@ -1,0 +1,238 @@
+/*
+ * Copyright 2018 Idealnaya rabota LLC
+ * Licensed under Multy.io license.
+ * See LICENSE for details
+ */
+
+package io.multy.ui.activities;
+
+import android.Manifest;
+import android.app.Activity;
+import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
+import android.support.annotation.IdRes;
+import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.view.MenuItem;
+import android.view.WindowManager;
+
+import java.net.URISyntaxException;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import io.multy.R;
+import io.multy.api.socket.SocketManager;
+import io.multy.storage.RealmManager;
+import io.multy.ui.fragments.send.AmountChooserFragment;
+import io.multy.ui.fragments.send.AssetSendFragment;
+import io.multy.ui.fragments.send.SendSummaryFragment;
+import io.multy.ui.fragments.send.TransactionFeeFragment;
+import io.multy.ui.fragments.send.WalletChooserFragment;
+import io.multy.util.Constants;
+import io.multy.util.NativeDataHelper;
+import io.multy.util.analytics.Analytics;
+import io.multy.util.analytics.AnalyticsConstants;
+import io.multy.viewmodels.AssetSendViewModel;
+
+public class TokenSendActivity extends BaseActivity {
+
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+
+    private boolean isFirstFragmentCreation;
+    private AssetSendViewModel viewModel;
+    private SocketManager socketManager;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN |
+                WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        setContentView(R.layout.activity_asset_send);
+        ButterKnife.bind(this);
+        isFirstFragmentCreation = true;
+        viewModel = ViewModelProviders.of(this).get(AssetSendViewModel.class);
+
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
+        viewModel.tokenBalance.setValue(getIntent().getExtras().getString(Constants.EXTRA_TOKEN_BALANCE, ""));
+        viewModel.contractAddress.setValue(getIntent().getExtras().getString(Constants.EXTRA_CONTRACT_ADDRESS, ""));
+        viewModel.tokenCode.setValue(getIntent().getExtras().getString(Constants.EXTRA_TOKEN_CODE, ""));
+        viewModel.decimals.setValue(getIntent().getExtras().getInt(Constants.EXTRA_TOKEN_DECIMALS, 0));
+        viewModel.imageUrl.setValue(getIntent().getExtras().getString(Constants.EXTRA_TOKEN_IMAGE_URL, ""));
+        viewModel.tokenPrice.setValue(getIntent().getExtras().getString(Constants.EXTRA_TOKEN_RATE, ""));
+
+        startFlow();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        try {
+            if (socketManager == null) {
+                socketManager = new SocketManager();
+            }
+            socketManager.listenTransactionUpdates(() -> {//todo remove it when it will become deprecated
+                viewModel.updateWallets();
+            });
+            socketManager.listenEvent(SocketManager.getEventReceive(
+                    RealmManager.getSettingsDao().getUserId().getUserId()), args -> viewModel.updateWallets());
+            socketManager.connect();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        if (socketManager != null && socketManager.isConnected()) {
+            socketManager.disconnect();
+        }
+        super.onPause();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void startFlow() {
+        AssetSendViewModel viewModel = ViewModelProviders.of(this).get(AssetSendViewModel.class);
+        if (getIntent().hasExtra(Constants.EXTRA_WALLET_ID)) {
+            viewModel.setWallet(RealmManager.getAssetsDao().getWalletById(getIntent().getExtras().getLong(Constants.EXTRA_WALLET_ID, -1)));
+        }
+
+        setFragment(R.string.send_to, R.id.container, AssetSendFragment.newInstance());
+    }
+
+    private void getAddressIds(final String address, int[] addressIdsHolder) {
+        for (NativeDataHelper.Blockchain blockchain : NativeDataHelper.Blockchain.values()) {
+            for (NativeDataHelper.NetworkId networkId : NativeDataHelper.NetworkId.values()) {
+                if (isValidAddress(address, blockchain.getValue(), networkId.getValue())) {
+                    addressIdsHolder[0] = blockchain.getValue();
+                    addressIdsHolder[1] = networkId.getValue();
+                    return;
+                }
+            }
+        }
+    }
+
+    private boolean isValidAddress(String address, int blockchain, int network) {
+        try {
+            NativeDataHelper.isValidAddress(address, blockchain, network);
+            return true;
+        } catch (Throwable t) {
+            t.printStackTrace();
+            return false;
+        }
+    }
+
+    private void logCancel() {
+        List<Fragment> backStackFragments = getSupportFragmentManager().getFragments();
+        for (Fragment backStackFragment : backStackFragments) {
+            if (backStackFragment instanceof SendSummaryFragment && backStackFragment.isVisible()) {
+                Analytics.getInstance(this).logSendSummary(AnalyticsConstants.BUTTON_CLOSE, viewModel.getChainId());
+            } else if (backStackFragment instanceof AmountChooserFragment && backStackFragment.isVisible()) {
+                Analytics.getInstance(this).logSendChooseAmount(AnalyticsConstants.BUTTON_CLOSE, viewModel.getChainId());
+            } else if (backStackFragment instanceof TransactionFeeFragment && backStackFragment.isVisible()) {
+                Analytics.getInstance(this).logTransactionFee(AnalyticsConstants.BUTTON_CLOSE, viewModel.getChainId());
+            } else if (backStackFragment instanceof WalletChooserFragment && backStackFragment.isVisible()) {
+                Analytics.getInstance(this).logSendFrom(AnalyticsConstants.BUTTON_CLOSE, viewModel.getChainId());
+            } else if (backStackFragment instanceof AssetSendFragment && backStackFragment.isVisible()) {
+                Analytics.getInstance(this).logSendTo(AnalyticsConstants.BUTTON_CLOSE);
+            }
+        }
+    }
+
+    public void setFragment(@StringRes int title, @IdRes int container, Fragment fragment) {
+        toolbar.setTitle(title);
+
+        FragmentTransaction transaction = getSupportFragmentManager()
+                .beginTransaction()
+                .replace(container, fragment);
+
+        if (!isFirstFragmentCreation) {
+            transaction.addToBackStack(fragment.getClass().getName());
+        }
+
+        isFirstFragmentCreation = false;
+        transaction.commit();
+
+        hideKeyboard(this);
+    }
+
+    @OnClick(R.id.button_cancel)
+    void ocLickCancel() {
+        logCancel();
+        finish();
+    }
+
+//    private void showAlert(@StringRes int resId, String msg){
+//        new AlertDialog.Builder(this)
+//                .setTitle(resId)
+//                .setMessage(msg)
+//                .setCancelable(false)
+//                .setPositiveButton(R.string.yes, (dialog, which) -> finish())
+//                .setNegativeButton(R.string.no, (dialog, which) -> dialog.dismiss())
+//                .show();
+//    }
+
+    public void showScanScreen() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, Constants.CAMERA_REQUEST_CODE);
+        } else {
+            startActivityForResult(new Intent(this, ScanActivity.class), Constants.CAMERA_REQUEST_CODE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == Constants.CAMERA_REQUEST_CODE && grantResults.length > 0) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Analytics.getInstance(this).logSendTo(AnalyticsConstants.PERMISSION_GRANTED);
+                showScanScreen();
+            } else if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                Analytics.getInstance(this).logSendTo(AnalyticsConstants.PERMISSION_DENIED);
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == Constants.CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            if (data.hasExtra(Constants.EXTRA_QR_CONTENTS)) {
+                AssetSendViewModel viewModel = ViewModelProviders.of(this).get(AssetSendViewModel.class);
+                viewModel.setReceiverAddress(data.getStringExtra(Constants.EXTRA_QR_CONTENTS));
+                viewModel.thoseAddress.setValue(data.getStringExtra(Constants.EXTRA_QR_CONTENTS));
+                if (data.hasExtra(Constants.EXTRA_AMOUNT) && data.getExtras() != null) {
+                    viewModel.setAmountScanned(true);
+                    String amount = data.getExtras().getString(Constants.EXTRA_AMOUNT, "0");
+                    if (!TextUtils.isEmpty(amount) && amount.contains(",")) {
+                        amount = amount.replace(",", ".");
+                    }
+                    viewModel.setAmount(Double.valueOf(amount));
+                }
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+}
