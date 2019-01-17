@@ -345,7 +345,7 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
 
     private void updateWallets() {
         Timber.i("update wallets called");
-        viewModel.isLoading.setValue(true);
+//        viewModel.isLoading.setValue(true);
         MultyApi.INSTANCE.getWalletsVerbose().enqueue(new Callback<WalletsResponse>() {
             @Override
             public void onResponse(@NonNull Call<WalletsResponse> call, @NonNull Response<WalletsResponse> response) {
