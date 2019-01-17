@@ -593,11 +593,13 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     }
 
     @Override
-    public void onTokenClick(String name, String address, String balance, String balanceFiat, int decimals, String imageUrl, String tokenRate) {
+    public void onTokenClick(String name, String address, String balance, String balanceFiat, int decimals, String imageUrl) {
+//    public void onTokenClick(String name, String address, String balance, String balanceFiat, int decimals, String imageUrl, String tokenRate) {
+        //TODO check tokenRate value and replace it if needed
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
                 .addToBackStack("")
-                .replace(R.id.frame_container, TokenInfoFragment.newInstance(name, address, balance, balanceFiat, decimals, imageUrl, tokenRate))
+                .replace(R.id.frame_container, TokenInfoFragment.newInstance(name, address, balance, balanceFiat, decimals, imageUrl, "100"))
                 .commit();
     }
 

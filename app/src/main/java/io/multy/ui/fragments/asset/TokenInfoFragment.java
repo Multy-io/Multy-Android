@@ -28,6 +28,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.samwolfand.oneprefs.Prefs;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -131,6 +133,7 @@ public class TokenInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         viewModel = ViewModelProviders.of(getActivity()).get(WalletViewModel.class);
         setBaseViewModel(viewModel);
         showInfo();
+        setButtonWarnVisibility();
 
 
         Analytics.getInstance(getActivity()).logWalletLaunch(AnalyticsConstants.WALLET_SCREEN, viewModel.getChainId());
@@ -148,6 +151,7 @@ public class TokenInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         textBalanceFiat.setText(balanceFiat);
         textAddress.setText(address);
         textWalletName.setText(name);
+
     }
 
 
@@ -193,11 +197,12 @@ public class TokenInfoFragment extends BaseFragment implements AppBarLayout.OnOf
 
     private void setTransactionsState() {
         if (recyclerView.getAdapter() == null || recyclerView.getAdapter().getItemCount() == 0) {
-//            swipeRefreshLayout.setEnabled(false);
-            setNotificationsVisibility(View.VISIBLE);
+            swipeRefreshLayout.setEnabled(false);
+            //TODO enable this when tokens transaction hisory will be implemeneted on backend
+            setNotificationsVisibility(View.GONE);
             setToolbarScrollFlag(0);
         } else {
-            swipeRefreshLayout.setEnabled(true);
+            swipeRefreshLayout.setEnabled(false);
             setNotificationsVisibility(View.GONE);
             setToolbarScrollFlag(3);
         }
@@ -337,7 +342,8 @@ public class TokenInfoFragment extends BaseFragment implements AppBarLayout.OnOf
 
     @Override
     public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-        swipeRefreshLayout.setEnabled(verticalOffset == 0);
+        //TODO uncoment this when transaction history will be done
+//        swipeRefreshLayout.setEnabled(verticalOffset == 0);
     }
 
     @OnClick(R.id.options)
@@ -391,6 +397,14 @@ public class TokenInfoFragment extends BaseFragment implements AppBarLayout.OnOf
                 String packageName = component.substring(component.indexOf("{") + 1, component.indexOf("/"));
                 Analytics.getInstance(context).logWalletSharing(intent.getIntExtra(context.getString(R.string.chain_id), 1), packageName);
             }
+        }
+    }
+
+    private void setButtonWarnVisibility() {
+        if (Prefs.getBoolean(Constants.PREF_BACKUP_SEED)) {
+            buttonWarn.setVisibility(View.GONE);
+            buttonWarn.getLayoutParams().height = 0;
+
         }
     }
 }

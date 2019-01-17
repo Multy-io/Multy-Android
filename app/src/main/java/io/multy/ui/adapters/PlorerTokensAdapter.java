@@ -24,6 +24,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.multy.R;
 import io.multy.model.responses.EthplorerResponse;
+import io.multy.util.Constants;
 import io.multy.util.NativeDataHelper;
 import io.multy.util.NumberFormatter;
 import io.multy.util.RoundedImageTransformation;
@@ -31,7 +32,8 @@ import io.multy.util.RoundedImageTransformation;
 public class PlorerTokensAdapter extends RecyclerView.Adapter<PlorerTokensAdapter.ViewHolder> {
 
     public interface OnTokenClickListener {
-        void onTokenClick(String name, String address, String balance, String balanceFiat, int decimals, String imageUrl, String tokenRate);
+//        void onTokenClick(String name, String address, String balance, String balanceFiat, int decimals, String imageUrl, String tokenRate);
+void onTokenClick(String name, String address, String balance, String balanceFiat, int decimals, String imageUrl);
     }
 
     private List<EthplorerResponse.PlorerToken> tokens = new ArrayList<>();
@@ -67,7 +69,7 @@ public class PlorerTokensAdapter extends RecyclerView.Adapter<PlorerTokensAdapte
 
         if (token != null) {
             final EthplorerResponse.PlorerTokenInfo tokenInfo = token.getTokenInfo();
-            final String imageUrl = "https://raw.githubusercontent.com/TrustWallet/tokens/master/images/" + token.getTokenInfo().getContractAddress() + ".png";
+            final String imageUrl = Constants.TOKEN_BASE_LOGO_URL + token.getTokenInfo().getContractAddress().toLowerCase() + ".png";
             Picasso.get()
                     .load(imageUrl)
                     .error(R.drawable.chain_eth)
@@ -84,8 +86,10 @@ public class PlorerTokensAdapter extends RecyclerView.Adapter<PlorerTokensAdapte
                     holder.textBalance.getText().toString(),
                     holder.textPrice.getText().toString(),
                     tokenInfo.getDecimals(),
-                    imageUrl,
-                    token.getTokenInfo().getPrice().getRate()));
+                    imageUrl
+//                    imageUrl,
+//                    token.getTokenInfo().getPrice().getRate()
+            ));
         } else {
             holder.parent.setOnClickListener(null);
             holder.textBalance.setText(ethBalance);
