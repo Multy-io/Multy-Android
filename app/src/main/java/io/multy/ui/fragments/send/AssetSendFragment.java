@@ -240,7 +240,11 @@ public class AssetSendFragment extends BaseFragment implements RecentAddressesAd
     @OnClick(R.id.button_scan_qr)
     void onClickScanQr() {
         Analytics.getInstance(getActivity()).logSendTo(AnalyticsConstants.SEND_TO_QR);
-        ((AssetSendActivity) getActivity()).showScanScreen();
+        if (getActivity() instanceof AssetSendActivity){
+            ((AssetSendActivity) getActivity()).showScanScreen();
+        } else if (getActivity() instanceof TokenSendActivity){
+            ((TokenSendActivity) getActivity()).showScanScreen();
+        }
     }
 
     @OnClick(R.id.button_next)
