@@ -13,14 +13,18 @@ import android.bluetooth.le.AdvertiseCallback;
 import android.bluetooth.le.AdvertiseData;
 import android.bluetooth.le.AdvertiseSettings;
 import android.bluetooth.le.BluetoothLeAdvertiser;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.os.ParcelUuid;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +49,7 @@ import io.multy.api.socket.SocketManager;
 import io.multy.api.socket.TransactionUpdateResponse;
 import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.model.socket.ReceiveMessage;
+import io.multy.service.BluetoothService;
 import io.multy.storage.RealmManager;
 import io.multy.storage.SettingsDao;
 import io.multy.ui.Hash2PicView;
@@ -61,12 +66,13 @@ import io.socket.client.Socket;
 
 import static io.multy.api.socket.BlueSocketManager.EVENT_PAY_RECEIVE;
 import static io.multy.api.socket.BlueSocketManager.EVENT_TRANSACTION_UPDATE;
+import static io.multy.util.Constants.EXTRA_USER_CODE;
+import static io.multy.util.Constants.START_BROADCAST;
 
 public class MagicReceiveFragment extends BaseFragment {
 
     public static final int REQUEST_CODE_LOCATION = 523;
     public static final int REQUEST_CODE_BLUETOOTH = 524;
-    private static final char[] HEX_CHARS = "0123456789ABCDEF".toCharArray();
 
     @BindView(R.id.image_fast_icon)
     Hash2PicView imageFastId;
@@ -81,12 +87,31 @@ public class MagicReceiveFragment extends BaseFragment {
 
     private AssetRequestViewModel viewModel;
     private BlueSocketManager socketManager = new BlueSocketManager();
-    private Callback callback;
+
+    private boolean mBound = false;
+    BluetoothService mBluetoothService;
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            BluetoothService.BluetoothBinder binder = (BluetoothService.BluetoothBinder) service;
+            mBluetoothService = binder.getService();
+            mBluetoothService.listenModeChanging(viewModel.getModeChangingLiveData());
+
+            start();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        callback = new Callback();
     }
 
     @Nullable
@@ -96,7 +121,23 @@ public class MagicReceiveFragment extends BaseFragment {
         ButterKnife.bind(this, convertView);
         viewModel = ViewModelProviders.of(getActivity()).get(AssetRequestViewModel.class);
         setBaseViewModel(viewModel);
+        viewModel.getModeChangingLiveData().observe(this, mode -> {
+            Log.d("MAGIC_TEST", "MODE CHANGED " + mode);
+            switch (mode) {
+                case BROADCASTER:
+                    connectSockets();
+                    break;
+            }
+        });
+
         return convertView;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Intent intent = new Intent(getActivity(), BluetoothService.class);
+        getActivity().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -122,16 +163,22 @@ public class MagicReceiveFragment extends BaseFragment {
 
     @Override
     public void onPause() {
-        if (callback != null && BluetoothAdapter.getDefaultAdapter().isEnabled()) {
-            BluetoothAdapter.getDefaultAdapter().getBluetoothLeAdvertiser().stopAdvertising(callback);
-            disconnect();
-        }
+        stop();
         super.onPause();
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+
+        if (mBound) {
+            getActivity().unbindService(mConnection);
+            mBound = false;
+        }
+    }
+
+    @Override
     public void onDestroy() {
-        callback = null;
         super.onDestroy();
     }
 
@@ -144,16 +191,45 @@ public class MagicReceiveFragment extends BaseFragment {
     }
 
     private void start() {
+        if (mBluetoothService != null) {
+            mBluetoothService.startAdvertise(viewModel.getUserCode());
+        }
+    }
+
+    private void stop() {
+        if (mBluetoothService != null) {
+            disconnectSockets();
+        }
+    }
+
+    private void connectSockets() {
         if (socketManager.getSocket() == null || !socketManager.getSocket().connected()) {
             socketManager.connect();
             socketManager.getSocket().on(EVENT_PAY_RECEIVE, args -> {
                 getActivity().setResult(Activity.RESULT_OK);
                 close();
             });
-            final double amount = viewModel.getAmount();
-            final int currencyId = viewModel.getWallet().getCurrencyId();
-            socketManager.getSocket().on(Socket.EVENT_CONNECT, args -> becomeReceiver(amount, currencyId));
-//            socketManager.getSocket().on(EVENT_TRANSACTION_UPDATE_BTC, args -> getActivity().runOnUiThread(() -> verifyTransactionUpdate(args[0].toString())));
+
+            JSONObject jsonObject = new JSONObject();
+            try {
+                jsonObject.put("userid", viewModel.getUserId());
+                jsonObject.put("usercode", viewModel.getUserCode());
+                jsonObject.put("currencyid", viewModel.getChainId());
+                jsonObject.put("networkid", viewModel.getNetworkId());
+                jsonObject.put("address", viewModel.getAddress().getValue());
+                jsonObject.put("amount", viewModel.getAmountInMinimalUnits());
+                socketManager.getSocket().on(Socket.EVENT_CONNECT, args -> {
+                    Log.d("MAGIC_TEST", "SOCKETS CONNECTED");
+                    socketManager.becomeReceiver(jsonObject);
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            socketManager.getSocket().on(Socket.EVENT_DISCONNECT, args -> {
+                Log.d("MAGIC_TEST", "SOCKETS DISCONNECTED");
+                mBluetoothService.stopAdvertise();
+            });
             socketManager.getSocket().on(EVENT_TRANSACTION_UPDATE, args -> getActivity().runOnUiThread(() -> verifyTransactionUpdate(args[0].toString())));
             socketManager.getSocket().on(SocketManager.getEventReceive(RealmManager.getSettingsDao().getUserId().getUserId()), args -> {
                 if (getActivity() != null) {
@@ -169,80 +245,18 @@ public class MagicReceiveFragment extends BaseFragment {
         }
     }
 
-    private String stringToHex(byte[] buf) {
-        char[] chars = new char[2 * buf.length];
-        for (int i = 0; i < buf.length; ++i) {
-            chars[2 * i] = HEX_CHARS[(buf[i] & 0xF0) >>> 4];
-            chars[2 * i + 1] = HEX_CHARS[buf[i] & 0x0F];
-        }
-        return new String(chars);
-    }
-
-    private void verifyTransactionUpdate(String json) {
-        TransactionUpdateResponse response = new Gson().fromJson(json, TransactionUpdateResponse.class);
-        if (response != null) {
-            final String address = viewModel.getWallet().getActiveAddress().getAddress();
-            if (response.getEntity().getAddress().equals(address) && response.getEntity().getType() == Constants.TX_MEMPOOL_INCOMING) {
-                if (socketManager.getSocket() != null && socketManager.getSocket().connected()) {
-                    socketManager.disconnect();
-                }
-                String amount = "";
-                switch (NativeDataHelper.Blockchain.valueOf(viewModel.getWallet().getCurrencyId())) {
-                    case BTC:
-                        amount = CryptoFormatUtils.satoshiToBtcLabel((long) response.getEntity().getAmount());
-                        break;
-                    case ETH:
-                        amount = CryptoFormatUtils.weiToEthLabel(CryptoFormatUtils.FORMAT_ETH.format(response.getEntity().getAmount()));
-                        break;
-                }
-                Analytics.getInstance(getActivity()).logEvent(AnalyticsConstants.KF_RECEIVED_TRANSACTION, AnalyticsConstants.KF_RECEIVED_TRANSACTION, "true");
-                CompleteDialogFragment.newInstance(viewModel.getWallet().getCurrencyId(), amount,
-                        response.getEntity().getAddressFrom()).show(getActivity().getSupportFragmentManager(), "");
-            }
+    public void close() {
+        if (getActivity().getIntent().hasExtra(Constants.EXTRA_DEEP_MAGIC)) {
+            Intent intent = new Intent(Multy.getContext(), MainActivity.class);
+            intent.removeExtra(Constants.EXTRA_DEEP_MAGIC);
+            startActivity(intent);
+            getActivity().finish();
+        } else {
+            getActivity().finish();
         }
     }
 
-    private void verifyTransaction(ReceiveMessage receiveMessage) {
-        final String address = viewModel.getWallet().getActiveAddress().getAddress();
-        final ReceiveMessage.Payload payload = receiveMessage.getPayload();
-        if (payload.getTo().equals(address) && (receiveMessage.getType() == Constants.EVENT_TYPE_NOTIFY_PAYMENT_REQUEST ||
-                receiveMessage.getType() == Constants.EVENT_TYPE_NOTIFY_INCOMING_TX)) {
-            if (socketManager.getSocket() != null && socketManager.getSocket().connected()) {
-                socketManager.disconnect();
-            }
-            String amount = "";
-            switch (NativeDataHelper.Blockchain.valueOf(viewModel.getWallet().getCurrencyId())) {
-                case BTC:
-                    amount = CryptoFormatUtils.satoshiToBtcLabel(Long.parseLong(receiveMessage.getPayload().getAmount()));
-                    break;
-                case ETH:
-                    amount = CryptoFormatUtils.weiToEthLabel(receiveMessage.getPayload().getAmount());
-                    break;
-            }
-            Analytics.getInstance(getActivity()).logEvent(AnalyticsConstants.KF_RECEIVED_TRANSACTION, AnalyticsConstants.KF_RECEIVED_TRANSACTION, "true");
-            CompleteDialogFragment.newInstance(viewModel.getWallet().getCurrencyId(), amount,
-                    receiveMessage.getPayload().getFrom()).show(getActivity().getSupportFragmentManager(), "");
-        }
-    }
-
-    private AdvertiseData buildAdvertiseData(String code) {
-        AdvertiseData.Builder dataBuilder = new AdvertiseData.Builder();
-        ParcelUuid pUuid = new ParcelUuid(UUID.fromString("8c0d3334-7711-44e3-b5c4-28b2" + code));
-        dataBuilder.setIncludeTxPowerLevel(true);
-        dataBuilder.addServiceUuid(pUuid);
-        return dataBuilder.build();
-    }
-
-
-    private AdvertiseSettings buildAdvertiseSettings() {
-        AdvertiseSettings.Builder settingsBuilder = new AdvertiseSettings.Builder();
-        settingsBuilder.setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_LOW_LATENCY);
-        settingsBuilder.setTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_HIGH);
-        settingsBuilder.setConnectable(false);
-        return settingsBuilder.build();
-    }
-
-    private void disconnect() {
+    private void disconnectSockets() {
         if (socketManager.getSocket() != null && socketManager.getSocket().connected()) {
             socketManager.disconnect();
         }
@@ -269,90 +283,57 @@ public class MagicReceiveFragment extends BaseFragment {
                 fiatAmount, CurrencyCode.USD.name()));
     }
 
-    public void becomeReceiver(double amount, int currencyId) {
-        if (callback != null) {
-            BluetoothLeAdvertiser advertiser = BluetoothAdapter.getDefaultAdapter().getBluetoothLeAdvertiser();
-            AdvertiseSettings advertiseSettings = buildAdvertiseSettings();
-            final String userCode = stringToHex(textAddress.getText().toString().substring(0, 4).getBytes());
-            AdvertiseData advertiseData = buildAdvertiseData(userCode);
-            callback.setUserCode(userCode);
-            String requestSum = "0";
-            switch (NativeDataHelper.Blockchain.valueOf(currencyId)) {
+    private void verifyTransaction(ReceiveMessage receiveMessage) {
+        final String address = viewModel.getWallet().getActiveAddress().getAddress();
+        final ReceiveMessage.Payload payload = receiveMessage.getPayload();
+        if (payload.getTo().equals(address) && (receiveMessage.getType() == Constants.EVENT_TYPE_NOTIFY_PAYMENT_REQUEST ||
+                receiveMessage.getType() == Constants.EVENT_TYPE_NOTIFY_INCOMING_TX)) {
+            if (socketManager.getSocket() != null && socketManager.getSocket().connected()) {
+                socketManager.disconnect();
+            }
+            String amount = "";
+            switch (NativeDataHelper.Blockchain.valueOf(viewModel.getWallet().getCurrencyId())) {
                 case BTC:
-                    requestSum = CryptoFormatUtils.btcToSatoshiString(amount);
+                    amount = CryptoFormatUtils.satoshiToBtcLabel(Long.parseLong(receiveMessage.getPayload().getAmount()));
                     break;
                 case ETH:
-                    requestSum = CryptoFormatUtils.ethToWei(String.valueOf(amount));
+                    amount = CryptoFormatUtils.weiToEthLabel(receiveMessage.getPayload().getAmount());
                     break;
             }
-            callback.setRequestSum(requestSum);
-            advertiser.startAdvertising(advertiseSettings, advertiseData, callback);
+            Analytics.getInstance(getActivity()).logEvent(AnalyticsConstants.KF_RECEIVED_TRANSACTION, AnalyticsConstants.KF_RECEIVED_TRANSACTION, "true");
+            CompleteDialogFragment.newInstance(viewModel.getWallet().getCurrencyId(), amount,
+                    receiveMessage.getPayload().getFrom()).show(getActivity().getSupportFragmentManager(), "");
+        }
+    }
+
+    private void verifyTransactionUpdate(String json) {
+        TransactionUpdateResponse response = new Gson().fromJson(json, TransactionUpdateResponse.class);
+        if (response != null) {
+            final String address = viewModel.getWallet().getActiveAddress().getAddress();
+            if (response.getEntity().getAddress().equals(address) && response.getEntity().getType() == Constants.TX_MEMPOOL_INCOMING) {
+                if (socketManager.getSocket() != null && socketManager.getSocket().connected()) {
+                    socketManager.disconnect();
+                }
+                String amount = "";
+                switch (NativeDataHelper.Blockchain.valueOf(viewModel.getWallet().getCurrencyId())) {
+                    case BTC:
+                        amount = CryptoFormatUtils.satoshiToBtcLabel((long) response.getEntity().getAmount());
+                        break;
+                    case ETH:
+                        amount = CryptoFormatUtils.weiToEthLabel(CryptoFormatUtils.FORMAT_ETH.format(response.getEntity().getAmount()));
+                        break;
+                }
+                Analytics.getInstance(getActivity()).logEvent(AnalyticsConstants.KF_RECEIVED_TRANSACTION, AnalyticsConstants.KF_RECEIVED_TRANSACTION, "true");
+                CompleteDialogFragment.newInstance(viewModel.getWallet().getCurrencyId(), amount,
+                        response.getEntity().getAddressFrom()).show(getActivity().getSupportFragmentManager(), "");
+            }
         }
     }
 
     @OnClick(R.id.button_cancel)
     public void onClickCancel() {
-        disconnect();
+        stop();
         getActivity().setResult(Activity.RESULT_CANCELED);
         close();
-    }
-
-    public void close() {
-        if (getActivity().getIntent().hasExtra(Constants.EXTRA_DEEP_MAGIC)) {
-            Intent intent = new Intent(Multy.getContext(), MainActivity.class);
-            intent.removeExtra(Constants.EXTRA_DEEP_MAGIC);
-            startActivity(intent);
-            getActivity().finish();
-        } else {
-            getActivity().finish();
-        }
-    }
-
-    private class Callback extends AdvertiseCallback {
-
-        private String userCode = "";
-        private String requestSum = "0";
-
-        @Override
-        public void onStartSuccess(AdvertiseSettings settingsInEffect) {
-            Realm realm = Realm.getInstance(Multy.getRealmConfiguration());
-            try {
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("userid", new SettingsDao(realm).getUserId().getUserId());
-                jsonObject.put("usercode", userCode);
-                jsonObject.put("currencyid", viewModel.getWallet().getCurrencyId());
-                jsonObject.put("networkid", viewModel.getWallet().getNetworkId());
-                jsonObject.put("address", textAddress.getText().toString());
-                jsonObject.put("amount", String.valueOf(requestSum));
-
-                socketManager.becomeReceiver(jsonObject);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            realm.close();
-        }
-
-        @Override
-        public void onStartFailure(int errorCode) {
-            Toast.makeText(getActivity(), BuildConfig.DEBUG ?
-                    "Failed to start broadcasting request. Error code - " + errorCode :
-                    getString(R.string.something_went_wrong), Toast.LENGTH_SHORT).show();
-        }
-
-        public String getUserCode() {
-            return userCode;
-        }
-
-        public void setUserCode(String userCode) {
-            this.userCode = userCode;
-        }
-
-        public String getRequestSum() {
-            return requestSum;
-        }
-
-        public void setRequestSum(String requestSum) {
-            this.requestSum = requestSum;
-        }
     }
 }

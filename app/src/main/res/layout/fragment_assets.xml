@@ -163,13 +163,13 @@
                     android:layout_marginStart="12dp"
                     android:layout_marginBottom="14dp"
                     app:layout_constraintBottom_toTopOf="@id/divider_gray"
-                    app:layout_constraintEnd_toStartOf="@+id/image_dot_chart"
+                    app:layout_constraintEnd_toStartOf="@+id/image_dot_multireceiver"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@+id/image_signal"
                     app:srcCompat="@drawable/circle_blue_light" />
 
                 <ImageView
-                    android:id="@+id/image_dot_chart"
+                    android:id="@+id/image_dot_multireceiver"
                     android:layout_width="8dp"
                     android:layout_height="8dp"
                     android:layout_marginStart="12dp"
@@ -192,7 +192,7 @@
                     app:layout_constraintBottom_toTopOf="@id/divider_gray"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/image_dot_chart"
+                    app:layout_constraintStart_toEndOf="@+id/image_dot_multireceiver"
                     app:srcCompat="@drawable/ic_plus_light" />
 
                 <View
@@ -294,7 +294,7 @@
                     android:id="@+id/group_portfolio"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:constraint_referenced_ids="view_pager,image_dot_chart,image_dot_portfolio"
+                    app:constraint_referenced_ids="view_pager,image_dot_multireceiver,image_dot_portfolio"
                     tools:visibility="visible" />
 
             </android.support.constraint.ConstraintLayout>

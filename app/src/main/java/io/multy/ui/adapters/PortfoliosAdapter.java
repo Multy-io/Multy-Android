@@ -15,19 +15,23 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.airbnb.lottie.L;
+import com.airbnb.lottie.LottieAnimationView;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.lang.annotation.Native;
 import java.text.DecimalFormat;
 import java.util.List;
+import java.security.MessageDigest;
 
 import io.multy.Multy;
 import io.multy.R;
 import io.multy.model.entities.OpenDragonsEvent;
+import io.multy.model.entities.UserId;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.storage.RealmManager;
+import io.multy.ui.Hash2PicView;
 import io.multy.ui.fragments.dialogs.DonateDialog;
 import io.multy.util.Constants;
 import io.multy.util.NativeDataHelper;
