@@ -209,14 +209,14 @@ public class ExchangeActivity extends BaseActivity {
 //        viewModel.getAssetsList();
 
         //TODO this is hardoded pair
-        ExchangePair pair = new ExchangePair("btc", "eth", 1f);
-        viewModel.getExchangePair(pair);
-
-        viewModel.getMinExchangeValue(pair);
-
-
-        pair.setReceivingToAddress("0xDFb0f70764847b3a2016D5F5912e7977E5eEA0C5");
-        viewModel.getPayToAddress(pair);
+//        ExchangePair pair = new ExchangePair("btc", "eth", 1f);
+//        viewModel.getExchangePair(pair);
+//
+//        viewModel.getMinExchangeValue(pair);
+//
+//
+//        pair.setReceivingToAddress("0xDFb0f70764847b3a2016D5F5912e7977E5eEA0C5");
+//        viewModel.getPayToAddress(pair);
     }
 
     private void getAddressIds(final String address, int[] addressIdsHolder) {

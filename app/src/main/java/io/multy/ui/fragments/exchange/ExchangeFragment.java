@@ -29,6 +29,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -96,7 +97,7 @@ public class ExchangeFragment extends BaseFragment {
     @BindView(R.id.tie_exchange_to_crypto)
     TextInputEditText inputToCrypto;
     @BindView(R.id.til_exchange_to_fiat)
-    TextInputLayout tilExchangeToFiatLayout;
+    TextInputLayout inputToFiatLayout;
     @BindView(R.id.tv_exchange_summery_receive_wallet)
     TextView tvSummeryToWallet;
     @BindView(R.id.tv_exchange_summery_receive_crypto_amount)
@@ -188,39 +189,40 @@ public class ExchangeFragment extends BaseFragment {
         inputFromFiat.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence text, int i, int i1, int i2) {
-                if (!text.toString().isEmpty()){
-                    inputFromFiat.setSelection(text.length());
-                }
+//                if (!text.toString().isEmpty()){
+//                    inputFromFiat.setSelection(text.length());
+//                }
             }
 
             @Override
             public void onTextChanged(CharSequence text, int i, int i1, int i2) {
-                if (getActivity().getCurrentFocus() == inputFromFiat) {
-                    if (!text.toString().isEmpty() ){
-                        if (isParsable(text.toString())) {
-                            checkForPointAndZeros(text.toString(), inputFromFiat);
-                            Log.d("EXCHANGE FRAGMENT", "OnTextChanged:" + text);
-                            float raw = Float.parseFloat(text.toString());
-                            float currRate = (float) viewModel.getCurrenciesRate().getEthToUsd();
+                if (inputFromFiat != null) {
+                    if (getActivity().getCurrentFocus() == inputFromFiat) {
+                        if (!text.toString().isEmpty()) {
+                            if (isParsable(text.toString())) {
+                                checkForPointAndZeros(text.toString(), inputFromFiat);
+                                double raw = Float.parseFloat(text.toString());
+                                double currRate = viewModel.getCurrenciesRate();
 
-                            //eth rarte 100 input is 1000, setup 10 Eth
-                            //          raw / currRate
-                            ///
+                                //eth rarte 100 input is 1000, setup 10 Eth
+                                //          raw / currRate
+                                ///
 
-                            float fromCryptoValue = raw / currRate;
+                                double fromCryptoValue = raw / currRate;
+                                double receiveCryptoValue = fromCryptoValue * viewModel.getExchangeRate().getValue();
 
-
-                            float receiveCryptoValue = fromCryptoValue * viewModel.getExchangeRate().getValue();
-                            inputToCrypto.setText(String.valueOf(receiveCryptoValue));
-                            inputFromCrypto.setText(String.valueOf(fromCryptoValue));
-                            inputFromFiat.setSelection(text.length());
-                        }
-                    } else {
+                                inputToCrypto.setText(NumberFormatter.getInstance().format(receiveCryptoValue));
+                                inputFromCrypto.setText(NumberFormatter.getInstance().format(fromCryptoValue));
+                                checkMaxLengthBeforePoint(inputFromFiat, 10, i, i1, i2);
+                                checkForCanSpend(inputFromFiat, fromCryptoValue);
+                            }
+                        } else {
 //                        inputFromFiat.setText("0");
-                        inputToCrypto.setText("0");
-                        inputFromCrypto.setText("0");
-                    }
+                            inputToCrypto.setText("0");
+                            inputFromCrypto.setText("0");
+                        }
 
+                    }
                 }
             }
 
@@ -238,36 +240,38 @@ public class ExchangeFragment extends BaseFragment {
         inputFromCrypto.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence text, int i, int i1, int i2) {
-                if (!text.toString().isEmpty()){
-                    inputFromCrypto.setSelection(text.length());
-                }
+//                if (!text.toString().isEmpty()){
+//                    inputFromCrypto.setSelection(text.length());
+//                }
             }
 
             @Override
             public void onTextChanged(CharSequence text, int i, int i1, int i2) {
-                //TODO add checks here
+                if (inputFromCrypto != null) {
+                    if (getActivity().getCurrentFocus() == inputFromCrypto) {
+                        if (!text.toString().isEmpty()) {
+                            if (isParsable(text.toString())) {
+                                checkForPointAndZeros(text.toString(), inputFromCrypto);
+                                double raw = Double.parseDouble(text.toString());
+                                if (viewModel.getExchangeRate().getValue() != null) {
+                                    double receiveCryptoValue = raw * viewModel.getExchangeRate().getValue();
+                                    double currRate = viewModel.getCurrenciesRate();
+                                    double sendFiatValue = raw * currRate;
 
+                                    inputToCrypto.setText(NumberFormatter.getInstance().format(receiveCryptoValue));
 
-                if (getActivity().getCurrentFocus() == inputFromCrypto) {
-                    if (!text.toString().isEmpty() ) {
-                        if (isParsable(text.toString())) {
-                            Log.d("EXCHANGE FRAGMENT", "OnTextChanged:" + text);
-                            checkForPointAndZeros(text.toString(), inputFromCrypto);
-                            float raw = Float.parseFloat(text.toString());
-                            if (viewModel.getExchangeRate().getValue() != null){
-                                float receiveCryptoValue = raw * viewModel.getExchangeRate().getValue();
-                                float currRate = (float) viewModel.getCurrenciesRate().getEthToUsd();
-                                float sendFiatValue = raw * currRate;
-                                inputToCrypto.setText(String.valueOf(receiveCryptoValue));
-                                inputFromFiat.setText(String.valueOf(sendFiatValue));
-                                inputFromCrypto.setSelection(text.length());
+                                    inputFromFiat.setText(NumberFormatter.getFiatInstance().format(sendFiatValue));
+                                    checkMaxLengthBeforePoint(inputFromCrypto, 10, i, i1, i2);
+
+                                    checkForCanSpend(inputFromCrypto, raw);
+                                }
                             }
-                        }
-                    } else {
-                        //TODO setup zeros
-                        inputFromFiat.setText("0");
-                        inputToCrypto.setText("0");
+                        } else {
+                            //TODO setup zeros
+                            inputFromFiat.setText("0");
+                            inputToCrypto.setText("0");
 //                        inputFromCrypto.setText("0");
+                        }
                     }
                 }
             }
@@ -285,30 +289,32 @@ public class ExchangeFragment extends BaseFragment {
         inputToCrypto.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence text, int i, int i1, int i2) {
-                if (!text.toString().isEmpty()){
-                    inputToCrypto.setSelection(text.length());
-                }
+//                if (!text.toString().isEmpty()){
+//                    inputToCrypto.setSelection(text.length());
+//                }
             }
 
             @Override
             public void onTextChanged(CharSequence text, int i, int i1, int i2) {
-                if (getActivity().getCurrentFocus() == inputToCrypto){
-                    if (!text.toString().isEmpty()) {
-                        if (isParsable(text.toString())) {
-                            checkForPointAndZeros(text.toString(), inputToCrypto);
-                            Log.d("AAAAA", "Curent focus is TO");
-                            float raw = Float.parseFloat(text.toString());
-                            float receiveCryptoValue = raw / viewModel.getExchangeRate().getValue();
-                            float currRate = (float) viewModel.getCurrenciesRate().getEthToUsd();
-                            float sendFiatValue = raw * currRate;
-                            inputFromCrypto.setText(String.valueOf(receiveCryptoValue));
-                            inputToCrypto.setSelection(text.length());
-                            inputFromFiat.setText(String.valueOf(sendFiatValue));
-                        }
-                    } else {
-                        inputFromFiat.setText("0");
+                if (inputToCrypto != null) {
+                    if (getActivity().getCurrentFocus() == inputToCrypto) {
+                        if (!text.toString().isEmpty()) {
+                            if (isParsable(text.toString())) {
+                                checkForPointAndZeros(text.toString(), inputToCrypto);
+                                double raw = Double.parseDouble(text.toString());
+                                double sendCryptoValue = raw / viewModel.getExchangeRate().getValue();
+                                double currRate = viewModel.getCurrenciesRate();
+                                double sendFiatValue = sendCryptoValue * currRate;
+                                inputFromCrypto.setText(NumberFormatter.getInstance().format(sendCryptoValue));
+                                inputFromFiat.setText(NumberFormatter.getFiatInstance().format(sendFiatValue));
+                                checkMaxLengthBeforePoint(inputToCrypto, 10, i, i1, i2);
+                                checkForCanSpend(inputToCrypto, sendCryptoValue);
+                            }
+                        } else {
+                            inputFromFiat.setText("0");
 //                        inputToCrypto.setText("0");
-                        inputFromCrypto.setText("0");
+                            inputFromCrypto.setText("0");
+                        }
                     }
                 }
             }
@@ -319,33 +325,18 @@ public class ExchangeFragment extends BaseFragment {
             }
         });
 
-        //            inputToCrypto.addTextChangedListener(this);
-//        inputToCrypto.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-//            @Override
-//            public void onFocusChange(View view, boolean hasFocus) {
-//                if (hasFocus){
-//                    inputToCrypto.addTextChangedListener(new TextWatcher() {
-//                        @Override
-//                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//
-//                        }
-//
-//                        @Override
-//                        public void onTextChanged(CharSequence text, int i, int i1, int i2) {
-//                            float raw = Float.parseFloat(text.toString());
-//                            float sendCryptoValue = raw / viewModel.getExchangeRate().getValue();
-//                            inputFromCrypto.setText(String.valueOf(sendCryptoValue));
-//                        }
-//
-//                        @Override
-//                        public void afterTextChanged(Editable editable) {
-//
-//                        }
-//                    });
-//                }
-//            }
-//        });
 
+    }
+
+    private void checkForCanSpend(TextInputEditText input, double amount){
+        if (!viewModel.canSpendAmount(amount)){
+            int substringCount = input.getText().length() - 1;
+            input.setText(input.getText().subSequence(0, substringCount < 0 ? 0 : substringCount));
+            input.setSelection(input.getText().length());
+            viewModel.errorMessage.setValue(getString(R.string.enter_sum_too_much));
+
+
+        }
     }
 
     private void setupPayFromWallet(){
@@ -357,6 +348,8 @@ public class ExchangeFragment extends BaseFragment {
                 tvSummeryCrypto.setText(wallet.getCurrencyName());
                 ivSummeryFromLogo.setImageResource(wallet.getIconResourceId());
                 tvSummeryFromFiat.setText("$ 0.0");
+                inputFromCryptoLayout.setVisibility(View.INVISIBLE);
+                inputFromFiatLayout.setVisibility(View.INVISIBLE);
                 buttonMax.setVisibility(View.INVISIBLE);
                 tvExchangeRate.setVisibility(View.INVISIBLE);
                 tvExchangeMin.setVisibility(View.INVISIBLE);
@@ -364,7 +357,7 @@ public class ExchangeFragment extends BaseFragment {
                 //TODO add additional check for that
                 tvExchangeTap.setVisibility(View.VISIBLE);
                 tilExchangeToCryptoLayout.setVisibility(View.INVISIBLE);
-                tilExchangeToFiatLayout.setVisibility(View.INVISIBLE);
+                inputToFiatLayout.setVisibility(View.INVISIBLE);
                 tvSummeryToWallet.setVisibility(View.INVISIBLE);
                 tvSummeryReceiveCrypto.setVisibility(View.INVISIBLE);
                 tvSummeryReceiveFiat.setVisibility(View.INVISIBLE);
@@ -378,8 +371,19 @@ public class ExchangeFragment extends BaseFragment {
             tvSummeryToTitle.setVisibility(View.VISIBLE);
 
             tilExchangeToCryptoLayout.setHint(viewModel.getSelectedAsset().getValue().getName());
+
+            //TODO complete this logic in the next iteration
+//            if (viewModel.haveToCryptoRate()){
+//                tilExchangeToFiatLayout.setVisibility(View.VISIBLE);
+//            } else {
+//                tilExchangeToFiatLayout.setVisibility(View.INVISIBLE);
+//            }
+            inputToFiatLayout.setVisibility(View.INVISIBLE);
+
+
+
             tilExchangeToCryptoLayout.setVisibility(View.VISIBLE);
-            tilExchangeToFiatLayout.setVisibility(View.VISIBLE);
+
 
             tvSummeryToWallet.setText(wallet.getWalletName());
             tvSummeryToWallet.setVisibility(View.VISIBLE);
@@ -406,13 +410,33 @@ public class ExchangeFragment extends BaseFragment {
 
         });
         viewModel.getExchangeRate().observe(this, rate ->{
+
+            inputFromCryptoLayout.setVisibility(View.VISIBLE);
+
+
+            if(viewModel.haveFromCryptoRate()){
+                inputFromFiatLayout.setVisibility(View.VISIBLE);
+            } else {
+                inputFromFiatLayout.setVisibility(View.INVISIBLE);
+            }
+
             tvExchangeRate.setVisibility(View.VISIBLE);
+
             tvExchangeRate.setText("1 "+viewModel.getPayFromWallet().getValue().getCurrencyName() + " = " + String.valueOf(rate) + " "+viewModel.getSelectedAsset().getValue().getName());
         });
+
+
+        viewModel.getMinAmount().observe(this, minValue ->{
+            tvExchangeMin.setText(NumberFormatter.getInstance().format(minValue) + " "+ viewModel.getPayFromWallet().getValue().getCurrencyName());
+            tvExchangeMin.setVisibility(View.VISIBLE);
+        });
+
         //TODO getExchangePair need to be implemented
 //        viewModel.getSelectedAsset().observe(this, asset -> {
 //            //TODO setup value from asset
 //        });
+
+
 
     }
 
@@ -597,10 +621,9 @@ public class ExchangeFragment extends BaseFragment {
                 summeryLayout.setVisibility(View.GONE);
 
                 return true;
+            } else {
+                showKeyboard(getActivity(), input);
             }
-//            showKeyboard(getActivity());
-//            summeryLayout.setVisibility(View.GONE);
-//            Analytics.getInstance(getActivity()).logSendChooseAmount(AnalyticsConstants.SEND_AMOUNT_CRYPTO, viewModel.getChainId());
             return true;
         });
 

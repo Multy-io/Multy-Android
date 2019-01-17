@@ -23,35 +23,21 @@ import java.util.List;
 import io.multy.Multy;
 import io.multy.R;
 import io.multy.api.MultyApi;
-import io.multy.api.socket.CurrenciesRate;
-import io.multy.model.core.Account;
-import io.multy.model.core.Builder;
-import io.multy.model.core.Payload;
-import io.multy.model.core.Transaction;
-import io.multy.model.core.TransactionBuilder;
-import io.multy.model.core.TransactionResponse;
 import io.multy.model.entities.Estimation;
 import io.multy.model.entities.ExchangeAsset;
 import io.multy.model.entities.ExchangePair;
 import io.multy.model.entities.Fee;
-import io.multy.model.entities.wallet.EthWallet;
 import io.multy.model.entities.wallet.Wallet;
-import io.multy.model.entities.wallet.WalletPrivateKey;
 import io.multy.model.responses.ExchangeCurrenciesListResponse;
 import io.multy.model.responses.ExchangePairResponse;
 import io.multy.model.responses.FeeRateResponse;
 import io.multy.model.responses.ServerConfigResponse;
-import io.multy.model.responses.WalletsResponse;
 import io.multy.storage.RealmManager;
 import io.multy.util.Constants;
-import io.multy.util.CryptoFormatUtils;
-import io.multy.util.JniException;
-import io.multy.util.NativeDataHelper;
 import io.multy.util.SingleLiveEvent;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import timber.log.Timber;
 
 public class ExchangeViewModel extends BaseViewModel {
 
@@ -62,8 +48,10 @@ public class ExchangeViewModel extends BaseViewModel {
     private MutableLiveData<List<ExchangeAsset>> assets  = new MutableLiveData<>();
     private MutableLiveData<ExchangeAsset> assetExchangeTo = new MutableLiveData<>();
     private MutableLiveData<Float> exchangeRate = new MutableLiveData<>();
+    private MutableLiveData<Double> minFromAmount = new MutableLiveData<>();
     private MutableLiveData<List<ServerConfigResponse.ERC20TokenSupport>> supportTokens = new MutableLiveData<>();
-
+//    private MutableLiveData<Boolean> hasRateFromCrypto = new MutableLiveData<>();
+//    private MutableLiveData<Boolean> hasRateToCrypto = new MutableLiveData<>();
 
     //TODO Check if this data is needed
 
@@ -83,7 +71,7 @@ public class ExchangeViewModel extends BaseViewModel {
     private boolean isPayForCommission = true;
     private String donationAmount = "0";
     private boolean isAmountScanned = false;
-    private CurrenciesRate currenciesRate;
+    private double currenciesRate;
     private long payFromWalletId;
 
     private String changeAddress;
@@ -92,8 +80,11 @@ public class ExchangeViewModel extends BaseViewModel {
     private String signTransactionError;
     private Handler handler = new Handler();
 
+
+
+
     public ExchangeViewModel() {
-        currenciesRate = RealmManager.getSettingsDao().getCurrenciesRate();
+//        currenciesRate = RealmManager.getSettingsDao().getCurrenciesRate();
         fragmentHolder.setValue(0);
         getSupportTokens();
     }
@@ -196,6 +187,7 @@ public class ExchangeViewModel extends BaseViewModel {
                     //TODO check respone code
                     Log.d("EXCHANGE VM", "PAIR from:" + pair.getFromAsset() + " to:" + pair.getToAsset() + " amount:" + response.body().getAmount());
                     exchangeRate.setValue(response.body().getAmount());
+                    getMinExchangeValue(pair);
                 }
             }
 
@@ -213,6 +205,7 @@ public class ExchangeViewModel extends BaseViewModel {
             public void onResponse(Call<ExchangePairResponse> call, Response<ExchangePairResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Log.d("EXCHANGE VM", "GOTED MIN VALUE:" + response.body().getAmount());
+                    minFromAmount.setValue((double) response.body().getAmount());
                 }
             }
 
@@ -252,10 +245,9 @@ public class ExchangeViewModel extends BaseViewModel {
         fragmentHolder.setValue(id);
     }
 
-    public CurrenciesRate getCurrenciesRate() {
-        if (currenciesRate == null) {
-            currenciesRate = new CurrenciesRate();
-            currenciesRate.setBtcToUsd(0);
+    public double getCurrenciesRate() {
+        if (currenciesRate == 0) {
+            currenciesRate = RealmManager.getSettingsDao().getCurrenciesRateById(payFromWallet.getValue().getCurrencyId());
         }
         return currenciesRate;
     }
@@ -602,6 +594,10 @@ public class ExchangeViewModel extends BaseViewModel {
 //        }
 //    }
 
+
+
+
+
     /**
      * Do not touch this
      * this method will be called from JNI automatically while makeTransaction is processing
@@ -624,25 +620,39 @@ public class ExchangeViewModel extends BaseViewModel {
         return 1;
     }
 
-//    public void updateWallets() {
-//        isLoading.postValue(true);
-//        MultyApi.INSTANCE.getWalletsVerbose().enqueue(new Callback<WalletsResponse>() {
-//            @Override
-//            public void onResponse(@NonNull Call<WalletsResponse> call, @NonNull Response<WalletsResponse> response) {
-//                isLoading.setValue(false);
-//                WalletsResponse body = response.body();
-//                if (response.isSuccessful() && body != null) {
-//                    RealmManager.getAssetsDao().saveWallets(body.getWallets());
-//                    Wallet newWallet = RealmManager.getAssetsDao().getWalletById(walletId);
-//                    setWallet(newWallet);
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(@NonNull Call<WalletsResponse> call, @NonNull Throwable t) {
-//                t.printStackTrace();
-//                isLoading.setValue(false);
-//            }
-//        });
-//    }
+    public boolean haveFromCryptoRate(){
+        return haveFiatRate(payFromWallet.getValue().getCurrencyId());
+    }
+
+    public boolean haveToCryptoRate(){
+        return haveFiatRate(receiveToWallet.getValue().getCurrencyId());
+    }
+
+    private boolean haveFiatRate(int blockchainID){
+        double rate = RealmManager.getSettingsDao().getCurrenciesRateById(blockchainID);
+
+        return rate == 0 ? false : true;
+    }
+
+    public MutableLiveData<Double> getMinAmount(){
+        return minFromAmount;
+    }
+
+    public boolean canSpendAmount(double amount){
+        boolean out = false;
+        switch (payFromWallet.getValue().getCurrencyName()){
+            case Constants.BTC:
+                c
+                return payFromWallet.getValue().getBtcDoubleValue() >= amount ? true : false;
+
+            case Constants.ETH:
+                return payFromWallet.getValue().getEthAvailableValue().doubleValue() >= amount ? true : false;
+
+            default:
+                //TODO update this logic for tokens
+//                return payFromWallet.getValue().getTokenAmount >= amount ? true : false;
+                return true;
+
+        }
+    }
 }
