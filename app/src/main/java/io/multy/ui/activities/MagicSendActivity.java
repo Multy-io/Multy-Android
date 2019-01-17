@@ -10,18 +10,19 @@ import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.arch.lifecycle.ViewModelProviders;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.le.ScanCallback;
-import android.bluetooth.le.ScanResult;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.ParcelUuid;
+import android.os.IBinder;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -29,6 +30,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -68,6 +70,7 @@ import io.multy.model.requests.HdTransactionRequestEntity;
 import io.multy.model.responses.FeeRateResponse;
 import io.multy.model.responses.MessageResponse;
 import io.multy.model.responses.WalletsResponse;
+import io.multy.service.BluetoothService;
 import io.multy.storage.RealmManager;
 import io.multy.ui.adapters.MyWalletPagerAdapter;
 import io.multy.ui.adapters.ReceiversPagerAdapter;
@@ -78,6 +81,7 @@ import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
+import io.multy.viewmodels.MagicSendViewModel;
 import io.realm.RealmResults;
 import io.socket.client.Ack;
 import io.socket.client.Socket;
@@ -122,9 +126,30 @@ public class MagicSendActivity extends BaseActivity {
     private long selectedWalletId = -1;
     private Handler handler = new Handler();
     private Runnable updateReceiversAction;
-    private ScanCallback bleScanCallback;
     private Handler animationHandler = new Handler();
     private float startY;
+    private boolean mBound = false;
+    BluetoothService mBluetoothService;
+    private MagicSendViewModel viewModel;
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            BluetoothService.BluetoothBinder binder = (BluetoothService.BluetoothBinder) service;
+            mBluetoothService = binder.getService();
+            mBluetoothService.listenModeChanging(viewModel.getModeChangingLiveData());
+            mBluetoothService.listenUserCodes(viewModel.getUserCodesLiveData());
+
+            startBleScanner();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -132,42 +157,59 @@ public class MagicSendActivity extends BaseActivity {
         setContentView(R.layout.activity_magic_send);
         ButterKnife.bind(this);
         Analytics.getInstance(this).logActivityLaunch(MagicSendActivity.class.getSimpleName());
+        viewModel = ViewModelProviders.of(this).get(MagicSendViewModel.class);
         initUpdateAction();
         initPagers();
-        initPermissions();
         initContainerSend();
-        startSockets();
 
         if (walletPagerAdapter != null) {
             Analytics.getInstance(this).logEvent(AnalyticsConstants.KF_WALLET_COUNT, AnalyticsConstants.KF_WALLET_COUNT, String.valueOf(walletPagerAdapter.getCount()));
         }
 
+        // TODO: need to refactor this
+        viewModel.getModeChangingLiveData().observe(this, mode -> {
+            Log.d("MAGIC_TEST", "MODE CHANGED " + mode);
+        });
+
+        viewModel.getUserCodesLiveData().observe(this, userCodes -> {
+            this.leIds = userCodes;
+        });
+
         containerSend.post(() -> startY = containerSend.getY());
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Intent intent = new Intent(this, BluetoothService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (bleScanCallback != null) {
-            startBLeScanner();
-        }
+        start();
     }
 
     @Override
     protected void onPause() {
-        if (bleScanCallback != null && BluetoothAdapter.getDefaultAdapter().isEnabled()) {
-            BluetoothAdapter.getDefaultAdapter().getBluetoothLeScanner().stopScan(bleScanCallback);
-        }
+        stop();
         super.onPause();
     }
 
     @Override
-    protected void onDestroy() {
-        if (socketManager.getSocket() != null && socketManager.getSocket().connected()) {
-            socketManager.getSocket().disconnect();
-            handler.removeCallbacksAndMessages(null);
+    public void onStop() {
+        super.onStop();
+
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
         }
-        bleScanCallback = null;
+    }
+
+    @Override
+    protected void onDestroy() {
+        stop();
 
         if (receiversPagerAdapter != null) {
             Analytics.getInstance(this).logEvent(AnalyticsConstants.KF_FOUND_DEVICES, AnalyticsConstants.KF_FOUND_DEVICES, String.valueOf(receiversPagerAdapter.getCount()));
@@ -186,7 +228,7 @@ public class MagicSendActivity extends BaseActivity {
             finish();
         } else if (requestCode == REQUEST_BLUETOOTH && resultCode == RESULT_OK) {
             Analytics.getInstance(this).logEvent(AnalyticsConstants.KF_PERMISSIONS_GRANTED, AnalyticsConstants.KF_PERMISSIONS_GRANTED, "BT_on");
-            start();
+            grantBluetooth();
         } else if (requestCode != REQUEST_CODE_LOCATION) {
             Analytics.getInstance(this).logEvent(AnalyticsConstants.KF_PERMISSIONS_GRANTED, AnalyticsConstants.KF_PERMISSIONS_GRANTED, "BT_off");
             finish();
@@ -207,7 +249,7 @@ public class MagicSendActivity extends BaseActivity {
 
                 if (perms.get(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                     Analytics.getInstance(this).logEvent(AnalyticsConstants.KF_PERMISSIONS_GRANTED, Manifest.permission.ACCESS_FINE_LOCATION, String.valueOf(true));
-                    start();
+                    grantBluetooth();
                 } else {
                     Analytics.getInstance(this).logEvent(AnalyticsConstants.KF_PERMISSIONS_GRANTED, Manifest.permission.ACCESS_FINE_LOCATION, String.valueOf(false));
                     finish();
@@ -239,14 +281,19 @@ public class MagicSendActivity extends BaseActivity {
         if (Build.VERSION.SDK_INT >= 23) {
             checkPermissions();
         } else {
-            start();
+            grantBluetooth();
         }
     }
 
     private void startSockets() {
-        socketManager = new BlueSocketManager();
-        socketManager.connect();
-        socketManager.getSocket().on(Socket.EVENT_CONNECT, args -> handler.postDelayed(updateReceiversAction, UPDATE_PERIOD));
+        if (socketManager == null || !socketManager.getSocket().connected()) {
+            socketManager = new BlueSocketManager();
+            socketManager.connect();
+            socketManager.getSocket().on(Socket.EVENT_CONNECT, args -> {
+                handler.postDelayed(updateReceiversAction, UPDATE_PERIOD);
+                startBleScanner();
+            });
+        }
     }
 
     private void initContainerSend() {
@@ -740,7 +787,7 @@ public class MagicSendActivity extends BaseActivity {
         });
     }
 
-    private void start() {
+    private void grantBluetooth() {
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (!bluetoothAdapter.isEnabled()) {
             Intent enableBT = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -753,42 +800,37 @@ public class MagicSendActivity extends BaseActivity {
             Intent enableLocationIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
             startActivityForResult(enableLocationIntent, REQUEST_CODE_LOCATION);
         }
+    }
 
-        if (bleScanCallback == null) {
-            bleScanCallback = createScanCallback();
+    private void start() {
+        startSockets();
+    }
+
+    private void stop() {
+        if (mBluetoothService != null && mBluetoothService.serviceMode == BluetoothService.BluetoothServiceMode.SCANNER) {
+            stopBleScanner();
+        }
+
+        if (socketManager.getSocket() != null && socketManager.getSocket().connected()) {
+            socketManager.disconnect();
+            handler.removeCallbacksAndMessages(null);
         }
     }
 
-    private void startBLeScanner() {
+    private void startBleScanner() {
         if (BluetoothAdapter.getDefaultAdapter().isEnabled()) {
-            BluetoothAdapter.getDefaultAdapter().getBluetoothLeScanner().startScan(bleScanCallback);
+            if (mBluetoothService != null && mBluetoothService.serviceMode != BluetoothService.BluetoothServiceMode.SCANNER) {
+                mBluetoothService.startScan();
+            }
         } else {
             initPermissions();
         }
     }
 
-    private ScanCallback createScanCallback() {
-        return new ScanCallback() {
-            @Override
-            public void onScanResult(int callbackType, ScanResult result) {
-                super.onScanResult(callbackType, result);
-//                ParcelUuid uuids[] = result.getDevice().getUuids();
-                List<ParcelUuid> ids = result.getScanRecord().getServiceUuids();
-
-                if (ids != null && ids.size() > 0) {
-                    for (ParcelUuid uuid : ids) {
-                        String sendUUID = uuid.getUuid().toString();
-                        sendUUID = sendUUID.substring(sendUUID.length() - 8);
-                        sendUUID = sendUUID.toUpperCase();
-//                        Timber.i("onScanResult " + sendUUID);
-
-                        if (sendUUID.length() > 0 && !leIds.contains(sendUUID)) {
-                            leIds.add(sendUUID);
-                        }
-                    }
-                }
-            }
-        };
+    private void stopBleScanner() {
+        if (mBluetoothService.serviceMode == BluetoothService.BluetoothServiceMode.SCANNER) {
+            mBluetoothService.stopScan();
+        }
     }
 
     private JSONObject getIdsJson() {
@@ -825,7 +867,7 @@ public class MagicSendActivity extends BaseActivity {
             return;
         }
 
-        start();
+        grantBluetooth();
     }
 
     private void showDialog(String message, DialogInterface.OnClickListener okListener) {

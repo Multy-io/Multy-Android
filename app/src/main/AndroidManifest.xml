@@ -223,6 +223,11 @@
                 android:name="android.provider.CONTACTS_STRUCTURE"
                 android:resource="@xml/contacts" />
         </service>
+
+        <service android:name=".service.BluetoothService"
+                 android:enabled = "true"
+                 android:exported = "true"/>
+
         <!-- Set color used with incoming notification messages. This is used when no color is set for the incoming
              notification message. See README(https://goo.gl/6BKBk7) for more. -->
         <meta-data

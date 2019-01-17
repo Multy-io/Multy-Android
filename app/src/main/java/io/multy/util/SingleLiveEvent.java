@@ -9,6 +9,8 @@ package io.multy.util;
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Observer;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.MainThread;
 import android.support.annotation.Nullable;
 
