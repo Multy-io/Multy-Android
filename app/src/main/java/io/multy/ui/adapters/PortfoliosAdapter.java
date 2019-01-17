@@ -40,10 +40,7 @@ import io.multy.util.NumberFormatter;
 public class PortfoliosAdapter extends PagerAdapter {
 
     public static String TAG_BALANCE = "balance";
-    public static String TAG_MULTIRECEIVER = "multireceiver";
-    private static final char[] HEX_CHARS = "0123456789ABCDEF".toCharArray();
 
-    private LottieAnimationView animationView;
     private FragmentManager fragmentManager;
     private String[] itemsName = new String[]{
             "",
@@ -77,8 +74,7 @@ public class PortfoliosAdapter extends PagerAdapter {
             layout = LayoutInflater.from(container.getContext()).inflate(R.layout.item_total_balance, container, false);
             layout.setTag(TAG_BALANCE);
         } else {
-            layout = LayoutInflater.from(container.getContext()).inflate(R.layout.item_multi_receiver, container, false);
-            layout.setTag(TAG_MULTIRECEIVER);
+            layout = LayoutInflater.from(container.getContext()).inflate(R.layout.item_portfolio, container, false);
         }
         container.addView(layout);
         ImageView imageBackground = layout.findViewById(R.id.image_background);
@@ -90,10 +86,9 @@ public class PortfoliosAdapter extends PagerAdapter {
                 updateBalanceView(layout);
                 break;
             case 1:
-//                imageBackground.setImageResource(R.drawable.charts_donation_image);
-//                donationCode = Constants.DONATE_ADDING_CHARTS;
-//                textDonate.setText(itemsName[position]);
-                updateMultireceiverView(layout);
+                imageBackground.setImageResource(R.drawable.charts_donation_image);
+                donationCode = Constants.DONATE_ADDING_CHARTS;
+                textDonate.setText(itemsName[position]);
                 break;
         }
         layout.setTag(donationCode);
@@ -103,14 +98,14 @@ public class PortfoliosAdapter extends PagerAdapter {
             if (position == 0) {
 //                EventBus.getDefault().post(new OpenDragonsEvent());
             } else {
-//                DonateDialog.getInstance((Integer) v.getTag()).show(fragmentManager, DonateDialog.TAG);
+                DonateDialog.getInstance((Integer) v.getTag()).show(fragmentManager, DonateDialog.TAG);
             }
+
         });
         return layout;
     }
 
     public void updateBalanceView(View v) {
-
         TextView textBalance = v.findViewById(R.id.text_balance);
         TextView textDecimals = v.findViewById(R.id.text_decimals);
         final String balance = getTotalFiatBalance();
@@ -118,54 +113,6 @@ public class PortfoliosAdapter extends PagerAdapter {
         final String fiat = balance.contains(".") ? balance.substring(0, balance.indexOf(".")) : balance;
         textBalance.setText(fiat);
         textDecimals.setText(decimals);
-    }
-
-    public void updateMultireceiverView(View v) {
-        Hash2PicView mrIdIcon = v.findViewById(R.id.mr_icon);
-        mrIdIcon.setAvatar(getMultireceiverAvatar());
-        LottieAnimationView wavesAnimation = v.findViewById(R.id.animation_view);
-        wavesAnimation.playAnimation();
-    }
-
-    private String getMultireceiverAvatar() {
-        String userId = RealmManager.getSettingsDao().getUserId().getUserId();
-        String userIdHex = md5(userId);
-
-        return stringToHex(userIdHex.getBytes());
-    }
-
-    private String stringToHex(byte[] buf) {
-        char[] chars = new char[2 * buf.length];
-        for (int i = 0; i < buf.length; ++i) {
-            chars[2 * i] = HEX_CHARS[(buf[i] & 0xF0) >>> 4];
-            chars[2 * i + 1] = HEX_CHARS[buf[i] & 0x0F];
-        }
-        return new String(chars);
-    }
-
-    public static final String md5(final String s) {
-        final String MD5 = "MD5";
-        try {
-            // Create MD5 Hash
-            MessageDigest digest = java.security.MessageDigest
-                    .getInstance(MD5);
-            digest.update(s.getBytes());
-            byte messageDigest[] = digest.digest();
-
-            // Create Hex String
-            StringBuilder hexString = new StringBuilder();
-            for (byte aMessageDigest : messageDigest) {
-                String h = Integer.toHexString(0xFF & aMessageDigest);
-                while (h.length() < 2)
-                    h = "0" + h;
-                hexString.append(h);
-            }
-            return hexString.toString();
-
-        } catch (java.security.NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        return "";
     }
 
     private String getTotalFiatBalance() {

@@ -68,6 +68,7 @@ import io.multy.ui.activities.FastReceiveActivity;
 import io.multy.ui.activities.MainActivity;
 import io.multy.ui.activities.SeedActivity;
 import io.multy.ui.adapters.MyWalletsAdapter;
+import io.multy.ui.adapters.PortfoliosAdapter;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.ui.fragments.MultireceiverFragment;
 import io.multy.ui.fragments.TotalBalanceFragment;
@@ -127,6 +128,7 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
     private boolean isViewsScroll = false;
     private boolean checkMetamask = false;
     private static int BANNERS_COUNT = 2;
+    private PortfoliosAdapter portfoliosAdapter;
     private BannersPagerAdapter bannersAdapter;
     private TotalBalanceFragment totalBalanceFragment;
     private MultireceiverFragment multireceiverFragment;
@@ -254,7 +256,7 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
 
     @SuppressLint("ClickableViewAccessibility")
     private void initialize() {
-        bannersAdapter = new BannersPagerAdapter(getChildFragmentManager());
+        portfoliosAdapter = new PortfoliosAdapter(getChildFragmentManager());
 
         if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
             if (RealmManager.getSettingsDao().getUserId() != null) {
@@ -262,19 +264,21 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
                     RealmManager.getSettingsDao().saveCurrenciesRate(currenciesRate, () -> {
                         if (walletsAdapter != null && !isViewsScroll) {
                             walletsAdapter.updateRates(currenciesRate);
-                         //   totalBalanceFragment.updateBalanceView();
+                        }
+
+                        if (portfoliosAdapter != null) {
+                            portfoliosAdapter.notifyDataSetChanged();
                         }
                     });
                 });
                 viewModel.transactionUpdate.observe(this, transactionUpdateEntity -> {
                     updateWallets();
-                 //   totalBalanceFragment.updateBalanceView();
                 });
                 viewModel.init(getLifecycle());
             }
         }
         recyclerView.setNestedScrollingEnabled(false);
-        viewPager.setAdapter(bannersAdapter);
+        viewPager.setAdapter(portfoliosAdapter);
         viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
@@ -284,7 +288,6 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
                 } else {
                     imageDotPortfolio.setAlpha(0.3f);
                     imageDotMultireceiver.setAlpha(1f);
-                    multireceiverFragment.updateMultireceiverView();
                 }
                 scrollView.fling(0);
                 scrollView.fullScroll(View.FOCUS_UP);
