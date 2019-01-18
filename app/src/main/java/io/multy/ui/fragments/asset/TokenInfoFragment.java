@@ -301,6 +301,13 @@ public class TokenInfoFragment extends BaseFragment implements AppBarLayout.OnOf
             return;
         }
 
+        if (wallet.getAvailableBalanceNumeric().compareTo(new BigDecimal(CryptoFormatUtils.ethToWei(String.valueOf("0.0001")))) <= 0){
+            //This check is needed to verify that parent wallet have enough ETH to send tokens
+            viewModel.errorMessage.setValue(getString(R.string.not_enough_linked_balance));
+            return;
+        }
+
+
         final String[] balance = textBalance.getText().toString().split(" ");
 
         startActivity(new Intent(getActivity(), TokenSendActivity.class)

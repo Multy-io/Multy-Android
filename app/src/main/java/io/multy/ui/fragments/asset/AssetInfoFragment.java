@@ -404,18 +404,19 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
 //                        recyclerView.setAdapter(new EosTransactionsAdapter(transactions, walletId));
                 } else {
                     ethTransactionsAdapter.setTransactions(transactions, walletId);
-                    initTokensInfo();
+//                    initTokensInfo();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-
+        initTokensInfo();
         setTransactionsState();
     }
 
+    //TODO update this logic
     private void setTransactionsState() {
-        if (recyclerView.getAdapter() == null || recyclerView.getAdapter().getItemCount() == 0) {
+        if (recyclerView.getAdapter() == null || recyclerView.getAdapter().getItemCount() == 0 && viewModel.wallet.getValue().getActiveAddress().getErc20Balance().size() == 0) {
 //            swipeRefreshLayout.setEnabled(false);
             setNotificationsVisibility(View.VISIBLE);
             setToolbarScrollFlag(0);
