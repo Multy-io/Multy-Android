@@ -48,6 +48,7 @@ import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
+import io.multy.util.NumberFormatter;
 import io.multy.util.analytics.Analytics;
 import io.multy.viewmodels.AssetSendViewModel;
 
@@ -76,6 +77,10 @@ public class TokenAmountChooserFragment extends BaseFragment {
     View buttonClearOriginal;
     @BindView(R.id.text_currency_code_original)
     TextView textCurrencyCode;
+    @BindView (R.id.button_next)
+     TextView buttonNext;
+
+
 
     private AssetSendViewModel viewModel;
     private CurrenciesRate currenciesRate;
@@ -91,6 +96,7 @@ public class TokenAmountChooserFragment extends BaseFragment {
         ButterKnife.bind(this, view);
         viewModel = ViewModelProviders.of(getActivity()).get(AssetSendViewModel.class);
         setBaseViewModel(viewModel);
+        buttonNext.setEnabled(false);
         currenciesRate = RealmManager.getSettingsDao().getCurrenciesRate();
 
         if (viewModel.getWallet() == null || !viewModel.getWallet().isValid()) {
@@ -110,6 +116,7 @@ public class TokenAmountChooserFragment extends BaseFragment {
             inputOriginal.setText(viewModel.getAmount() > 0 ? String.valueOf(viewModel.getAmount()) : "");
         }
 
+
         inputOriginal.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -117,8 +124,46 @@ public class TokenAmountChooserFragment extends BaseFragment {
             }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                textTotal.setText(String.format("%s %s", s, viewModel.tokenCode.getValue()));
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                //TODO implement 0 entity check!
+
+                if (!checkMaxLengthAfterPoint(inputOriginal, 8, i, i2)) {
+                    return;
+                }
+                checkMaxLengthBeforePoint(inputOriginal, 6, i, i1, i2);
+//                if (!isAmountSwapped) { // if currency input is main
+//                    if (!TextUtils.isEmpty(charSequence)) {
+//                        if (isParsable(charSequence.toString())) {
+//                            inputCurrency.setText(NumberFormatter.getFiatInstance().format(viewModel.getCurrenciesRate().getBtcToUsd() * Double.parseDouble(charSequence.toString())));
+//                            setTotalAmountForInput();
+//                        }
+//                    } else {
+//                        setEmptyTotalWithFee();
+//                        inputCurrency.getText().clear();
+//                        inputOriginal.getText().clear();
+//                    }
+//                }
+//
+                if (!charSequence.toString().isEmpty() && isParsable(charSequence.toString())){
+
+                    double currentAmount = Double.parseDouble(charSequence.toString());
+                    double maxValue = Double.parseDouble(viewModel.tokenBalance.getValue());
+                    if (currentAmount > 0){
+                        if (maxValue >= currentAmount){
+                            buttonNext.setEnabled(true);
+                            textTotal.setText(String.format("%s %s", inputOriginal.getText().toString(), viewModel.tokenCode.getValue()));
+                        } else {
+                            buttonNext.setEnabled(false);
+//                        String s = charSequence.toString();
+//                        s.substring(0, s.length()-1 );
+//                        inputOriginal.setText(s);
+                            showMessage(getResources().getString(R.string.enter_sum_too_much));
+                        }
+                    } else {
+                        buttonNext.setEnabled(false);
+                    }
+
+                }
             }
 
             @Override
@@ -157,40 +202,44 @@ public class TokenAmountChooserFragment extends BaseFragment {
 
     @OnClick(R.id.button_next)
     public void onClickNext() {
-        Wallet wallet = viewModel.getWallet();
-        BigDecimal amount = new BigDecimal(inputOriginal.getText().toString()).multiply(new BigDecimal(Math.pow(10, viewModel.decimals.getValue())));
-        BigDecimal balance = new BigDecimal(viewModel.tokenBalance.getValue()).multiply(new BigDecimal(Math.pow(10, viewModel.decimals.getValue())));
-        viewModel.tokensAmount.setValue(inputOriginal.getText().toString());
+        String inputAmount = inputOriginal.getText().toString();
+        if (!inputAmount.isEmpty() && isParsable(inputAmount) && Double.parseDouble(inputAmount)> 0) {
 
-        Payload payload = new Payload(wallet.getActiveAddress().getAmountString(),
-                viewModel.contractAddress.getValue(),
-                balance.toBigInteger().toString(),
-                amount.toBigInteger().toString(),
-                viewModel.getReceiverAddress().getValue());
+            Wallet wallet = viewModel.getWallet();
+            BigDecimal amount = new BigDecimal(inputOriginal.getText().toString()).multiply(new BigDecimal(Math.pow(10, viewModel.decimals.getValue())));
+            BigDecimal balance = new BigDecimal(viewModel.tokenBalance.getValue()).multiply(new BigDecimal(Math.pow(10, viewModel.decimals.getValue())));
+            viewModel.tokensAmount.setValue(inputOriginal.getText().toString());
 
-        Builder builder = new Builder(Builder.TYPE_ERC20, Builder.ACTION_TRANSFER, payload);
+            Payload payload = new Payload(wallet.getActiveAddress().getAmountString(),
+                    viewModel.contractAddress.getValue(),
+                    balance.toBigInteger().toString(),
+                    amount.toBigInteger().toString(),
+                    viewModel.getReceiverAddress().getValue());
 
-        Transaction transaction = new Transaction(wallet.getEthWallet().getNonce(), new io.multy.model.core.Fee(
-                String.valueOf(viewModel.getFee().getAmount()), Constants.GAS_LIMIT_TOKEN_TANSFER));
+            Builder builder = new Builder(Builder.TYPE_ERC20, Builder.ACTION_TRANSFER, payload);
 
-        TransactionBuilder transactionBuilder = new TransactionBuilder(
-                NativeDataHelper.Blockchain.ETH.getName(),
-                NativeDataHelper.NetworkId.ETH_MAIN_NET.getValue(),
-                Account.getAccount(wallet.getIndex(), wallet.getActiveAddress().getIndex(), wallet.getNetworkId()),
-                builder,
-                transaction);
+            Transaction transaction = new Transaction(wallet.getEthWallet().getNonce(), new io.multy.model.core.Fee(
+                    String.valueOf(viewModel.getFee().getAmount()), Constants.GAS_LIMIT_TOKEN_TANSFER));
 
-        try {
-            String json = NativeDataHelper.makeTransactionJSONAPI(new Gson().toJson(transactionBuilder));
-            TransactionResponse transactionResponse = new Gson().fromJson(json, TransactionResponse.class);
-            if (transactionResponse == null) {
-                viewModel.errorMessage.setValue("Error building transaction");
-            } else {
-                viewModel.transaction.setValue(transactionResponse.getTransactionHex());
+            TransactionBuilder transactionBuilder = new TransactionBuilder(
+                    NativeDataHelper.Blockchain.ETH.getName(),
+                    NativeDataHelper.NetworkId.ETH_MAIN_NET.getValue(),
+                    Account.getAccount(wallet.getIndex(), wallet.getActiveAddress().getIndex(), wallet.getNetworkId()),
+                    builder,
+                    transaction);
+
+            try {
+                String json = NativeDataHelper.makeTransactionJSONAPI(new Gson().toJson(transactionBuilder));
+                TransactionResponse transactionResponse = new Gson().fromJson(json, TransactionResponse.class);
+                if (transactionResponse == null) {
+                    viewModel.errorMessage.setValue("Error building transaction");
+                } else {
+                    viewModel.transaction.setValue(transactionResponse.getTransactionHex());
+                }
+            } catch (JniException e) {
+                viewModel.errorMessage.setValue(e.getLocalizedMessage());
+                e.printStackTrace();
             }
-        } catch (JniException e) {
-            viewModel.errorMessage.setValue(e.getLocalizedMessage());
-            e.printStackTrace();
         }
     }
 
@@ -230,4 +279,78 @@ public class TokenAmountChooserFragment extends BaseFragment {
     void onClickMax() {
         inputOriginal.setText(viewModel.tokenBalance.getValue());
     }
+
+
+    private void checkForPointAndZeros(String input, EditText inputView) {
+        int selection = inputView.getSelectionStart();
+        if (!TextUtils.isEmpty(input) && input.length() == 1 && input.contains(".")) {
+            String result = input.replaceAll(".", "0.");
+            inputView.setText(result);
+            inputView.setSelection(inputView.getText().toString().trim().length());
+        } else if (!TextUtils.isEmpty(input) && input.startsWith("0") &&
+                !input.startsWith("0.") && input.length() > 1) {
+            inputView.setText(input.substring(1, input.length()));
+            inputView.setSelection(selection - 1);
+        }
+    }
+
+    private void checkMaxLengthBeforePoint(EditText input, int max, int start, int end, int count) {
+        String amount = input.getText().toString();
+        if (!TextUtils.isEmpty(amount) && amount.length() > max) {
+            if (amount.contains(".")) {
+                if (amount.indexOf(".") > max) {
+                    if (start != 0 && end != amount.length() && count == amount.length()) {
+                        StringBuilder stringBuilder = new StringBuilder();
+                        stringBuilder.append(amount.substring(0, start));
+                        stringBuilder.append(amount.substring(start + count, amount.length()));
+                        input.setText(stringBuilder.toString());
+                        if (start <= input.getText().length()) {
+                            input.setSelection(start);
+                        } else {
+                            input.setSelection(input.getText().length());
+                        }
+                    } else {
+                        input.setText(amount.substring(0, amount.length() - 1));
+                        input.setSelection(input.getText().length());
+                    }
+                }
+            } else {
+                if (start != 0 && end != amount.length() && count == amount.length()) {
+                    StringBuilder stringBuilder = new StringBuilder();
+                    stringBuilder.append(amount.substring(0, start));
+                    stringBuilder.append(amount.substring(start + count, amount.length()));
+                    input.setText(stringBuilder.toString());
+                    input.setSelection(start);
+                } else {
+                    input.setText(amount.substring(0, amount.length() - 1));
+                    input.setSelection(input.getText().length());
+                }
+            }
+        }
+    }
+
+    private boolean checkMaxLengthAfterPoint(EditText input, int max, int start, int count) {
+        String amount = input.getText().toString();
+        if (!TextUtils.isEmpty(amount) && amount.contains(".")) {
+            if (amount.length() - (amount.indexOf(".") + 1) > max) {
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.append(amount.substring(0, start));
+                stringBuilder.append(amount.substring(start + count, amount.length()));
+                input.setText(stringBuilder.toString());
+                input.setSelection(start);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean isParsable(String input) {
+        try {
+            Double.parseDouble(input);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
 }
