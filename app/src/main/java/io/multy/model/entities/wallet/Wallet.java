@@ -413,7 +413,7 @@ public class Wallet extends RealmObject implements WalletBalanceInterface {
     }
 
     public BigDecimal getAvailableBalanceNumeric() {
-        return new BigDecimal(availableBalance);
+        return availableBalance.isEmpty() ? new BigDecimal("0") : new BigDecimal(availableBalance);
     }
 
     public double getBtcDoubleValue() {
