@@ -12,6 +12,7 @@ import java.util.List;
 import io.multy.model.entities.AuthEntity;
 import io.multy.model.entities.BrokenAddresses;
 import io.multy.model.entities.Estimation;
+import io.multy.model.entities.ExchangePairRequestEntity;
 import io.multy.model.entities.TransactionRequestEntity;
 import io.multy.model.entities.wallet.DiscoverableWalletInfo;
 import io.multy.model.entities.wallet.Wallet;
@@ -24,6 +25,8 @@ import io.multy.model.responses.AccountsResponse;
 import io.multy.model.responses.AddressBalanceResponse;
 import io.multy.model.responses.AuthResponse;
 import io.multy.model.responses.ChainInfoResponse;
+import io.multy.model.responses.ExchangeCurrenciesListResponse;
+import io.multy.model.responses.ExchangePairResponse;
 import io.multy.model.responses.FeeRateResponse;
 import io.multy.model.responses.MessageResponse;
 import io.multy.model.responses.ServerConfigResponse;
@@ -141,4 +144,17 @@ public interface ApiServiceInterface {
 
     @POST("/api/v1/discover/wallets")
     Call<ResponseBody> discoverWallets(@Body DiscoverWalletRequest request);
+
+//    This methods working with Exchange Multy API
+    @GET("/api/v1/exchanger/supported_currencies")
+    Call<ExchangeCurrenciesListResponse> getExchangeList();
+
+    @POST("/api/v1/exchanger/exchange_amount")
+    Call<ExchangePairResponse> getExchangePair(@Body ExchangePairRequestEntity requestPair);
+
+    @POST("/api/v1/exchanger/minimum_amount")
+    Call<ExchangePairResponse> getMinExchangeValue(@Body ExchangePairRequestEntity requestPair);
+
+    @POST("/api/v1/exchanger/transaction")
+    Call<ExchangePairResponse> getPayToAddress(@Body ExchangePairRequestEntity requestPair);
 }

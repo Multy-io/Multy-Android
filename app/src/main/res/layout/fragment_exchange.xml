@@ -1,0 +1,578 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2018 Idealnaya rabota LLC
+  ~ Licensed under Multy.io license.
+  ~ See LICENSE for details
+  -->
+
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_main"
+    android:clickable="true"
+    android:clipToPadding="false"
+    android:focusable="true"
+    tools:showIn="io.multy.android.ExchangeActivity">
+
+
+
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/constraint_exchange"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+
+            <TextView
+                android:id="@+id/tv_exchange_min_rate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:textColor="@color/grey_blue"
+                android:text="MIN: not determinated"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_exchange_rate"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <TextView
+                android:id="@+id/tv_exchange_rate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:textColor="@color/grey_blue"
+                android:textSize="12sp"
+                android:text="1 BTC = 0.0123 ETH"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/constraint_exchange_value" />
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/constraint_exchange_value"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white">
+
+                <android.support.constraint.ConstraintLayout
+                    android:id="@+id/constraint_exchange_from"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    app:layout_constraintEnd_toStartOf="@+id/exchange_center"
+
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+
+                    <TextView
+                        android:id="@+id/button_max"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginEnd="24dp"
+                        android:layout_marginBottom="16dp"
+                        android:background="@drawable/selector_wallet_header_button"
+                        android:gravity="center"
+                        android:maxLines="1"
+                        android:padding="12dp"
+                        android:text="MAX 1234567 EU"
+                        android:textColor="@color/white"
+                        android:textSize="12sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/til_exchange_from_fiat" />
+
+
+                    <TextView
+                        android:id="@+id/tv_exchange_sending_from_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:text="You are sending"
+                        android:textColor="@color/grey_blue"
+                        android:textSize="12sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <ImageButton
+                        android:id="@+id/ib_exchange_from_icon"
+                        android:layout_width="@dimen/dimen_60dp"
+                        android:layout_height="@dimen/dimen_60dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="#00000000"
+                        android:scaleType="fitXY"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tv_exchange_sending_from_title"
+                        app:srcCompat="@drawable/chain_bch" />
+
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/til_exchange_from_crypto"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/ib_exchange_from_icon">
+
+                        <android.support.design.widget.TextInputEditText
+                            android:id="@+id/tie_exchange_from_crypto"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_horizontal"
+                            android:inputType="numberDecimal"
+                            android:maxLength="13"
+                            android:minWidth="@dimen/dimen_60dp"
+                            android:text="0"
+                            android:textAppearance="@style/HintInputAppearance"
+                            android:textColorHighlight="@color/grey_blue" />
+                    </android.support.design.widget.TextInputLayout>
+
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/til_exchange_from_fiat"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/til_exchange_from_crypto">
+
+                        <android.support.design.widget.TextInputEditText
+                            android:id="@+id/tie_exchange_from_fiat"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_horizontal"
+                            android:maxLength="13"
+                            android:hint="USD"
+                            android:inputType="numberDecimal"
+                            android:minWidth="@dimen/dimen_60dp"
+                            android:text="0"
+                            android:textAppearance="@style/HintInputAppearance"
+                            android:textColorHighlight="@color/grey_blue" />
+                    </android.support.design.widget.TextInputLayout>
+
+                </android.support.constraint.ConstraintLayout>
+
+                <android.support.constraint.Guideline
+                    android:id="@+id/exchange_center"
+                    android:layout_width="10dp"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.5" />
+
+                <android.support.constraint.ConstraintLayout
+                    android:id="@+id/constraint_arrow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/exchange_center"
+                    app:layout_constraintStart_toStartOf="@+id/exchange_center"
+                    app:layout_constraintTop_toTopOf="parent">
+
+
+                    <ImageView
+                        android:id="@+id/iv_arrow_devider"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="8dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_exchange_medium_arrow" />
+
+                    <View
+                        android:id="@+id/viewDeviderTop"
+                        android:layout_width="2dp"
+                        android:layout_height="0dp"
+
+                        android:layout_marginTop="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:background="@color/divider_grey_lightest"
+                        app:layout_constraintBottom_toTopOf="@+id/iv_arrow_devider"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+
+                    <View
+                        android:id="@+id/viewDeviderBottom"
+                        android:layout_width="2dp"
+                        android:layout_height="0dp"
+                        android:layout_marginStart="8dp"
+
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginBottom="8dp"
+
+                        android:background="@color/divider_grey_lightest"
+                        app:layout_constraintBottom_toBottomOf="parent"
+
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/iv_arrow_devider" />
+                </android.support.constraint.ConstraintLayout>
+
+                <android.support.constraint.ConstraintLayout
+                    android:id="@+id/constraint_exchange_to"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/exchange_center"
+                    app:layout_constraintTop_toTopOf="parent">
+
+
+                    <TextView
+                        android:id="@+id/tv_receiving"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:textColor="@color/grey_blue"
+                        android:text="You will receive"
+                        android:textSize="12sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <ImageButton
+                        android:id="@+id/ib_receive"
+                        android:layout_width="@dimen/dimen_60dp"
+                        android:layout_height="@dimen/dimen_60dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="#00000000"
+                        android:scaleType="fitXY"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tv_receiving"
+                        app:srcCompat="@drawable/ic_fast_recieve" />
+
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/til_exchange_to_crtypo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/ib_receive">
+
+                        <android.support.design.widget.TextInputEditText
+                            android:id="@+id/tie_exchange_to_crypto"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_horizontal"
+                            android:maxLength="13"
+                            android:hint="BTC"
+                            android:inputType="numberDecimal"
+                            android:minWidth="@dimen/dimen_60dp"
+                            android:textAppearance="@style/HintInputAppearance" />
+                    </android.support.design.widget.TextInputLayout>
+
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/til_exchange_to_fiat"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:visibility="invisible"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/til_exchange_to_crtypo">
+
+                        <android.support.design.widget.TextInputEditText
+                            android:id="@+id/tie_exchange_to_fiat"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_horizontal"
+                            android:maxLength="13"
+                            android:hint="USD"
+                            android:inputType="numberDecimal"
+                            android:minWidth="@dimen/dimen_60dp"
+                            android:textAppearance="@style/HintInputAppearance" />
+                    </android.support.design.widget.TextInputLayout>
+
+                    <TextView
+                        android:id="@+id/tv_exchange_select_asset"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:textColor="@color/grey_blue"
+                        android:textSize="12sp"
+                        android:text="@string/exchange_tap"
+                        android:gravity="center_horizontal"
+                        android:padding="16dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/ib_receive" />
+
+
+                </android.support.constraint.ConstraintLayout>
+
+            </android.support.constraint.ConstraintLayout>
+        </android.support.constraint.ConstraintLayout>
+
+
+
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/constraint_summery"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/btn_height"
+        android:background="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <View
+            android:id="@+id/view2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/divider_grey_lightest" />
+
+        <android.support.constraint.Guideline
+            android:id="@+id/summery_center"
+            android:layout_width="10dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/constraintLayout2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view2">
+
+            <ImageView
+                android:id="@+id/iv_arrow_summery"
+                android:layout_width="10dp"
+                android:layout_height="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="4dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_exchange_small_arrow" />
+
+            <ImageView
+                android:id="@+id/iv_summery_from_logo"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginBottom="4dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/iv_arrow_summery"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_btc_huge" />
+
+            <ImageView
+                android:id="@+id/iv_summery_to_logo"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/iv_arrow_summery"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/chain_eth" />
+
+
+        </android.support.constraint.ConstraintLayout>
+
+
+        <TextView
+            android:id="@+id/tv_exchange_summery_sending_from"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="2dp"
+            android:text="You are sending from"
+            android:textColor="@color/grey_blue"
+            android:textSize="10sp"
+            app:layout_constraintBottom_toTopOf="@+id/tv_exchange_summery_from_wallet"
+            app:layout_constraintEnd_toStartOf="@+id/constraintLayout2"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_exchange_summery_from_wallet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="2dp"
+            android:text="MyBTCWallet"
+            android:textColor="@color/grey_blue"
+            android:textSize="10sp"
+            app:layout_constraintBottom_toTopOf="@+id/tv_exchange_summery_crypto_amount"
+            app:layout_constraintEnd_toStartOf="@+id/constraintLayout2" />
+
+
+        <TextView
+            android:id="@+id/tv_exchange_summery_crypto_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="2dp"
+            android:textColor="@color/text_main_dark"
+            android:text="1 BTC"
+            app:layout_constraintBottom_toTopOf="@+id/tv_exchange_summery_fiat_amount"
+            app:layout_constraintEnd_toStartOf="@+id/constraintLayout2" />
+
+
+        <TextView
+            android:id="@+id/tv_exchange_summery_fiat_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:textColor="@color/grey_blue"
+            android:textSize="10sp"
+            android:text="$6000"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/constraintLayout2" />
+
+        <TextView
+            android:id="@+id/tv_exchange_summery_receive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="2dp"
+            android:text="You will receive to"
+            android:textColor="@color/grey_blue"
+            android:textSize="10sp"
+            app:layout_constraintBottom_toTopOf="@+id/tv_exchange_summery_receive_wallet"
+            app:layout_constraintStart_toEndOf="@+id/constraintLayout2"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_exchange_summery_receive_wallet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="2dp"
+            android:text="MyETH Wallet"
+            android:textColor="@color/grey_blue"
+            android:textSize="10sp"
+            app:layout_constraintBottom_toTopOf="@+id/tv_exchange_summery_receive_crypto_amount"
+            app:layout_constraintStart_toEndOf="@+id/constraintLayout2" />
+
+        <TextView
+            android:id="@+id/tv_exchange_summery_receive_crypto_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="2dp"
+            android:textColor="@color/text_main_dark"
+            android:text="1 ETH"
+            app:layout_constraintBottom_toTopOf="@+id/tv_exchange_summery_receive_fiat_amount"
+            app:layout_constraintStart_toEndOf="@+id/constraintLayout2" />
+
+        <TextView
+            android:id="@+id/tv_exchange_summery_receive_fiat_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="8dp"
+            android:textColor="@color/grey_blue"
+            android:textSize="10sp"
+            android:text="$ 6000"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/constraintLayout2" />
+
+    </android.support.constraint.ConstraintLayout>
+
+
+    <TextView
+        android:id="@+id/button_exchange"
+        style="@style/ButtonNext"
+        android:text="@string/slide_to_exchange"
+        android:textColor="@color/white_transparent"
+        android:textSize="16sp"
+        android:letterSpacing="0.01"
+        android:lineSpacingExtra="13sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/space" />
+
+    <ImageView
+        android:id="@+id/image_slider"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:clickable="true"
+        android:elevation="10dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:foreground="@drawable/selectable_item_background"
+        android:paddingEnd="24dp"
+        android:paddingStart="24dp"
+        app:layout_constraintBottom_toBottomOf="@+id/button_exchange"
+        app:layout_constraintStart_toStartOf="@+id/button_exchange"
+        app:layout_constraintTop_toTopOf="@+id/button_exchange"
+        app:srcCompat="@drawable/ic_slide_to_send" />
+
+    <ImageView
+        android:id="@+id/image_slider_finish"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:clickable="true"
+        android:elevation="10dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:paddingEnd="24dp"
+        android:paddingStart="24dp"
+        app:layout_constraintBottom_toBottomOf="@+id/button_exchange"
+        app:layout_constraintEnd_toEndOf="@+id/button_exchange"
+        app:layout_constraintTop_toTopOf="@+id/button_exchange"
+        app:srcCompat="@drawable/ic_slide_to_send_finish" />
+
+</android.support.constraint.ConstraintLayout>

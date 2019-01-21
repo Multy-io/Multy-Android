@@ -26,8 +26,8 @@ public class ServerConfigResponse {
     @SerializedName("multisigfactory")
     private MultisigFactory multisigFactory;
 
-//    @SerializedName("erc20tokenlist")
-//    private ArrayList<Erc20Token> tokens;
+    @SerializedName("erc20tokenlist")
+    private List<ERC20TokenSupport> tokens;
 
 
     public MultisigFactory getMultisigFactory() {
@@ -46,6 +46,7 @@ public class ServerConfigResponse {
         return brouserDefault;
     }
 
+    public List<ERC20TokenSupport> getSupportTokens() {return this.tokens;}
 //    public ArrayList<Erc20Token> getTokenList() {
 //        return tokens;
 //    }
@@ -108,5 +109,20 @@ public class ServerConfigResponse {
         public int getFeatureCode() {
             return featureCode;
         }
+    }
+
+    public class ERC20TokenSupport{
+        @SerializedName("ContractAddress")
+        private String smartContractAddress;
+
+        @SerializedName("Ticker")
+        private String name;
+
+        @SerializedName("Name")
+        private String fullName;
+
+        public String getName(){return this.name;}
+        public String getFullName(){return this.fullName;}
+        public String getSmartContractAddress(){return this.smartContractAddress;}
     }
 }

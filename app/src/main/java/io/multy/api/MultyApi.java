@@ -24,6 +24,8 @@ import io.multy.Multy;
 import io.multy.model.entities.AuthEntity;
 import io.multy.model.entities.BrokenAddresses;
 import io.multy.model.entities.Estimation;
+import io.multy.model.entities.ExchangePair;
+import io.multy.model.entities.ExchangePairRequestEntity;
 import io.multy.model.entities.TransactionRequestEntity;
 import io.multy.model.entities.UserId;
 import io.multy.model.entities.wallet.DiscoverableWalletInfo;
@@ -36,6 +38,8 @@ import io.multy.model.requests.WalletRequest;
 import io.multy.model.responses.AccountsResponse;
 import io.multy.model.responses.AuthResponse;
 import io.multy.model.responses.ChainInfoResponse;
+import io.multy.model.responses.ExchangeCurrenciesListResponse;
+import io.multy.model.responses.ExchangePairResponse;
 import io.multy.model.responses.FeeRateResponse;
 import io.multy.model.responses.MessageResponse;
 import io.multy.model.responses.ServerConfigResponse;
@@ -264,5 +268,32 @@ public enum MultyApi implements MultyApiInterface {
         public Call<ResponseBody> discoverWallets(DiscoverWalletRequest request) {
             return api.discoverWallets(request);
         }
+
+
+        /**
+         * Requests for Exchange
+         */
+
+        @Override
+        public Call<ExchangeCurrenciesListResponse> getExchangeList(){
+            return api.getExchangeList();
+        }
+
+        @Override
+        public Call<ExchangePairResponse> getExchangePair(ExchangePair pair){
+            return api.getExchangePair(new ExchangePairRequestEntity(pair));
+        }
+
+
+        @Override
+        public Call<ExchangePairResponse> getMinExchangeValue(ExchangePair pair){
+            return api.getMinExchangeValue(new ExchangePairRequestEntity(pair));
+        }
+
+        @Override
+        public Call<ExchangePairResponse> getPayToAddress(ExchangePair pair){
+            return api.getPayToAddress(new ExchangePairRequestEntity(pair));
+        }
+
     }
 }

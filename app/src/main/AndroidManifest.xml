@@ -110,10 +110,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/Send" />
         <activity
-            android:name=".ui.activities.ExchangingActivity"
-            android:label="@string/exchange"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".ui.activities.PinSetupActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysVisible|adjustNothing" />
@@ -151,6 +147,10 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activities.TokenSendActivity"
+            android:windowSoftInputMode="adjustResize|stateAlwaysVisible"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activities.ExchangeActivity"
             android:windowSoftInputMode="adjustResize|stateAlwaysVisible"
             android:screenOrientation="portrait" />
 

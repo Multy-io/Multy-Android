@@ -13,6 +13,7 @@ import java.util.List;
 
 import io.multy.model.entities.BrokenAddresses;
 import io.multy.model.entities.Estimation;
+import io.multy.model.entities.ExchangePair;
 import io.multy.model.entities.wallet.DiscoverableWalletInfo;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.requests.AddWalletAddressRequest;
@@ -23,6 +24,9 @@ import io.multy.model.requests.WalletRequest;
 import io.multy.model.responses.AccountsResponse;
 import io.multy.model.responses.AuthResponse;
 import io.multy.model.responses.ChainInfoResponse;
+import io.multy.model.responses.ExchangeCurrenciesListResponse;
+import io.multy.model.responses.ExchangePairResponse;
+import io.multy.model.responses.ExchangePriceResponse;
 import io.multy.model.responses.FeeRateResponse;
 import io.multy.model.responses.MessageResponse;
 import io.multy.model.responses.ServerConfigResponse;
@@ -97,4 +101,13 @@ public interface MultyApiInterface {
     Call<ResponseBody> makeBroken(BrokenAddresses brokenAddresses);
 
     Call<ResponseBody> discoverWallets(DiscoverWalletRequest walletInfoList);
+
+    Call<ExchangeCurrenciesListResponse> getExchangeList();
+
+    Call<ExchangePairResponse> getExchangePair(ExchangePair pair);
+
+    Call<ExchangePairResponse> getMinExchangeValue(ExchangePair pair);
+
+    Call<ExchangePairResponse> getPayToAddress(ExchangePair pair);
+
 }
