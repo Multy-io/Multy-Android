@@ -46,6 +46,7 @@ import io.multy.ui.activities.BaseActivity;
 import io.multy.ui.activities.TokenSendActivity;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
+import io.multy.util.CryptoFormatUtils;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
 import io.multy.util.NumberFormatter;
@@ -117,6 +118,14 @@ public class TokenAmountChooserFragment extends BaseFragment {
         }
 
 
+        inputOriginal.setOnFocusChangeListener((view1, hasFocus) -> {
+            if (hasFocus) {
+                inputOriginal.setSelection(inputOriginal.getText().length());
+
+            }
+        });
+
+
         inputOriginal.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -131,44 +140,34 @@ public class TokenAmountChooserFragment extends BaseFragment {
                     return;
                 }
                 checkMaxLengthBeforePoint(inputOriginal, 6, i, i1, i2);
-//                if (!isAmountSwapped) { // if currency input is main
-//                    if (!TextUtils.isEmpty(charSequence)) {
-//                        if (isParsable(charSequence.toString())) {
-//                            inputCurrency.setText(NumberFormatter.getFiatInstance().format(viewModel.getCurrenciesRate().getBtcToUsd() * Double.parseDouble(charSequence.toString())));
-//                            setTotalAmountForInput();
+
+                if (!charSequence.toString().isEmpty() && isParsable(charSequence.toString())){
+                    setTotalAmountForInput();
+//                    double currentAmount = Double.parseDouble(charSequence.toString());
+//                    double maxValue = Double.parseDouble(viewModel.tokenBalance.getValue());
+//                    if (currentAmount > 0){
+//                        if (maxValue >= currentAmount){
+//                            buttonNext.setEnabled(true);
+//                            textTotal.setText(String.format("%s %s", inputOriginal.getText().toString(), viewModel.tokenCode.getValue()));
+//                        } else {
+//                            buttonNext.setEnabled(false);
+//                            String toSet = charSequence.toString();
+//                            toSet.substring(0, toSet.length()-2 );
+////                            inputOriginal.setText(toSet);
+//                            textTotal.setText(String.format("%s %s", toSet, viewModel.tokenCode.getValue()));
+//                            showMessage(getResources().getString(R.string.enter_sum_too_much));
+//                            return;
 //                        }
 //                    } else {
-//                        setEmptyTotalWithFee();
-//                        inputCurrency.getText().clear();
-//                        inputOriginal.getText().clear();
+//                        buttonNext.setEnabled(false);
 //                    }
-//                }
-//
-                if (!charSequence.toString().isEmpty() && isParsable(charSequence.toString())){
-
-                    double currentAmount = Double.parseDouble(charSequence.toString());
-                    double maxValue = Double.parseDouble(viewModel.tokenBalance.getValue());
-                    if (currentAmount > 0){
-                        if (maxValue >= currentAmount){
-                            buttonNext.setEnabled(true);
-                            textTotal.setText(String.format("%s %s", inputOriginal.getText().toString(), viewModel.tokenCode.getValue()));
-                        } else {
-                            buttonNext.setEnabled(false);
-//                        String s = charSequence.toString();
-//                        s.substring(0, s.length()-1 );
-//                        inputOriginal.setText(s);
-                            showMessage(getResources().getString(R.string.enter_sum_too_much));
-                        }
-                    } else {
-                        buttonNext.setEnabled(false);
-                    }
 
                 }
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-
+                checkForPointAndZeros(s.toString(), inputOriginal);
             }
         });
         return view;
@@ -350,6 +349,46 @@ public class TokenAmountChooserFragment extends BaseFragment {
             return true;
         } catch (NumberFormatException e) {
             return false;
+        }
+    }
+
+
+    private void setTotalAmountForInput() {
+        try {
+                if (!TextUtils.isEmpty(inputOriginal.getText())) { // checks input for value to not parse null
+
+                    double currentAmount = Double.parseDouble(inputOriginal.getText().toString());
+                    double maxValue = Double.parseDouble(viewModel.tokenBalance.getValue());
+
+                    if (currentAmount > 0){
+                        if (maxValue >= currentAmount){
+                            buttonNext.setEnabled(true);
+                            buttonNext.setEnabled(true);
+                            textTotal.setText(String.format("%s %s", inputOriginal.getText().toString(), viewModel.tokenCode.getValue()));
+                        } else {
+                            buttonNext.setEnabled(true);
+                            int substringCount = inputOriginal.getText().length() - 1;
+                            textTotal.setText(inputOriginal.getText().subSequence(0, substringCount < 0 ? 0 : substringCount));
+                            inputOriginal.setText(inputOriginal.getText().subSequence(0, substringCount < 0 ? 0 : substringCount));
+                            inputOriginal.setSelection(inputOriginal.getText().length());
+                            viewModel.errorMessage.setValue(getString(R.string.enter_sum_too_much));
+                            return;
+                        }
+                    } else {
+                        buttonNext.setEnabled(false);
+                    }
+
+                } else {
+//                    setEmptyTotalWithFee();
+                }
+//            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+            int substringCount = inputOriginal.getText().length() - 1;
+            buttonNext.setEnabled(true);
+            textTotal.setText(inputOriginal.getText().subSequence(0, substringCount < 0 ? 0 : substringCount));
+            inputOriginal.setText(inputOriginal.getText().subSequence(0, substringCount < 0 ? 0 : substringCount));
+            inputOriginal.setSelection(inputOriginal.getText().length());
         }
     }
 
