@@ -88,7 +88,7 @@ public class TransactionHelper {
             byte[] transactionHex = NativeDataHelper.makeTransaction(meta.getWallet().getId(), meta.getWallet().getNetworkId(),
                     seed, meta.getWallet().getIndex(), String.valueOf(CryptoFormatUtils.btcToSatoshi(String.valueOf(String.valueOf(meta.getAmount())))),
                     meta.getFeeRate(), getDonationSatoshi(meta.getDonationAmount()),
-                    meta.getToAddress(), meta.getChangeAddress(), meta.getDonationAddress(), meta.isPayingForComission(), feeTotal);
+                    meta.getToAddress(), meta.getChangeAddress(), meta.getDonationAddress(), meta.isPayingForComission());
 //            return byteArrayToHex(transactionHex);
             Log.d("TH", "GOT TOTAL FEE RATE:"+feeTotal);
             return transactionHex;

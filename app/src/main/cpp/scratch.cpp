@@ -387,14 +387,14 @@ Java_io_multy_util_NativeDataHelper_bruteForceAddress(JNIEnv *jniEnv, jobject ob
     return jstring();
 }
 
-JNIEXPORT jbyteArray JNICALL
-Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *jniEnv, jobject obj, jlong jWalletId,
-                                                    jint jNetworkId, jbyteArray jSeed,
-                                                    jint jWalletIndex, jstring amountToSpend,
-                                                    jstring jFeePerByte, jstring jDonation,
-                                                    jstring jDestinationAddress,
-                                                    jstring jChangeAddress,
-                                                    jstring jDonationAddress, jboolean payFee) {
+Transaction* makeTransaction(JNIEnv *jniEnv, jobject obj, jlong jWalletId,
+            jint jNetworkId, jbyteArray jSeed,
+            jint jWalletIndex, jstring amountToSpend,
+            jstring jFeePerByte, jstring jDonation,
+            jstring jDestinationAddress,
+                    jstring jChangeAddress,
+            jstring jDonationAddress, jboolean payFee)
+{
     const jbyteArray defaultResult{};
     bool fladPayFee = (bool) (payFee == JNI_TRUE);
     using namespace multy_core::internal;
@@ -457,153 +457,213 @@ Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *jniEnv, jobject obj,
     size_t outputsCount = 0;
     BigInt total_fee;
 
-    try {
+    for (int i = 0; i < length; i++) {
+        //SET ADDRESS INDEX
+        //GET DATA FROM SET ADDRESS
+        jint addressId = addressIds[i];
 
-        for (int i = 0; i < length; i++) {
-            //SET ADDRESS INDEX
-            //GET DATA FROM SET ADDRESS
-            jint addressId = addressIds[i];
+        env->CallVoidMethod(jObjectTransaction, jMidSetup, addressId);
 
-            env->CallVoidMethod(jObjectTransaction, jMidSetup, addressId);
+        jintArray outIds = (jintArray) env->CallObjectMethod(jObjectTransaction, jMidIds);
+        jobjectArray hashes = (jobjectArray) env->CallObjectMethod(jObjectTransaction,
+                                                                   jMidHashes);
+        jobjectArray keys = (jobjectArray) env->CallObjectMethod(jObjectTransaction, jMidKeys);
+        jobjectArray amounts = (jobjectArray) env->CallObjectMethod(jObjectTransaction,
+                                                                    jMidAmounts);
 
-            jintArray outIds = (jintArray) env->CallObjectMethod(jObjectTransaction, jMidIds);
-            jobjectArray hashes = (jobjectArray) env->CallObjectMethod(jObjectTransaction,
-                                                                       jMidHashes);
-            jobjectArray keys = (jobjectArray) env->CallObjectMethod(jObjectTransaction, jMidKeys);
-            jobjectArray amounts = (jobjectArray) env->CallObjectMethod(jObjectTransaction,
-                                                                        jMidAmounts);
+        int stringCount = env->GetArrayLength(hashes);
+        jint *outIdArr = env->GetIntArrayElements(outIds, nullptr);
 
-            int stringCount = env->GetArrayLength(hashes);
-            jint *outIdArr = env->GetIntArrayElements(outIds, nullptr);
+        AccountPtr account;
+        HANDLE_ERROR(make_hd_leaf_account(hdAccount.get(), ADDRESS_EXTERNAL, addressId,
+                                          reset_sp(account)));
+        // START SET INPUTS
+        for (int k = 0; k < stringCount; k++) {
+            jstring jHash = (jstring) (env->GetObjectArrayElement(hashes, k));
+            jstring jKey = (jstring) (env->GetObjectArrayElement(keys, k));
+            jstring jAmount = (jstring) (env->GetObjectArrayElement(amounts, k));
+            JniString hashString(env, jHash);
+            JniString keyString(env, jKey);
+            JniString amountString(env, jAmount);
 
-            AccountPtr account;
-            HANDLE_ERROR(make_hd_leaf_account(hdAccount.get(), ADDRESS_EXTERNAL, addressId,
-                                              reset_sp(account)));
-// START SET INPUTS
-            for (int k = 0; k < stringCount; k++) {
-                jstring jHash = (jstring) (env->GetObjectArrayElement(hashes, k));
-                jstring jKey = (jstring) (env->GetObjectArrayElement(keys, k));
-                jstring jAmount = (jstring) (env->GetObjectArrayElement(amounts, k));
-                JniString hashString(env, jHash);
-                JniString keyString(env, jKey);
-                JniString amountString(env, jAmount);
+            jint outId = outIdArr[k];
 
-                jint outId = outIdArr[k];
+            BinaryDataPtr binaryDataTxHash;
+            BinaryDataPtr binaryDataPubKey;
+            BigIntPtr amount;
+            PrivateKey *private_key_ptr;
+            HANDLE_ERROR(account_get_key(account.get(), KEY_TYPE_PRIVATE,
+                                         reinterpret_cast<Key **>(&private_key_ptr)));
 
-                BinaryDataPtr binaryDataTxHash;
-                BinaryDataPtr binaryDataPubKey;
-                BigIntPtr amount;
-                PrivateKey *private_key_ptr;
-                HANDLE_ERROR(account_get_key(account.get(), KEY_TYPE_PRIVATE,
-                                             reinterpret_cast<Key **>(&private_key_ptr)));
-
-                PrivateKeyPtr private_key(private_key_ptr);
-                HANDLE_ERROR(
-                        make_binary_data_from_hex(hashString.c_str(), reset_sp(binaryDataTxHash)));
-                HANDLE_ERROR(
-                        make_binary_data_from_hex(keyString.c_str(), reset_sp(binaryDataPubKey)));
-                HANDLE_ERROR(make_big_int(amountString.c_str(), reset_sp(amount)));
-
-                HANDLE_ERROR(big_int_add(&sum, amount.get()));
-
-                Properties *source = nullptr;
-                HANDLE_ERROR(transaction_add_source(transaction.get(), &source));
-                HANDLE_ERROR(properties_set_big_int_value(source, "amount", amount.get()));
-                HANDLE_ERROR(properties_set_binary_data_value(source, "prev_tx_hash",
-                                                              binaryDataTxHash.get()));
-                HANDLE_ERROR(properties_set_int32_value(source, "prev_tx_out_index", outId));
-                HANDLE_ERROR(properties_set_binary_data_value(source, "prev_tx_out_script_pubkey",
-                                                              binaryDataPubKey.get()));
-                HANDLE_ERROR(
-                        properties_set_private_key_value(source, "private_key", private_key.get()));
-
-
-                outputsCount++;
-            }
-            env->ReleaseIntArrayElements(outIds, outIdArr, 0);
-        }
-// END SET INPUTS
-
-// set fee per byte
-        {
-            Properties *fee = nullptr;
-            HANDLE_ERROR(transaction_get_fee(transaction.get(), &fee));
-            HANDLE_ERROR(properties_set_big_int_value(fee, "amount_per_byte", &feePerByte));
-        }
-// set donation
-        if (donationAmount != "0") {
-            // donation
-            Properties *donation = nullptr;
-            HANDLE_ERROR(transaction_add_destination(transaction.get(), &donation));
-            HANDLE_ERROR(properties_set_big_int_value(donation, "amount", &donationAmount));
+            PrivateKeyPtr private_key(private_key_ptr);
             HANDLE_ERROR(
-                    properties_set_string_value(donation, "address", donationAddressStr.c_str()));
+                    make_binary_data_from_hex(hashString.c_str(), reset_sp(binaryDataTxHash)));
+            HANDLE_ERROR(
+                    make_binary_data_from_hex(keyString.c_str(), reset_sp(binaryDataPubKey)));
+            HANDLE_ERROR(make_big_int(amountString.c_str(), reset_sp(amount)));
+
+            HANDLE_ERROR(big_int_add(&sum, amount.get()));
+
+            Properties *source = nullptr;
+            HANDLE_ERROR(transaction_add_source(transaction.get(), &source));
+            HANDLE_ERROR(properties_set_big_int_value(source, "amount", amount.get()));
+            HANDLE_ERROR(properties_set_binary_data_value(source, "prev_tx_hash",
+                                                          binaryDataTxHash.get()));
+            HANDLE_ERROR(properties_set_int32_value(source, "prev_tx_out_index", outId));
+            HANDLE_ERROR(properties_set_binary_data_value(source, "prev_tx_out_script_pubkey",
+                                                          binaryDataPubKey.get()));
+            HANDLE_ERROR(
+                    properties_set_private_key_value(source, "private_key", private_key.get()));
+
+
+            outputsCount++;
         }
+        env->ReleaseIntArrayElements(outIds, outIdArr, 0);
+    }
+    // END SET INPUTS
 
-// SET DESTINATION AND CHANGE ADDRESS
-        Properties *destination = nullptr;
-        Properties *change = nullptr;
-        HANDLE_ERROR(transaction_add_destination(transaction.get(), &destination));
-        HANDLE_ERROR(properties_set_string_value(destination, "address",
-                                                 destinationAddressStr.c_str()));
-        if (sum == destinationAmount) {
-            HANDLE_ERROR(properties_set_int32_value(destination, "is_change", 1));
-        } else {
-            if (!fladPayFee) {
-                destinationAmount = destinationAmount - donationAmount;
-            }
-            // set destination amount
-            HANDLE_ERROR(properties_set_big_int_value(destination, "amount", &destinationAmount));
+    // set fee per byte
+    {
+        Properties *fee = nullptr;
+        HANDLE_ERROR(transaction_get_fee(transaction.get(), &fee));
+        HANDLE_ERROR(properties_set_big_int_value(fee, "amount_per_byte", &feePerByte));
+    }
+    // set donation
+    if (donationAmount != "0") {
+        // donation
+        Properties *donation = nullptr;
+        HANDLE_ERROR(transaction_add_destination(transaction.get(), &donation));
+        HANDLE_ERROR(properties_set_big_int_value(donation, "amount", &donationAmount));
+        HANDLE_ERROR(
+                properties_set_string_value(donation, "address", donationAddressStr.c_str()));
+    }
 
-            //set change destination
-            HANDLE_ERROR(transaction_add_destination(transaction.get(), &change));
-            HANDLE_ERROR(properties_set_int32_value(change, "is_change", 1));
-            HANDLE_ERROR(properties_set_string_value(change, "address", changeAddressStr.c_str()));
+    // SET DESTINATION AND CHANGE ADDRESS
+    Properties *destination = nullptr;
+    Properties *change = nullptr;
+    HANDLE_ERROR(transaction_add_destination(transaction.get(), &destination));
+    HANDLE_ERROR(properties_set_string_value(destination, "address",
+                                             destinationAddressStr.c_str()));
+    if (sum == destinationAmount) {
+        HANDLE_ERROR(properties_set_int32_value(destination, "is_change", 1));
+    } else {
+        if (!fladPayFee) {
+        destinationAmount = destinationAmount - donationAmount;
+    }
+    // set destination amount
+    HANDLE_ERROR(properties_set_big_int_value(destination, "amount", &destinationAmount));
 
-            if (!fladPayFee) {
-                HANDLE_ERROR(transaction_update(transaction.get()));
-                BigIntPtr fee_transaction;
-                HANDLE_ERROR(
-                        transaction_get_total_fee(transaction.get(), reset_sp(fee_transaction)));
-                BigInt noPtrFeeTransaction(*fee_transaction);
-                destinationAmount -= noPtrFeeTransaction;
-                HANDLE_ERROR(
-                        properties_set_big_int_value(destination, "amount", &destinationAmount));
-            }
-        }
+    //set change destination
+    HANDLE_ERROR(transaction_add_destination(transaction.get(), &change));
+    HANDLE_ERROR(properties_set_int32_value(change, "is_change", 1));
+    HANDLE_ERROR(properties_set_string_value(change, "address", changeAddressStr.c_str()));
+
+    if (!fladPayFee) {
         HANDLE_ERROR(transaction_update(transaction.get()));
-
-        BinaryDataPtr serialized;
-        HANDLE_ERROR(transaction_serialize(transaction.get(), reset_sp(serialized)));
-
         BigIntPtr fee_transaction;
-        HANDLE_ERROR(transaction_get_total_fee(transaction.get(), reset_sp(fee_transaction)));
+        HANDLE_ERROR(
+                transaction_get_total_fee(transaction.get(), reset_sp(fee_transaction)));
         BigInt noPtrFeeTransaction(*fee_transaction);
+        destinationAmount -= noPtrFeeTransaction;
+        HANDLE_ERROR(
+                properties_set_big_int_value(destination, "amount", &destinationAmount));
+        }
+    }
+    HANDLE_ERROR(transaction_update(transaction.get()));
 
-        auto env = getEnv();
-        auto randomClass = env->FindClass("io/multy/viewmodels/AssetSendViewModel");
+    BinaryDataPtr serialized;
+    HANDLE_ERROR(transaction_serialize(transaction.get(), reset_sp(serialized)));
 
-        jstring jstrBuf = env->NewStringUTF(noPtrFeeTransaction.get_value().c_str());
-
-        jmethodID mid = env->GetStaticMethodID(randomClass, "setTransactionPrice",
-                                               "(Ljava/lang/String;)V");
-        env->CallStaticVoidMethod(randomClass, mid, jstrBuf);
-
-
-        //let java side know about tx fee
+    // Clear memory after using addrIds
+    jniEnv->ReleaseIntArrayElements(addrIds, addressIds, 0);
+    return transaction.release();
+}
 
 
-        jbyteArray resultArray = env->NewByteArray(serialized.get()->len);
-        env->SetByteArrayRegion(resultArray, 0, serialized.get()->len,
-                                reinterpret_cast<const jbyte *>(serialized->data));
-        return resultArray;
+JNIEXPORT jstring JNICALL
+Java_io_multy_util_NativeDataHelper_estimateTransactionFee(JNIEnv *jniEnv, jobject obj, jlong jWalletId,
+        jint jNetworkId, jbyteArray jSeed,
+        jint jWalletIndex, jstring amountToSpend,
+        jstring jFeePerByte, jstring jDonation,
+        jstring jDestinationAddress,
+                jstring jChangeAddress,
+        jstring jDonationAddress, jboolean payFee)
+{
+    using namespace multy_core::internal;
+    auto env = jniEnv;
+    try {
+        TransactionPtr transaction(makeTransaction(jniEnv, obj, jWalletId,
+             jNetworkId,  jSeed,
+             jWalletIndex,  amountToSpend,
+             jFeePerByte,  jDonation,
+             jDestinationAddress,
+             jChangeAddress,
+             jDonationAddress,  payFee));
+        if (transaction) {
+
+            BigIntPtr fee_transaction;
+            HANDLE_ERROR(transaction_get_total_fee(transaction.get(), reset_sp(fee_transaction)));
+            return jniEnv->NewStringUTF(fee_transaction->get_value().c_str());
+        }
+    } catch (std::exception const &e) {
+        throw_java_exception_str(jniEnv, e.what());
+    } catch (...) {
+        throw_java_exception_str(jniEnv, "something went wrong");
+    }
+    return jstring();
+}
+
+JNIEXPORT jbyteArray JNICALL
+Java_io_multy_util_NativeDataHelper_makeTransaction(JNIEnv *jniEnv, jobject obj, jlong jWalletId,
+                                                    jint jNetworkId, jbyteArray jSeed,
+                                                    jint jWalletIndex, jstring amountToSpend,
+                                                    jstring jFeePerByte, jstring jDonation,
+                                                    jstring jDestinationAddress,
+                                                    jstring jChangeAddress,
+                                                    jstring jDonationAddress, jboolean payFee) {
+    using namespace multy_core::internal;
+    try{
+        TransactionPtr transaction(makeTransaction(jniEnv, obj, jWalletId,
+                                                     jNetworkId,  jSeed,
+                                                     jWalletIndex,  amountToSpend,
+                                                     jFeePerByte,  jDonation,
+                                                     jDestinationAddress,
+                                                     jChangeAddress,
+                                                     jDonationAddress,  payFee));
+        if(transaction) {
+            auto env =jniEnv;
+
+            BinaryDataPtr serialized;
+            HANDLE_ERROR(transaction_serialize(transaction.get(), reset_sp(serialized)));
+
+            BigIntPtr fee_transaction;
+            HANDLE_ERROR(transaction_get_total_fee(transaction.get(), reset_sp(fee_transaction)));
+
+            //auto env = getEnv();
+            auto randomClass = jniEnv->FindClass("io/multy/viewmodels/AssetSendViewModel");
+
+            jstring jstrBuf = jniEnv->NewStringUTF(fee_transaction->get_value().c_str());
+
+            jmethodID mid = jniEnv->GetStaticMethodID(randomClass, "setTransactionPrice",
+                                                   "(Ljava/lang/String;)V");
+            jniEnv->CallStaticVoidMethod(randomClass, mid, jstrBuf);
+
+
+            //let java side know about tx fee
+
+
+            jbyteArray resultArray = jniEnv->NewByteArray(serialized.get()->len);
+            jniEnv->SetByteArrayRegion(resultArray, 0, serialized.get()->len,
+                                    reinterpret_cast<const jbyte *>(serialized->data));
+            return resultArray;
+        }
 
     } catch (std::exception const &e) {
-        throw_java_exception_str(env, e.what());
+        throw_java_exception_str(jniEnv, e.what());
     } catch (...) {
-        throw_java_exception_str(env, "something went wrong");
+        throw_java_exception_str(jniEnv, "something went wrong");
     }
-    env->ReleaseIntArrayElements(addrIds, addressIds, 0);
+
     return jbyteArray();
 }
 
