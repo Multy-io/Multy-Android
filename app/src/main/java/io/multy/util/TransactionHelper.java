@@ -6,6 +6,8 @@
 
 package io.multy.util;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 import com.samwolfand.oneprefs.Prefs;
 
@@ -44,37 +46,52 @@ public class TransactionHelper {
         return instance;
     }
 
-    public static String makeTransaction(int blockchainID, Object metaTX){
+    public static void makeTransaction(Object metaTX){
+        if (metaTX instanceof TransactionBTCMeta){
+//            return signBTCTransaction((TransactionBTCMeta) metaTX);
+             signBTCTransaction((TransactionBTCMeta) metaTX);
+        } else if (metaTX instanceof TransactionETHMeta){
+//            return signETHTransactionEth((TransactionETHMeta) metaTX);
+            signETHTransactionEth((TransactionETHMeta) metaTX);
+        } else {
+            //THIS is not supported blockchains yet
+//            return null;
+        }
 
-        if (blockchainID == NativeDataHelper.Blockchain.BTC.getValue()){
-            return signBTCTransaction((TransactionBTCMeta) metaTX);
-        } else if (blockchainID == NativeDataHelper.Blockchain.ETH.getValue()){
+    }
+
+    public static String estimateTransactionFee(Object metaTX){
+        String out = "0";
+        if (metaTX instanceof TransactionBTCMeta){
+            byte[] rawBTCTx = signBTCTransaction((TransactionBTCMeta) metaTX);
+
+
+
+//            return String.valueOf(rawBTCTx.length * ((TransactionBTCMeta) metaTX).getFeeRate())
+        } else if (metaTX instanceof TransactionETHMeta){
             return signETHTransactionEth((TransactionETHMeta) metaTX);
         } else {
             //THIS is not supported blockchains yet
             return null;
         }
-
-    }
-
-    public static void estimateTransaction(){
-        //TODO make implementation here
+        return out;
     }
 
 
-    private static String signBTCTransaction(TransactionBTCMeta meta) {
+    private static byte[] signBTCTransaction(TransactionBTCMeta meta) {
 
 //        Wallet wallet, String amount, String donationAmount, String toAddress, String changeAddress, String donationAddress, String fee, String meta
         byte[] seed = RealmManager.getSettingsDao().getSeed().getSeed();
 
-
+        String feeTotal = null;
         try {
             byte[] transactionHex = NativeDataHelper.makeTransaction(meta.getWallet().getId(), meta.getWallet().getNetworkId(),
                     seed, meta.getWallet().getIndex(), String.valueOf(CryptoFormatUtils.btcToSatoshi(String.valueOf(String.valueOf(meta.getAmount())))),
                     meta.getFeeRate(), getDonationSatoshi(meta.getDonationAmount()),
-                    meta.getToAddress(), meta.getChangeAddress(), meta.getDonationAddress(), meta.isPayingForComission());
-            return byteArrayToHex(transactionHex);
-
+                    meta.getToAddress(), meta.getChangeAddress(), meta.getDonationAddress(), meta.isPayingForComission(), feeTotal);
+//            return byteArrayToHex(transactionHex);
+            Log.d("TH", "GOT TOTAL FEE RATE:"+feeTotal);
+            return transactionHex;
         } catch (JniException e) {
 //            errorMessage.setValue(Multy.getContext().getString(R.string.invalid_entered_sum));
             e.printStackTrace();
