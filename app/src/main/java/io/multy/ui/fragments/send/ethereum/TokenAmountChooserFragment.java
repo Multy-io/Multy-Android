@@ -379,7 +379,8 @@ public class TokenAmountChooserFragment extends BaseFragment {
                     }
 
                 } else {
-//                    setEmptyTotalWithFee();
+                    textTotal.setText("");
+                    buttonNext.setEnabled(false);
                 }
 //            }
         } catch (Throwable t) {
