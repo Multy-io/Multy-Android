@@ -338,6 +338,9 @@ public class Web3Fragment extends BaseFragment {
                 final String ethPrice = CryptoFormatUtils.weiToEthLabel(feePrice.toString());
                 final String finalPriceAmount = priceAmount;
 
+
+
+
                 AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
                 alertDialog.setMessage("You are going to spend " + CryptoFormatUtils.weiToEthLabel(finalPriceAmount) +
                         " (and " + ethPrice + " in fees) from wallet " + viewModel.getWalletLive().getValue().getWalletName());
@@ -345,9 +348,17 @@ public class Web3Fragment extends BaseFragment {
                     try {
                         Wallet wallet = viewModel.getWalletLive().getValue();
                         byte[] seed = RealmManager.getSettingsDao().getSeed().getSeed();
-                        final byte[] tx = NativeDataHelper.makeTransactionEthPayload(seed, wallet.getIndex(), wallet.getActiveAddress().getIndex(),
+
+
+                        //TODO need to move this dummy check to Transaction Helper class to prevent such stupid check
+
+                        final int walletIndex = Prefs.getBoolean(Constants.PREF_METAMASK_MODE, false) ? wallet.getActiveAddress().getIndex() : wallet.getIndex();
+                        final int addressIndex = Prefs.getBoolean(Constants.PREF_METAMASK_MODE, false) ? wallet.getIndex() : wallet.getActiveAddress().getIndex();
+
+                        final byte[] tx = NativeDataHelper.makeTransactionEthPayload(seed, walletIndex, addressIndex,
                                 wallet.getCurrencyId(), wallet.getNetworkId(), wallet.getBalance(), finalPriceAmount,
                                 transaction.recipient.toString(), String.valueOf(transaction.gasLimit), transaction.gasPrice.toString(), wallet.getEthWallet().getNonce(), transaction.payload.replace("0x", ""));
+//                                transaction.recipient.toString(), String.valueOf(transaction.gasLimit), manualGasPrice.toString(), wallet.getEthWallet().getNonce(), transaction.payload.replace("0x", ""));
                         Timber.i("start converting to hex");
                         final String hex = "0x" + SendSummaryFragment.byteArrayToHex(tx);
                         Timber.i("hex converted " + hex);

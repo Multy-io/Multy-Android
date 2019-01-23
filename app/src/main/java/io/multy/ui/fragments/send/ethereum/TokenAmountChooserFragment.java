@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.samwolfand.oneprefs.Prefs;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -46,6 +47,7 @@ import io.multy.ui.activities.BaseActivity;
 import io.multy.ui.activities.TokenSendActivity;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
+import io.multy.util.CryptoFormatUtils;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
 import io.multy.util.NumberFormatter;
@@ -117,6 +119,14 @@ public class TokenAmountChooserFragment extends BaseFragment {
         }
 
 
+        inputOriginal.setOnFocusChangeListener((view1, hasFocus) -> {
+            if (hasFocus) {
+                inputOriginal.setSelection(inputOriginal.getText().length());
+
+            }
+        });
+
+
         inputOriginal.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -131,44 +141,18 @@ public class TokenAmountChooserFragment extends BaseFragment {
                     return;
                 }
                 checkMaxLengthBeforePoint(inputOriginal, 6, i, i1, i2);
-//                if (!isAmountSwapped) { // if currency input is main
-//                    if (!TextUtils.isEmpty(charSequence)) {
-//                        if (isParsable(charSequence.toString())) {
-//                            inputCurrency.setText(NumberFormatter.getFiatInstance().format(viewModel.getCurrenciesRate().getBtcToUsd() * Double.parseDouble(charSequence.toString())));
-//                            setTotalAmountForInput();
-//                        }
-//                    } else {
-//                        setEmptyTotalWithFee();
-//                        inputCurrency.getText().clear();
-//                        inputOriginal.getText().clear();
-//                    }
-//                }
-//
+
                 if (!charSequence.toString().isEmpty() && isParsable(charSequence.toString())){
-
-                    double currentAmount = Double.parseDouble(charSequence.toString());
-                    double maxValue = Double.parseDouble(viewModel.tokenBalance.getValue());
-                    if (currentAmount > 0){
-                        if (maxValue >= currentAmount){
-                            buttonNext.setEnabled(true);
-                            textTotal.setText(String.format("%s %s", inputOriginal.getText().toString(), viewModel.tokenCode.getValue()));
-                        } else {
-                            buttonNext.setEnabled(false);
-//                        String s = charSequence.toString();
-//                        s.substring(0, s.length()-1 );
-//                        inputOriginal.setText(s);
-                            showMessage(getResources().getString(R.string.enter_sum_too_much));
-                        }
-                    } else {
-                        buttonNext.setEnabled(false);
-                    }
-
+                    setTotalAmountForInput();
+                } else {
+                    textTotal.setText("");
                 }
+
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-
+                checkForPointAndZeros(s.toString(), inputOriginal);
             }
         });
         return view;
@@ -221,10 +205,18 @@ public class TokenAmountChooserFragment extends BaseFragment {
             Transaction transaction = new Transaction(wallet.getEthWallet().getNonce(), new io.multy.model.core.Fee(
                     String.valueOf(viewModel.getFee().getAmount()), Constants.GAS_LIMIT_TOKEN_TANSFER));
 
+
+            //TODO need to move this dummy check to Transaction Helper class to prevent such stupid check
+
+            final int walletIndex = Prefs.getBoolean(Constants.PREF_METAMASK_MODE, false) ? wallet.getActiveAddress().getIndex() : wallet.getIndex();
+            final int addressIndex = Prefs.getBoolean(Constants.PREF_METAMASK_MODE, false) ? wallet.getIndex() : wallet.getActiveAddress().getIndex();
+
+
+
             TransactionBuilder transactionBuilder = new TransactionBuilder(
                     NativeDataHelper.Blockchain.ETH.getName(),
                     NativeDataHelper.NetworkId.ETH_MAIN_NET.getValue(),
-                    Account.getAccount(wallet.getIndex(), wallet.getActiveAddress().getIndex(), wallet.getNetworkId()),
+                    Account.getAccount(walletIndex, addressIndex, wallet.getNetworkId()),
                     builder,
                     transaction);
 
@@ -350,6 +342,47 @@ public class TokenAmountChooserFragment extends BaseFragment {
             return true;
         } catch (NumberFormatException e) {
             return false;
+        }
+    }
+
+
+    private void setTotalAmountForInput() {
+        try {
+                if (!TextUtils.isEmpty(inputOriginal.getText())) { // checks input for value to not parse null
+
+                    double currentAmount = Double.parseDouble(inputOriginal.getText().toString());
+                    double maxValue = Double.parseDouble(viewModel.tokenBalance.getValue());
+
+                    if (currentAmount > 0){
+                        if (maxValue >= currentAmount){
+                            buttonNext.setEnabled(true);
+                            buttonNext.setEnabled(true);
+                            textTotal.setText(String.format("%s %s", inputOriginal.getText().toString(), viewModel.tokenCode.getValue()));
+                        } else {
+                            buttonNext.setEnabled(true);
+                            int substringCount = inputOriginal.getText().length() - 1;
+                            textTotal.setText(inputOriginal.getText().subSequence(0, substringCount < 0 ? 0 : substringCount));
+                            inputOriginal.setText(inputOriginal.getText().subSequence(0, substringCount < 0 ? 0 : substringCount));
+                            inputOriginal.setSelection(inputOriginal.getText().length());
+                            viewModel.errorMessage.setValue(getString(R.string.enter_sum_too_much));
+                            return;
+                        }
+                    } else {
+                        buttonNext.setEnabled(false);
+                    }
+
+                } else {
+                    textTotal.setText("");
+                    buttonNext.setEnabled(false);
+                }
+//            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+            int substringCount = inputOriginal.getText().length() - 1;
+            buttonNext.setEnabled(true);
+            textTotal.setText(inputOriginal.getText().subSequence(0, substringCount < 0 ? 0 : substringCount));
+            inputOriginal.setText(inputOriginal.getText().subSequence(0, substringCount < 0 ? 0 : substringCount));
+            inputOriginal.setSelection(inputOriginal.getText().length());
         }
     }
 
