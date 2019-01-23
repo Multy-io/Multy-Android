@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.samwolfand.oneprefs.Prefs;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -143,26 +144,10 @@ public class TokenAmountChooserFragment extends BaseFragment {
 
                 if (!charSequence.toString().isEmpty() && isParsable(charSequence.toString())){
                     setTotalAmountForInput();
-//                    double currentAmount = Double.parseDouble(charSequence.toString());
-//                    double maxValue = Double.parseDouble(viewModel.tokenBalance.getValue());
-//                    if (currentAmount > 0){
-//                        if (maxValue >= currentAmount){
-//                            buttonNext.setEnabled(true);
-//                            textTotal.setText(String.format("%s %s", inputOriginal.getText().toString(), viewModel.tokenCode.getValue()));
-//                        } else {
-//                            buttonNext.setEnabled(false);
-//                            String toSet = charSequence.toString();
-//                            toSet.substring(0, toSet.length()-2 );
-////                            inputOriginal.setText(toSet);
-//                            textTotal.setText(String.format("%s %s", toSet, viewModel.tokenCode.getValue()));
-//                            showMessage(getResources().getString(R.string.enter_sum_too_much));
-//                            return;
-//                        }
-//                    } else {
-//                        buttonNext.setEnabled(false);
-//                    }
-
+                } else {
+                    textTotal.setText("");
                 }
+
             }
 
             @Override
@@ -220,10 +205,18 @@ public class TokenAmountChooserFragment extends BaseFragment {
             Transaction transaction = new Transaction(wallet.getEthWallet().getNonce(), new io.multy.model.core.Fee(
                     String.valueOf(viewModel.getFee().getAmount()), Constants.GAS_LIMIT_TOKEN_TANSFER));
 
+
+            //TODO need to move this dummy check to Transaction Helper class to prevent such stupid check
+
+            final int walletIndex = Prefs.getBoolean(Constants.PREF_METAMASK_MODE, false) ? wallet.getActiveAddress().getIndex() : wallet.getIndex();
+            final int addressIndex = Prefs.getBoolean(Constants.PREF_METAMASK_MODE, false) ? wallet.getIndex() : wallet.getActiveAddress().getIndex();
+
+
+
             TransactionBuilder transactionBuilder = new TransactionBuilder(
                     NativeDataHelper.Blockchain.ETH.getName(),
                     NativeDataHelper.NetworkId.ETH_MAIN_NET.getValue(),
-                    Account.getAccount(wallet.getIndex(), wallet.getActiveAddress().getIndex(), wallet.getNetworkId()),
+                    Account.getAccount(walletIndex, addressIndex, wallet.getNetworkId()),
                     builder,
                     transaction);
 
