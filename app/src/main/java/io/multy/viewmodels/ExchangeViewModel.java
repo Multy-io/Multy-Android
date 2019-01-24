@@ -27,6 +27,8 @@ import io.multy.model.entities.Estimation;
 import io.multy.model.entities.ExchangeAsset;
 import io.multy.model.entities.ExchangePair;
 import io.multy.model.entities.Fee;
+import io.multy.model.entities.TransactionBTCMeta;
+import io.multy.model.entities.TransactionUIEstimation;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.responses.ExchangeCurrenciesListResponse;
 import io.multy.model.responses.ExchangePairResponse;
@@ -34,7 +36,11 @@ import io.multy.model.responses.FeeRateResponse;
 import io.multy.model.responses.ServerConfigResponse;
 import io.multy.storage.RealmManager;
 import io.multy.util.Constants;
+import io.multy.util.CryptoFormatUtils;
+import io.multy.util.NativeDataHelper;
+import io.multy.util.NumberFormatter;
 import io.multy.util.SingleLiveEvent;
+import io.multy.util.TransactionHelper;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -50,14 +56,16 @@ public class ExchangeViewModel extends BaseViewModel {
     private MutableLiveData<Float> exchangeRate = new MutableLiveData<>();
     private MutableLiveData<Double> minFromAmount = new MutableLiveData<>();
     private MutableLiveData<List<ServerConfigResponse.ERC20TokenSupport>> supportTokens = new MutableLiveData<>();
+    public MutableLiveData<FeeRateResponse.Speeds> speeds = new MutableLiveData<>();
+    public MutableLiveData<TransactionUIEstimation> transactionFeeEstimation = new MutableLiveData<>();
 //    private MutableLiveData<Boolean> hasRateFromCrypto = new MutableLiveData<>();
 //    private MutableLiveData<Boolean> hasRateToCrypto = new MutableLiveData<>();
 
     //TODO Check if this data is needed
 
-    public MutableLiveData<FeeRateResponse.Speeds> speeds = new MutableLiveData<>();
+
     public MutableLiveData<Estimation> estimation = new MutableLiveData<>();
-    public MutableLiveData<Fee> fee = new MutableLiveData<>();
+//    public MutableLiveData<Fee> fee = new MutableLiveData<>();
     public MutableLiveData<String> gasLimit = new MutableLiveData<>();
 
     public MutableLiveData<String> thoseAddress = new MutableLiveData<>();
@@ -86,6 +94,7 @@ public class ExchangeViewModel extends BaseViewModel {
     public ExchangeViewModel() {
 //        currenciesRate = RealmManager.getSettingsDao().getCurrenciesRate();
         fragmentHolder.setValue(0);
+
         getSupportTokens();
     }
 
@@ -149,6 +158,8 @@ public class ExchangeViewModel extends BaseViewModel {
                 if (response.isSuccessful() && response.body() != null) {
                     supportTokens.setValue(response.body().getSupportTokens());
                     getAssetsList();
+                    requestFeeRates(payFromWallet.getValue().getCurrencyId(), payFromWallet.getValue().getNetworkId(), null);
+
                 }
             }
 
@@ -299,13 +310,13 @@ public class ExchangeViewModel extends BaseViewModel {
 //        return this.wallet.getValue();
 //    }
 
-    public void setFee(Fee fee) {
-        this.fee.setValue(fee);
-    }
-
-    public Fee getFee() {
-        return fee.getValue();
-    }
+//    public void setFee(Fee fee) {
+//        this.fee.setValue(fee);
+//    }
+//
+//    public Fee getFee() {
+//        return fee.getValue();
+//    }
 
     public void setAmount(double amount) {
         this.amount = amount;
@@ -411,7 +422,62 @@ public class ExchangeViewModel extends BaseViewModel {
                 isLoading.setValue(false);
                 errorMessage.setValue(t.getLocalizedMessage());
             }
+
         });
+    }
+
+    public MutableLiveData<TransactionUIEstimation> getEstimateTransaction(){
+        return this.transactionFeeEstimation;
+    }
+
+    public void estimateTransaction(String amount){
+        //TODO add check for max Amount
+        Object meta = null;
+        if (payFromWallet.getValue().getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()){
+            //We are sending BTC so need to make BTC estimation
+
+            //For estimation we don't need some exact payToAddress
+            meta = new TransactionBTCMeta(payFromWallet.getValue(), String.valueOf(speeds.getValue().getVeryFast()), payFromWallet.getValue().getAddresses().get(0).getAddress(), payFromWallet.getValue().getAddresses().get(0).getAddress());
+
+            ((TransactionBTCMeta) meta).setAmount(amount);
+            ((TransactionBTCMeta) meta).setDonationAmount("0");
+            ((TransactionBTCMeta) meta).setDonationAddress(payFromWallet.getValue().getAddresses().get(0).getAddress());
+            ((TransactionBTCMeta) meta).setPayingForComission(true);
+
+        } else if (payFromWallet.getValue().getCurrencyId() == NativeDataHelper.Blockchain.ETH.getValue()){
+            //We are sending BTC so need to make ETH estimation
+            //TODO be worning about ERC20 Tokens
+        }
+
+        //TODO create correct object
+        TransactionUIEstimation totalSummery = new TransactionUIEstimation();
+
+
+        //TODO this is hardcode for BTC
+
+        String txFeeCost = TransactionHelper.estimateTransactionFee(meta);
+        if (txFeeCost != null){
+            Double fromCryptoAmountD = Double.parseDouble(amount);
+            Double fromCryptoFeeValue = Double.parseDouble(CryptoFormatUtils.satoshiToBtc(Long.parseLong(txFeeCost)));
+            Double fromTotalCrypto = fromCryptoAmountD + fromCryptoFeeValue;
+            Double fiatFromCrypto = fromTotalCrypto * getCurrenciesRate();
+
+//        NumberFormatter.getInstance().format(estimation.getFromCryptoValue()), viewModel.getPayFromWallet().getValue().getCurrencyName()));
+
+
+
+            totalSummery.setFromCryptoValue(NumberFormatter.getInstance().format(fromTotalCrypto));
+            totalSummery.setFromFiatValue(NumberFormatter.getFiatInstance().format(fiatFromCrypto));
+
+
+            transactionFeeEstimation.setValue(totalSummery);
+        } else {
+            transactionFeeEstimation.setValue(null);
+        }
+
+
+//        Log.d("TRANSACTION HELPER", "ESTIMATION:"+ txEstimation );
+
     }
 
 //    public void scheduleUpdateTransactionPrice(long amount) {
@@ -462,8 +528,9 @@ public class ExchangeViewModel extends BaseViewModel {
 //    }
 
 
-    //TODO This code we can use for make Exchange!!!!
+
 //    public void signTransaction() {
+//        //TODO use TransactionHelper for this class
 //        try {
 ////            Log.i("wise", getWallet().getId() + " " + getWallet().getNetworkId() + " " + amount + " " + getFee().getAmount() + " " + getDonationSatoshi() + " " + isPayForCommission);
 //            byte[] transactionHex = NativeDataHelper.makeTransaction(getWallet().getId(), getWallet().getNetworkId(),

@@ -9,6 +9,7 @@ package io.multy.ui.fragments.exchange;
 import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -25,6 +26,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -66,6 +68,8 @@ public class ExchangeFragment extends BaseFragment {
 
     public static final int REQUEST_CONTACT = 1101;
 
+    @BindView(R.id.container)
+    ConstraintLayout globalLayout;
     @BindView(R.id.tv_exchange_summery_from_wallet)
     TextView tvPayFromWallet;
     @BindView(R.id.ib_exchange_from_icon)
@@ -146,10 +150,13 @@ public class ExchangeFragment extends BaseFragment {
         viewModel = ViewModelProviders.of(requireActivity()).get(ExchangeViewModel.class);
         setBaseViewModel(viewModel);
 
+
+        setupGlobalLayout();
         setupPayFromWallet();
         setupInputFromCrypto();
         setupInputToCrypto();
         setupInputFromFiat();
+        setupTotalAmount();
 //        viewModel.getReceiverAddress().observe(this, s -> {
 //            inputAddress.setText(s);
 //            inputAddress.setSelection(inputAddress.length());
@@ -182,6 +189,42 @@ public class ExchangeFragment extends BaseFragment {
     }
 
 
+    private void setupGlobalLayout(){
+        globalLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                if (globalLayout!=null) {
+                    Rect r = new Rect();
+                    globalLayout.getWindowVisibleDisplayFrame(r);
+                    int screenHeight = globalLayout.getRootView().getHeight();
+
+                    // r.bottom is the position above soft keypad or device button.
+                    // if keypad is shown, the r.bottom is smaller than that before.
+                    int keypadHeight = screenHeight - r.bottom;
+
+                    if (keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
+                        hideTotalSummery();
+                    } else {
+                        showTotalSummery();
+                    }
+                }
+            }
+        });
+    }
+
+    private void setupTotalAmount(){
+        viewModel.getEstimateTransaction().observe(this, estimation ->{
+            if (estimation != null) {
+
+                tvSummeryCrypto.setText(String.format("%s %s", estimation.getFromCryptoValue(), viewModel.getPayFromWallet().getValue().getCurrencyName()));
+                tvSummeryFromFiat.setText(String.format("$ %s", estimation.getFromFiatValue()));
+                tvSummeryReceiveCrypto.setText(String.format("%s %s", inputToCrypto.getText().toString(), viewModel.getSelectedAsset().getValue().getName()));
+            } else {
+                setSummeryToZero();
+            }
+        });
+    }
+
     private void setupInputFromFiat(){
         setupOnFocusListnere(inputFromFiat);
 
@@ -189,9 +232,7 @@ public class ExchangeFragment extends BaseFragment {
         inputFromFiat.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence text, int i, int i1, int i2) {
-//                if (!text.toString().isEmpty()){
-//                    inputFromFiat.setSelection(text.length());
-//                }
+
             }
 
             @Override
@@ -228,7 +269,7 @@ public class ExchangeFragment extends BaseFragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
-
+                setTotalAmount();
             }
         });
     }
@@ -278,7 +319,7 @@ public class ExchangeFragment extends BaseFragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
-
+                setTotalAmount();
             }
         });
     }
@@ -321,11 +362,21 @@ public class ExchangeFragment extends BaseFragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
-
+                setTotalAmount();
             }
         });
 
 
+    }
+
+    private void setTotalAmount(){
+        String fromCryptoAmount = inputFromCrypto.getText().toString();
+
+        if (!fromCryptoAmount.isEmpty() && isParsable(fromCryptoAmount) && Float.parseFloat(fromCryptoAmount) > 0){
+            viewModel.estimateTransaction(fromCryptoAmount);
+        } else {
+            setSummeryToZero();
+        }
     }
 
     private void checkForCanSpend(TextInputEditText input, double amount){
@@ -358,11 +409,12 @@ public class ExchangeFragment extends BaseFragment {
                 tvExchangeTap.setVisibility(View.VISIBLE);
                 tilExchangeToCryptoLayout.setVisibility(View.INVISIBLE);
                 inputToFiatLayout.setVisibility(View.INVISIBLE);
-                tvSummeryToWallet.setVisibility(View.INVISIBLE);
-                tvSummeryReceiveCrypto.setVisibility(View.INVISIBLE);
-                tvSummeryReceiveFiat.setVisibility(View.INVISIBLE);
-                ivSummeryToLogo.setVisibility(View.INVISIBLE);
-                tvSummeryToTitle.setVisibility(View.INVISIBLE);
+                hideTotalSummery();
+//                tvSummeryToWallet.setVisibility(View.INVISIBLE);
+//                tvSummeryReceiveCrypto.setVisibility(View.INVISIBLE);
+//                tvSummeryReceiveFiat.setVisibility(View.INVISIBLE);
+//                ivSummeryToLogo.setVisibility(View.INVISIBLE);
+//                tvSummeryToTitle.setVisibility(View.INVISIBLE);
             }
 //            Log.d("EXCHANGE FRAGMENT", "GOT WALLET NAME:"+wallet.getCurrencyId() + " CURRENCIE ID:"+ wallet.getCurrencyName());
         });
@@ -384,7 +436,7 @@ public class ExchangeFragment extends BaseFragment {
 
             tilExchangeToCryptoLayout.setVisibility(View.VISIBLE);
 
-
+            showTotalSummery();
             tvSummeryToWallet.setText(wallet.getWalletName());
             tvSummeryToWallet.setVisibility(View.VISIBLE);
 
@@ -393,7 +445,7 @@ public class ExchangeFragment extends BaseFragment {
             tvSummeryReceiveCrypto.setVisibility(View.VISIBLE);
 
             //TODO UPDATE THIS TO CURRECT VALUE
-            tvSummeryReceiveFiat.setVisibility(View.VISIBLE);
+            tvSummeryReceiveFiat.setVisibility(View.INVISIBLE);
 
             Picasso.get().load(viewModel.getSelectedAsset().getValue().getLogo()).into(ivSummeryToLogo);
 //            ivSummeryToLogo.setImageResource(wallet.getIconResourceId());
@@ -618,7 +670,6 @@ public class ExchangeFragment extends BaseFragment {
                 input.requestFocus();
 
                 showKeyboard(getActivity(), input);
-                summeryLayout.setVisibility(View.GONE);
 
                 return true;
             } else {
@@ -646,9 +697,27 @@ public class ExchangeFragment extends BaseFragment {
                     input.setText("0");
                 }
                 hideKeyboard(getActivity());
-                if (summeryLayout!= null)
-                    summeryLayout.setVisibility(View.VISIBLE);
+                    //TODO total summery should be visible
+
             }
         });
+    }
+
+    private void hideTotalSummery(){
+        Log.d("EXCHANGE FRAGMENT", "TOTAL SUMMERY SHOULD GONE");
+        if (summeryLayout!= null)
+            summeryLayout.setVisibility(View.GONE);
+    }
+
+    private void showTotalSummery(){
+        Log.d("EXCHANGE FRAGMENT", "TOTAL SUMMERY SHOULD VISIBLE");
+        if (summeryLayout!= null)
+            summeryLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void setSummeryToZero(){
+        tvSummeryCrypto.setText(String.format("0 %s", viewModel.getPayFromWallet().getValue().getCurrencyName()));
+        tvSummeryFromFiat.setText("$ 0");
+        tvSummeryReceiveCrypto.setText(String.format("0 %s", viewModel.getSelectedAsset().getValue().getName()));
     }
 }

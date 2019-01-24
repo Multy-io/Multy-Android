@@ -61,42 +61,54 @@ public class TransactionHelper {
     }
 
     public static String estimateTransactionFee(Object metaTX){
-        String out = "0";
         if (metaTX instanceof TransactionBTCMeta){
-            byte[] rawBTCTx = signBTCTransaction((TransactionBTCMeta) metaTX);
+           return estimateBTCTransaction((TransactionBTCMeta) metaTX);
 
 
-
-//            return String.valueOf(rawBTCTx.length * ((TransactionBTCMeta) metaTX).getFeeRate())
         } else if (metaTX instanceof TransactionETHMeta){
+            //TODO return Estimate ETH TRansaction
             return signETHTransactionEth((TransactionETHMeta) metaTX);
         } else {
             //THIS is not supported blockchains yet
             return null;
         }
-        return out;
     }
 
 
-    private static byte[] signBTCTransaction(TransactionBTCMeta meta) {
+    private static String estimateBTCTransaction(TransactionBTCMeta meta){
+        byte[] seed = RealmManager.getSettingsDao().getSeed().getSeed();
+        try {
+            return NativeDataHelper.estimateTransactionFee(meta.getWallet().getId(), meta.getWallet().getNetworkId(),
+                    seed, meta.getWallet().getIndex(), String.valueOf(CryptoFormatUtils.btcToSatoshi(String.valueOf(String.valueOf(meta.getAmount())))),
+                    meta.getFeeRate(), getDonationSatoshi(meta.getDonationAmount()),
+                    meta.getToAddress(), meta.getChangeAddress(), meta.getDonationAddress(), meta.isPayingForComission());
+        } catch (JniException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
-//        Wallet wallet, String amount, String donationAmount, String toAddress, String changeAddress, String donationAddress, String fee, String meta
+    private static byte[] buildBTCTransaction(TransactionBTCMeta meta){
         byte[] seed = RealmManager.getSettingsDao().getSeed().getSeed();
 
-        String feeTotal = null;
+
         try {
             byte[] transactionHex = NativeDataHelper.makeTransaction(meta.getWallet().getId(), meta.getWallet().getNetworkId(),
                     seed, meta.getWallet().getIndex(), String.valueOf(CryptoFormatUtils.btcToSatoshi(String.valueOf(String.valueOf(meta.getAmount())))),
                     meta.getFeeRate(), getDonationSatoshi(meta.getDonationAmount()),
                     meta.getToAddress(), meta.getChangeAddress(), meta.getDonationAddress(), meta.isPayingForComission());
 //            return byteArrayToHex(transactionHex);
-            Log.d("TH", "GOT TOTAL FEE RATE:"+feeTotal);
+
             return transactionHex;
         } catch (JniException e) {
 //            errorMessage.setValue(Multy.getContext().getString(R.string.invalid_entered_sum));
             e.printStackTrace();
         }
         return null;
+    }
+
+    private static String signBTCTransaction(TransactionBTCMeta meta) {
+        return byteArrayToHex(buildBTCTransaction(meta));
     }
 
     private static String signETHTransactionEth(TransactionETHMeta metaTX) {
