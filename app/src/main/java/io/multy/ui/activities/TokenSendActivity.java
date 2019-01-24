@@ -185,16 +185,6 @@ public class TokenSendActivity extends BaseActivity {
         finish();
     }
 
-//    private void showAlert(@StringRes int resId, String msg){
-//        new AlertDialog.Builder(this)
-//                .setTitle(resId)
-//                .setMessage(msg)
-//                .setCancelable(false)
-//                .setPositiveButton(R.string.yes, (dialog, which) -> finish())
-//                .setNegativeButton(R.string.no, (dialog, which) -> dialog.dismiss())
-//                .show();
-//    }
-
     public void showScanScreen() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, Constants.CAMERA_REQUEST_CODE);

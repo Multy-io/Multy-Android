@@ -234,11 +234,6 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
 
     @OnClick(R.id.text_max)
     void onClickMax() {
-//        if (textMax.isSelected()) {
-//            textMax.setSelected(false);
-//        } else {
-//            textMax.setSelected(true);
-//        }
         switcher.setChecked(false);
 
         disableInputsListeners();
