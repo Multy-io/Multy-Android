@@ -431,7 +431,7 @@ public class ExchangeViewModel extends BaseViewModel {
     }
 
     public void estimateTransaction(String amount){
-        //TODO add check for max Amount
+        TransactionUIEstimation totalSummery = new TransactionUIEstimation();
         Object meta = null;
         if (payFromWallet.getValue().getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()){
             //We are sending BTC so need to make BTC estimation
@@ -444,40 +444,41 @@ public class ExchangeViewModel extends BaseViewModel {
             ((TransactionBTCMeta) meta).setDonationAddress(payFromWallet.getValue().getAddresses().get(0).getAddress());
             ((TransactionBTCMeta) meta).setPayingForComission(true);
 
+
+            String txFeeCost = TransactionHelper.estimateTransactionFee(meta);
+            if (txFeeCost != null){
+                Double fromCryptoAmountD = Double.parseDouble(amount);
+                Double fromCryptoFeeValue = Double.parseDouble(CryptoFormatUtils.satoshiToBtc(Long.parseLong(txFeeCost)));
+                Double fromTotalCrypto = fromCryptoAmountD + fromCryptoFeeValue;
+                Double fiatFromCrypto = fromTotalCrypto * getCurrenciesRate();
+
+                totalSummery.setFromCryptoValue(NumberFormatter.getInstance().format(fromTotalCrypto));
+                totalSummery.setFromFiatValue(NumberFormatter.getFiatInstance().format(fiatFromCrypto));
+
+                transactionFeeEstimation.setValue(totalSummery);
+            } else {
+                transactionFeeEstimation.setValue(null);
+            }
+
+
+
         } else if (payFromWallet.getValue().getCurrencyId() == NativeDataHelper.Blockchain.ETH.getValue()){
-            //We are sending BTC so need to make ETH estimation
-            //TODO be worning about ERC20 Tokens
-        }
+            //We are sending ETH or ERC20 so need to make ETH estimation
 
-        //TODO create correct object
-        TransactionUIEstimation totalSummery = new TransactionUIEstimation();
+            long gasPrice = speeds.getValue().getVeryFast();
+            long gasLimitOwn = Long.parseLong(gasLimit.getValue());
+            Double txETHCost = CryptoFormatUtils.weiToEth(String.valueOf(gasPrice * gasLimitOwn));
 
-
-        //TODO this is hardcode for BTC
-
-        String txFeeCost = TransactionHelper.estimateTransactionFee(meta);
-        if (txFeeCost != null){
             Double fromCryptoAmountD = Double.parseDouble(amount);
-            Double fromCryptoFeeValue = Double.parseDouble(CryptoFormatUtils.satoshiToBtc(Long.parseLong(txFeeCost)));
-            Double fromTotalCrypto = fromCryptoAmountD + fromCryptoFeeValue;
+            Double fromTotalCrypto = fromCryptoAmountD + txETHCost;
             Double fiatFromCrypto = fromTotalCrypto * getCurrenciesRate();
-
-//        NumberFormatter.getInstance().format(estimation.getFromCryptoValue()), viewModel.getPayFromWallet().getValue().getCurrencyName()));
-
-
 
             totalSummery.setFromCryptoValue(NumberFormatter.getInstance().format(fromTotalCrypto));
             totalSummery.setFromFiatValue(NumberFormatter.getFiatInstance().format(fiatFromCrypto));
 
-
             transactionFeeEstimation.setValue(totalSummery);
-        } else {
-            transactionFeeEstimation.setValue(null);
+            //TODO be worning about ERC20 Tokens
         }
-
-
-//        Log.d("TRANSACTION HELPER", "ESTIMATION:"+ txEstimation );
-
     }
 
 //    public void scheduleUpdateTransactionPrice(long amount) {
