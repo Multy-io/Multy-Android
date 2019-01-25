@@ -27,6 +27,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.api.socket.SocketManager;
+import io.multy.model.entities.ERC20TokenDAO;
 import io.multy.model.entities.ExchangeAsset;
 import io.multy.model.entities.ExchangePair;
 import io.multy.storage.RealmManager;
@@ -182,18 +183,28 @@ public class ExchangeActivity extends BaseActivity {
         //TODO update this flow!
         ExchangeViewModel viewModel = ViewModelProviders.of(this).get(ExchangeViewModel.class);
 
-//        .addCategory(Constants.EXTRA_SENDER_ADDRESS)
-//                .putExtra(Constants.EXTRA_WALLET_ID, getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0)));
 
+        if (getIntent().hasExtra(Constants.EXTRA_TOKEN_CODE)){
 
-        if (getIntent().hasExtra(Constants.EXTRA_WALLET_ID)) {
-            //this is case of crash
+            ERC20TokenDAO token = new ERC20TokenDAO(
+                    getIntent().getExtras().getString(Constants.EXTRA_TOKEN_CODE),
+                    getIntent().getExtras().getString(Constants.EXTRA_TOKEN_IMAGE_URL),
+                    getIntent().getExtras().getString(Constants.EXTRA_CONTRACT_ADDRESS),
+                    getIntent().getExtras().getInt(Constants.EXTRA_TOKEN_DECIMALS),
+                    getIntent().getExtras().getString(Constants.EXTRA_TOKEN_BALANCE),
+                    getIntent().getExtras().getLong(Constants.EXTRA_WALLET_ID),
+                    getIntent().getExtras().getString(Constants.EXTRA_TOKEN_RATE)
+            );
 
-            long walletID = getIntent().getExtras().getLong(Constants.EXTRA_WALLET_ID);
-            viewModel.setPayFromWalletById(walletID);
+            viewModel.setSendERC20Token(token);
 
-
+        } else if (getIntent().hasExtra(Constants.EXTRA_WALLET_ID)){
+            viewModel.setPayFromWalletById(getIntent().getExtras().getLong(Constants.EXTRA_WALLET_ID));
         }
+
+
+        //TODO parse alsl this staff for tokens and set correct values
+
 
 
 

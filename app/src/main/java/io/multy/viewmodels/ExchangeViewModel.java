@@ -23,6 +23,7 @@ import java.util.List;
 import io.multy.Multy;
 import io.multy.R;
 import io.multy.api.MultyApi;
+import io.multy.model.entities.ERC20TokenDAO;
 import io.multy.model.entities.Estimation;
 import io.multy.model.entities.ExchangeAsset;
 import io.multy.model.entities.ExchangePair;
@@ -58,6 +59,9 @@ public class ExchangeViewModel extends BaseViewModel {
     private MutableLiveData<List<ServerConfigResponse.ERC20TokenSupport>> supportTokens = new MutableLiveData<>();
     public MutableLiveData<FeeRateResponse.Speeds> speeds = new MutableLiveData<>();
     public MutableLiveData<TransactionUIEstimation> transactionFeeEstimation = new MutableLiveData<>();
+
+    public MutableLiveData<ERC20TokenDAO> sendERC20Token = new MutableLiveData<>();
+
 //    private MutableLiveData<Boolean> hasRateFromCrypto = new MutableLiveData<>();
 //    private MutableLiveData<Boolean> hasRateToCrypto = new MutableLiveData<>();
 
@@ -82,11 +86,11 @@ public class ExchangeViewModel extends BaseViewModel {
     private double currenciesRate;
     private long payFromWalletId;
 
-    private String changeAddress;
-    private String donationAddress;
-    private byte[] seed;
-    private String signTransactionError;
-    private Handler handler = new Handler();
+//    private String changeAddress;
+//    private String donationAddress;
+//    private byte[] seed;
+//    private String signTransactionError;
+//    private Handler handler = new Handler();
 
 
 
@@ -104,8 +108,13 @@ public class ExchangeViewModel extends BaseViewModel {
         List<ServerConfigResponse.ERC20TokenSupport> tokens = supportTokens.getValue();
         List<String> rawAssets = assetsList.getValue();
 
+        String fromWalletChain = null;
+        if (sendERC20Token.getValue()!= null){
+            fromWalletChain = sendERC20Token.getValue().getName().toLowerCase();
+        } else {
+            fromWalletChain = payFromWallet.getValue().getCurrencyName().toLowerCase();
+        }
 
-        String fromWalletChain = payFromWallet.getValue().getCurrencyName().toLowerCase();
 
 
         for (String asset : rawAssets){
@@ -132,20 +141,7 @@ public class ExchangeViewModel extends BaseViewModel {
             }
         }
 
-//        for(ServerConfigResponse.ERC20TokenSupport token : tokens){
-//            for (String asset : rawAssets){
-//                if (asset.toLowerCase().equals(token.getName().toLowerCase())){
-//                    if (!token.getSmartContractAddress().isEmpty()){
-//
-//                        String url = "https://raw.githubusercontent.com/Multy-io/tokens/master/images/"+ token.getSmartContractAddress().toLowerCase() + ".png";
-//
-//                        ExchangeAsset exchangeAsset = new ExchangeAsset(token.getName(), token.getFullName(), 60, url);
-//                        assetsFull.add(exchangeAsset);
-//                    }
-//
-//                }
-//            }
-//        }
+
         assets.setValue(assetsFull);
     }
 
@@ -265,8 +261,13 @@ public class ExchangeViewModel extends BaseViewModel {
 
     public void setSelectedAsset(ExchangeAsset asset){
         assetExchangeTo.setValue(asset);
+        String from = null;
+        if (sendERC20Token.getValue() != null){
+            from = sendERC20Token.getValue().getName();
+        } else {
+            from = payFromWallet.getValue().getCurrencyName();
+        }
 
-        String from = payFromWallet.getValue().getCurrencyName();
         String to = asset.getName();
         getExchangePair(new ExchangePair(from, to, 1f));
 
@@ -298,9 +299,10 @@ public class ExchangeViewModel extends BaseViewModel {
         this.payFromWallet.setValue(RealmManager.getAssetsDao().getWalletById(walletId));
     }
 
-    public void setPayFromWallet(Wallet wallet) {
-        payFromWalletId = wallet.getId();
-        this.payFromWallet.setValue(wallet);
+    public void setSendERC20Token(ERC20TokenDAO token){
+        this.sendERC20Token.setValue(token);
+        this.payFromWalletId = token.getParentWalletID();
+        this.payFromWallet.setValue(RealmManager.getAssetsDao().getWalletById(token.getParentWalletID()));
     }
 
 //    public Wallet getWallet() {
@@ -330,6 +332,10 @@ public class ExchangeViewModel extends BaseViewModel {
         return new BigDecimal(amount);
     }
 
+    public MutableLiveData<ERC20TokenDAO> getSendERC20Token(){
+        return this.sendERC20Token;
+    }
+
     public MutableLiveData<Wallet> getPayFromWallet(){
         return this.payFromWallet;
     }
@@ -342,37 +348,37 @@ public class ExchangeViewModel extends BaseViewModel {
 //        this.receiverAddress.setValue(receiverAddress);
 //    }
 
-    public String getDonationAmount() {
-        return donationAmount;
-    }
+//    public String getDonationAmount() {
+//        return donationAmount;
+//    }
 
-    public String getDonationSatoshi() {
-        if (getDonationAmount() != null) {
-            return String.valueOf((long) (Double.valueOf(getDonationAmount()) * Math.pow(10, 8)));
-        } else {
-            return "0";
-        }
-    }
+//    public String getDonationSatoshi() {
+//        if (getDonationAmount() != null) {
+//            return String.valueOf((long) (Double.valueOf(getDonationAmount()) * Math.pow(10, 8)));
+//        } else {
+//            return "0";
+//        }
+//    }
 
-    public void setDonationAmount(String donationAmount) {
-        this.donationAmount = donationAmount;
-    }
+//    public void setDonationAmount(String donationAmount) {
+//        this.donationAmount = donationAmount;
+//    }
 
-    public boolean isPayForCommission() {
-        return isPayForCommission;
-    }
+//    public boolean isPayForCommission() {
+//        return isPayForCommission;
+//    }
 
-    public void setPayForCommission(boolean payForCommission) {
-        isPayForCommission = payForCommission;
-    }
+//    public void setPayForCommission(boolean payForCommission) {
+//        isPayForCommission = payForCommission;
+//    }
 
-    public boolean isAmountScanned() {
-        return isAmountScanned;
-    }
-
-    public void setAmountScanned(boolean amountScanned) {
-        isAmountScanned = amountScanned;
-    }
+//    public boolean isAmountScanned() {
+//        return isAmountScanned;
+//    }
+//
+//    public void setAmountScanned(boolean amountScanned) {
+//        isAmountScanned = amountScanned;
+//    }
 
     public void requestFeeRates(int currencyId, int networkId, @Nullable String recipientAddress) {
         isLoading.postValue(true);
@@ -464,20 +470,24 @@ public class ExchangeViewModel extends BaseViewModel {
 
         } else if (payFromWallet.getValue().getCurrencyId() == NativeDataHelper.Blockchain.ETH.getValue()){
             //We are sending ETH or ERC20 so need to make ETH estimation
-
             long gasPrice = speeds.getValue().getVeryFast();
             long gasLimitOwn = Long.parseLong(gasLimit.getValue());
             Double txETHCost = CryptoFormatUtils.weiToEth(String.valueOf(gasPrice * gasLimitOwn));
+            if (getSendERC20Token().getValue() != null){
+                //TODO this is bulshit
+                totalSummery.setFromCryptoValue(amount);
+                transactionFeeEstimation.setValue(totalSummery);
+            } else {
+                Double fromCryptoAmountD = Double.parseDouble(amount);
+                Double fromTotalCrypto = fromCryptoAmountD + txETHCost;
+                Double fiatFromCrypto = fromTotalCrypto * getCurrenciesRate();
 
-            Double fromCryptoAmountD = Double.parseDouble(amount);
-            Double fromTotalCrypto = fromCryptoAmountD + txETHCost;
-            Double fiatFromCrypto = fromTotalCrypto * getCurrenciesRate();
+                totalSummery.setFromCryptoValue(NumberFormatter.getInstance().format(fromTotalCrypto));
+                totalSummery.setFromFiatValue(NumberFormatter.getFiatInstance().format(fiatFromCrypto));
 
-            totalSummery.setFromCryptoValue(NumberFormatter.getInstance().format(fromTotalCrypto));
-            totalSummery.setFromFiatValue(NumberFormatter.getFiatInstance().format(fiatFromCrypto));
+                transactionFeeEstimation.setValue(totalSummery);
+            }
 
-            transactionFeeEstimation.setValue(totalSummery);
-            //TODO be worning about ERC20 Tokens
         }
     }
 
@@ -689,7 +699,12 @@ public class ExchangeViewModel extends BaseViewModel {
     }
 
     public boolean haveFromCryptoRate(){
-        return haveFiatRate(payFromWallet.getValue().getCurrencyId());
+        if (sendERC20Token.getValue()!= null){
+            return false;
+        } else {
+            return haveFiatRate(payFromWallet.getValue().getCurrencyId());
+        }
+
     }
 
     public boolean haveToCryptoRate(){
@@ -707,13 +722,17 @@ public class ExchangeViewModel extends BaseViewModel {
     }
 
     public boolean canSpendAmount(double amount){
-        boolean out = false;
         switch (payFromWallet.getValue().getCurrencyName()){
             case Constants.BTC:
                 return payFromWallet.getValue().getBtcDoubleValue() >= amount ? true : false;
 
             case Constants.ETH:
-                return payFromWallet.getValue().getEthAvailableValue().doubleValue() >= amount ? true : false;
+                if (sendERC20Token.getValue()!=null){
+                    return Double.parseDouble(sendERC20Token.getValue().getBalance()) >= amount ? true : false;
+                } else {
+                    return payFromWallet.getValue().getEthAvailableValue().doubleValue() >= amount ? true : false;
+                }
+
 
             default:
                 //TODO update this logic for tokens
@@ -722,4 +741,6 @@ public class ExchangeViewModel extends BaseViewModel {
 
         }
     }
+
+
 }

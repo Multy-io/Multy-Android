@@ -43,6 +43,7 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.multy.R;
 import io.multy.model.entities.wallet.RecentAddress;
+import io.multy.model.entities.wallet.Wallet;
 import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetSendActivity;
 import io.multy.ui.activities.MagicSendActivity;
@@ -215,9 +216,17 @@ public class ExchangeFragment extends BaseFragment {
     private void setupTotalAmount(){
         viewModel.getEstimateTransaction().observe(this, estimation ->{
             if (estimation != null) {
+                String from = null;
+                if (viewModel.getSendERC20Token().getValue()!= null){
+                    from = viewModel.getSendERC20Token().getValue().getName();
+                    tvSummeryFromFiat.setVisibility(View.INVISIBLE);
+                    tvSummeryCrypto.setText(String.format("%s %s", estimation.getFromCryptoValue(), from));
 
-                tvSummeryCrypto.setText(String.format("%s %s", estimation.getFromCryptoValue(), viewModel.getPayFromWallet().getValue().getCurrencyName()));
-                tvSummeryFromFiat.setText(String.format("$ %s", estimation.getFromFiatValue()));
+                } else {
+                    from = viewModel.getPayFromWallet().getValue().getCurrencyName();
+                    tvSummeryFromFiat.setText(String.format("$ %s", estimation.getFromFiatValue()));
+                }
+                tvSummeryCrypto.setText(String.format("%s %s", estimation.getFromCryptoValue(), from));
                 tvSummeryReceiveCrypto.setText(String.format("%s %s", inputToCrypto.getText().toString(), viewModel.getSelectedAsset().getValue().getName()));
             } else {
                 setSummeryToZero();
@@ -391,33 +400,65 @@ public class ExchangeFragment extends BaseFragment {
     }
 
     private void setupPayFromWallet(){
-        viewModel.getPayFromWallet().observe(this, wallet -> {
-            if (wallet != null){
-                tvPayFromWallet.setText(wallet.getWalletName());
-                ibPayFromWalletLogo.setImageResource(wallet.getIconResourceId());
-                inputFromCryptoLayout.setHint(wallet.getCurrencyName());
-                tvSummeryCrypto.setText(wallet.getCurrencyName());
-                ivSummeryFromLogo.setImageResource(wallet.getIconResourceId());
-                tvSummeryFromFiat.setText("$ 0.0");
-                inputFromCryptoLayout.setVisibility(View.INVISIBLE);
-                inputFromFiatLayout.setVisibility(View.INVISIBLE);
-                buttonMax.setVisibility(View.INVISIBLE);
-                tvExchangeRate.setVisibility(View.INVISIBLE);
-                tvExchangeMin.setVisibility(View.INVISIBLE);
 
-                //TODO add additional check for that
-                tvExchangeTap.setVisibility(View.VISIBLE);
-                tilExchangeToCryptoLayout.setVisibility(View.INVISIBLE);
-                inputToFiatLayout.setVisibility(View.INVISIBLE);
-                hideTotalSummery();
+        //TODO add check for ERC20 TOken send or BTC/ETH send
+        if (viewModel.getSendERC20Token().getValue() != null){
+            viewModel.getSendERC20Token().observe(this, token ->{
+                Wallet parentWallet = viewModel.getPayFromWallet().getValue();
+                if (parentWallet != null){
+                    tvPayFromWallet.setText(parentWallet.getWalletName());
+
+                    Picasso.get().load(token.getLogo()).into(ibPayFromWalletLogo);
+
+                    inputFromCryptoLayout.setHint(token.getName());
+                    tvSummeryCrypto.setText(token.getName());
+                    Picasso.get().load(token.getLogo()).into(ivSummeryFromLogo);
+
+                    tvSummeryFromFiat.setVisibility(View.INVISIBLE);
+                    inputFromCryptoLayout.setVisibility(View.INVISIBLE);
+                    inputFromFiatLayout.setVisibility(View.INVISIBLE);
+                    buttonMax.setVisibility(View.INVISIBLE);
+                    tvExchangeRate.setVisibility(View.INVISIBLE);
+                    tvExchangeMin.setVisibility(View.INVISIBLE);
+
+                    //TODO add additional check for that
+                    tvExchangeTap.setVisibility(View.VISIBLE);
+                    tilExchangeToCryptoLayout.setVisibility(View.INVISIBLE);
+                    inputToFiatLayout.setVisibility(View.INVISIBLE);
+                    hideTotalSummery();
+                }
+            });
+
+        } else {
+            viewModel.getPayFromWallet().observe(this, wallet -> {
+                if (wallet != null){
+                    tvPayFromWallet.setText(wallet.getWalletName());
+                    ibPayFromWalletLogo.setImageResource(wallet.getIconResourceId());
+                    inputFromCryptoLayout.setHint(wallet.getCurrencyName());
+                    tvSummeryCrypto.setText(wallet.getCurrencyName());
+                    ivSummeryFromLogo.setImageResource(wallet.getIconResourceId());
+                    tvSummeryFromFiat.setText("$ 0.0");
+                    inputFromCryptoLayout.setVisibility(View.INVISIBLE);
+                    inputFromFiatLayout.setVisibility(View.INVISIBLE);
+                    buttonMax.setVisibility(View.INVISIBLE);
+                    tvExchangeRate.setVisibility(View.INVISIBLE);
+                    tvExchangeMin.setVisibility(View.INVISIBLE);
+
+                    //TODO add additional check for that
+                    tvExchangeTap.setVisibility(View.VISIBLE);
+                    tilExchangeToCryptoLayout.setVisibility(View.INVISIBLE);
+                    inputToFiatLayout.setVisibility(View.INVISIBLE);
+                    hideTotalSummery();
 //                tvSummeryToWallet.setVisibility(View.INVISIBLE);
 //                tvSummeryReceiveCrypto.setVisibility(View.INVISIBLE);
 //                tvSummeryReceiveFiat.setVisibility(View.INVISIBLE);
 //                ivSummeryToLogo.setVisibility(View.INVISIBLE);
 //                tvSummeryToTitle.setVisibility(View.INVISIBLE);
-            }
+                }
 //            Log.d("EXCHANGE FRAGMENT", "GOT WALLET NAME:"+wallet.getCurrencyId() + " CURRENCIE ID:"+ wallet.getCurrencyName());
-        });
+            });
+        }
+
         viewModel.getReceiveToWallet().observe(this, wallet -> {
             tvExchangeTap.setVisibility(View.GONE);
             tvSummeryToTitle.setVisibility(View.VISIBLE);
@@ -440,7 +481,7 @@ public class ExchangeFragment extends BaseFragment {
             tvSummeryToWallet.setText(wallet.getWalletName());
             tvSummeryToWallet.setVisibility(View.VISIBLE);
 
-            //TODO UPDATE THIS TO CURRECT VALUE
+
             tvSummeryReceiveCrypto.setText(viewModel.getSelectedAsset().getValue().getName());
             tvSummeryReceiveCrypto.setVisibility(View.VISIBLE);
 
@@ -474,12 +515,24 @@ public class ExchangeFragment extends BaseFragment {
 
             tvExchangeRate.setVisibility(View.VISIBLE);
 
-            tvExchangeRate.setText("1 "+viewModel.getPayFromWallet().getValue().getCurrencyName() + " = " + String.valueOf(rate) + " "+viewModel.getSelectedAsset().getValue().getName());
+            String from = null;
+            if (viewModel.getSendERC20Token().getValue() != null){
+                from = viewModel.getSendERC20Token().getValue().getName();
+            } else {
+                from = viewModel.getPayFromWallet().getValue().getCurrencyName();
+            }
+            tvExchangeRate.setText(String.format("1 %s = %s %s", from, NumberFormatter.getInstance().format(rate), viewModel.getSelectedAsset().getValue().getName()));
         });
 
 
         viewModel.getMinAmount().observe(this, minValue ->{
-            tvExchangeMin.setText(NumberFormatter.getInstance().format(minValue) + " "+ viewModel.getPayFromWallet().getValue().getCurrencyName());
+            String from = null;
+            if (viewModel.getSendERC20Token().getValue()!= null){
+                from = viewModel.getSendERC20Token().getValue().getName();
+            } else {
+                from = viewModel.getPayFromWallet().getValue().getCurrencyName();
+            }
+            tvExchangeMin.setText(String.format("MIN %s %s", NumberFormatter.getInstance().format(minValue),from));
             tvExchangeMin.setVisibility(View.VISIBLE);
         });
 
