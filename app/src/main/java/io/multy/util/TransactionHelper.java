@@ -46,16 +46,14 @@ public class TransactionHelper {
         return instance;
     }
 
-    public static void makeTransaction(Object metaTX){
+    public static String makeTransaction(Object metaTX){
         if (metaTX instanceof TransactionBTCMeta){
-//            return signBTCTransaction((TransactionBTCMeta) metaTX);
-             signBTCTransaction((TransactionBTCMeta) metaTX);
+            return signBTCTransaction((TransactionBTCMeta) metaTX);
         } else if (metaTX instanceof TransactionETHMeta){
-//            return signETHTransactionEth((TransactionETHMeta) metaTX);
-            signETHTransactionEth((TransactionETHMeta) metaTX);
+            return signETHTransactionEth((TransactionETHMeta) metaTX);
         } else {
             //THIS is not supported blockchains yet
-//            return null;
+            return null;
         }
 
     }

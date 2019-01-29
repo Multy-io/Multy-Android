@@ -102,20 +102,21 @@ public class ExchangeViewModel extends BaseViewModel {
         getSupportTokens();
     }
 
+    public void makeExchange(){
+        isLoading.setValue(true);
+        ExchangePair exchangePair = new ExchangePair(getPayFromAssetName() , assetExchangeTo.getValue().getName(), amount);
+        exchangePair.setReceivingToAddress(receiveToWallet.getValue().getActiveAddress().getAddress());
+        getPayToAddress(exchangePair);
+
+    }
+
     private void mapAssets(){
         List<ExchangeAsset> assetsFull = new ArrayList<>();
 
         List<ServerConfigResponse.ERC20TokenSupport> tokens = supportTokens.getValue();
         List<String> rawAssets = assetsList.getValue();
 
-        String fromWalletChain = null;
-        if (sendERC20Token.getValue()!= null){
-            fromWalletChain = sendERC20Token.getValue().getName().toLowerCase();
-        } else {
-            fromWalletChain = payFromWallet.getValue().getCurrencyName().toLowerCase();
-        }
-
-
+        String fromWalletChain = getPayFromAssetName();
 
         for (String asset : rawAssets){
 
@@ -227,15 +228,28 @@ public class ExchangeViewModel extends BaseViewModel {
         MultyApi.INSTANCE.getPayToAddress(pair).enqueue(new Callback<ExchangePairResponse>() {
             @Override
             public void onResponse(Call<ExchangePairResponse> call, Response<ExchangePairResponse> response) {
+
                 if (response.isSuccessful() && response.body() != null) {
-                    Log.d("EXCHANGE VM", "GOTED PAYING TO ADDRESS:" + response.body().getPayToAddress());
-                    Log.d("EXCHANGE VM", "GOTED RECEIVE TO ADDRESS:" + response.body().getReceiveToAddress());
+                    if (response.body().getTransactionId() == null){
+                        //TODO show Pair is not available now
+                    } else if (response.body().getPayToAddress() == null){
+                        //TODO show amount is too small for exchange
+                    } else {
+                        //We have currect payToAddress
+                        signTransaction(response.body().getPayToAddress());
+                        //TODO sign and send transaction to this address;
+                        Log.d("EXCHANGE VM", "GOTED PAYING TO ADDRESS:" + response.body().getPayToAddress());
+                        Log.d("EXCHANGE VM", "GOTED RECEIVE TO ADDRESS:" + response.body().getReceiveToAddress());
+                    }
+
                 }
+                isLoading.setValue(false);
             }
 
             @Override
             public void onFailure(Call<ExchangePairResponse> call, Throwable t) {
-
+                //TODO show something went wrong message
+                isLoading.setValue(false);
             }
         });
     }
@@ -269,7 +283,7 @@ public class ExchangeViewModel extends BaseViewModel {
         }
 
         String to = asset.getName();
-        getExchangePair(new ExchangePair(from, to, 1f));
+        getExchangePair(new ExchangePair(from, to, 1d));
 
         //TODO check if walletExchangeTo was selected Before and
 
@@ -451,7 +465,7 @@ public class ExchangeViewModel extends BaseViewModel {
             ((TransactionBTCMeta) meta).setPayingForComission(true);
 
 
-            String txFeeCost = TransactionHelper.estimateTransactionFee(meta);
+            String txFeeCost = TransactionHelper.getInstance().estimateTransactionFee(meta);
             if (txFeeCost != null){
                 Double fromCryptoAmountD = Double.parseDouble(amount);
                 Double fromCryptoFeeValue = Double.parseDouble(CryptoFormatUtils.satoshiToBtc(Long.parseLong(txFeeCost)));
@@ -490,6 +504,38 @@ public class ExchangeViewModel extends BaseViewModel {
 
         }
     }
+
+
+    private void signTransaction(String payToAddress){
+
+        //TODO create correct meta;
+        Object meta = null;
+
+        if (getPayFromWallet().getValue().getCurrencyName().equals(NativeDataHelper.Blockchain.ETH.getName())){
+            //TODO let's make ETH META
+            if (sendERC20Token.getValue() != null){
+                //TODO let's make ERC20 Meta
+            } else {
+                //TODO implement other checks for ETH Wallets
+            }
+        } else if (getPayFromWallet().getValue().getCurrencyName().equals(NativeDataHelper.Blockchain.BTC.getName())){
+            //TODO make BTC Meta
+
+
+
+        } else {
+            //Something went absolutelly wrong. We should crash
+        }
+
+
+        String transaction = TransactionHelper.getInstance().makeTransaction(meta);
+
+        //TODO make all the magic here
+        //TODO getReadyTo send transaciton
+        //TODO send it
+        //check nice recposce and show ok message
+    }
+
 
 //    public void scheduleUpdateTransactionPrice(long amount) {
 //        final int walletIndex = getWallet().getIndex();
@@ -740,6 +786,11 @@ public class ExchangeViewModel extends BaseViewModel {
                 return true;
 
         }
+    }
+
+
+    private String getPayFromAssetName(){
+        return sendERC20Token.getValue() !=  null ? sendERC20Token.getValue().getName().toLowerCase() : payFromWallet.getValue().getCurrencyName().toLowerCase();
     }
 
 

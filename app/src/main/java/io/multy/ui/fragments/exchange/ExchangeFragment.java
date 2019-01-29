@@ -840,7 +840,7 @@ public class ExchangeFragment extends BaseFragment {
                 .translationX(buttonNext.getX() + buttonNext.getWidth())
                 .setDuration(200)
                 .withStartAction(() -> sliderFinish.setVisibility(View.GONE))
-                .withEndAction(this::send).start();
+                .withEndAction(this::makeExchange).start();
     }
 
     private void stopSlideAnimation() {
@@ -926,11 +926,12 @@ public class ExchangeFragment extends BaseFragment {
         });
     }
 
-    private void send() {
-        viewModel.isLoading.setValue(true);
-        //TODO implement all sending logic here
+    private void makeExchange() {
+
+        viewModel.setAmount(Double.parseDouble(inputFromCrypto.getText().toString()));
+        viewModel.makeExchange();
         Log.d("EXCHANGE FRAGMENT:", "READY TO SEND!!!");
-        viewModel.isLoading.setValue(false);
+
     }
 
 }

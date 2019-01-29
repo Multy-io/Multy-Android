@@ -9,11 +9,11 @@ package io.multy.model.entities;
 public class ExchangePair {
     private String fromAsset;
     private String toAsset;
-    private float rate;
+    private double rate;
     private String payingFromAddress;
     private String receivingToAddress;
 
-    public ExchangePair(String from, String to, float rate){
+    public ExchangePair(String from, String to, double rate){
         this.fromAsset = from;
         this.toAsset  = to;
         this.rate = rate;
@@ -27,7 +27,7 @@ public class ExchangePair {
 
     public String getFromAsset() {return this.fromAsset;}
     public String getToAsset() {return this.toAsset;}
-    public float getRate() {return this.rate;}
+    public double getRate() {return this.rate;}
     public String getPayingFromAddress() {return this.payingFromAddress;}
     public String getReceivingToAddress() {return this.receivingToAddress;}
 
