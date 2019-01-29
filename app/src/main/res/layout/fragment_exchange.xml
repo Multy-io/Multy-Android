@@ -85,6 +85,7 @@
                         android:background="@drawable/selector_wallet_header_button"
                         android:gravity="center"
                         android:maxLines="1"
+                        android:maxLength="12"
                         android:padding="12dp"
                         android:text="MAX 1234567 EU"
                         android:textColor="@color/white"
