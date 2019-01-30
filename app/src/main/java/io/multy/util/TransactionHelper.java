@@ -14,6 +14,7 @@ import com.samwolfand.oneprefs.Prefs;
 import java.math.BigDecimal;
 
 import io.multy.Multy;
+import io.multy.R;
 import io.multy.model.core.Account;
 import io.multy.model.core.Builder;
 import io.multy.model.core.Payload;
@@ -21,6 +22,7 @@ import io.multy.model.core.Transaction;
 import io.multy.model.core.TransactionBuilder;
 import io.multy.model.core.TransactionResponse;
 import io.multy.model.entities.TransactionBTCMeta;
+import io.multy.model.entities.TransactionERC20Meta;
 import io.multy.model.entities.TransactionETHMeta;
 import io.multy.model.entities.wallet.EthWallet;
 import io.multy.model.entities.wallet.Wallet;
@@ -50,7 +52,9 @@ public class TransactionHelper {
         if (metaTX instanceof TransactionBTCMeta){
             return signBTCTransaction((TransactionBTCMeta) metaTX);
         } else if (metaTX instanceof TransactionETHMeta){
-            return signETHTransactionEth((TransactionETHMeta) metaTX);
+            return signETHTransaction((TransactionETHMeta) metaTX);
+        } else if (metaTX instanceof TransactionERC20Meta) {
+            return signERC20Transaction((TransactionERC20Meta) metaTX);
         } else {
             //THIS is not supported blockchains yet
             return null;
@@ -65,7 +69,7 @@ public class TransactionHelper {
 
         } else if (metaTX instanceof TransactionETHMeta){
             //TODO return Estimate ETH TRansaction
-            return signETHTransactionEth((TransactionETHMeta) metaTX);
+            return null;
         } else {
             //THIS is not supported blockchains yet
             return null;
@@ -109,7 +113,51 @@ public class TransactionHelper {
         return byteArrayToHex(buildBTCTransaction(meta));
     }
 
-    private static String signETHTransactionEth(TransactionETHMeta metaTX) {
+
+    private static String signERC20Transaction(TransactionERC20Meta metaTX){
+        Wallet wallet = metaTX.getWallet();
+//        BigDecimal amount = new BigDecimal(metaTX.getAmount());
+//        BigDecimal balance = new BigDecimal(metaTX.getTokenBalance());
+//        viewModel.tokensAmount.setValue(inputOriginal.getText().toString());
+
+        Payload payload = new Payload(wallet.getActiveAddress().getAmountString(),
+                metaTX.getContractAddress(),                    //Smart Contract Address
+                metaTX.getTokenBalance(),                       //Balance of all the tokens
+                metaTX.getAmount(),                             //Amount to send
+                metaTX.getToAddress());                         //Send To Address
+
+        Builder builder = new Builder(Builder.TYPE_ERC20, Builder.ACTION_TRANSFER, payload);
+
+        Transaction transaction = new Transaction(wallet.getEthWallet().getNonce(), new io.multy.model.core.Fee(
+                String.valueOf(metaTX.getFeeRate()), Constants.GAS_LIMIT_TOKEN_TANSFER));
+
+        final int walletIndex = Prefs.getBoolean(Constants.PREF_METAMASK_MODE, false) ? wallet.getActiveAddress().getIndex() : wallet.getIndex();
+        final int addressIndex = Prefs.getBoolean(Constants.PREF_METAMASK_MODE, false) ? wallet.getIndex() : wallet.getActiveAddress().getIndex();
+
+
+
+        TransactionBuilder transactionBuilder = new TransactionBuilder(
+                NativeDataHelper.Blockchain.ETH.getName(),
+                NativeDataHelper.NetworkId.ETH_MAIN_NET.getValue(),
+                Account.getAccount(walletIndex, addressIndex, wallet.getNetworkId()),
+                builder,
+                transaction);
+
+        try {
+            String json = NativeDataHelper.makeTransactionJSONAPI(new Gson().toJson(transactionBuilder));
+            TransactionResponse transactionResponse = new Gson().fromJson(json, TransactionResponse.class);
+            if (transactionResponse == null) {
+                return null;
+            } else {
+                return transactionResponse.getTransactionHex();
+            }
+        } catch (JniException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private static String signETHTransaction(TransactionETHMeta metaTX) {
         try {
             String signAmount;
             if (metaTX.getWallet().isMultisig()) {

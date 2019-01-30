@@ -30,6 +30,7 @@ import io.multy.model.entities.ExchangeAsset;
 import io.multy.model.entities.ExchangePair;
 import io.multy.model.entities.Fee;
 import io.multy.model.entities.TransactionBTCMeta;
+import io.multy.model.entities.TransactionERC20Meta;
 import io.multy.model.entities.TransactionETHMeta;
 import io.multy.model.entities.TransactionUIEstimation;
 import io.multy.model.entities.wallet.RecentAddress;
@@ -246,8 +247,11 @@ public class ExchangeViewModel extends BaseViewModel {
                 if (response.isSuccessful() && response.body() != null) {
                     if (response.body().getTransactionId() == null){
                         //TODO show Pair is not available now
-                    } else if (response.body().getPayToAddress() == null){
-                        //TODO show amount is too small for exchange
+                        success.setValue(false);
+                    } else if (response.body().getPayToAddress() == null || response.body().getPayToAddress().length() < 1){
+                        //TODO remove this hardcoded string
+                        errorMessage.setValue("Amount is too small for exchange");
+                        success.setValue(false);
                     } else {
                         //We have currect payToAddress
                         signTransaction(response.body().getPayToAddress());
@@ -489,9 +493,9 @@ public class ExchangeViewModel extends BaseViewModel {
         if (getPayFromWallet().getValue().getCurrencyId() == NativeDataHelper.Blockchain.ETH.getValue()){
             //TODO let's make ETH META
             if (sendERC20Token.getValue() != null){
-                //TODO let's make ERC20 Meta
+               meta = buildERC20TransactionMeta(String.valueOf(amount), payToAddress);
             } else {
-                //TODO implement other checks for ETH Wallets
+                meta = buildETHTransactionMeta(String.valueOf(amount), payToAddress);
             }
         } else if (getPayFromWallet().getValue().getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()){
             //Here we are building metaTransaction
@@ -500,15 +504,10 @@ public class ExchangeViewModel extends BaseViewModel {
             //Something went absolutelly wrong. We should crash
         }
 
-
         String transaction = TransactionHelper.getInstance().makeTransaction(meta);
 
-
-        send(meta, transaction);
-
         Log.d("EXCHANGE VM", "We got signed transaction:"+transaction);
-        //TODO send it
-        //check nice recposce and show ok message
+        send(meta, transaction);
     }
 
     private TransactionBTCMeta buildBTCTransactionMeta(String amount, String payToAddress){
@@ -542,78 +541,213 @@ public class ExchangeViewModel extends BaseViewModel {
         return meta;
     }
 
-    private TransactionETHMeta buildETHTransactionMeta(){
-        TransactionETHMeta meta = null;
-
+    private TransactionETHMeta buildETHTransactionMeta(String amount, String payToAddress){
+        TransactionETHMeta meta = new TransactionETHMeta(
+                getPayFromWallet().getValue(),                  //Wallet to pay from
+                String.valueOf(speeds.getValue().getVeryFast()),
+                gasLimit.getValue(),
+                payToAddress
+        );
+        meta.setAmount(amount);
+        meta.setPayingForComission(true);
 
         return meta;
     }
 
+    private TransactionERC20Meta buildERC20TransactionMeta(String amount, String payToAddress){
+        TransactionERC20Meta meta = new TransactionERC20Meta(
+                payFromWallet.getValue(),
+                String.valueOf(speeds.getValue().getVeryFast()),
+                gasLimit.getValue(),
+                payToAddress,
+                sendERC20Token.getValue()
+        );
+        meta.setAmount(amount);
+        meta.setPayingForComission(true);
+        return meta;
+    }
+
+
     private void send(Object rawMeta, String transaction) {
         isLoading.setValue(true);
-//        String addressTo = viewModel.getReceiverAddress().getValue();
-        TransactionBTCMeta meta = null;
+        Object meta = null;
         if (rawMeta instanceof TransactionBTCMeta){
-            meta = (TransactionBTCMeta) rawMeta;
+            sendBTC((TransactionBTCMeta) rawMeta, transaction);
+        } else if (rawMeta instanceof  TransactionETHMeta){
+            sendETH((TransactionETHMeta) rawMeta, transaction);
+        } else if (rawMeta instanceof TransactionERC20Meta){
+            sendERC20((TransactionERC20Meta) rawMeta, transaction);
         }
+    }
 
-
+    private void sendERC20(TransactionERC20Meta meta, String transaction){
+        //TODO make all the staff here!
+        isLoading.setValue(true);
 
         try {
-            isLoading.setValue(true);
-//            byte[] seed = RealmManager.getSettingsDao().getSeed().getSeed();
-//            final int currencyId = viewModel.getWallet().getCurrencyId();
-//            final int networkId = viewModel.getWallet().getNetworkId();
-//            final int addressesSize = viewModel.getWallet().getBtcWallet().getAddresses().size();
-//            final String changeAddress = NativeDataHelper.makeAccountAddress(seed, viewModel.getWallet().getIndex(), addressesSize, currencyId, networkId);
-//            final String hex = viewModel.transaction.getValue();
-//            Timber.i("hex=%s", hex);
-//            Timber.i("change address=%s", changeAddress);
-            //THIS is valid for BTC
             MultyApi.INSTANCE.sendHdTransaction(new HdTransactionRequestEntity(
-                    meta.getWallet().getCurrencyId(),                                               //Currency ID
-                    meta.getWallet().getNetworkId(),                                                //Network ID
+                    meta.getWallet().getCurrencyId(),
+                    meta.getWallet().getNetworkId(),
                     new HdTransactionRequestEntity.Payload(
-                            meta.getChangeAddress(),
-                            meta.getWallet().getAddresses().size(),                                 //Address Index
-                            meta.getWallet().getIndex(),                                            //Wallet Index
-                            transaction)
+                            "",
+                            0,
+                            meta.getWallet().getIndex(),
+                            transaction.startsWith("0x") ? transaction : "0x" + transaction,
+                            false)
                     )
             ).enqueue(new Callback<MessageResponse>() {
                 @Override
                 public void onResponse(Call<MessageResponse> call, Response<MessageResponse> response) {
+                    isLoading.postValue(false);
                     if (response.isSuccessful()) {
-                        isLoading.postValue(false);
-                        //TODO show success dialog in UI
-                        success.setValue(true);
-//                        CompleteDialogFragment.newInstance(meta.getWallet().getChainId()).show(getActivity().getSupportFragmentManager(), TAG_SEND_SUCCESS);
+                        success.postValue(true);
                     } else {
 //                        Analytics.getInstance(getActivity()).logError(AnalyticsConstants.ERROR_TRANSACTION_API);
                         try {
                             String errorBody = response.errorBody() == null ? "" : response.errorBody().string();
                             errorMessage.setValue(errorBody);
-
+                            success.postValue(false);
 //                            if (response.code() == 406 && getContext() != null) {
 //                                Analytics.getInstance(getContext()).logEvent(TAG, "406", errorBody);
 //                            }
                         } catch (IOException e) {
                             e.printStackTrace();
                             errorMessage.setValue("Something went wrong :(");
+                            success.postValue(false);
                         }
                     }
                 }
 
                 @Override
                 public void onFailure(@NonNull Call<MessageResponse> call, @NonNull Throwable t) {
+                    //{"code":200,"message":"d537ac25da78cf85a34eba6396bedf8f9bb7db5e13662773c350497a1c0e5094"}
+                    //{"code":200,"message":{"message":"0x78f5d5a0931166045bd878c81cce267291f410c57c61afa5c10bb0f1d8b67880"}}
                     t.printStackTrace();
-                    errorMessage.setValue(t.getMessage());
+                    errorMessage.postValue(t.getMessage());
+                    success.postValue(false);
                 }
             });
         } catch (Exception e) {
             e.printStackTrace();
-            errorMessage.setValue(e.getMessage());
+            errorMessage.postValue(e.getMessage());
+            success.postValue(false);
+        }
+
+    }
+
+
+    private void sendETH(TransactionETHMeta meta, String transaction){
+        //TODO make all staff here
+
+        isLoading.setValue(true);
+//        String addressTo = viewModel.getReceiverAddress().getValue();
+//        Wallet wallet = viewModel.getWallet().isMultisig() ?
+//                RealmManager.getAssetsDao().getMultisigLinkedWallet(viewModel.getWallet().getMultisigWallet().getOwners()) : viewModel.getWallet();
+
+        try {
+//            final String txHex = viewModel.transaction.getValue();
+            isLoading.setValue(true);
+            MultyApi.INSTANCE.sendHdTransaction(new HdTransactionRequestEntity(
+                    meta.getWallet().getCurrencyId(),                 //Currency ID
+                    meta.getWallet().getNetworkId(),                  //Network ID
+                    new HdTransactionRequestEntity.Payload(
+                            "",
+                            0,
+                            meta.getWallet().getIndex(),
+                            transaction.startsWith("0x") ? transaction : "0x" + transaction,
+                            false)
+                    )
+            ).enqueue(new Callback<MessageResponse>() {
+                @Override
+                public void onResponse(Call<MessageResponse> call, Response<MessageResponse> response) {
+                    isLoading.postValue(false);
+                    if (response.isSuccessful()) {
+                        success.postValue(true);
+                    } else {
+//                        Analytics.getInstance(getActivity()).logError(AnalyticsConstants.ERROR_TRANSACTION_API);
+                        try {
+                            String errorBody = response.errorBody() == null ? "" : response.errorBody().string();
+                            errorMessage.setValue(errorBody);
+                            success.postValue(false);
+//                            if (response.code() == 406 && getContext() != null) {
+//                                Analytics.getInstance(getContext()).logEvent(TAG, "406", errorBody);
+//                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            errorMessage.setValue("Something went wrong :(");
+                            success.postValue(false);
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<MessageResponse> call, @NonNull Throwable t) {
+                    //{"code":200,"message":"d537ac25da78cf85a34eba6396bedf8f9bb7db5e13662773c350497a1c0e5094"}
+                    //{"code":200,"message":{"message":"0x78f5d5a0931166045bd878c81cce267291f410c57c61afa5c10bb0f1d8b67880"}}
+                    t.printStackTrace();
+                    errorMessage.postValue(t.getMessage());
+                    success.postValue(false);
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            errorMessage.postValue(e.getMessage());
+            success.postValue(false);
         }
     }
+
+    private void sendBTC(TransactionBTCMeta meta, String transaction){
+        try {
+            isLoading.setValue(true);
+            //THIS is valid for BTC
+            MultyApi.INSTANCE.sendHdTransaction(new HdTransactionRequestEntity(
+                            meta.getWallet().getCurrencyId(),                                               //Currency ID
+                            meta.getWallet().getNetworkId(),                                                //Network ID
+                            new HdTransactionRequestEntity.Payload(
+                                    meta.getChangeAddress(),
+                                    meta.getWallet().getAddresses().size(),                                 //Address Index
+                                    meta.getWallet().getIndex(),                                            //Wallet Index
+                                    transaction)
+                    )
+            ).enqueue(new Callback<MessageResponse>() {
+                @Override
+                public void onResponse(Call<MessageResponse> call, Response<MessageResponse> response) {
+                    isLoading.postValue(false);
+                    if (response.isSuccessful()) {
+                        success.postValue(true);
+                    } else {
+//                        Analytics.getInstance(getActivity()).logError(AnalyticsConstants.ERROR_TRANSACTION_API);
+                        try {
+                            String errorBody = response.errorBody() == null ? "" : response.errorBody().string();
+                            errorMessage.postValue(errorBody);
+                            success.postValue(false);
+//                            if (response.code() == 406 && getContext() != null) {
+//                                Analytics.getInstance(getContext()).logEvent(TAG, "406", errorBody);
+//                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            errorMessage.postValue("Something went wrong :(");
+                            success.postValue(false);
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<MessageResponse> call, @NonNull Throwable t) {
+                    //{"code":200,"message":"d537ac25da78cf85a34eba6396bedf8f9bb7db5e13662773c350497a1c0e5094"}
+                    t.printStackTrace();
+                    errorMessage.postValue(t.getMessage());
+                    success.postValue(false);
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            errorMessage.postValue(e.getMessage());
+            success.postValue(false);
+        }
+    }
+
+
 
     /**
      * Do not touch this

@@ -14,33 +14,37 @@ package io.multy.model.entities;
 
 import io.multy.model.entities.wallet.Wallet;
 
-public class TransactionETHMeta {
+public class TransactionERC20Meta {
     private Wallet wallet;
     private String amount;
     private String feeRate;
     private String gasLimit;
     private String toAddress;
+    private String tokenBalance;
+    private String contractAddress;
 
-
-    private String donationAmount;
-    private String donationAddress;
 
     private boolean payingForComission;
 
     private String meta;
 
-    public TransactionETHMeta(Wallet wallet, String feeRate, String gasLimit, String toAddress){
+    public TransactionERC20Meta(Wallet wallet, String feeRate, String gasLimit, String toAddress, ERC20TokenDAO token){
         this.wallet = wallet;
         this.feeRate = feeRate;
         this.gasLimit = gasLimit;
         this.toAddress = toAddress;
         this.payingForComission = true;
+        this.tokenBalance = token.getBalance();
+        this.contractAddress = token.getContractAddress();
+
     }
 
     public Wallet getWallet() {return this.wallet;}
     public String getAmount() {return this.amount;}
     public String getFeeRate() {return this.feeRate;}
     public String getGasLimit() {return this.gasLimit;}
+    public String getTokenBalance() {return this.tokenBalance;}
+    public String getContractAddress(){return this.contractAddress;}
 
     public String getToAddress() {return this.toAddress;}
 
@@ -50,8 +54,6 @@ public class TransactionETHMeta {
 
     public void setAmount(String amount) {this.amount = amount;}
     public void setFeeRate(String rate) {this.feeRate = rate;}
-
-    public void setDonationAmount(String amount) {this.donationAmount = amount;}
 
     public void setMeta(String meta) {this.meta = meta;}
 

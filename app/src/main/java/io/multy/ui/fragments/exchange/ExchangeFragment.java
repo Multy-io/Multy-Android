@@ -828,12 +828,14 @@ public class ExchangeFragment extends BaseFragment {
     }
 
     private void slideAnimation(Animatable animatableSlider, Animatable animatableFinish) {
-        animatableSlider.start();
-        animatableFinish.start();
-        textLarger.start();
-        textAlpha.start();
-        textSmaller.start();
-        slider.animate().withEndAction(() -> slideAnimation(animatableSlider, animatableFinish)).start();
+        if (slider != null){
+            animatableSlider.start();
+            animatableFinish.start();
+            textLarger.start();
+            textAlpha.start();
+            textSmaller.start();
+            slider.animate().withEndAction(() -> slideAnimation(animatableSlider, animatableFinish)).start();
+        }
     }
 
     private void goOutAnimation() {
@@ -941,6 +943,11 @@ public class ExchangeFragment extends BaseFragment {
             if (isSuccess){
                 //Transaction was send and everything is fine
                 CompleteDialogFragment.newInstance(viewModel.getPayFromWallet().getValue().getCurrencyId()).show(getActivity().getSupportFragmentManager(), TAG_SEND_SUCCESS);
+            } else {
+                //TODO restart send button
+                returnSliderOnStart();
+                startSlideAnimation();
+                isSending = false;
             }
         });
     }

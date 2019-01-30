@@ -188,7 +188,7 @@ public class TokenAmountChooserFragment extends BaseFragment {
     public void onClickNext() {
         String inputAmount = inputOriginal.getText().toString();
         if (!inputAmount.isEmpty() && isParsable(inputAmount) && Double.parseDouble(inputAmount)> 0) {
-
+            //TODO remove this code from FRAGMENT!!!
             Wallet wallet = viewModel.getWallet();
             BigDecimal amount = new BigDecimal(inputOriginal.getText().toString()).multiply(new BigDecimal(Math.pow(10, viewModel.decimals.getValue())));
             BigDecimal balance = new BigDecimal(viewModel.tokenBalance.getValue()).multiply(new BigDecimal(Math.pow(10, viewModel.decimals.getValue())));
