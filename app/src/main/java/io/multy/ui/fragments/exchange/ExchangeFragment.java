@@ -65,6 +65,7 @@ import io.multy.ui.fragments.dialogs.AddressActionsDialogFragment;
 import io.multy.ui.fragments.dialogs.CompleteDialogFragment;
 import io.multy.ui.fragments.main.contacts.ContactsFragment;
 import io.multy.ui.fragments.send.AmountChooserFragment;
+import io.multy.ui.fragments.send.SendSummaryFragment;
 import io.multy.ui.fragments.send.TransactionFeeFragment;
 import io.multy.ui.fragments.send.ethereum.EthTransactionFeeFragment;
 import io.multy.util.Constants;
@@ -84,7 +85,7 @@ import timber.log.Timber;
 //public class ExchangeFragment extends BaseFragment implements TextWatcher{
 public class ExchangeFragment extends BaseFragment {
 
-    public static final int REQUEST_CONTACT = 1101;
+    public static final String TAG_SEND_SUCCESS = ExchangeFragment.class.getSimpleName();
 
     @BindView(R.id.container)
     ConstraintLayout globalLayout;
@@ -193,6 +194,7 @@ public class ExchangeFragment extends BaseFragment {
         setupInputFromFiat();
         setupTotalAmount();
         initAnimations();
+        subscribeToSuccess();
 //        viewModel.getReceiverAddress().observe(this, s -> {
 //            inputAddress.setText(s);
 //            inputAddress.setSelection(inputAddress.length());
@@ -932,6 +934,15 @@ public class ExchangeFragment extends BaseFragment {
         viewModel.makeExchange();
         Log.d("EXCHANGE FRAGMENT:", "READY TO SEND!!!");
 
+    }
+
+    private void subscribeToSuccess(){
+        viewModel.getSuccess().observe(this, isSuccess -> {
+            if (isSuccess){
+                //Transaction was send and everything is fine
+                CompleteDialogFragment.newInstance(viewModel.getPayFromWallet().getValue().getCurrencyId()).show(getActivity().getSupportFragmentManager(), TAG_SEND_SUCCESS);
+            }
+        });
     }
 
 }
