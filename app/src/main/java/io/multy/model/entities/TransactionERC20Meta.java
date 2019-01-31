@@ -12,6 +12,9 @@
 
 package io.multy.model.entities;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
 import io.multy.model.entities.wallet.Wallet;
 
 public class TransactionERC20Meta {
@@ -22,6 +25,8 @@ public class TransactionERC20Meta {
     private String toAddress;
     private String tokenBalance;
     private String contractAddress;
+
+    private BigDecimal decimals;
 
 
     private boolean payingForComission;
@@ -34,7 +39,13 @@ public class TransactionERC20Meta {
         this.gasLimit = gasLimit;
         this.toAddress = toAddress;
         this.payingForComission = true;
-        this.tokenBalance = token.getBalance();
+        this.decimals = BigDecimal.TEN.pow(token.getDecimals());
+
+        BigDecimal bigBalance = BigDecimal.valueOf(Double.parseDouble(token.getBalance()));
+
+        this.tokenBalance = bigBalance.multiply(decimals).toBigInteger().toString();
+
+//        this.tokenBalance = String.valueOf(Long.valueOf(decimals * Double.parseDouble(token.getBalance())));
         this.contractAddress = token.getContractAddress();
 
     }
@@ -52,11 +63,14 @@ public class TransactionERC20Meta {
 
     public String getMeta() {return this.meta;}
 
-    public void setAmount(String amount) {this.amount = amount;}
+    public void setAmount(String amount) {
+        this.amount = BigDecimal.valueOf(Double.parseDouble(amount)).multiply(this.decimals).toBigInteger().toString();
+
+    }
     public void setFeeRate(String rate) {this.feeRate = rate;}
 
     public void setMeta(String meta) {this.meta = meta;}
 
     public void setPayingForComission(boolean value) {this.payingForComission = value;}
-
+    public BigDecimal getDecimals() {return this.decimals;}
 }
