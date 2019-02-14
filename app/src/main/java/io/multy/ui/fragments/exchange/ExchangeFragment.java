@@ -32,6 +32,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.AlphaAnimation;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -57,6 +58,7 @@ import io.multy.model.requests.HdTransactionRequestEntity;
 import io.multy.model.responses.MessageResponse;
 import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetSendActivity;
+import io.multy.ui.activities.ExchangeActivity;
 import io.multy.ui.activities.MagicSendActivity;
 import io.multy.ui.activities.TokenSendActivity;
 import io.multy.ui.adapters.RecentAddressesAdapter;
@@ -158,7 +160,8 @@ public class ExchangeFragment extends BaseFragment {
     @OnClick(R.id.ib_receive)
     void onClickReceiveLogo(){
         Log.d("EXCHANGE FR", "LOGO TAPPED");
-        viewModel.changeFragment(1);
+//        viewModel.changeFragment(1);
+        ((ExchangeActivity) getActivity()).setFragment(R.string.exchanging, R.id.container, ChooserExchangePairFragment.newInstance());
     }
 
 //    @BindView(R.id.input_address)
@@ -243,9 +246,10 @@ public class ExchangeFragment extends BaseFragment {
                     if (keypadHeight > screenHeight * 0.15) { // 0.15 ratio is perhaps enough to determine keypad height.
                         hideTotalSummery();
                         hideExchangeButton();
-                    } else {
+                    } else if (viewModel.getReceiveToWallet().getValue() != null) {
                         showTotalSummery();
-                        showExchangeButton();
+                        if (canSend)
+                            showExchangeButton();
                     }
                 }
             }
@@ -304,7 +308,7 @@ public class ExchangeFragment extends BaseFragment {
                                 inputFromCrypto.setText(NumberFormatter.getInstance().format(fromCryptoValue));
                                 checkMaxLengthBeforePoint(inputFromFiat, 10, i, i1, i2);
                                 checkForCanSpend(inputFromFiat, fromCryptoValue);
-                                canSend = true;
+
                             }
                         } else {
 //                        inputFromFiat.setText("0");
@@ -355,7 +359,6 @@ public class ExchangeFragment extends BaseFragment {
                                     checkMaxLengthBeforePoint(inputFromCrypto, 10, i, i1, i2);
 
                                     checkForCanSpend(inputFromCrypto, raw);
-                                    canSend = true;
                                 }
                             }
                         } else {
@@ -401,7 +404,6 @@ public class ExchangeFragment extends BaseFragment {
                                 inputFromFiat.setText(NumberFormatter.getFiatInstance().format(sendFiatValue));
                                 checkMaxLengthBeforePoint(inputToCrypto, 10, i, i1, i2);
                                 checkForCanSpend(inputToCrypto, sendCryptoValue);
-                                canSend = true;
 
                             }
                         } else {
@@ -440,8 +442,10 @@ public class ExchangeFragment extends BaseFragment {
             input.setText(input.getText().subSequence(0, substringCount < 0 ? 0 : substringCount));
             input.setSelection(input.getText().length());
             viewModel.errorMessage.setValue(getString(R.string.enter_sum_too_much));
+            canSend = false;
 
-
+        } else {
+            canSend = true;
         }
     }
 
@@ -556,7 +560,7 @@ public class ExchangeFragment extends BaseFragment {
 
             tvExchangeRate.setVisibility(View.INVISIBLE);
             tvExchangeMin.setVisibility(View.INVISIBLE);
-
+            inputFromCrypto.requestFocus();
         });
         viewModel.getExchangeRate().observe(this, rate ->{
 
@@ -785,45 +789,66 @@ public class ExchangeFragment extends BaseFragment {
         buttonNext.setVisibility(View.GONE);
         slider.setVisibility(View.GONE);
         sliderFinish.setVisibility(View.GONE);
+
     }
 
     private void showExchangeButton(){
         if (canSend == true){
+            showWithAlpha(buttonNext);
             buttonNext.setVisibility(View.VISIBLE);
             slider.setVisibility(View.VISIBLE);
             sliderFinish.setVisibility(View.VISIBLE);
+
         }
 
     }
 
+    private void showWithAlpha(View view){
+        AlphaAnimation animation = new AlphaAnimation(0.0f, 1.0f);
+        view.setAlpha(1f);
+        animation.setDuration(300);
+        view.startAnimation(animation);
+    }
 
     private void hideTotalSummery(){
         Log.d("EXCHANGE FRAGMENT", "TOTAL SUMMERY SHOULD GONE");
-        if (summeryLayout!= null)
+        if (summeryLayout!= null) {
             summeryLayout.setVisibility(View.GONE);
+            summeryLayout.setAlpha(0f);
+        }
     }
 
     private void showTotalSummery(){
         Log.d("EXCHANGE FRAGMENT", "TOTAL SUMMERY SHOULD VISIBLE");
-        if (summeryLayout!= null)
+        if (summeryLayout!= null) {
+
+            showWithAlpha(summeryLayout);
+
             summeryLayout.setVisibility(View.VISIBLE);
+        }
     }
 
     private void setSummeryToZero(){
-        tvSummeryCrypto.setText(String.format("0 %s", viewModel.getPayFromWallet().getValue().getCurrencyName()));
-        tvSummeryFromFiat.setText("$ 0");
-        tvSummeryReceiveCrypto.setText(String.format("0 %s", viewModel.getSelectedAsset().getValue().getName()));
+        if (tvSummeryCrypto != null && tvSummeryFromFiat != null && tvSummeryReceiveCrypto != null) {
+            tvSummeryCrypto.setText(String.format("0 %s", viewModel.getPayFromWallet().getValue().getCurrencyName()));
+            tvSummeryFromFiat.setText("$ 0");
+            if (viewModel.getSelectedAsset().getValue() != null) {
+                tvSummeryReceiveCrypto.setText(String.format("0 %s", viewModel.getSelectedAsset().getValue().getName()));
+            }
+        }
     }
 
 
     private void startSlideAnimation() {
-        slider.animate().cancel();
-        if (slider.getDrawable() != null && slider.getDrawable() instanceof Animatable &&
-                sliderFinish.getDrawable() != null && sliderFinish.getDrawable() instanceof Animatable) {
-            slider.animate().setStartDelay(2000).withEndAction(() ->
-                    slider.animate().setStartDelay(3000).withEndAction(() ->
-                            slideAnimation((Animatable) slider.getDrawable(), (Animatable) sliderFinish.getDrawable())).start())
-                    .start();
+        if (slider != null) {
+            slider.animate().cancel();
+            if (slider.getDrawable() != null && slider.getDrawable() instanceof Animatable &&
+                    sliderFinish.getDrawable() != null && sliderFinish.getDrawable() instanceof Animatable) {
+                slider.animate().setStartDelay(2000).withEndAction(() ->
+                        slider.animate().setStartDelay(3000).withEndAction(() ->
+                                slideAnimation((Animatable) slider.getDrawable(), (Animatable) sliderFinish.getDrawable())).start())
+                        .start();
+            }
         }
     }
 

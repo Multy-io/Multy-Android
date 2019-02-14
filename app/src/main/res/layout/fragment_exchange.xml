@@ -145,6 +145,7 @@
                             android:maxLength="13"
                             android:minWidth="@dimen/dimen_60dp"
                             android:text="0"
+                            android:imeOptions="actionDone"
                             android:textAppearance="@style/HintInputAppearance"
                             android:textColorHighlight="@color/grey_blue" />
                     </android.support.design.widget.TextInputLayout>
@@ -169,6 +170,7 @@
                             android:inputType="numberDecimal"
                             android:minWidth="@dimen/dimen_60dp"
                             android:text="0"
+                            android:imeOptions="actionDone"
                             android:textAppearance="@style/HintInputAppearance"
                             android:textColorHighlight="@color/grey_blue" />
                     </android.support.design.widget.TextInputLayout>
@@ -300,6 +302,7 @@
                             android:gravity="center_horizontal"
                             android:maxLength="13"
                             android:hint="BTC"
+                            android:imeOptions="actionDone"
                             android:inputType="numberDecimal"
                             android:minWidth="@dimen/dimen_60dp"
                             android:textAppearance="@style/HintInputAppearance" />
@@ -324,6 +327,7 @@
                             android:maxLength="13"
                             android:hint="USD"
                             android:inputType="numberDecimal"
+                            android:imeOptions="actionDone"
                             android:minWidth="@dimen/dimen_60dp"
                             android:textAppearance="@style/HintInputAppearance" />
                     </android.support.design.widget.TextInputLayout>

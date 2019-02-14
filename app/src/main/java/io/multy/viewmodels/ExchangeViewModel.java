@@ -62,7 +62,7 @@ public class ExchangeViewModel extends BaseViewModel {
     private MutableLiveData<Wallet> payFromWallet = new MutableLiveData<>();
     private MutableLiveData<Wallet> receiveToWallet = new MutableLiveData<>();
     private MutableLiveData<List<String>> assetsList = new MutableLiveData<>();
-    private MutableLiveData<Integer> fragmentHolder = new MutableLiveData<>();
+//    private MutableLiveData<Integer> fragmentHolder = new MutableLiveData<>();
     private MutableLiveData<List<ExchangeAsset>> assets  = new MutableLiveData<>();
     private MutableLiveData<ExchangeAsset> assetExchangeTo = new MutableLiveData<>();
     private MutableLiveData<Float> exchangeRate = new MutableLiveData<>();
@@ -112,7 +112,7 @@ public class ExchangeViewModel extends BaseViewModel {
 
     public ExchangeViewModel() {
 //        currenciesRate = RealmManager.getSettingsDao().getCurrenciesRate();
-        fragmentHolder.setValue(0);
+//        fragmentHolder.setValue(0);
 
         getSupportTokens();
     }
@@ -170,7 +170,8 @@ public class ExchangeViewModel extends BaseViewModel {
                 if (response.isSuccessful() && response.body() != null) {
                     supportTokens.setValue(response.body().getSupportTokens());
                     getAssetsList();
-                    requestFeeRates(payFromWallet.getValue().getCurrencyId(), payFromWallet.getValue().getNetworkId(), null);
+                    if (payFromWallet.getValue() != null)
+                        requestFeeRates(payFromWallet.getValue().getCurrencyId(), payFromWallet.getValue().getNetworkId(), null);
 
                 }
             }
@@ -276,13 +277,13 @@ public class ExchangeViewModel extends BaseViewModel {
         return this.assets;
     }
 
-    public void setFragmentHolder(MutableLiveData<Integer> fragmentIDHolder){
-        this.fragmentHolder = fragmentIDHolder;
-    }
+//    public void setFragmentHolder(MutableLiveData<Integer> fragmentIDHolder){
+//        this.fragmentHolder = fragmentIDHolder;
+//    }
 
-    public void changeFragment(int id){
-        fragmentHolder.setValue(id);
-    }
+//    public void changeFragment(int id){
+//        fragmentHolder.setValue(id);
+//    }
 
     public double getCurrenciesRate() {
         if (currenciesRate == 0) {
@@ -297,7 +298,8 @@ public class ExchangeViewModel extends BaseViewModel {
         if (sendERC20Token.getValue() != null){
             from = sendERC20Token.getValue().getName();
         } else {
-            from = payFromWallet.getValue().getCurrencyName();
+            if (payFromWallet.getValue()!= null)
+                from = payFromWallet.getValue().getCurrencyName();
         }
 
         String to = asset.getName();
@@ -305,12 +307,11 @@ public class ExchangeViewModel extends BaseViewModel {
 
         //TODO check if walletExchangeTo was selected Before and
 
-        if (receiveToWallet.getValue() == null|| receiveToWallet.getValue().getCurrencyId() != asset.getChainId()){
-            //TODO launch select wallet fragment
-            fragmentHolder.setValue(2);
-        } else {
-            fragmentHolder.setValue(0);
-        }
+//        if (receiveToWallet.getValue() == null|| receiveToWallet.getValue().getCurrencyId() != asset.getChainId()){
+//            fragmentHolder.setValue(2);
+//        } else {
+//            fragmentHolder.setValue(0);
+//        }
 
     }
 
@@ -318,7 +319,7 @@ public class ExchangeViewModel extends BaseViewModel {
 
     public void setReceiveToWallet(Wallet wallet){
         this.receiveToWallet.setValue(wallet);
-        fragmentHolder.setValue(0);
+//        fragmentHolder.setValue(0);
     }
 
 

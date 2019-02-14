@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -58,7 +59,8 @@ public class ExchangeActivity extends BaseActivity {
     private boolean isFirstFragmentCreation;
     private ExchangeViewModel viewModel;
 
-    private MutableLiveData<Integer> fragmentIDHolder = new MutableLiveData<>();
+//    private MutableLiveData<Integer> fragmentIDHolder = new MutableLiveData<>();
+//    private int currentFragmentId = 0;
 
     //TODO check if SocketManager is needed here
     private SocketManager socketManager;
@@ -75,34 +77,36 @@ public class ExchangeActivity extends BaseActivity {
         isFirstFragmentCreation = true;
         viewModel = ViewModelProviders.of(this).get(ExchangeViewModel.class);
 
-        viewModel.setFragmentHolder(fragmentIDHolder);
+//        viewModel.setFragmentHolder(fragmentIDHolder);
 
 
 
 
 
-        fragmentIDHolder.observe(this, id ->{
-            switch (id){
-                case 0:
-                    setFragment(R.string.exchanging, R.id.container, ExchangeFragment.newInstance());
-                    break;
-                case 1:
-                    setFragment(R.string.exchanging, R.id.container, ChooserExchangePairFragment.newInstance());
-                    break;
-                case 2:
-                    //TODO open select wallet fragment
-                    ExchangeAsset asset = viewModel.getSelectedAsset().getValue();
-                    if (asset != null){
-                        int chainId = 0;
-                        int networdId = 0;
-                        if (asset.getChainId() != chainId){
-                            chainId = 60;
-                            networdId = 1;
-                        }
-                        setFragment(R.string.select_walet, R.id.container, ExchangeWalletChooserFragment.newInstance(chainId,networdId));
-                    }
-            }
-        });
+//        fragmentIDHolder.observe(this, id ->{
+//            switch (id){
+//                case 0:
+//                    setFragment(R.string.exchanging, R.id.container, ExchangeFragment.newInstance());
+//                    currentFragmentId = 0;
+//                    break;
+//                case 1:
+//                    setFragment(R.string.exchanging, R.id.container, ChooserExchangePairFragment.newInstance());
+//                    currentFragmentId = 1;
+//                    break;
+//                case 2:
+//                    ExchangeAsset asset = viewModel.getSelectedAsset().getValue();
+//                    if (asset != null){
+//                        int chainId = 0;
+//                        int networdId = 0;
+//                        if (asset.getChainId() != chainId){
+//                            chainId = 60;
+//                            networdId = 1;
+//                        }
+//                        setFragment(R.string.select_walet, R.id.container, ExchangeWalletChooserFragment.newInstance(chainId,networdId));
+//                        currentFragmentId = 2;
+//                    }
+//            }
+//        });
 
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
@@ -157,25 +161,61 @@ public class ExchangeActivity extends BaseActivity {
     public void onBackPressed() {
         //TODO WTF is that. fragment backstack, nah?
         logCancel();
-        if (getSupportFragmentManager().getBackStackEntryCount() >= 1) {
-            List<Fragment> backStackFragments = getSupportFragmentManager().getFragments();
-            for (Fragment backStackFragment : backStackFragments) {
-                //TODO update this
-                if (backStackFragment instanceof SendSummaryFragment || backStackFragment instanceof EthSendSummaryFragment) {
-                    toolbar.setTitle(R.string.send_amount);
-                } else if (backStackFragment instanceof AmountChooserFragment || backStackFragment instanceof EthAmountChooserFragment) {
-                    toolbar.setTitle(R.string.transaction_fee);
-                } else if (backStackFragment instanceof TransactionFeeFragment || backStackFragment instanceof EthTransactionFeeFragment) {
-                    toolbar.setTitle(R.string.send_from);
-                } else if (backStackFragment instanceof WalletChooserFragment) {
-                    toolbar.setTitle(R.string.send_to);
-                } else if (backStackFragment instanceof AssetSendFragment || backStackFragment instanceof EthSendSummaryFragment) {
-                    toolbar.setTitle(R.string.send_to);
+//        switch (currentFragmentId){
+//            case 0:
+//                super.onBackPressed();
+//                finish();
+//                break;
+//            case 1:
+//                setFragment(R.string.exchanging, R.id.container, ExchangeFragment.newInstance());
+//                currentFragmentId = 0;
+//                break;
+//            case 2:
+//                setFragment(R.string.exchanging, R.id.container, ChooserExchangePairFragment.newInstance());
+//                currentFragmentId = 1;
+//                break;
+//        }
+//
+//
+//        if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
+//            List<Fragment> backStackFragments = getSupportFragmentManager().getFragments();
+//            for (Fragment backStackFragment : backStackFragments) {
+//                //TODO update this
+//                if (backStackFragment.getClass().getSimpleName().equals(ExchangeFragment.TAG_SEND_SUCCESS)) {
+//                    super.onBackPressed();
+//                } else if (backStackFragment instanceof AmountChooserFragment || backStackFragment instanceof EthAmountChooserFragment) {
+//                    toolbar.setTitle(R.string.transaction_fee);
+//                } else if (backStackFragment instanceof TransactionFeeFragment || backStackFragment instanceof EthTransactionFeeFragment) {
+//                    toolbar.setTitle(R.string.send_from);
+//                } else if (backStackFragment instanceof WalletChooserFragment) {
+//                    toolbar.setTitle(R.string.send_to);
+//                } else if (backStackFragment instanceof AssetSendFragment || backStackFragment instanceof EthSendSummaryFragment) {
+//                    toolbar.setTitle(R.string.send_to);
+//                }
+//            }
+//            getSupportFragmentManager().popBackStack();
+//        } else {
+//            super.onBackPressed();
+//            finish();
+//        }
+
+        int fragmentsInBackStack = getSupportFragmentManager().getBackStackEntryCount();
+        if (fragmentsInBackStack > 1){
+
+            int index = getSupportFragmentManager().getBackStackEntryCount() - 1;
+            FragmentManager.BackStackEntry backEntry = getSupportFragmentManager().getBackStackEntryAt(index);
+            String tag = backEntry.getName();
+            if (tag.equals(ExchangeFragment.class.getName())){
+                finish();
+            } else {
+                if (tag.equals(WalletChooserFragment.class.getName()) || tag.equals(ChooserExchangePairFragment.class.getName())){
+                    getSupportActionBar().setTitle(R.string.exchanging);
                 }
+                getSupportFragmentManager().popBackStack();
             }
-            getSupportFragmentManager().popBackStack();
-        } else {
-            super.onBackPressed();
+        } else{
+            finish();
+//            super.onBackPressed();
         }
     }
 
@@ -202,55 +242,33 @@ public class ExchangeActivity extends BaseActivity {
             viewModel.setPayFromWalletById(getIntent().getExtras().getLong(Constants.EXTRA_WALLET_ID));
         }
 
-
-        //TODO parse alsl this staff for tokens and set correct values
-
-
-
-
-        //TODO remove this test calls
         setFragment(R.string.exchanging, R.id.container, ExchangeFragment.newInstance());
 
-//        viewModel.getAssetsList();
-//       testAPIcallse();
 
     }
 
-    private void testAPIcallse(){
-//        viewModel.getAssetsList();
-
-        //TODO this is hardoded pair
-//        ExchangePair pair = new ExchangePair("btc", "eth", 1f);
-//        viewModel.getExchangePair(pair);
 //
-//        viewModel.getMinExchangeValue(pair);
-//
-//
-//        pair.setReceivingToAddress("0xDFb0f70764847b3a2016D5F5912e7977E5eEA0C5");
-//        viewModel.getPayToAddress(pair);
-    }
+//    private void getAddressIds(final String address, int[] addressIdsHolder) {
+//        for (NativeDataHelper.Blockchain blockchain : NativeDataHelper.Blockchain.values()) {
+//            for (NativeDataHelper.NetworkId networkId : NativeDataHelper.NetworkId.values()) {
+//                if (isValidAddress(address, blockchain.getValue(), networkId.getValue())) {
+//                    addressIdsHolder[0] = blockchain.getValue();
+//                    addressIdsHolder[1] = networkId.getValue();
+//                    return;
+//                }
+//            }
+//        }
+//    }
 
-    private void getAddressIds(final String address, int[] addressIdsHolder) {
-        for (NativeDataHelper.Blockchain blockchain : NativeDataHelper.Blockchain.values()) {
-            for (NativeDataHelper.NetworkId networkId : NativeDataHelper.NetworkId.values()) {
-                if (isValidAddress(address, blockchain.getValue(), networkId.getValue())) {
-                    addressIdsHolder[0] = blockchain.getValue();
-                    addressIdsHolder[1] = networkId.getValue();
-                    return;
-                }
-            }
-        }
-    }
-
-    private boolean isValidAddress(String address, int blockchain, int network) {
-        try {
-            NativeDataHelper.isValidAddress(address, blockchain, network);
-            return true;
-        } catch (Throwable t) {
-            t.printStackTrace();
-            return false;
-        }
-    }
+//    private boolean isValidAddress(String address, int blockchain, int network) {
+//        try {
+//            NativeDataHelper.isValidAddress(address, blockchain, network);
+//            return true;
+//        } catch (Throwable t) {
+//            t.printStackTrace();
+//            return false;
+//        }
+//    }
 
     private void logCancel() {
         List<Fragment> backStackFragments = getSupportFragmentManager().getFragments();
@@ -272,15 +290,23 @@ public class ExchangeActivity extends BaseActivity {
     public void setFragment(@StringRes int title, @IdRes int container, Fragment fragment) {
         getSupportActionBar().setTitle(title);
 
+
+
         FragmentTransaction transaction = getSupportFragmentManager()
                 .beginTransaction()
                 .replace(container, fragment);
 
-        if (!isFirstFragmentCreation) {
-            transaction.addToBackStack(fragment.getClass().getName());
-        }
 
+//        if (isFirstFragmentCreation) {
+            transaction.addToBackStack(fragment.getClass().getName());
+//        }
+//
         isFirstFragmentCreation = false;
+
+//        if (addToBackStack){
+//            transaction.addToBackStack(fragment.getClass().getSimpleName());
+//        }
+
         transaction.commit();
 
         hideKeyboard(this);
