@@ -123,7 +123,7 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
 
     private AssetsViewModel viewModel;
     private MyWalletsAdapter walletsAdapter;
-    private SocketManager socketManager;
+//    private SocketManager socketManager;
     private Wallet deepMagicWallet = null;
     private boolean isViewsScroll = false;
     private boolean checkMetamask = false;
@@ -170,10 +170,12 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
         if (dialog != null) {
             dialog.dismiss();
         }
-        if (socketManager != null) {
-            socketManager.disconnect();
-            socketManager = null;
-        }
+
+//        //TODO pass this object to the View Model
+//        if (socketManager != null) {
+//            socketManager.disconnect();
+//            socketManager = null;
+//        }
         super.onPause();
     }
 
@@ -340,16 +342,17 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
     }
 
     private void subscribeSocketsUpdate() {
-        try {
-            if (socketManager == null) {
-                socketManager = new SocketManager();
-            }
-            final String eventReceive = SocketManager.getEventReceive(RealmManager.getSettingsDao().getUserId().getUserId());
-            socketManager.listenEvent(eventReceive, args -> updateWallets());
-            socketManager.connect();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+        //TODO use this object with ViewModel
+//        try {
+//            if (socketManager == null) {
+//                socketManager = new SocketManager();
+//            }
+//            final String eventReceive = SocketManager.getEventReceive(RealmManager.getSettingsDao().getUserId().getUserId());
+//            socketManager.listenEvent(eventReceive, args -> updateWallets());
+//            socketManager.connect();
+//        } catch (URISyntaxException e) {
+//            e.printStackTrace();
+//        }
     }
 
     private void updateWallets() {

@@ -53,22 +53,19 @@ public class CreateMultisigViewModel extends BaseViewModel {
     private String gasPrice = "3000000000";
 
     public void connectSockets(Emitter.Listener args) {
-        try {
-            if (socketManager == null) {
-                socketManager = new SocketManager();
-            }
-            final String eventReceive = SocketManager.getEventReceive(RealmManager.getSettingsDao().getUserId().getUserId());
-            socketManager.listenEvent(eventReceive, args);
-            socketManager.connect();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
+        if (socketManager == null) {
+            socketManager = SocketManager.getInstance();
         }
+        final String eventReceive = SocketManager.getEventReceive(RealmManager.getSettingsDao().getUserId().getUserId());
+        socketManager.listenEvent(eventReceive, args);
+        socketManager.connect();
     }
 
     public void disconnectSockets() {
-        if (socketManager != null && socketManager.isConnected()) {
-            socketManager.disconnect();
-        }
+        SocketManager.getInstance().lazyDisconnect();
+//        if (socketManager != null && socketManager.isConnected()) {
+//            socketManager.disconnect();
+//        }
     }
 
     public boolean isCreator() {

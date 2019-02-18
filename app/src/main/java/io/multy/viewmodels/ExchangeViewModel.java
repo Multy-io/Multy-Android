@@ -642,7 +642,6 @@ public class ExchangeViewModel extends BaseViewModel {
         boolean out = false;
         switch (payFromWallet.getValue().getCurrencyName()){
             case Constants.BTC:
-                c
                 return payFromWallet.getValue().getBtcDoubleValue() >= amount ? true : false;
 
             case Constants.ETH:

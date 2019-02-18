@@ -155,11 +155,7 @@ public class MultisigTransactionInfoFragment extends BaseFragment {
         viewModel = ViewModelProviders.of(requireActivity()).get(WalletViewModel.class);
         setBaseViewModel(viewModel);
         adapter = new MultisigOwnersAdapter();
-        try {
-            socketManager = new SocketManager();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+        socketManager = SocketManager.getInstance();
     }
 
     @Nullable
@@ -188,9 +184,11 @@ public class MultisigTransactionInfoFragment extends BaseFragment {
     @Override
     public void onPause() {
         super.onPause();
-        if (socketManager != null) {
-            socketManager.disconnect();
-        }
+
+        SocketManager.getInstance().lazyDisconnect();
+//        if (socketManager != null) {
+//            socketManager.disconnect();
+//        }
     }
 
     private void onReceiveEvent(Object[] objects) {

@@ -50,6 +50,7 @@ public class AssetActivity extends BaseActivity {
 
         viewModel = ViewModelProviders.of(this).get(WalletViewModel.class);
 
+
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
@@ -147,6 +148,7 @@ public class AssetActivity extends BaseActivity {
             }
         }
     }
+
 
     private void logCancel() {
         List<Fragment> backStackFragments = getSupportFragmentManager().getFragments();

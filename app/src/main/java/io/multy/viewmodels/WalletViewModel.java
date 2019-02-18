@@ -19,6 +19,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -86,7 +87,7 @@ import timber.log.Timber;
 import static android.content.Intent.ACTION_SEND;
 
 public class WalletViewModel extends BaseViewModel {
-
+    public static final String TAG =  WalletViewModel.class.getSimpleName();
     public MutableLiveData<Wallet> wallet = new MutableLiveData<>();
     public MutableLiveData<String> chainCurrency = new MutableLiveData<>();
     public MutableLiveData<String> fiatCurrency = new MutableLiveData<>();
@@ -97,32 +98,43 @@ public class WalletViewModel extends BaseViewModel {
     public MutableLiveData<ArrayList<TransactionHistory>> transactions = new MutableLiveData<>();
     public SingleLiveEvent<TransactionUpdateEntity> transactionUpdate = new SingleLiveEvent<>();
 
-    private SocketManager socketManager;
+//    ServiceConnection socketServiceConnection;
+//    private SocketManager socketManager;
     private long walletId = -1;
 
     public WalletViewModel() {
+
+
     }
 
     public void subscribeSocketsUpdate() {
-        try {
-            socketManager = new SocketManager();
-            socketManager.listenRatesAndTransactions(rates, transactionUpdate);
-            if (getWalletLive().getValue().isMultisig()) {
-                String eventReceive = SocketManager.getEventReceive(RealmManager.getSettingsDao().getUserId().getUserId());
-                socketManager.listenEvent(eventReceive, args -> {
-                    transactionUpdate.postValue(new TransactionUpdateEntity());
-                });
-            }
-            socketManager.connect();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+
+        Log.d(TAG, "SOCKET should be initialized");
+        subscribeToSockets(TAG);
+
+        rates = getRatesSubscribtion();
+        transactionUpdate = getTransactionsSubscribtion();
+//        try {
+//            socketManager = new SocketManager();
+//            socketManager.listenRatesAndTransactions(rates, transactionUpdate);
+//            if (getWalletLive().getValue().isMultisig()) {
+//                String eventReceive = SocketManager.getEventReceive(RealmManager.getSettingsDao().getUserId().getUserId());
+//                socketManager.listenEvent(eventReceive, args -> {
+//                    transactionUpdate.postValue(new TransactionUpdateEntity());
+//                });
+//            }
+//            socketManager.connect();
+//        } catch (URISyntaxException e) {
+//            e.printStackTrace();
+//        }
     }
 
     public void unsubscribeSocketsUpdate() {
-        if (socketManager != null) {
-            socketManager.disconnect();
-        }
+        unsubscribeSockets();
+//        socketServiceConnection = null;
+//        if (socketManager != null) {
+//            socketManager.disconnect();
+//        }
     }
 
     public MutableLiveData<List<WalletAddress>> getAddresses() {
@@ -549,46 +561,44 @@ public class WalletViewModel extends BaseViewModel {
     }
 
     public void sendTransactionStatus(int eventType, int currencyId, int networkId, int walletIndex, String txId, Lifecycle lifecycle) {
+        isLoading.setValue(true);
+        SocketManager socketManager = SocketManager.getInstance();
+        socketManager.connect();
+        MultisigEvent event = MultisigEvent.getBuilder()
+                .setType(eventType)
+                .setDate(System.currentTimeMillis())
+                .setPayload(MultisigEvent.Payload.getBuilder()
+                        .setUserId(RealmManager.getSettingsDao().getUserId().getUserId())
+                        .setAddress(RealmManager.getAssetsDao().getMultisigLinkedWallet(wallet.getValue()
+                                .getMultisigWallet().getOwners()).getActiveAddress().getAddress())
+                        .setInviteCode(wallet.getValue().getMultisigWallet().getInviteCode())
+                        .setWalletIndex(walletIndex)
+                        .setCurrencyId(currencyId)
+                        .setNetworkId(networkId)
+                        .setTxId(txId)
+                        .build())
+                .build();
         try {
-            isLoading.setValue(true);
-            SocketManager socketManager = new SocketManager();
-            socketManager.connect();
-            MultisigEvent event = MultisigEvent.getBuilder()
-                    .setType(eventType)
-                    .setDate(System.currentTimeMillis())
-                    .setPayload(MultisigEvent.Payload.getBuilder()
-                            .setUserId(RealmManager.getSettingsDao().getUserId().getUserId())
-                            .setAddress(RealmManager.getAssetsDao().getMultisigLinkedWallet(wallet.getValue()
-                                    .getMultisigWallet().getOwners()).getActiveAddress().getAddress())
-                            .setInviteCode(wallet.getValue().getMultisigWallet().getInviteCode())
-                            .setWalletIndex(walletIndex)
-                            .setCurrencyId(currencyId)
-                            .setNetworkId(networkId)
-                            .setTxId(txId)
-                            .build())
-                    .build();
-            try {
-                JSONObject eventJson = new JSONObject(new Gson().toJson(event));
-                socketManager.sendMultisigTransactionOwnerAction(eventJson, args -> {
-                    Timber.i("EVENT_MESSAGE_SEND" + args[0]);
-                    isLoading.postValue(false);
-                    socketManager.disconnect();
-                });
-            } catch (JSONException e) {
-                e.printStackTrace();
-                socketManager.disconnect();
-                isLoading.setValue(false);
-            }
-            lifecycle.addObserver(new LifecycleObserver() {
-                @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-                void onPause() {
-                    socketManager.disconnect();
-                }
+            JSONObject eventJson = new JSONObject(new Gson().toJson(event));
+            socketManager.sendMultisigTransactionOwnerAction(eventJson, args -> {
+                Timber.i("EVENT_MESSAGE_SEND" + args[0]);
+                isLoading.postValue(false);
+//                socketManager.disconnect();
+                SocketManager.getInstance().lazyDisconnect();
             });
-        } catch (URISyntaxException e) {
+        } catch (JSONException e) {
             e.printStackTrace();
+//            socketManager.disconnect();
+            SocketManager.getInstance().lazyDisconnect();
             isLoading.setValue(false);
         }
+        lifecycle.addObserver(new LifecycleObserver() {
+            @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+            void onPause() {
+//                socketManager.disconnect();
+                SocketManager.getInstance().lazyDisconnect();
+            }
+        });
     }
 
     public void resyncWallet(Runnable successCallback) {

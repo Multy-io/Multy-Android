@@ -37,6 +37,7 @@ public final class Constants {
     public static final String NEW_LINE = "\n";
     public static final String QUESTION_MARK = "?";
     public static final String EQUAL = "=";
+    public static final String NAME = "name";
 
     public static final String PREF_APP_INITIALIZED = "is_first_start";
     public static final String PREF_BACKUP_SEED = "backup_seed";

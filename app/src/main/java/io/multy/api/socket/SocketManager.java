@@ -17,6 +17,8 @@ import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import io.multy.storage.RealmManager;
 import io.multy.util.Constants;
@@ -31,6 +33,9 @@ import okhttp3.OkHttpClient;
 import timber.log.Timber;
 
 public class SocketManager {
+
+
+
 
     public static final String TAG = SocketManager.class.getSimpleName();
     private static final String DEVICE_TYPE = "Android";
@@ -57,7 +62,20 @@ public class SocketManager {
     private Socket socket;
     private Gson gson;
 
-    public SocketManager() throws URISyntaxException {
+
+    private static volatile SocketManager instance = new SocketManager();
+
+
+    private static boolean isSomeoneListen = false;
+
+
+
+    private SocketManager() {
+
+        if (instance != null){
+            throw new RuntimeException("Use getInstance to call this class");
+        }
+
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .hostnameVerifier((hostname, session) -> true)
 //                    .sslSocketFactory(mySSLContext.getSocketFactory(), myX509TrustManager)
@@ -75,9 +93,41 @@ public class SocketManager {
         options.secure = false;
         options.callFactory = okHttpClient;
         options.webSocketFactory = okHttpClient;
-        socket = IO.socket(SOCKET_URL, options);
+        try {
+            socket = IO.socket(SOCKET_URL, options);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
         initDefaultHeaders();
         initDefaultEvents();
+    }
+
+    public synchronized static SocketManager getInstance()  {
+
+        if (instance == null){
+            instance = new SocketManager();
+        }
+        isSomeoneListen = true;
+        return instance;
+    }
+
+    public void lazyDisconnect(){
+        isSomeoneListen = false;
+        Timer timer = new Timer();
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                tryToKillSockets();
+            }
+        };
+        timer.schedule(task, 3000);
+    }
+
+    private void tryToKillSockets(){
+        if (!isSomeoneListen){
+            disconnect();
+        }
+
     }
 
     private void initDefaultHeaders() {
@@ -157,7 +207,8 @@ public class SocketManager {
     }
 
     public void connect() {
-        socket.connect();
+        if (!socket.connected())
+            socket.connect();
     }
 
     public boolean isConnected() {
