@@ -155,7 +155,7 @@ public class MultisigTransactionInfoFragment extends BaseFragment {
         viewModel = ViewModelProviders.of(requireActivity()).get(WalletViewModel.class);
         setBaseViewModel(viewModel);
         adapter = new MultisigOwnersAdapter();
-        socketManager = SocketManager.getInstance();
+        socketManager = SocketManager.getInstance(TAG);
     }
 
     @Nullable
@@ -185,7 +185,7 @@ public class MultisigTransactionInfoFragment extends BaseFragment {
     public void onPause() {
         super.onPause();
 
-        SocketManager.getInstance().lazyDisconnect();
+        SocketManager.getInstance(TAG).lazyDisconnect(TAG);
 //        if (socketManager != null) {
 //            socketManager.disconnect();
 //        }

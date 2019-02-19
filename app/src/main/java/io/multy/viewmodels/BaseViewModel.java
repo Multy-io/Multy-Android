@@ -55,12 +55,12 @@ public class BaseViewModel extends ViewModel {
 
     public void subscribeToSockets(String TAG){
 
-        if (!SocketManager.getInstance().isConnected()){
-            SocketManager.getInstance().listenRatesAndTransactions(rates, transactionUpdate);
-            SocketManager.getInstance().listenEvent(SocketManager.getEventReceive(RealmManager.getSettingsDao().getUserId().getUserId()), args -> {
+        if (!SocketManager.getInstance(TAG).isConnected()){
+            SocketManager.getInstance(TAG).listenRatesAndTransactions(rates, transactionUpdate);
+            SocketManager.getInstance(TAG).listenEvent(SocketManager.getEventReceive(RealmManager.getSettingsDao().getUserId().getUserId()), args -> {
                 transactionUpdate.postValue(new TransactionUpdateEntity());
             });
-            SocketManager.getInstance().connect();
+            SocketManager.getInstance(TAG).connect();
         }
 
 //        ServiceConnection socketServiceConnection = new ServiceConnection() {
@@ -90,7 +90,7 @@ public class BaseViewModel extends ViewModel {
     public MutableLiveData<CurrenciesRate> getRatesSubscribtion() { return this.rates;}
     public SingleLiveEvent<TransactionUpdateEntity> getTransactionsSubscribtion() { return this.transactionUpdate;}
 
-    public void unsubscribeSockets(){
-        SocketManager.getInstance().lazyDisconnect();
+    public void unsubscribeSockets(String TAG){
+        SocketManager.getInstance(TAG).lazyDisconnect(TAG);
     }
 }

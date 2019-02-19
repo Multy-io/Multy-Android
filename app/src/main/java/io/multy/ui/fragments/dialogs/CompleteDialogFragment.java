@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.support.constraint.Group;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,7 @@ import static android.view.View.GONE;
 
 public class CompleteDialogFragment extends DialogFragment {
 
+    public static final String TAG = CompleteDialogFragment.class.getSimpleName();
     private final static String EXTRA_AMOUNT_COMPLETE_DIALOG = "amount_complete_dialog";
 
     @BindView(R.id.text_amount)
@@ -91,6 +93,7 @@ public class CompleteDialogFragment extends DialogFragment {
 
     @Override
     public void show(FragmentManager manager, String tag) {
+        Log.d(TAG, "COMPLETE DIALOG MUST BE SHOWN");
         try {
             super.show(manager, tag);
         } catch (IllegalStateException e) {

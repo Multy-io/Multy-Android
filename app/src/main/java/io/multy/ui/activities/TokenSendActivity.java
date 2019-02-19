@@ -44,7 +44,7 @@ import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.AssetSendViewModel;
 
 public class TokenSendActivity extends BaseActivity {
-
+    public static final String TAG = TokenSendActivity.class.getSimpleName();
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
@@ -81,7 +81,7 @@ public class TokenSendActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         if (socketManager == null) {
-            socketManager = SocketManager.getInstance();
+            socketManager = SocketManager.getInstance(TAG);
         }
         socketManager.listenTransactionUpdates(() -> {//todo remove it when it will become deprecated
             viewModel.updateWallets();
@@ -94,7 +94,7 @@ public class TokenSendActivity extends BaseActivity {
     @Override
     protected void onPause() {
 
-        SocketManager.getInstance().lazyDisconnect();
+        SocketManager.getInstance(TAG).lazyDisconnect(TAG);
 //        if (socketManager != null && socketManager.isConnected()) {
 //            socketManager.disconnect();
 //        }

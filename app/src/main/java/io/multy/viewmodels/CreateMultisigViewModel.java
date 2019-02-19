@@ -42,7 +42,7 @@ import retrofit2.Response;
 import timber.log.Timber;
 
 public class CreateMultisigViewModel extends BaseViewModel {
-
+    private static final String TAG = CreateMultisigViewModel.class.getSimpleName();
     private boolean isCreator = false;
     private long walletId;
     private SocketManager socketManager;
@@ -54,7 +54,7 @@ public class CreateMultisigViewModel extends BaseViewModel {
 
     public void connectSockets(Emitter.Listener args) {
         if (socketManager == null) {
-            socketManager = SocketManager.getInstance();
+            socketManager = SocketManager.getInstance(TAG);
         }
         final String eventReceive = SocketManager.getEventReceive(RealmManager.getSettingsDao().getUserId().getUserId());
         socketManager.listenEvent(eventReceive, args);
@@ -62,7 +62,7 @@ public class CreateMultisigViewModel extends BaseViewModel {
     }
 
     public void disconnectSockets() {
-        SocketManager.getInstance().lazyDisconnect();
+        SocketManager.getInstance(TAG).lazyDisconnect(TAG);
 //        if (socketManager != null && socketManager.isConnected()) {
 //            socketManager.disconnect();
 //        }

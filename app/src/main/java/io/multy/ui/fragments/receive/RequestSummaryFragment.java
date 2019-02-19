@@ -62,7 +62,7 @@ import timber.log.Timber;
 
 
 public class RequestSummaryFragment extends BaseFragment {
-
+    public static final String TAG = RequestSummaryFragment.class.getSimpleName();
     public static final int AMOUNT_CHOOSE_REQUEST = 729;
     public static final int ADDRESS_CHOOSER_REQUEST = 560;
     public static final int REQUEST_CODE_WIRELESS = 112;
@@ -159,7 +159,7 @@ public class RequestSummaryFragment extends BaseFragment {
 
     private void connectSockets() {
         if (socketManager == null) {
-            socketManager = SocketManager.getInstance();
+            socketManager = SocketManager.getInstance(TAG);
         }
         socketManager.listenEvent(SocketManager.EVENT_RECEIVE, args -> {
             if (getActivity() != null) {
@@ -208,7 +208,7 @@ public class RequestSummaryFragment extends BaseFragment {
     }
 
     private void disconnectSockets() {
-        SocketManager.getInstance().lazyDisconnect();
+        SocketManager.getInstance(TAG).lazyDisconnect(TAG);
 //        if(socketManager != null && socketManager.isConnected()) {
 //            socketManager.disconnect();
 //        }

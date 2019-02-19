@@ -75,7 +75,7 @@ public class AssetsViewModel extends BaseViewModel implements LifecycleObserver 
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     void onStop() {
-        unsubscribeSockets();
+        unsubscribeSockets(TAG);
 //        socketServiceConnection = null;
 //        if (socketManager != null) {
 //            socketManager.disconnect();

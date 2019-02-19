@@ -49,7 +49,7 @@ import timber.log.Timber;
 
 
 public class AssetSendActivity extends BaseActivity {
-
+    public static final String TAG = AssetSendActivity.class.getSimpleName();
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
@@ -79,7 +79,7 @@ public class AssetSendActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         if (socketManager == null) {
-            socketManager = SocketManager.getInstance();
+            socketManager = SocketManager.getInstance(TAG);
         }
         socketManager.listenTransactionUpdates(() -> {//todo remove it when it will become deprecated
             viewModel.updateWallets();
@@ -94,7 +94,7 @@ public class AssetSendActivity extends BaseActivity {
 //        if (socketManager != null && socketManager.isConnected()) {
 //            socketManager.disconnect();
 //        }
-        SocketManager.getInstance().lazyDisconnect();
+        SocketManager.getInstance(TAG).lazyDisconnect(TAG);
         super.onPause();
     }
 
