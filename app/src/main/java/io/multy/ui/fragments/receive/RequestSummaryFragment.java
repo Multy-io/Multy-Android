@@ -62,7 +62,7 @@ import timber.log.Timber;
 
 
 public class RequestSummaryFragment extends BaseFragment {
-
+    public static final String TAG = RequestSummaryFragment.class.getSimpleName();
     public static final int AMOUNT_CHOOSE_REQUEST = 729;
     public static final int ADDRESS_CHOOSER_REQUEST = 560;
     public static final int REQUEST_CODE_WIRELESS = 112;
@@ -158,37 +158,31 @@ public class RequestSummaryFragment extends BaseFragment {
     }
 
     private void connectSockets() {
-        try {
-            if (socketManager == null) {
-                socketManager = new SocketManager();
+        socketManager = SocketManager.getInstance();
+        socketManager.listenEvent(SocketManager.EVENT_RECEIVE, args -> {
+            if (getActivity() != null) {
+                getActivity().runOnUiThread(() -> {
+                    try {
+                        verifyTransaction(args[0].toString());
+                    } catch (Throwable t) {
+                        t.printStackTrace();
+                        Crashlytics.logException(t);
+                    }
+                });
             }
-            socketManager.listenEvent(SocketManager.EVENT_RECEIVE, args -> {
-                if (getActivity() != null) {
-                    getActivity().runOnUiThread(() -> {
-                        try {
-                            verifyTransaction(args[0].toString());
-                        } catch (Throwable t) {
-                            t.printStackTrace();
-                            Crashlytics.logException(t);
-                        }
-                    });
-                }
-            });
-            socketManager.listenEvent(SocketManager.getEventReceive(RealmManager.getSettingsDao().getUserId().getUserId()), args -> {
-                if (getActivity() != null) {
-                    getActivity().runOnUiThread(() -> {
-                        try {
-                            verifyTransaction(new Gson().fromJson(args[0].toString(), ReceiveMessage.class));
-                        } catch (Throwable t) {
-                            t.printStackTrace();
-                        }
-                    });
-                }
-            });
-            socketManager.connect();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+        });
+        socketManager.listenEvent(SocketManager.getEventReceive(RealmManager.getSettingsDao().getUserId().getUserId()), args -> {
+            if (getActivity() != null) {
+                getActivity().runOnUiThread(() -> {
+                    try {
+                        verifyTransaction(new Gson().fromJson(args[0].toString(), ReceiveMessage.class));
+                    } catch (Throwable t) {
+                        t.printStackTrace();
+                    }
+                });
+            }
+        });
+        socketManager.connect(TAG);
     }
 
     private void verifyTransaction(String json) {
@@ -212,9 +206,10 @@ public class RequestSummaryFragment extends BaseFragment {
     }
 
     private void disconnectSockets() {
-        if(socketManager != null && socketManager.isConnected()) {
-            socketManager.disconnect();
-        }
+        SocketManager.getInstance().lazyDisconnect(TAG);
+//        if(socketManager != null && socketManager.isConnected()) {
+//            socketManager.disconnect();
+//        }
     }
 
     @Override

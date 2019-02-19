@@ -31,6 +31,7 @@ import io.socket.engineio.client.transports.WebSocket;
 import okhttp3.OkHttpClient;
 import timber.log.Timber;
 
+@Deprecated
 public class BlueSocketManager {
 
     public static final String TAG = BlueSocketManager.class.getSimpleName();

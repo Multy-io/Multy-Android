@@ -37,7 +37,7 @@ import static io.multy.util.Constants.START_SERVICE;
 
 
 public class BluetoothService extends Service {
-
+    public static final String TAG = BluetoothService.class.getSimpleName();
     public enum BluetoothServiceMode { STOPPED, STARTED, SCANNER, BROADCASTER, HYBRID /* scanner + broadcaster */}
     public boolean isBluetoothTransportReachable() {
         return BluetoothAdapter.getDefaultAdapter().isEnabled();
@@ -73,12 +73,26 @@ public class BluetoothService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
+        Log.d(TAG, "BINDING");
         return mBinder;
     }
 
     @Override
+    public  boolean onUnbind(Intent intent){
+        Log.d(TAG, "UNBINDING");
+//        super.onUnbind(intent);
+        return true;
+    }
+
+    @Override
+    public void onRebind(Intent intent) {
+        Log.d(TAG, "onRebind()");
+        super.onRebind(intent);
+    }
+
+    @Override
     public void onDestroy() {
-        Log.d("MAGIC_TEST", "SERVICE DESTROYED");
+        Log.d(TAG, "SERVICE DESTROYED");
         super.onDestroy();
     }
 

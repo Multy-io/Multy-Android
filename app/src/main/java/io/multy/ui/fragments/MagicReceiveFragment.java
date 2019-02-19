@@ -7,12 +7,9 @@
 package io.multy.ui.fragments;
 
 import android.app.Activity;
+import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModelProviders;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.le.AdvertiseCallback;
-import android.bluetooth.le.AdvertiseData;
-import android.bluetooth.le.AdvertiseSettings;
-import android.bluetooth.le.BluetoothLeAdvertiser;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -20,7 +17,6 @@ import android.content.ServiceConnection;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.ParcelUuid;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -29,15 +25,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.airbnb.lottie.LottieAnimationView;
 import com.google.gson.Gson;
-
 import org.json.JSONObject;
-
-import java.util.UUID;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -45,7 +35,9 @@ import io.multy.BuildConfig;
 import io.multy.Multy;
 import io.multy.R;
 import io.multy.api.socket.BlueSocketManager;
+import io.multy.api.socket.CurrenciesRate;
 import io.multy.api.socket.SocketManager;
+import io.multy.api.socket.TransactionUpdateEntity;
 import io.multy.api.socket.TransactionUpdateResponse;
 import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.model.socket.ReceiveMessage;
@@ -70,7 +62,7 @@ import static io.multy.util.Constants.EXTRA_USER_CODE;
 import static io.multy.util.Constants.START_BROADCAST;
 
 public class MagicReceiveFragment extends BaseFragment {
-
+    public static final String TAG = MagicReceiveFragment.class.getSimpleName();
     public static final int REQUEST_CODE_LOCATION = 523;
     public static final int REQUEST_CODE_BLUETOOTH = 524;
 
@@ -86,7 +78,8 @@ public class MagicReceiveFragment extends BaseFragment {
     View parent;
 
     private AssetRequestViewModel viewModel;
-    private BlueSocketManager socketManager = new BlueSocketManager();
+//    private BlueSocketManager socketManager = new BlueSocketManager();
+    private SocketManager socketManager;
 
     private boolean mBound = false;
     BluetoothService mBluetoothService;
@@ -143,6 +136,8 @@ public class MagicReceiveFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
+        socketManager = SocketManager.getInstance();
+        socketManager.connect(TAG);
         if (viewModel.getAmount() != 0) {
             setupRequestSum();
         }
@@ -203,46 +198,98 @@ public class MagicReceiveFragment extends BaseFragment {
     }
 
     private void connectSockets() {
-        if (socketManager.getSocket() == null || !socketManager.getSocket().connected()) {
-            socketManager.connect();
-            socketManager.getSocket().on(EVENT_PAY_RECEIVE, args -> {
-                getActivity().setResult(Activity.RESULT_OK);
-                close();
-            });
+        socketManager = SocketManager.getInstance();
+        socketManager.connect(TAG);
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("userid", viewModel.getUserId());
+            jsonObject.put("usercode", viewModel.getUserCode());
+            jsonObject.put("currencyid", viewModel.getChainId());
+            jsonObject.put("networkid", viewModel.getNetworkId());
+            jsonObject.put("address", viewModel.getAddress().getValue());
+            jsonObject.put("amount", viewModel.getAmountInMinimalUnits());
 
-            JSONObject jsonObject = new JSONObject();
-            try {
-                jsonObject.put("userid", viewModel.getUserId());
-                jsonObject.put("usercode", viewModel.getUserCode());
-                jsonObject.put("currencyid", viewModel.getChainId());
-                jsonObject.put("networkid", viewModel.getNetworkId());
-                jsonObject.put("address", viewModel.getAddress().getValue());
-                jsonObject.put("amount", viewModel.getAmountInMinimalUnits());
-                socketManager.getSocket().on(Socket.EVENT_CONNECT, args -> {
-                    Log.d("MAGIC_TEST", "SOCKETS CONNECTED");
-                    socketManager.becomeReceiver(jsonObject);
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            socketManager.getSocket().on(Socket.EVENT_DISCONNECT, args -> {
-                Log.d("MAGIC_TEST", "SOCKETS DISCONNECTED");
-                mBluetoothService.stopAdvertise();
-            });
-            socketManager.getSocket().on(EVENT_TRANSACTION_UPDATE, args -> getActivity().runOnUiThread(() -> verifyTransactionUpdate(args[0].toString())));
-            socketManager.getSocket().on(SocketManager.getEventReceive(RealmManager.getSettingsDao().getUserId().getUserId()), args -> {
-                if (getActivity() != null) {
-                    getActivity().runOnUiThread(() -> {
-                        try {
-                            verifyTransaction(new Gson().fromJson(args[0].toString(), ReceiveMessage.class));
-                        } catch (Throwable t) {
-                            t.printStackTrace();
-                        }
-                    });
-                }
-            });
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
+
+        socketManager.becomeReceiver(jsonObject);
+
+
+        MutableLiveData<CurrenciesRate> rates = new MutableLiveData<>();
+        MutableLiveData<TransactionUpdateEntity> transactionUpdate = new MutableLiveData<>();
+
+        socketManager.listenRatesAndTransactions(rates, transactionUpdate);
+
+        transactionUpdate.observe(this, transaciton ->{
+
+            verifyTransaction(transaciton);
+        });
+
+
+//        socketManager.listenTransactionUpdates(args -> {
+//            getActivity().runOnUiThread(() -> {
+//                verifyTransactionUpdate(args[0].toString());
+//            });
+//        });
+
+//        socketManager.getSocket().on(EVENT_TRANSACTION_UPDATE, args -> getActivity().runOnUiThread(() -> verifyTransactionUpdate(args[0].toString())));
+//        socketManager.getSocket().on(SocketManager.getEventReceive(RealmManager.getSettingsDao().getUserId().getUserId()), args -> {
+//            if (getActivity() != null) {
+//                getActivity().runOnUiThread(() -> {
+//                    try {
+//                        verifyTransaction(new Gson().fromJson(args[0].toString(), ReceiveMessage.class));
+//                    } catch (Throwable t) {
+//                        t.printStackTrace();
+//                    }
+//                });
+//            }
+//        });
+//
+
+
+        //TODO rewrite this
+//        if (socketManager.getSocket() == null || !socketManager.getSocket().connected()) {
+//            socketManager.connect();
+//            socketManager.getSocket().on(EVENT_PAY_RECEIVE, args -> {
+//                getActivity().setResult(Activity.RESULT_OK);
+//                close();
+//            });
+//
+//            JSONObject jsonObject = new JSONObject();
+//            try {
+//                jsonObject.put("userid", viewModel.getUserId());
+//                jsonObject.put("usercode", viewModel.getUserCode());
+//                jsonObject.put("currencyid", viewModel.getChainId());
+//                jsonObject.put("networkid", viewModel.getNetworkId());
+//                jsonObject.put("address", viewModel.getAddress().getValue());
+//                jsonObject.put("amount", viewModel.getAmountInMinimalUnits());
+//                socketManager.getSocket().on(Socket.EVENT_CONNECT, args -> {
+//                    Log.d("MAGIC_TEST", "SOCKETS CONNECTED");
+//                    socketManager.becomeReceiver(jsonObject);
+//                });
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//
+//            socketManager.getSocket().on(Socket.EVENT_DISCONNECT, args -> {
+//                Log.d("MAGIC_TEST", "SOCKETS DISCONNECTED");
+//                mBluetoothService.stopAdvertise();
+//            });
+//            socketManager.getSocket().on(EVENT_TRANSACTION_UPDATE, args -> getActivity().runOnUiThread(() -> verifyTransactionUpdate(args[0].toString())));
+//            socketManager.getSocket().on(SocketManager.getEventReceive(RealmManager.getSettingsDao().getUserId().getUserId()), args -> {
+//                if (getActivity() != null) {
+//                    getActivity().runOnUiThread(() -> {
+//                        try {
+//                            verifyTransaction(new Gson().fromJson(args[0].toString(), ReceiveMessage.class));
+//                        } catch (Throwable t) {
+//                            t.printStackTrace();
+//                        }
+//                    });
+//                }
+//            });
+//        }
     }
 
     public void close() {
@@ -257,9 +304,10 @@ public class MagicReceiveFragment extends BaseFragment {
     }
 
     private void disconnectSockets() {
-        if (socketManager.getSocket() != null && socketManager.getSocket().connected()) {
-            socketManager.disconnect();
-        }
+        socketManager.lazyDisconnect(TAG);
+//        if (socketManager.getSocket() != null && socketManager.getSocket().connected()) {
+//            socketManager.disconnect();
+//        }
     }
 
     public void setupRequestSum() {
@@ -288,9 +336,10 @@ public class MagicReceiveFragment extends BaseFragment {
         final ReceiveMessage.Payload payload = receiveMessage.getPayload();
         if (payload.getTo().equals(address) && (receiveMessage.getType() == Constants.EVENT_TYPE_NOTIFY_PAYMENT_REQUEST ||
                 receiveMessage.getType() == Constants.EVENT_TYPE_NOTIFY_INCOMING_TX)) {
-            if (socketManager.getSocket() != null && socketManager.getSocket().connected()) {
-                socketManager.disconnect();
-            }
+//            if (socketManager.getSocket() != null && socketManager.getSocket().connected()) {
+//                socketManager.disconnect();
+//            }
+            socketManager.lazyDisconnect(TAG);
             String amount = "";
             switch (NativeDataHelper.Blockchain.valueOf(viewModel.getWallet().getCurrencyId())) {
                 case BTC:
@@ -306,14 +355,42 @@ public class MagicReceiveFragment extends BaseFragment {
         }
     }
 
+
+    private void verifyTransaction(TransactionUpdateEntity transaction) {
+//        TransactionUpdateResponse response = new Gson().fromJson(json, TransactionUpdateResponse.class);
+//        if (response != null) {
+            final String address = viewModel.getWallet().getActiveAddress().getAddress();
+            if (transaction.getAddress().equals(address) && transaction.getType() == Constants.TX_MEMPOOL_INCOMING) {
+//                if (socketManager.getSocket() != null && socketManager.getSocket().connected()) {
+//                    socketManager.disconnect();
+//                }
+                socketManager.lazyDisconnect(TAG);
+                String amount = "";
+                switch (NativeDataHelper.Blockchain.valueOf(viewModel.getWallet().getCurrencyId())) {
+                    case BTC:
+                        amount = CryptoFormatUtils.satoshiToBtcLabel((long) transaction.getAmount());
+                        break;
+                    case ETH:
+                        amount = CryptoFormatUtils.weiToEthLabel(CryptoFormatUtils.FORMAT_ETH.format(transaction.getAmount()));
+                        break;
+                }
+                Analytics.getInstance(getActivity()).logEvent(AnalyticsConstants.KF_RECEIVED_TRANSACTION, AnalyticsConstants.KF_RECEIVED_TRANSACTION, "true");
+                CompleteDialogFragment.newInstance(viewModel.getWallet().getCurrencyId(), amount,
+                        transaction.getAddressFrom()).show(getActivity().getSupportFragmentManager(), "");
+            }
+
+    }
+
+
     private void verifyTransactionUpdate(String json) {
         TransactionUpdateResponse response = new Gson().fromJson(json, TransactionUpdateResponse.class);
         if (response != null) {
             final String address = viewModel.getWallet().getActiveAddress().getAddress();
             if (response.getEntity().getAddress().equals(address) && response.getEntity().getType() == Constants.TX_MEMPOOL_INCOMING) {
-                if (socketManager.getSocket() != null && socketManager.getSocket().connected()) {
-                    socketManager.disconnect();
-                }
+//                if (socketManager.getSocket() != null && socketManager.getSocket().connected()) {
+//                    socketManager.disconnect();
+//                }
+                socketManager.lazyDisconnect(TAG);
                 String amount = "";
                 switch (NativeDataHelper.Blockchain.valueOf(viewModel.getWallet().getCurrencyId())) {
                     case BTC:

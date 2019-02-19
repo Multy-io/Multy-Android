@@ -7,6 +7,7 @@
 package io.multy.api.socket;
 
 import android.arch.lifecycle.MutableLiveData;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.samwolfand.oneprefs.Prefs;
@@ -14,9 +15,12 @@ import com.samwolfand.oneprefs.Prefs;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import io.multy.storage.RealmManager;
 import io.multy.util.Constants;
@@ -32,6 +36,9 @@ import timber.log.Timber;
 
 public class SocketManager {
 
+
+
+
     public static final String TAG = SocketManager.class.getSimpleName();
     private static final String DEVICE_TYPE = "Android";
 
@@ -46,6 +53,17 @@ public class SocketManager {
 
     public static final String EVENT_MESSAGE_SEND = "message:send";
     private static final String EVENT_MESSAGE_RECEIVE = "message:recieve:";
+
+
+    public static final String EVENT_RECEIVER_ON = "event:receiver:on";
+    public static final String EVENT_SENDER_ON = "event:sender:on";
+    public static final String EVENT_SENDER_CHECK = "event:sender:check";
+    public static final String EVENT_FILTER = "event:filter";
+    public static final String EVENT_NEW_RECEIVER = "event:new:receiver:";
+    public static final String EVENT_SEND_RAW = "event:sendraw";
+    public static final String EVENT_PAY_SEND = "event:payment:send";
+    public static final String EVENT_PAY_RECEIVE = "event:payment:received";
+
 //    private static final String EVENT_EXCHANGE_RESPONSE = "exchangeBitfinex";
 
     public static final int SOCKET_JOIN = 1;
@@ -57,7 +75,20 @@ public class SocketManager {
     private Socket socket;
     private Gson gson;
 
-    public SocketManager() throws URISyntaxException {
+
+    private static volatile SocketManager instance = new SocketManager();
+
+
+    private static List<String> watchers = new ArrayList<>();
+
+
+
+    private SocketManager() {
+
+        if (instance != null){
+            throw new RuntimeException("Use getInstance to call this class");
+        }
+
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .hostnameVerifier((hostname, session) -> true)
 //                    .sslSocketFactory(mySSLContext.getSocketFactory(), myX509TrustManager)
@@ -75,9 +106,40 @@ public class SocketManager {
         options.secure = false;
         options.callFactory = okHttpClient;
         options.webSocketFactory = okHttpClient;
-        socket = IO.socket(SOCKET_URL, options);
+        try {
+            socket = IO.socket(SOCKET_URL, options);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
         initDefaultHeaders();
         initDefaultEvents();
+    }
+
+    public synchronized static SocketManager getInstance()  {
+
+        if (instance == null){
+            instance = new SocketManager();
+        }
+        return instance;
+    }
+
+    public void lazyDisconnect(String TAG){
+        if (watchers.contains(TAG))
+            watchers.remove(TAG);
+        Timer timer = new Timer();
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                tryToKillSockets();
+            }
+        };
+        timer.schedule(task, 3000);
+    }
+
+    private void tryToKillSockets(){
+        if (watchers.size() == 0){
+            disconnect();
+        }
     }
 
     private void initDefaultHeaders() {
@@ -144,6 +206,19 @@ public class SocketManager {
         });
     }
 
+    public void listenAirDropEvents(){
+        //TODO implement this code!
+    }
+
+    public void becomeReceiver(JSONObject jsonObject) {
+        socket.emit(EVENT_RECEIVER_ON, jsonObject, new Ack() {
+            @Override
+            public void call(Object... args) {
+                Log.i("wise", "become sender got ack");
+            }
+        });
+    }
+
     public void listenEvent(String event, Emitter.Listener listener) {
         socket.on(event, listener);
     }
@@ -156,8 +231,13 @@ public class SocketManager {
         socket.emit(EVENT_MESSAGE_SEND, eventJson, ack);
     }
 
-    public void connect() {
-        socket.connect();
+    public void connect(String TAG) {
+        if (!watchers.contains(TAG)){
+            watchers.add(TAG);
+        }
+
+        if (!socket.connected())
+            socket.connect();
     }
 
     public boolean isConnected() {

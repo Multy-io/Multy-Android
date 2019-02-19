@@ -49,7 +49,7 @@ import timber.log.Timber;
 
 
 public class AssetSendActivity extends BaseActivity {
-
+    public static final String TAG = AssetSendActivity.class.getSimpleName();
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
@@ -78,26 +78,24 @@ public class AssetSendActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        try {
-            if (socketManager == null) {
-                socketManager = new SocketManager();
-            }
-            socketManager.listenTransactionUpdates(() -> {//todo remove it when it will become deprecated
-                viewModel.updateWallets();
-            });
-            socketManager.listenEvent(SocketManager.getEventReceive(
-                    RealmManager.getSettingsDao().getUserId().getUserId()), args -> viewModel.updateWallets());
-            socketManager.connect();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
+        if (socketManager == null) {
+            socketManager = SocketManager.getInstance();
+
         }
+        socketManager.listenTransactionUpdates(() -> {//todo remove it when it will become deprecated
+            viewModel.updateWallets();
+        });
+        socketManager.listenEvent(SocketManager.getEventReceive(
+                RealmManager.getSettingsDao().getUserId().getUserId()), args -> viewModel.updateWallets());
+        socketManager.connect(TAG);
     }
 
     @Override
     protected void onPause() {
-        if (socketManager != null && socketManager.isConnected()) {
-            socketManager.disconnect();
-        }
+//        if (socketManager != null && socketManager.isConnected()) {
+//            socketManager.disconnect();
+//        }
+        socketManager.lazyDisconnect(TAG);
         super.onPause();
     }
 

@@ -42,7 +42,7 @@ import retrofit2.Response;
 import timber.log.Timber;
 
 public class CreateMultisigViewModel extends BaseViewModel {
-
+    private static final String TAG = CreateMultisigViewModel.class.getSimpleName();
     private boolean isCreator = false;
     private long walletId;
     private SocketManager socketManager;
@@ -53,22 +53,17 @@ public class CreateMultisigViewModel extends BaseViewModel {
     private String gasPrice = "3000000000";
 
     public void connectSockets(Emitter.Listener args) {
-        try {
-            if (socketManager == null) {
-                socketManager = new SocketManager();
-            }
-            final String eventReceive = SocketManager.getEventReceive(RealmManager.getSettingsDao().getUserId().getUserId());
-            socketManager.listenEvent(eventReceive, args);
-            socketManager.connect();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+        socketManager = SocketManager.getInstance();
+        final String eventReceive = SocketManager.getEventReceive(RealmManager.getSettingsDao().getUserId().getUserId());
+        socketManager.listenEvent(eventReceive, args);
+        socketManager.connect(TAG);
     }
 
     public void disconnectSockets() {
-        if (socketManager != null && socketManager.isConnected()) {
-            socketManager.disconnect();
-        }
+        SocketManager.getInstance().lazyDisconnect(TAG);
+//        if (socketManager != null && socketManager.isConnected()) {
+//            socketManager.disconnect();
+//        }
     }
 
     public boolean isCreator() {

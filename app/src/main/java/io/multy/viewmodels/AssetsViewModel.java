@@ -10,6 +10,8 @@ import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.OnLifecycleEvent;
+import android.content.Context;
+import android.content.ServiceConnection;
 
 import com.samwolfand.oneprefs.Prefs;
 
@@ -26,14 +28,19 @@ import io.multy.util.SingleLiveEvent;
 
 public class AssetsViewModel extends BaseViewModel implements LifecycleObserver {
 
-    private SocketManager socketManager;
+    public static final String TAG = AssetsViewModel.class.getSimpleName();
+//    private SocketManager socketManager;
 
     public MutableLiveData<List<Wallet>> wallets = new MutableLiveData<>();
     public MutableLiveData<CurrenciesRate> rates = new MutableLiveData<>();
     public SingleLiveEvent<TransactionUpdateEntity> transactionUpdate = new SingleLiveEvent<>();
 
+//    ServiceConnection socketServiceConnection;
+
     public void init(Lifecycle lifecycle) {
         initRates();
+
+
         lifecycle.addObserver(this);
     }
 
@@ -46,25 +53,33 @@ public class AssetsViewModel extends BaseViewModel implements LifecycleObserver 
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     void onCreate() {
-        try {
-            if (socketManager == null) {
-                socketManager = new SocketManager();
-            }
-            socketManager.listenRatesAndTransactions(rates, transactionUpdate);
-            socketManager.listenEvent(SocketManager.getEventReceive(RealmManager.getSettingsDao().getUserId().getUserId()), args -> {
-                transactionUpdate.postValue(new TransactionUpdateEntity());
-            });
-            socketManager.connect();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+//        socketServiceConnection = subscribeToSockets(TAG);
+        subscribeToSockets(TAG);
+        rates = getRatesSubscribtion();
+        transactionUpdate = getTransactionsSubscribtion();
+
+
+//        try {
+//            if (socketManager == null) {
+//                socketManager = new SocketManager();
+//            }
+//            socketManager.listenRatesAndTransactions(rates, transactionUpdate);
+//            socketManager.listenEvent(SocketManager.getEventReceive(RealmManager.getSettingsDao().getUserId().getUserId()), args -> {
+//                transactionUpdate.postValue(new TransactionUpdateEntity());
+//            });
+//            socketManager.connect();
+//        } catch (URISyntaxException e) {
+//            e.printStackTrace();
+//        }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     void onStop() {
-        if (socketManager != null) {
-            socketManager.disconnect();
-        }
+        unsubscribeSockets(TAG);
+//        socketServiceConnection = null;
+//        if (socketManager != null) {
+//            socketManager.disconnect();
+//        }
     }
 
     public List<Wallet> getWalletsFromDB() {

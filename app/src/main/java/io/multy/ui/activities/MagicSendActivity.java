@@ -61,6 +61,7 @@ import io.multy.Multy;
 import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.api.socket.BlueSocketManager;
+import io.multy.api.socket.SocketManager;
 import io.multy.model.entities.Estimation;
 import io.multy.model.entities.FastReceiver;
 import io.multy.model.entities.wallet.CurrencyCode;
@@ -94,7 +95,7 @@ import static io.multy.api.socket.BlueSocketManager.EVENT_SENDER_CHECK;
 import static io.multy.ui.fragments.send.SendSummaryFragment.byteArrayToHex;
 
 public class MagicSendActivity extends BaseActivity {
-
+    private static final String TAG = MagicSendActivity.class.getSimpleName();
     private static final String TAG_SEND = "Send";
     public static final int UPDATE_PERIOD = 5000;
     public static final int REQUEST_BLUETOOTH = 1;
@@ -121,7 +122,8 @@ public class MagicSendActivity extends BaseActivity {
 
     private ReceiversPagerAdapter receiversPagerAdapter;
     private MyWalletPagerAdapter walletPagerAdapter;
-    private BlueSocketManager socketManager;
+//    private BlueSocketManager socketManager;
+    private SocketManager socketManager;
     private ArrayList<String> leIds = new ArrayList<>();
     private long selectedWalletId = -1;
     private Handler handler = new Handler();
@@ -209,7 +211,7 @@ public class MagicSendActivity extends BaseActivity {
 
     @Override
     protected void onDestroy() {
-        stop();
+//        stop();
 
         if (receiversPagerAdapter != null) {
             Analytics.getInstance(this).logEvent(AnalyticsConstants.KF_FOUND_DEVICES, AnalyticsConstants.KF_FOUND_DEVICES, String.valueOf(receiversPagerAdapter.getCount()));
@@ -286,14 +288,21 @@ public class MagicSendActivity extends BaseActivity {
     }
 
     private void startSockets() {
-        if (socketManager == null || !socketManager.getSocket().connected()) {
-            socketManager = new BlueSocketManager();
-            socketManager.connect();
-            socketManager.getSocket().on(Socket.EVENT_CONNECT, args -> {
-                handler.postDelayed(updateReceiversAction, UPDATE_PERIOD);
-                startBleScanner();
-            });
+        socketManager = SocketManager.getInstance();
+        socketManager.connect(TAG);
+        startBleScanner();
+        if (socketManager.isConnected()){
+            handler.postDelayed(updateReceiversAction, UPDATE_PERIOD);
+            startBleScanner();
         }
+//        if (socketManager == null || !socketManager.getSocket().connected()) {
+//            socketManager = new BlueSocketManager();
+//            socketManager.connect();
+//            socketManager.getSocket().on(Socket.EVENT_CONNECT, args -> {
+//                handler.postDelayed(updateReceiversAction, UPDATE_PERIOD);
+//                startBleScanner();
+//            });
+//        }
     }
 
     private void initContainerSend() {
@@ -644,6 +653,7 @@ public class MagicSendActivity extends BaseActivity {
             @Override
             public void onResponse(@NonNull Call<MessageResponse> call, @NonNull Response<MessageResponse> response) {
                 if (response.isSuccessful()) {
+                    Log.d(TAG, "SHOW SUCSESS SHOULD BE CALLED");
                     showSuccess();
                 } else {
                     try {
@@ -669,23 +679,30 @@ public class MagicSendActivity extends BaseActivity {
     }
 
     private void showSuccess() {
-        if (socketManager.getSocket() != null && socketManager.getSocket().connected()) {
-            socketManager.disconnect();
-        }
+//        if (socketManager.getSocket() != null && socketManager.getSocket().connected()) {
+//            socketManager.disconnect();
+//        }
+//        socketManager.lazyDisconnect();
+        Log.d(TAG, "SHOW SUCSESS INSIDE CALL CALLED");
         Analytics.getInstance(this).logEvent(AnalyticsConstants.KF_TRANSACTION_SUCCESS, AnalyticsConstants.KF_TRANSACTION_SUCCESS, String.valueOf(true));
 
         LottieAnimationView animationView = receiversPagerAdapter.getAnimationView(pagerRequests.getCurrentItem());
 
-        if (animationView != null && animationView.isAnimating()) {
-            animationView.addAnimatorListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    new CompleteDialogFragment().show(getSupportFragmentManager(), "");
-                }
-            });
-        } else {
-            new CompleteDialogFragment().show(getSupportFragmentManager(), "");
-        }
+        handler.postDelayed(() -> new CompleteDialogFragment().show(getSupportFragmentManager(), ""), 1500);
+
+//        if (animationView != null && animationView.isAnimating()) {
+//            Log.d(TAG, "SHOW SUCSESS INSIDE CALL ANIMATION IS NOT NULL");
+//            animationView.addAnimatorListener(new AnimatorListenerAdapter() {
+//                @Override
+//                public void onAnimationEnd(Animator animation) {
+//                    Log.d(TAG, "SHOW SUCSESS INSIDE CALL CALL ANIMATION END");
+//                    new CompleteDialogFragment().show(getSupportFragmentManager(), "");
+//                }
+//            });
+//        } else {
+//            Log.d(TAG, "SHOW SUCSESS INSIDE CALL CALL WITHOUT ANIMATION");
+//            new CompleteDialogFragment().show(getSupportFragmentManager(), "");
+//        }
     }
 
     private void logError(Exception e) {
@@ -811,10 +828,13 @@ public class MagicSendActivity extends BaseActivity {
             stopBleScanner();
         }
 
-        if (socketManager.getSocket() != null && socketManager.getSocket().connected()) {
-            socketManager.disconnect();
-            handler.removeCallbacksAndMessages(null);
-        }
+//        if (socketManager.getSocket() != null && socketManager.getSocket().connected()) {
+//            socketManager.disconnect();
+//            handler.removeCallbacksAndMessages(null);
+//        }
+
+        socketManager.lazyDisconnect(TAG);
+        handler.removeCallbacksAndMessages(null);
     }
 
     private void startBleScanner() {
@@ -893,8 +913,10 @@ public class MagicSendActivity extends BaseActivity {
 
 
     private void emitUpdateReceivers() {
+        //TODO rewrite it!!!
         try {
-            socketManager.getSocket().emit(EVENT_SENDER_CHECK, getIdsJson(), (Ack) args -> MagicSendActivity.this.runOnUiThread(() -> {
+
+            socketManager.sendEvent(EVENT_SENDER_CHECK, getIdsJson(), (Ack) args -> MagicSendActivity.this.runOnUiThread(() -> {
                 int prevNetworkId = -1;
                 int prevCurrencyId = -1;
 
@@ -929,6 +951,44 @@ public class MagicSendActivity extends BaseActivity {
                 }
 
             }));
+
+
+
+//            socketManager.getSocket().emit(EVENT_SENDER_CHECK, getIdsJson(), (Ack) args -> MagicSendActivity.this.runOnUiThread(() -> {
+//                int prevNetworkId = -1;
+//                int prevCurrencyId = -1;
+//
+//                if (receiversPagerAdapter.getCount() != 0) {
+//                    FastReceiver fastReceiver = receiversPagerAdapter.getReceiver(pagerRequests.getCurrentItem());
+//                    if (fastReceiver != null) {
+//                        prevCurrencyId = fastReceiver.getCurrencyId();
+//                        prevNetworkId = fastReceiver.getNetworkId();
+//                    }
+//                }
+//
+//                String json = args[0].toString();
+//                FastReceiver[] receivers = new Gson().fromJson(json, FastReceiver[].class);
+//                ArrayList<FastReceiver> list = new ArrayList(Arrays.asList(receivers));
+//
+//                if (receivers != null && receiversPagerAdapter != null) {
+//                    receiversPagerAdapter.setData(list);
+//                }
+//
+//                if (receiversPagerAdapter.getCount() != 0) {
+//                    FastReceiver fastReceiver = receiversPagerAdapter.getReceiver(pagerRequests.getCurrentItem());
+//                    if (fastReceiver != null) {
+//                        if (prevCurrencyId != fastReceiver.getCurrencyId() || prevNetworkId != fastReceiver.getNetworkId()) {
+//                            initPagerWallets();
+//                        }
+//                    }
+//                }
+//
+//                if (selectedWalletId != -1) {
+//                    enableScroll();
+//                    showPagerElements();
+//                }
+//
+//            }));
         } catch (Exception e) {
             e.printStackTrace();
         }

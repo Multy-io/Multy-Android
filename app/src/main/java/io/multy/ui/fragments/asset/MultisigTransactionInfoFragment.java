@@ -155,11 +155,7 @@ public class MultisigTransactionInfoFragment extends BaseFragment {
         viewModel = ViewModelProviders.of(requireActivity()).get(WalletViewModel.class);
         setBaseViewModel(viewModel);
         adapter = new MultisigOwnersAdapter();
-        try {
-            socketManager = new SocketManager();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+
     }
 
     @Nullable
@@ -177,20 +173,22 @@ public class MultisigTransactionInfoFragment extends BaseFragment {
 
     @Override
     public void onResume() {
-        if (socketManager != null) {
-            String eventReceive = SocketManager.getEventReceive(RealmManager.getSettingsDao().getUserId().getUserId());
-            socketManager.listenEvent(eventReceive, this::onReceiveEvent);
-            socketManager.connect();
-        }
+        socketManager = SocketManager.getInstance();
+        String eventReceive = SocketManager.getEventReceive(RealmManager.getSettingsDao().getUserId().getUserId());
+        socketManager.listenEvent(eventReceive, this::onReceiveEvent);
+        socketManager.connect(TAG);
+
         super.onResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (socketManager != null) {
-            socketManager.disconnect();
-        }
+
+        SocketManager.getInstance().lazyDisconnect(TAG);
+//        if (socketManager != null) {
+//            socketManager.disconnect();
+//        }
     }
 
     private void onReceiveEvent(Object[] objects) {
