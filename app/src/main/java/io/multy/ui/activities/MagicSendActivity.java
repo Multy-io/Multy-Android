@@ -688,19 +688,21 @@ public class MagicSendActivity extends BaseActivity {
 
         LottieAnimationView animationView = receiversPagerAdapter.getAnimationView(pagerRequests.getCurrentItem());
 
-        if (animationView != null && animationView.isAnimating()) {
-            Log.d(TAG, "SHOW SUCSESS INSIDE CALL ANIMATION IS NOT NULL");
-            animationView.addAnimatorListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    Log.d(TAG, "SHOW SUCSESS INSIDE CALL CALL ANIMATION END");
-                    new CompleteDialogFragment().show(getSupportFragmentManager(), "");
-                }
-            });
-        } else {
-            Log.d(TAG, "SHOW SUCSESS INSIDE CALL CALL WITHOUT ANIMATION");
-            new CompleteDialogFragment().show(getSupportFragmentManager(), "");
-        }
+        handler.postDelayed(() -> new CompleteDialogFragment().show(getSupportFragmentManager(), ""), 1500);
+
+//        if (animationView != null && animationView.isAnimating()) {
+//            Log.d(TAG, "SHOW SUCSESS INSIDE CALL ANIMATION IS NOT NULL");
+//            animationView.addAnimatorListener(new AnimatorListenerAdapter() {
+//                @Override
+//                public void onAnimationEnd(Animator animation) {
+//                    Log.d(TAG, "SHOW SUCSESS INSIDE CALL CALL ANIMATION END");
+//                    new CompleteDialogFragment().show(getSupportFragmentManager(), "");
+//                }
+//            });
+//        } else {
+//            Log.d(TAG, "SHOW SUCSESS INSIDE CALL CALL WITHOUT ANIMATION");
+//            new CompleteDialogFragment().show(getSupportFragmentManager(), "");
+//        }
     }
 
     private void logError(Exception e) {
