@@ -79,14 +79,15 @@ public class AssetSendActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         if (socketManager == null) {
-            socketManager = SocketManager.getInstance(TAG);
+            socketManager = SocketManager.getInstance();
+
         }
         socketManager.listenTransactionUpdates(() -> {//todo remove it when it will become deprecated
             viewModel.updateWallets();
         });
         socketManager.listenEvent(SocketManager.getEventReceive(
                 RealmManager.getSettingsDao().getUserId().getUserId()), args -> viewModel.updateWallets());
-        socketManager.connect();
+        socketManager.connect(TAG);
     }
 
     @Override
@@ -94,7 +95,7 @@ public class AssetSendActivity extends BaseActivity {
 //        if (socketManager != null && socketManager.isConnected()) {
 //            socketManager.disconnect();
 //        }
-        SocketManager.getInstance(TAG).lazyDisconnect(TAG);
+        socketManager.lazyDisconnect(TAG);
         super.onPause();
     }
 

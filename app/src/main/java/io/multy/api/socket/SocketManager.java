@@ -115,13 +115,10 @@ public class SocketManager {
         initDefaultEvents();
     }
 
-    public synchronized static SocketManager getInstance(String TAG)  {
+    public synchronized static SocketManager getInstance()  {
 
         if (instance == null){
             instance = new SocketManager();
-        }
-        if (!watchers.contains(TAG)){
-            watchers.add(TAG);
         }
         return instance;
     }
@@ -234,7 +231,11 @@ public class SocketManager {
         socket.emit(EVENT_MESSAGE_SEND, eventJson, ack);
     }
 
-    public void connect() {
+    public void connect(String TAG) {
+        if (!watchers.contains(TAG)){
+            watchers.add(TAG);
+        }
+
         if (!socket.connected())
             socket.connect();
     }

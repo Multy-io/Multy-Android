@@ -53,16 +53,14 @@ public class CreateMultisigViewModel extends BaseViewModel {
     private String gasPrice = "3000000000";
 
     public void connectSockets(Emitter.Listener args) {
-        if (socketManager == null) {
-            socketManager = SocketManager.getInstance(TAG);
-        }
+        socketManager = SocketManager.getInstance();
         final String eventReceive = SocketManager.getEventReceive(RealmManager.getSettingsDao().getUserId().getUserId());
         socketManager.listenEvent(eventReceive, args);
-        socketManager.connect();
+        socketManager.connect(TAG);
     }
 
     public void disconnectSockets() {
-        SocketManager.getInstance(TAG).lazyDisconnect(TAG);
+        SocketManager.getInstance().lazyDisconnect(TAG);
 //        if (socketManager != null && socketManager.isConnected()) {
 //            socketManager.disconnect();
 //        }

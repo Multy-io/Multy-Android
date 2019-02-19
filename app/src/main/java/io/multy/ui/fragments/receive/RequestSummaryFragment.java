@@ -158,9 +158,7 @@ public class RequestSummaryFragment extends BaseFragment {
     }
 
     private void connectSockets() {
-        if (socketManager == null) {
-            socketManager = SocketManager.getInstance(TAG);
-        }
+        socketManager = SocketManager.getInstance();
         socketManager.listenEvent(SocketManager.EVENT_RECEIVE, args -> {
             if (getActivity() != null) {
                 getActivity().runOnUiThread(() -> {
@@ -184,7 +182,7 @@ public class RequestSummaryFragment extends BaseFragment {
                 });
             }
         });
-        socketManager.connect();
+        socketManager.connect(TAG);
     }
 
     private void verifyTransaction(String json) {
@@ -208,7 +206,7 @@ public class RequestSummaryFragment extends BaseFragment {
     }
 
     private void disconnectSockets() {
-        SocketManager.getInstance(TAG).lazyDisconnect(TAG);
+        SocketManager.getInstance().lazyDisconnect(TAG);
 //        if(socketManager != null && socketManager.isConnected()) {
 //            socketManager.disconnect();
 //        }

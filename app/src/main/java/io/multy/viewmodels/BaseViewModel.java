@@ -55,42 +55,18 @@ public class BaseViewModel extends ViewModel {
 
     public void subscribeToSockets(String TAG){
 
-        if (!SocketManager.getInstance(TAG).isConnected()){
-            SocketManager.getInstance(TAG).listenRatesAndTransactions(rates, transactionUpdate);
-            SocketManager.getInstance(TAG).listenEvent(SocketManager.getEventReceive(RealmManager.getSettingsDao().getUserId().getUserId()), args -> {
+        if (!SocketManager.getInstance().isConnected()){
+            SocketManager.getInstance().listenRatesAndTransactions(rates, transactionUpdate);
+            SocketManager.getInstance().listenEvent(SocketManager.getEventReceive(RealmManager.getSettingsDao().getUserId().getUserId()), args -> {
                 transactionUpdate.postValue(new TransactionUpdateEntity());
             });
-            SocketManager.getInstance(TAG).connect();
+            SocketManager.getInstance().connect(TAG);
         }
-
-//        ServiceConnection socketServiceConnection = new ServiceConnection() {
-//                @Override
-//                public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-//
-//                    rates = ((SocketService.LocalBinder) iBinder).getService().getRates();
-//                    transactionUpdate = ((SocketService.LocalBinder) iBinder).getService().getTransactionUpdate();
-//                    //TODO add wallet here
-//                }
-//
-//                @Override
-//                public void onServiceDisconnected(ComponentName componentName) {
-////
-//                }
-//            };
-//
-//            Log.d("BASEVM", "Bind Socket service cll:" + TAG);
-//
-//            Intent socketIntent = new Intent(Multy.getContext(), SocketService.class);
-//            socketIntent.putExtra(Constants.NAME, TAG);
-//            Multy.getContext().bindService(socketIntent, socketServiceConnection, Context.BIND_AUTO_CREATE);
-//
-//        return socketServiceConnection;
     }
 
     public MutableLiveData<CurrenciesRate> getRatesSubscribtion() { return this.rates;}
     public SingleLiveEvent<TransactionUpdateEntity> getTransactionsSubscribtion() { return this.transactionUpdate;}
-
     public void unsubscribeSockets(String TAG){
-        SocketManager.getInstance(TAG).lazyDisconnect(TAG);
+        SocketManager.getInstance().lazyDisconnect(TAG);
     }
 }

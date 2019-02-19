@@ -81,20 +81,20 @@ public class TokenSendActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         if (socketManager == null) {
-            socketManager = SocketManager.getInstance(TAG);
+            socketManager = SocketManager.getInstance();
         }
         socketManager.listenTransactionUpdates(() -> {//todo remove it when it will become deprecated
             viewModel.updateWallets();
         });
         socketManager.listenEvent(SocketManager.getEventReceive(
                 RealmManager.getSettingsDao().getUserId().getUserId()), args -> viewModel.updateWallets());
-        socketManager.connect();
+        socketManager.connect(TAG);
     }
 
     @Override
     protected void onPause() {
 
-        SocketManager.getInstance(TAG).lazyDisconnect(TAG);
+        socketManager.lazyDisconnect(TAG);
 //        if (socketManager != null && socketManager.isConnected()) {
 //            socketManager.disconnect();
 //        }

@@ -288,8 +288,8 @@ public class MagicSendActivity extends BaseActivity {
     }
 
     private void startSockets() {
-        socketManager = SocketManager.getInstance(TAG);
-        socketManager.connect();
+        socketManager = SocketManager.getInstance();
+        socketManager.connect(TAG);
         startBleScanner();
         if (socketManager.isConnected()){
             handler.postDelayed(updateReceiversAction, UPDATE_PERIOD);

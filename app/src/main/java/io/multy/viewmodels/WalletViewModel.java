@@ -562,8 +562,8 @@ public class WalletViewModel extends BaseViewModel {
 
     public void sendTransactionStatus(int eventType, int currencyId, int networkId, int walletIndex, String txId, Lifecycle lifecycle) {
         isLoading.setValue(true);
-        SocketManager socketManager = SocketManager.getInstance(TAG);
-        socketManager.connect();
+        SocketManager socketManager = SocketManager.getInstance();
+        socketManager.connect(TAG);
         MultisigEvent event = MultisigEvent.getBuilder()
                 .setType(eventType)
                 .setDate(System.currentTimeMillis())
@@ -584,19 +584,19 @@ public class WalletViewModel extends BaseViewModel {
                 Timber.i("EVENT_MESSAGE_SEND" + args[0]);
                 isLoading.postValue(false);
 //                socketManager.disconnect();
-                SocketManager.getInstance(TAG).lazyDisconnect(TAG);
+                SocketManager.getInstance().lazyDisconnect(TAG);
             });
         } catch (JSONException e) {
             e.printStackTrace();
 //            socketManager.disconnect();
-            SocketManager.getInstance(TAG).lazyDisconnect(TAG);
+            SocketManager.getInstance().lazyDisconnect(TAG);
             isLoading.setValue(false);
         }
         lifecycle.addObserver(new LifecycleObserver() {
             @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
             void onPause() {
 //                socketManager.disconnect();
-                SocketManager.getInstance(TAG).lazyDisconnect(TAG);
+                SocketManager.getInstance().lazyDisconnect(TAG);
             }
         });
     }

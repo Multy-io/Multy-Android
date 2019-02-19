@@ -10,10 +10,6 @@ import android.app.Activity;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModelProviders;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.le.AdvertiseCallback;
-import android.bluetooth.le.AdvertiseData;
-import android.bluetooth.le.AdvertiseSettings;
-import android.bluetooth.le.BluetoothLeAdvertiser;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -21,7 +17,6 @@ import android.content.ServiceConnection;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.ParcelUuid;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -30,15 +25,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.airbnb.lottie.LottieAnimationView;
 import com.google.gson.Gson;
-
 import org.json.JSONObject;
-
-import java.util.UUID;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -147,7 +136,8 @@ public class MagicReceiveFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        socketManager = SocketManager.getInstance(TAG);
+        socketManager = SocketManager.getInstance();
+        socketManager.connect(TAG);
         if (viewModel.getAmount() != 0) {
             setupRequestSum();
         }
@@ -208,8 +198,8 @@ public class MagicReceiveFragment extends BaseFragment {
     }
 
     private void connectSockets() {
-        socketManager = SocketManager.getInstance(TAG);
-
+        socketManager = SocketManager.getInstance();
+        socketManager.connect(TAG);
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("userid", viewModel.getUserId());
