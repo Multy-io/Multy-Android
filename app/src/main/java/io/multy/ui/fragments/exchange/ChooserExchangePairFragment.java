@@ -30,6 +30,7 @@ import io.multy.model.entities.ExchangeAsset;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.responses.SingleWalletResponse;
 import io.multy.storage.RealmManager;
+import io.multy.ui.activities.ExchangeActivity;
 import io.multy.ui.adapters.ExchangePairAdapter;
 import io.multy.ui.adapters.MyWalletsAdapter;
 import io.multy.ui.fragments.BaseFragment;
@@ -120,6 +121,17 @@ public class ChooserExchangePairFragment extends BaseFragment implements Exchang
 
 
         viewModel.setSelectedAsset(asset);
+                    if (asset != null){
+                        int chainId = 0;
+                        int networdId = 0;
+                        if (asset.getChainId() != chainId){
+                            chainId = 60;
+                            networdId = 1;
+                        }
+                        ((ExchangeActivity) getActivity()).setFragment(R.string.select_walet, R.id.container, ExchangeWalletChooserFragment.newInstance(chainId,networdId));
+                    }
+
+
 //        MultyApi.INSTANCE.getWalletVerbose(wallet.getIndex(), wallet.getCurrencyId(), wallet.getNetworkId(), wallet.isMultisig() ?
 //                Constants.ASSET_TYPE_ADDRESS_MULTISIG : Constants.ASSET_TYPE_ADDRESS_MULTY).enqueue(new Callback<SingleWalletResponse>() {
 //            @Override
