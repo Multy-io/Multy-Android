@@ -94,9 +94,9 @@ public class WalletViewModel extends BaseViewModel {
     private MutableLiveData<Boolean> isWalletUpdated = new MutableLiveData<>();
     public MutableLiveData<List<WalletAddress>> addresses = new MutableLiveData<>();
     public MutableLiveData<Boolean> isRemoved = new MutableLiveData<>();
-    public MutableLiveData<CurrenciesRate> rates = new MutableLiveData<>();
+//    public MutableLiveData<CurrenciesRate> rates = new MutableLiveData<>();
     public MutableLiveData<ArrayList<TransactionHistory>> transactions = new MutableLiveData<>();
-    public SingleLiveEvent<TransactionUpdateEntity> transactionUpdate = new SingleLiveEvent<>();
+//    public SingleLiveEvent<TransactionUpdateEntity> transactionUpdate = new SingleLiveEvent<>();
 
 //    ServiceConnection socketServiceConnection;
 //    private SocketManager socketManager;
@@ -629,4 +629,7 @@ public class WalletViewModel extends BaseViewModel {
             errorMessage.setValue("Wallet is need to refresh");
         }
     }
+
+    public SingleLiveEvent<TransactionUpdateEntity> getTransactionUpdate() {return this.transactionUpdate;}
+    public MutableLiveData<CurrenciesRate> getRates() {return this.rates;}
 }

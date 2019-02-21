@@ -142,7 +142,7 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         Wallet wallet = viewModel.getWallet(getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, -1));
         setBaseViewModel(viewModel);
 
-        subscribeWalletUpdates();
+
         showWalletInfo(wallet);
         setAddressesVisibility(wallet.getCurrencyId());
         initSwipeRefresh();
@@ -247,8 +247,8 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     }
 
     private void subscribeWalletUpdates() {
-        viewModel.rates.observe(this, currenciesRate -> updateBalanceViews());
-        viewModel.transactionUpdate.observe(this, transactionUpdateEntity -> {
+        viewModel.getRates().observe(this, currenciesRate -> updateBalanceViews());
+        viewModel.getTransactionUpdate().observe(this, transactionUpdateEntity -> {
             new Handler().postDelayed(this::refreshWallet, 300);
         });
     }
@@ -484,6 +484,7 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
 
         viewModel.subscribeSocketsUpdate();
         appBarLayout.addOnOffsetChangedListener(this);
+        subscribeWalletUpdates();
     }
 
     @Override
