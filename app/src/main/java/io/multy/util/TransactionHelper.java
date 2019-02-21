@@ -30,7 +30,7 @@ import io.multy.model.entities.wallet.WalletPrivateKey;
 import io.multy.storage.RealmManager;
 
 public class TransactionHelper {
-
+    public static final String TAG = TransactionHelper.class.getSimpleName();
     private static volatile TransactionHelper instance = new TransactionHelper();
 
     private TransactionHelper(){
@@ -48,6 +48,47 @@ public class TransactionHelper {
         return instance;
     }
 
+
+    /**
+     *
+     * @param fromWallet
+     * @param amount amount should be BTC
+     * @param feeRate
+     * @param toAddress
+     * @param donationAmount
+     * @param donationAddress
+     * @param payingForComission
+     * @return
+     */
+
+    public static String createBTCTransaction(Wallet fromWallet, String amount, String feeRate, String toAddress, String donationAmount, String donationAddress, boolean payingForComission ){
+        Log.d(TAG, "AMOUNT IS :"+amount);
+//        2019-02-20 12:47:33.184 1642-1642/io.multy.debug D/TransactionHelper: AMOUNT IS :0.00007802
+//        2019-02-20 12:47:33.367 1642-1642/io.multy.debug D/TransactionHelper: SIGN AMOUNT IS :7802
+
+//        2019-02-20 13:34:48.108 5524-5524/io.multy.debug D/TransactionHelper: AMOUNT IS :0.00130036
+//        2019-02-20 13:34:48.121 5524-5524/io.multy.debug D/TransactionHelper: SIGN AMOUNT IS :130036
+        TransactionBTCMeta meta = buildBTCTransactionMeta(fromWallet, feeRate, amount, toAddress, donationAmount, donationAddress, payingForComission);
+        return signBTCTransaction(meta);
+    }
+
+    /**
+     *
+     * @param fromWallet
+     * @param feeRate
+     * @param gasLimit
+     * @param amount    amount should be in ETH not WEI
+     * @param toAddress
+     * @param payingForComission
+     * @return
+     */
+
+    public static String createETHTransaction(Wallet fromWallet, String feeRate, String gasLimit, String amount, String toAddress, boolean payingForComission){
+        Log.d(TAG, "AMOUNT IS :"+amount);
+        TransactionETHMeta meta = buildETHTransactionMeta(fromWallet, feeRate, gasLimit, amount, toAddress, payingForComission);
+        return signETHTransaction(meta);
+    }
+
     public static String makeTransaction(Object metaTX){
         if (metaTX instanceof TransactionBTCMeta){
             return signBTCTransaction((TransactionBTCMeta) metaTX);
@@ -60,6 +101,11 @@ public class TransactionHelper {
             return null;
         }
 
+    }
+
+    public static String estimateBTCTransactionByRawData(Wallet fromWallet, String amount, String feeRate, String toAddress, String donationAmount, String donationAddress, boolean payingForComission ){
+        TransactionBTCMeta meta = buildBTCTransactionMeta(fromWallet, feeRate, amount, toAddress, donationAmount, donationAddress, payingForComission);
+        return estimateTransactionFee(meta);
     }
 
     public static String estimateTransactionFee(Object metaTX){
@@ -92,11 +138,11 @@ public class TransactionHelper {
 
     private static byte[] buildBTCTransaction(TransactionBTCMeta meta){
         byte[] seed = RealmManager.getSettingsDao().getSeed().getSeed();
-
-
+        String signAmount = String.valueOf(CryptoFormatUtils.btcToSatoshi(String.valueOf(meta.getAmount())));
+        Log.d(TAG, "SIGN AMOUNT IS :"+signAmount);
         try {
             byte[] transactionHex = NativeDataHelper.makeTransaction(meta.getWallet().getId(), meta.getWallet().getNetworkId(),
-                    seed, meta.getWallet().getIndex(), String.valueOf(CryptoFormatUtils.btcToSatoshi(String.valueOf(String.valueOf(meta.getAmount())))),
+                    seed, meta.getWallet().getIndex(), signAmount,
                     meta.getFeeRate(), getDonationSatoshi(meta.getDonationAmount()),
                     meta.getToAddress(), meta.getChangeAddress(), meta.getDonationAddress(), meta.isPayingForComission());
 //            return byteArrayToHex(transactionHex);
@@ -168,7 +214,7 @@ public class TransactionHelper {
                 signAmount = CryptoFormatUtils.ethToWei(String.valueOf(metaTX.isPayingForComission() ?
                         metaTX.getAmount() : (Long.parseLong(metaTX.getAmount()) - EthWallet.getTransactionPrice(Long.parseLong(metaTX.getFeeRate())))));
             }
-
+            Log.d(TAG, "SIGN AMOUNT IS:"+signAmount);
             byte[] tx;
             TransactionResponse txResult = null;
             if (metaTX.getWallet().isMultisig()) {
@@ -278,4 +324,48 @@ public class TransactionHelper {
     }
 
 
+    private static TransactionBTCMeta buildBTCTransactionMeta(Wallet fromWallet, String feeRate, String amount, String payToAddress, String donationAmount, String donationAddress, boolean payingForComission){
+
+        String changeAddress = getChangeAddress(fromWallet);
+
+
+        TransactionBTCMeta meta = new TransactionBTCMeta(
+                fromWallet,                                       //From Wallet
+                feeRate,                //Fee rate
+                payToAddress,                                                   //To Address
+                changeAddress                                                   //Change Address
+        );
+
+        meta.setAmount(amount);
+        meta.setDonationAmount(donationAmount);
+        meta.setDonationAddress(donationAddress); //this is just fake data ..Core ignore this field
+        meta.setPayingForComission(payingForComission);                                      //Should check if sending all amount of the wallet or not
+
+        return meta;
+    }
+
+    private static TransactionETHMeta buildETHTransactionMeta(Wallet wallet, String feeRate, String gasLimit, String amount, String payToAddress, boolean payingForComission){
+        TransactionETHMeta meta = new TransactionETHMeta(
+                wallet,                  //Wallet to pay from
+                feeRate,
+                gasLimit,
+                payToAddress
+        );
+        meta.setAmount(amount);
+        meta.setPayingForComission(payingForComission);
+
+        return meta;
+    }
+
+    public static String getChangeAddress(Wallet wallet){
+        byte[] seed = RealmManager.getSettingsDao().getSeed().getSeed();
+        String changeAddress = null;
+        try {
+            changeAddress = NativeDataHelper.makeAccountAddress(seed, wallet.getIndex(), wallet.getBtcWallet().getAddresses().size(),
+                    wallet.getCurrencyId(), wallet.getNetworkId());
+        } catch (JniException e) {
+            e.printStackTrace();
+        }
+        return changeAddress;
+    }
 }

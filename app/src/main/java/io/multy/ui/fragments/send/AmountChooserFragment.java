@@ -19,6 +19,7 @@ import android.support.v7.widget.SwitchCompat;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -160,6 +161,7 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
         AssetSendViewModel.transactionPrice.observe(this, transactionPrice -> {
             if (transactionPrice != null) {
                 this.transactionPrice = transactionPrice;
+                Log.d(TAG, "TRANSACTION FEE IS SETUPED:"+transactionPrice);
                 setTotalAmountForInput();
             }
         });
@@ -346,10 +348,22 @@ public class AmountChooserFragment extends BaseFragment implements BaseActivity.
     }
 
     private void calculateTransactionPrice() {
+        //TODO call estimate transaciton and
+        Log.d(TAG,"CALCULATE FEE CALLED");
+
         long amountSatoshi = CryptoFormatUtils.btcToSatoshi(inputOriginal.getText().toString());
+        String amountDouble = CryptoFormatUtils.satoshiToBtc(amountSatoshi);
         if (amountSatoshi != -1) {
-            viewModel.scheduleUpdateTransactionPrice(amountSatoshi);
+            viewModel.estimateTransation(String.valueOf(amountDouble));
         }
+
+
+
+
+//        long amountSatoshi = CryptoFormatUtils.btcToSatoshi(inputOriginal.getText().toString());
+//        if (amountSatoshi != -1) {
+//            viewModel.scheduleUpdateTransactionPrice(amountSatoshi);
+//        }
     }
 
     private void setupInputCurrency() {
