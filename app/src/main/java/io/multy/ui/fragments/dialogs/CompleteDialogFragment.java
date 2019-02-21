@@ -28,6 +28,7 @@ import io.multy.R;
 import io.multy.storage.RealmManager;
 import io.multy.ui.activities.MainActivity;
 import io.multy.ui.fragments.DonationFragment;
+import io.multy.ui.fragments.exchange.ExchangeFragment;
 import io.multy.ui.fragments.send.SendSummaryFragment;
 import io.multy.util.Constants;
 import io.multy.util.analytics.Analytics;
@@ -132,7 +133,7 @@ public class CompleteDialogFragment extends DialogFragment {
 
     @OnClick(R.id.button_close)
     public void onClickClose() {
-        if (getTag() != null && getTag().equals(SendSummaryFragment.TAG_SEND_SUCCESS)) {
+        if (getTag() != null && getTag().equals(SendSummaryFragment.TAG_SEND_SUCCESS) || getTag().equals(ExchangeFragment.TAG_SEND_SUCCESS)) {
             if (getArguments() != null) {
                 Analytics.getInstance(getActivity()).logSendSuccess(AnalyticsConstants.BUTTON_CLOSE, getArguments().getInt(Constants.CHAIN_ID));
             }

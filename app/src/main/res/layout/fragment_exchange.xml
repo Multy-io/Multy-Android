@@ -85,6 +85,7 @@
                         android:background="@drawable/selector_wallet_header_button"
                         android:gravity="center"
                         android:maxLines="1"
+                        android:maxLength="12"
                         android:padding="12dp"
                         android:text="MAX 1234567 EU"
                         android:textColor="@color/white"
@@ -144,6 +145,7 @@
                             android:maxLength="13"
                             android:minWidth="@dimen/dimen_60dp"
                             android:text="0"
+                            android:imeOptions="actionDone"
                             android:textAppearance="@style/HintInputAppearance"
                             android:textColorHighlight="@color/grey_blue" />
                     </android.support.design.widget.TextInputLayout>
@@ -168,6 +170,7 @@
                             android:inputType="numberDecimal"
                             android:minWidth="@dimen/dimen_60dp"
                             android:text="0"
+                            android:imeOptions="actionDone"
                             android:textAppearance="@style/HintInputAppearance"
                             android:textColorHighlight="@color/grey_blue" />
                     </android.support.design.widget.TextInputLayout>
@@ -299,6 +302,7 @@
                             android:gravity="center_horizontal"
                             android:maxLength="13"
                             android:hint="BTC"
+                            android:imeOptions="actionDone"
                             android:inputType="numberDecimal"
                             android:minWidth="@dimen/dimen_60dp"
                             android:textAppearance="@style/HintInputAppearance" />
@@ -323,6 +327,7 @@
                             android:maxLength="13"
                             android:hint="USD"
                             android:inputType="numberDecimal"
+                            android:imeOptions="actionDone"
                             android:minWidth="@dimen/dimen_60dp"
                             android:textAppearance="@style/HintInputAppearance" />
                     </android.support.design.widget.TextInputLayout>
@@ -523,6 +528,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginBottom="8dp"
             android:textColor="@color/grey_blue"
+            android:visibility="invisible"
             android:textSize="10sp"
             android:text="$ 6000"
             app:layout_constraintBottom_toBottomOf="parent"

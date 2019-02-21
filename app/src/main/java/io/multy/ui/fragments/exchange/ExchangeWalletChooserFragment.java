@@ -12,6 +12,7 @@ import android.arch.lifecycle.OnLifecycleEvent;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +22,7 @@ import butterknife.ButterKnife;
 import io.multy.R;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.storage.RealmManager;
+import io.multy.ui.activities.ExchangeActivity;
 import io.multy.ui.adapters.MyWalletsAdapter;
 import io.multy.ui.fragments.BaseFragment;
 import io.multy.util.Constants;
@@ -80,6 +82,8 @@ public class ExchangeWalletChooserFragment extends BaseFragment implements MyWal
     @Override
     public void onWalletClick(Wallet wallet) {
         viewModel.setReceiveToWallet(wallet);
+//        getActivity().getSupportFragmentManager().popBackStack(ExchangeFragment.TAG_SEND_SUCCESS,FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        ((ExchangeActivity) getActivity()).setFragment(R.string.exchanging, R.id.container, ExchangeFragment.newInstance());
 
     }
 

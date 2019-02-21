@@ -110,6 +110,11 @@ public class NativeDataHelper {
 
     public static native int runTest();
 
+    public static native String estimateTransactionFee(long id, int networkId, byte[] seed, int walletIndex, String amountToSpend,
+                                                String feePerByte, String donationAmount, String destinationAddress,
+                                                String changeAddress, String donationAddress, boolean payFee) throws JniException;
+
+
     public static native byte[] makeTransaction(long id, int networkId, byte[] seed, int walletIndex, String amountToSpend,
                                                 String feePerByte, String donationAmount, String destinationAddress,
                                                 String changeAddress, String donationAddress, boolean payFee) throws JniException;

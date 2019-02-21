@@ -47,6 +47,7 @@ import io.multy.model.events.TransactionUpdateEvent;
 import io.multy.storage.RealmManager;
 import io.multy.ui.activities.AssetActivity;
 import io.multy.ui.activities.AssetRequestActivity;
+import io.multy.ui.activities.ExchangeActivity;
 import io.multy.ui.activities.SeedActivity;
 import io.multy.ui.activities.TokenSendActivity;
 import io.multy.ui.adapters.AssetTransactionsAdapter;
@@ -307,7 +308,7 @@ public class TokenInfoFragment extends BaseFragment implements AppBarLayout.OnOf
             return;
         }
 
-
+        //TODO need to make this code less hardoced
         final String[] balance = textBalance.getText().toString().split(" ");
 
         startActivity(new Intent(getActivity(), TokenSendActivity.class)
@@ -331,9 +332,42 @@ public class TokenInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     @OnClick(R.id.button_exchange)
     void onClickExchange() {
         Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_EXCHANGE, viewModel.getChainId());
-//        Toast.makeText(this, R.string.not_implemented, Toast.LENGTH_SHORT).show();
-//        DonationActivity.showDonation(this, Constants.DONATE_ADDING_EXCHANGE);
-        DonateDialog.getInstance(Constants.DONATE_ADDING_EXCHANGE).show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
+
+        //new implementation
+
+        //TODO need to test this checks
+        Wallet wallet = viewModel.getWalletLive().getValue();
+        if (wallet != null && wallet.getAvailableBalanceNumeric().compareTo(BigDecimal.ZERO) <= 0) {
+            viewModel.errorMessage.setValue(getString(R.string.not_enough_balance));
+            return;
+        }
+        if (wallet.isMultisig()) {
+            Wallet linked = RealmManager.getAssetsDao().getMultisigLinkedWallet(wallet.getMultisigWallet().getOwners());
+            if (linked == null || linked.getAvailableBalanceNumeric()
+                    .compareTo(new BigDecimal(CryptoFormatUtils.ethToWei(String.valueOf("0.0001")))) <= 0) {
+                viewModel.errorMessage.setValue(getString(R.string.not_enough_linked_balance));
+                return;
+            }
+        }
+        if (wallet.isPending()) {
+            return;
+        }
+
+        //TODO need to make this code less hardoced
+        final String[] balance = textBalance.getText().toString().split(" ");
+        startActivity(new Intent(getActivity(), ExchangeActivity.class)
+                .addCategory(Constants.EXTRA_SENDER_ADDRESS)
+                .putExtra(Constants.EXTRA_TOKEN_BALANCE, balance[0])
+                .putExtra(Constants.EXTRA_TOKEN_CODE, balance[1])
+                .putExtra(Constants.EXTRA_TOKEN_DECIMALS, getArguments().getInt(ARG_DECIMALS))
+                .putExtra(Constants.EXTRA_TOKEN_IMAGE_URL, getArguments().getString(ARG_IMAGE_URL))
+                .putExtra(Constants.EXTRA_TOKEN_RATE, getArguments().getString(ARG_TOKEN_RATE))
+                .putExtra(Constants.EXTRA_CONTRACT_ADDRESS, textAddress.getText().toString())
+                .putExtra(Constants.EXTRA_WALLET_ID, getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0)));
+
+//        startActivity(new Intent(getActivity(), ExchangeActivity.class)
+//                .addCategory(Constants.EXTRA_SENDER_ADDRESS)
+//                .putExtra(Constants.EXTRA_WALLET_ID, getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0)));
     }
 
     @OnClick(R.id.button_addresses)

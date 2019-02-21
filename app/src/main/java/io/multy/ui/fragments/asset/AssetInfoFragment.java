@@ -539,7 +539,7 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         //TODO need to test this checks
         Wallet wallet = viewModel.getWalletLive().getValue();
         if (wallet != null && wallet.getAvailableBalanceNumeric().compareTo(BigDecimal.ZERO) <= 0) {
-            Toast.makeText(getActivity(), R.string.no_balance, Toast.LENGTH_SHORT).show();
+            viewModel.errorMessage.setValue(getString(R.string.not_enough_balance));
             return;
         }
         if (wallet.isMultisig()) {

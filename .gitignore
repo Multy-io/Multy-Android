@@ -32,4 +32,4 @@ Project.xml
 /.idea/caches/build_file_checksums.ser
 constants.gradle
 google-services.json
-
+app/constants.gradle

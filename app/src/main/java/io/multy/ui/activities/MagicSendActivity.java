@@ -80,6 +80,7 @@ import io.multy.util.Constants;
 import io.multy.util.CryptoFormatUtils;
 import io.multy.util.JniException;
 import io.multy.util.NativeDataHelper;
+import io.multy.util.TransactionHelper;
 import io.multy.util.analytics.Analytics;
 import io.multy.util.analytics.AnalyticsConstants;
 import io.multy.viewmodels.MagicSendViewModel;
@@ -547,107 +548,136 @@ public class MagicSendActivity extends BaseActivity {
     }
 
     private boolean send(Wallet wallet, String feeRate, @Nullable String estimation) throws JniException {
-        final byte[] seed = RealmManager.getSettingsDao().getSeed().getSeed();
         FastReceiver receiver = receiversPagerAdapter.getReceiver(pagerRequests.getCurrentItem());
-        String changeAddress = "";
-        if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()) {
-            changeAddress = NativeDataHelper.makeAccountAddress(seed, wallet.getIndex(), wallet.getBtcWallet().getAddresses().size(),
-                    wallet.getCurrencyId(), wallet.getNetworkId());
-        }
 
-        final byte[] transaction;
+
+        //OLD LOGIC
+//        final byte[] seed = RealmManager.getSettingsDao().getSeed().getSeed();
+//        String changeAddress = "";
+//        if (wallet.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue()) {
+//            changeAddress = NativeDataHelper.makeAccountAddress(seed, wallet.getIndex(), wallet.getBtcWallet().getAddresses().size(),
+//                    wallet.getCurrencyId(), wallet.getNetworkId());
+//        }
+//
+//        final byte[] transaction;
+
         final boolean isHd;
+        String hexTransaction = null;
+        String changeAddress = "";
         switch (NativeDataHelper.Blockchain.valueOf(receiver.getCurrencyId())) {
             case BTC:
-                transaction = NativeDataHelper.makeTransaction(
-                        wallet.getId(),
-                        wallet.getNetworkId(),
-                        seed,
-                        wallet.getIndex(),
-                        receiver.getAmount(),
-                        feeRate,
-                        "0",
-                        receiver.getAddress(),
-                        changeAddress,
-                        "",
-                        true);
+                hexTransaction = TransactionHelper.getInstance().createBTCTransaction(
+                    wallet,
+                    CryptoFormatUtils.satoshiToBtc(Long.parseLong(receiver.getAmount())),
+                    feeRate,
+                    receiver.getAddress(),
+                    "0",
+                    "",
+                    true
+                );
+//                transaction = NativeDataHelper.makeTransaction(
+//                        wallet.getId(),
+//                        wallet.getNetworkId(),
+//                        seed,
+//                        wallet.getIndex(),
+//                        receiver.getAmount(),
+//                        feeRate,
+//                        "0",
+//                        receiver.getAddress(),
+//                        changeAddress,
+//                        "",
+//                        true);
                 isHd = true;
+                changeAddress = TransactionHelper.getChangeAddress(wallet);
                 break;
             case ETH:
-                if (wallet.isMultisig()) {
-                    Wallet linkedWallet = RealmManager.getAssetsDao().getMultisigLinkedWallet(wallet.getMultisigWallet().getOwners());
-                    if (linkedWallet.shouldUseExternalKey()) {
-                        WalletPrivateKey keyObject = RealmManager.getAssetsDao().getPrivateKey(linkedWallet.getActiveAddress().getAddress(),
-                                linkedWallet.getCurrencyId(), linkedWallet.getNetworkId());
-                        transaction = NativeDataHelper.makeTransactionMultisigETHFromKey(
-                                keyObject.getPrivateKey(),
-                                linkedWallet.getCurrencyId(),
-                                linkedWallet.getNetworkId(),
-                                linkedWallet.getActiveAddress().getAmountString(),
-                                wallet.getActiveAddress().getAddress(),
-                                receiver.getAmount(),
-                                receiver.getAddress(),
-                                estimation, feeRate, linkedWallet.getEthWallet().getNonce());
-                    } else {
-                        transaction = NativeDataHelper.makeTransactionMultisigETH(
-                                seed,
-                                linkedWallet.getIndex(),
-                                0,
-                                linkedWallet.getCurrencyId(),
-                                linkedWallet.getNetworkId(),
-                                linkedWallet.getActiveAddress().getAmountString(),
-                                wallet.getActiveAddress().getAddress(),
-                                receiver.getAmount(),
-                                receiver.getAddress(),
-                                estimation,
-                                feeRate,
-                                linkedWallet.getEthWallet().getNonce());
-                    }
-                } else {
-                    if (wallet.shouldUseExternalKey()) {
-                        WalletPrivateKey keyObject = RealmManager.getAssetsDao().getPrivateKey(wallet.getActiveAddress().getAddress(),
-                                wallet.getCurrencyId(), wallet.getNetworkId());
-                                transaction = NativeDataHelper.makeTransactionETHFromKey(
-                                keyObject.getPrivateKey(),
-                                wallet.getCurrencyId(),
-                                wallet.getNetworkId(),
-                                wallet.getActiveAddress().getAmountString(),
-                                receiver.getAmount(),
-                                receiver.getAddress(),
-                                estimation == null ? Constants.GAS_LIMIT_DEFAULT : estimation,
-                                feeRate,
-                                wallet.getEthWallet().getNonce());
-                    } else {
-                        transaction = NativeDataHelper.makeTransactionETH(
-                                seed,
-                                wallet.getIndex(),
-                                0,
-                                wallet.getCurrencyId(),
-                                wallet.getNetworkId(),
-                                wallet.getActiveAddress().getAmountString(),
-                                receiver.getAmount(),
-                                receiver.getAddress(),
-                                estimation == null ? Constants.GAS_LIMIT_DEFAULT : estimation,
-                                feeRate,
-                                wallet.getEthWallet().getNonce());
-                    }
-                }
+
+                hexTransaction = TransactionHelper.getInstance().createETHTransaction(
+                    wallet,
+                    feeRate,
+                    estimation,
+                    String.valueOf(CryptoFormatUtils.weiToEth(receiver.getAmount())),
+                    receiver.getAddress(),
+                    true
+                );
+
+
+//                if (wallet.isMultisig()) {
+//                    Wallet linkedWallet = RealmManager.getAssetsDao().getMultisigLinkedWallet(wallet.getMultisigWallet().getOwners());
+//                    if (linkedWallet.shouldUseExternalKey()) {
+//                        WalletPrivateKey keyObject = RealmManager.getAssetsDao().getPrivateKey(linkedWallet.getActiveAddress().getAddress(),
+//                                linkedWallet.getCurrencyId(), linkedWallet.getNetworkId());
+//                        transaction = NativeDataHelper.makeTransactionMultisigETHFromKey(
+//                                keyObject.getPrivateKey(),
+//                                linkedWallet.getCurrencyId(),
+//                                linkedWallet.getNetworkId(),
+//                                linkedWallet.getActiveAddress().getAmountString(),
+//                                wallet.getActiveAddress().getAddress(),
+//                                receiver.getAmount(),
+//                                receiver.getAddress(),
+//                                estimation, feeRate, linkedWallet.getEthWallet().getNonce());
+//                    } else {
+//                        transaction = NativeDataHelper.makeTransactionMultisigETH(
+//                                seed,
+//                                linkedWallet.getIndex(),
+//                                0,
+//                                linkedWallet.getCurrencyId(),
+//                                linkedWallet.getNetworkId(),
+//                                linkedWallet.getActiveAddress().getAmountString(),
+//                                wallet.getActiveAddress().getAddress(),
+//                                receiver.getAmount(),
+//                                receiver.getAddress(),
+//                                estimation,
+//                                feeRate,
+//                                linkedWallet.getEthWallet().getNonce());
+//                    }
+//                } else {
+//                    if (wallet.shouldUseExternalKey()) {
+//                        WalletPrivateKey keyObject = RealmManager.getAssetsDao().getPrivateKey(wallet.getActiveAddress().getAddress(),
+//                                wallet.getCurrencyId(), wallet.getNetworkId());
+//                                transaction = NativeDataHelper.makeTransactionETHFromKey(
+//                                keyObject.getPrivateKey(),
+//                                wallet.getCurrencyId(),
+//                                wallet.getNetworkId(),
+//                                wallet.getActiveAddress().getAmountString(),
+//                                receiver.getAmount(),
+//                                receiver.getAddress(),
+//                                estimation == null ? Constants.GAS_LIMIT_DEFAULT : estimation,
+//                                feeRate,
+//                                wallet.getEthWallet().getNonce());
+//                    } else {
+//                        transaction = NativeDataHelper.makeTransactionETH(
+//                                seed,
+//                                wallet.getIndex(),
+//                                0,
+//                                wallet.getCurrencyId(),
+//                                wallet.getNetworkId(),
+//                                wallet.getActiveAddress().getAmountString(),
+//                                receiver.getAmount(),
+//                                receiver.getAddress(),
+//                                estimation == null ? Constants.GAS_LIMIT_DEFAULT : estimation,
+//                                feeRate,
+//                                wallet.getEthWallet().getNonce());
+//                    }
+//                }
                 isHd = false;
                 break;
             default:
                 throw new IllegalStateException("No one currency id is not Blockchain value!");
         }
 
-        String hex = byteArrayToHex(transaction);
+//        String hex = byteArrayToHex(transaction);
         switch (NativeDataHelper.Blockchain.valueOf(wallet.getCurrencyId())) {
             case ETH:
-                hex = "0x" + hex;
+                hexTransaction = "0x" + hexTransaction;
         }
+
+
         final HdTransactionRequestEntity entity = new HdTransactionRequestEntity(wallet.getCurrencyId(), wallet.getNetworkId(),
                 new HdTransactionRequestEntity.Payload(changeAddress, wallet.getAddresses().size(),
-                        wallet.getIndex(), hex, isHd));
-
-        Timber.i("hex=%s", hex);
+                        wallet.getIndex(), hexTransaction, isHd));
+        //TODO till now
+        Timber.i("hex=%s", hexTransaction);
         Timber.i("change address=%s", changeAddress);
         MultyApi.INSTANCE.sendHdTransaction(entity).enqueue(new Callback<MessageResponse>() {
             @Override

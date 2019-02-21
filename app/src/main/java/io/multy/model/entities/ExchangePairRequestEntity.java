@@ -21,18 +21,22 @@ public class ExchangePairRequestEntity {
     private String from;
 
     @SerializedName("address")
-    private String receiveToAddress;
+    private String address;
+
+//    @SerializedName("address")
+//    private String sendFromAddress;
 
     public ExchangePairRequestEntity(ExchangePair pair) {
         this.from = pair.getFromAsset();
         this.to = pair.getToAsset();
         this.amount = String.valueOf(pair.getRate());
-        this.receiveToAddress = pair.getReceivingToAddress();
+        this.address = pair.getReceivingToAddress();
 
     }
 
     public String getFrom() { return this.from; }
     public String getTo() {return this.to;}
     public float getAmount() {return Float.parseFloat(this.amount);}
-    public String getReceiveToAddress() {return this.receiveToAddress;}
+    public String getReceiveToAddress() {return this.address;}
+    public String getPayingToAddress() {return this.address;}
 }

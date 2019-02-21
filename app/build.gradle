@@ -16,8 +16,8 @@ android {
         applicationId "io.multy"
         minSdkVersion 22
         targetSdkVersion 28
-        versionCode 27
-        versionName "1.4.0"
+        versionCode 28
+        versionName "1.4.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         
         externalNativeBuild {
@@ -68,6 +68,9 @@ android {
         }
         multyTest {
             resValue "string", "base_url", "http://test.multy.io/"
+        }
+        multyDev {
+            resValue "string", "base_url", "http://dev.multy.io/"
         }
     }
     variantFilter { variant ->
