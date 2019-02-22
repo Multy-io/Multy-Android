@@ -555,6 +555,13 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
             return;
         }
 
+
+
+        if ((wallet.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue() && wallet.getNetworkId() != NativeDataHelper.NetworkId.MAIN_NET.getValue()) ||
+                (wallet.getNetworkId() == NativeDataHelper.Blockchain.ETH.getValue() && wallet.getNetworkId() != NativeDataHelper.NetworkId.ETH_MAIN_NET.getValue())
+                )
+            return;
+
         startActivity(new Intent(getActivity(), ExchangeActivity.class)
                 .addCategory(Constants.EXTRA_SENDER_ADDRESS)
                 .putExtra(Constants.EXTRA_WALLET_ID, getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0)));

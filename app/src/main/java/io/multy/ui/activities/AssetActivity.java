@@ -76,50 +76,6 @@ public class AssetActivity extends BaseActivity {
         return transactionInfo;
     }
 
-
-    //THIS IS NOT WORKING STAFF
-    //TODO Need to be refactoree
-//    @OnClick(R.id.send)
-//    void onClickSend() {
-//        Analytics.getInstance(this).logWallet(AnalyticsConstants.WALLET_SEND, viewModel.getChainId());
-//        if (viewModel.getWalletLive().getValue() != null &&
-//                viewModel.getWalletLive().getValue().getAvailableBalanceNumeric().compareTo(BigDecimal.ZERO) <= 0) {
-//            Toast.makeText(this, R.string.no_balance, Toast.LENGTH_SHORT).show();
-//            return;
-//        }
-//        startActivity(new Intent(this, AssetSendActivity.class)
-//                .addCategory(Constants.EXTRA_SENDER_ADDRESS)
-//                .putExtra(Constants.EXTRA_WALLET_ID, getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0)));
-//    }
-//
-//    @OnClick(R.id.receive)
-//    void onClickReceive() {
-//        Analytics.getInstance(this).logWallet(AnalyticsConstants.WALLET_RECEIVE, viewModel.getChainId());
-//        startActivity(new Intent(this, AssetRequestActivity.class)
-//                .putExtra(Constants.EXTRA_WALLET_ID, getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0)));
-//    }
-//
-//    @OnClick(R.id.exchange)
-//    void onClickExchange() {
-//        //new implementation
-//        if (viewModel.getWalletLive().getValue() != null &&
-//                viewModel.getWalletLive().getValue().getAvailableBalanceNumeric().compareTo(BigDecimal.ZERO) <= 0) {
-//            Toast.makeText(this, R.string.no_balance, Toast.LENGTH_SHORT).show();
-//            return;
-//        }
-//        startActivity(new Intent(this, ExchangeActivity.class)
-//                .addCategory(Constants.EXTRA_SENDER_ADDRESS)
-//                .putExtra(Constants.EXTRA_WALLET_ID, getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0)));
-//
-//
-//
-//        //THIS is old implementations
-////        Analytics.getInstance(this).logWallet(AnalyticsConstants.WALLET_EXCHANGE, viewModel.getChainId());
-//////        Toast.makeText(this, R.string.not_implemented, Toast.LENGTH_SHORT).show();
-//////        DonationActivity.showDonation(this, Constants.DONATE_ADDING_EXCHANGE);
-////        DonateDialog.getInstance(Constants.DONATE_ADDING_EXCHANGE).show(getSupportFragmentManager(), DonateDialog.TAG);
-//    }
-
     public void setFragment(@IdRes int container, Fragment fragment) {
         FragmentTransaction transaction = getSupportFragmentManager()
                 .beginTransaction()

@@ -192,6 +192,7 @@ public class MagicSendActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         start();
+        initPermissions();
     }
 
     @Override

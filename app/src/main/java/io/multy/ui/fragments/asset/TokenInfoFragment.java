@@ -365,9 +365,6 @@ public class TokenInfoFragment extends BaseFragment implements AppBarLayout.OnOf
                 .putExtra(Constants.EXTRA_CONTRACT_ADDRESS, textAddress.getText().toString())
                 .putExtra(Constants.EXTRA_WALLET_ID, getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0)));
 
-//        startActivity(new Intent(getActivity(), ExchangeActivity.class)
-//                .addCategory(Constants.EXTRA_SENDER_ADDRESS)
-//                .putExtra(Constants.EXTRA_WALLET_ID, getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0)));
     }
 
     @OnClick(R.id.button_addresses)
