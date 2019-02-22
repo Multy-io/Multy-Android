@@ -149,6 +149,25 @@ public class TransactionInfoFragment extends BaseFragment {
         return v;
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+        viewModel.subscribeToSockets(TAG);
+        subscribeToUpdates();
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        viewModel.unsubscribeSockets(TAG);
+    }
+
+    private void subscribeToUpdates(){
+        viewModel.getTransactionUpdate().observe(this, tx ->{
+            loadData();
+        });
+    }
+
     private void initialize() {
         if (getArguments() == null) {
             return;

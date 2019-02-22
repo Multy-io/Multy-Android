@@ -240,6 +240,10 @@ public class WalletViewModel extends BaseViewModel {
         return index;
     }
 
+//    public void updateTransactionHistory(){
+//
+//    }
+
     public MutableLiveData<ArrayList<TransactionHistory>> getTransactionsHistory(final int currencyId, final int networkId, final int walletIndex) {
         isLoading.postValue(true);
         MultyApi.INSTANCE.getTransactionHistory(currencyId, networkId, walletIndex).enqueue(new Callback<TransactionHistoryResponse>() {

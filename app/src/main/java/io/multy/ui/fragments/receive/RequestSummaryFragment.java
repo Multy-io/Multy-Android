@@ -96,7 +96,7 @@ public class RequestSummaryFragment extends BaseFragment {
 
     private AssetRequestViewModel viewModel;
     private SharingBroadcastReceiver receiver;
-    private SocketManager socketManager;
+//    private SocketManager socketManager;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -123,7 +123,7 @@ public class RequestSummaryFragment extends BaseFragment {
     @Override
     public void onStart() {
         super.onStart();
-        connectSockets();
+//        connectSockets();
 
         if (getActivity() != null) {
             getActivity().registerReceiver(receiver, new IntentFilter());
@@ -146,7 +146,7 @@ public class RequestSummaryFragment extends BaseFragment {
     @Override
     public void onStop() {
         super.onStop();
-        disconnectSockets();
+        viewModel.unsubscribeSockets(TAG);
 
         if (getActivity() != null) {
             try {
@@ -157,33 +157,53 @@ public class RequestSummaryFragment extends BaseFragment {
         }
     }
 
-    private void connectSockets() {
-        socketManager = SocketManager.getInstance();
-        socketManager.listenEvent(SocketManager.EVENT_RECEIVE, args -> {
-            if (getActivity() != null) {
-                getActivity().runOnUiThread(() -> {
-                    try {
-                        verifyTransaction(args[0].toString());
-                    } catch (Throwable t) {
-                        t.printStackTrace();
-                        Crashlytics.logException(t);
-                    }
-                });
-            }
-        });
-        socketManager.listenEvent(SocketManager.getEventReceive(RealmManager.getSettingsDao().getUserId().getUserId()), args -> {
-            if (getActivity() != null) {
-                getActivity().runOnUiThread(() -> {
-                    try {
-                        verifyTransaction(new Gson().fromJson(args[0].toString(), ReceiveMessage.class));
-                    } catch (Throwable t) {
-                        t.printStackTrace();
-                    }
-                });
-            }
-        });
-        socketManager.connect(TAG);
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        viewModel.subscribeToSockets(TAG);
+        subscribeToUpdates();
     }
+
+    private void subscribeToUpdates(){
+        viewModel.subscribeToReceive();
+        viewModel.getReceiveValue().observe(this, msg ->{
+            verifyTransaction(msg);
+        });
+        viewModel.getReceiveMessage().observe(this, msg ->{
+            verifyTransaction(msg);
+        });
+    }
+
+
+
+//    private void connectSockets() {
+//        socketManager = SocketManager.getInstance();
+////        socketManager.listenEvent(SocketManager.EVENT_RECEIVE, args -> {
+////            if (getActivity() != null) {
+////                getActivity().runOnUiThread(() -> {
+////                    try {
+//                        verifyTransaction(args[0].toString());
+////                    } catch (Throwable t) {
+////                        t.printStackTrace();
+////                        Crashlytics.logException(t);
+////                    }
+////                });
+////            }
+////        });
+////        socketManager.listenEvent(SocketManager.getEventReceive(RealmManager.getSettingsDao().getUserId().getUserId()), args -> {
+////            if (getActivity() != null) {
+////                getActivity().runOnUiThread(() -> {
+////                    try {
+////                        verifyTransaction(new Gson().fromJson(args[0].toString(), ReceiveMessage.class));
+////                    } catch (Throwable t) {
+////                        t.printStackTrace();
+////                    }
+////                });
+////            }
+////        });
+////        socketManager.connect(TAG);
+//    }
 
     private void verifyTransaction(String json) {
         Timber.i("got transaction " + json);
@@ -205,12 +225,12 @@ public class RequestSummaryFragment extends BaseFragment {
         }
     }
 
-    private void disconnectSockets() {
-        SocketManager.getInstance().lazyDisconnect(TAG);
-//        if(socketManager != null && socketManager.isConnected()) {
-//            socketManager.disconnect();
-//        }
-    }
+//    private void disconnectSockets() {
+//        SocketManager.getInstance().lazyDisconnect(TAG);
+////        if(socketManager != null && socketManager.isConnected()) {
+////            socketManager.disconnect();
+////        }
+//    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
