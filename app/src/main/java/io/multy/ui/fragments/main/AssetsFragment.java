@@ -162,6 +162,7 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
     public void onResume() {
         super.onResume();
         checkViewsVisibility();
+        subscribeToUpdates();
     }
 
     @Override
@@ -250,6 +251,14 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
         }
     }
 
+
+    private void subscribeToUpdates(){
+        viewModel.getTransactionUpdates().observe(this, tx ->{
+            Log.d(TAG, "TX UPDATE RECEIVED");
+            updateWallets();
+        });
+    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onTransactionUpdateEvent(TransactionUpdateEvent event) {
         Log.i(TAG, "transaction update event called");
@@ -262,7 +271,7 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
 
         if (Prefs.getBoolean(Constants.PREF_APP_INITIALIZED)) {
             if (RealmManager.getSettingsDao().getUserId() != null) {
-                viewModel.rates.observe(this, currenciesRate -> {
+                viewModel.getRates().observe(this, currenciesRate -> {
                     RealmManager.getSettingsDao().saveCurrenciesRate(currenciesRate, () -> {
                         if (walletsAdapter != null && !isViewsScroll) {
                             walletsAdapter.updateRates(currenciesRate);
@@ -336,24 +345,24 @@ public class AssetsFragment extends BaseFragment implements MyWalletsAdapter.OnW
 
     private void checkMultisigWallets() {
         RealmResults<Wallet> wallets = RealmManager.getAssetsDao().getMultisigWallets();
-        if (wallets.size() > 0) {
-            subscribeSocketsUpdate();
-        }
-    }
-
-    private void subscribeSocketsUpdate() {
-        //TODO use this object with ViewModel
-//        try {
-//            if (socketManager == null) {
-//                socketManager = new SocketManager();
-//            }
-//            final String eventReceive = SocketManager.getEventReceive(RealmManager.getSettingsDao().getUserId().getUserId());
-//            socketManager.listenEvent(eventReceive, args -> updateWallets());
-//            socketManager.connect();
-//        } catch (URISyntaxException e) {
-//            e.printStackTrace();
+//        if (wallets.size() > 0) {
+//            subscribeSocketsUpdate();
 //        }
     }
+
+//    private void subscribeSocketsUpdate() {
+//        //TODO use this object with ViewModel
+////        try {
+////            if (socketManager == null) {
+////                socketManager = new SocketManager();
+////            }
+////            final String eventReceive = SocketManager.getEventReceive(RealmManager.getSettingsDao().getUserId().getUserId());
+////            socketManager.listenEvent(eventReceive, args -> updateWallets());
+////            socketManager.connect();
+////        } catch (URISyntaxException e) {
+////            e.printStackTrace();
+////        }
+//    }
 
     private void updateWallets() {
         Timber.i("update wallets called");

@@ -55,7 +55,7 @@ public class AssetSendActivity extends BaseActivity {
 
     private boolean isFirstFragmentCreation;
     private AssetSendViewModel viewModel;
-    private SocketManager socketManager;
+//    private SocketManager socketManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,16 +78,18 @@ public class AssetSendActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (socketManager == null) {
-            socketManager = SocketManager.getInstance();
-
-        }
-        socketManager.listenTransactionUpdates(() -> {//todo remove it when it will become deprecated
-            viewModel.updateWallets();
-        });
-        socketManager.listenEvent(SocketManager.getEventReceive(
-                RealmManager.getSettingsDao().getUserId().getUserId()), args -> viewModel.updateWallets());
-        socketManager.connect(TAG);
+        viewModel.subscribeToSockets(TAG);
+        subscribeToUpdates();
+//        if (socketManager == null) {
+//            socketManager = SocketManager.getInstance();
+//
+//        }
+//        socketManager.listenTransactionUpdates(() -> {//todo remove it when it will become deprecated
+//            viewModel.updateWallets();
+//        });
+//        socketManager.listenEvent(SocketManager.getEventReceive(
+//                RealmManager.getSettingsDao().getUserId().getUserId()), args -> viewModel.updateWallets());
+//        socketManager.connect(TAG);
     }
 
     @Override
@@ -95,7 +97,9 @@ public class AssetSendActivity extends BaseActivity {
 //        if (socketManager != null && socketManager.isConnected()) {
 //            socketManager.disconnect();
 //        }
-        socketManager.lazyDisconnect(TAG);
+//        socketManager.lazyDisconnect(TAG);
+
+        viewModel.unsubscribeSockets(TAG);
         super.onPause();
     }
 
@@ -133,6 +137,14 @@ public class AssetSendActivity extends BaseActivity {
         } else {
             super.onBackPressed();
         }
+    }
+
+    private void subscribeToUpdates(){
+        viewModel.getTransactionUpdate().observe(this, tx ->{
+            viewModel.updateWallets();
+        });
+
+        viewModel.subscribeToReceive();
     }
 
     private void startFlow() {

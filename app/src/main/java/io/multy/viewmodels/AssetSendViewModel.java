@@ -22,6 +22,8 @@ import io.multy.Multy;
 import io.multy.R;
 import io.multy.api.MultyApi;
 import io.multy.api.socket.CurrenciesRate;
+import io.multy.api.socket.SocketManager;
+import io.multy.api.socket.TransactionUpdateEntity;
 import io.multy.model.core.Account;
 import io.multy.model.core.Builder;
 import io.multy.model.core.Payload;
@@ -462,12 +464,12 @@ public class AssetSendViewModel extends BaseViewModel {
         transactionPrice.setValue(changeAmountSatoshi);
     }
 
-    private String byteArrayToHex(byte[] a) {
-        StringBuilder sb = new StringBuilder(a.length * 2);
-        for (byte b : a)
-            sb.append(String.format("%02x", b));
-        return sb.toString();
-    }
+//    private String byteArrayToHex(byte[] a) {
+//        StringBuilder sb = new StringBuilder(a.length * 2);
+//        for (byte b : a)
+//            sb.append(String.format("%02x", b));
+//        return sb.toString();
+//    }
 
     public int getChainId() {
         return 1;
@@ -494,4 +496,13 @@ public class AssetSendViewModel extends BaseViewModel {
             }
         });
     }
+
+    public MutableLiveData<TransactionUpdateEntity> getTransactionUpdate() {return this.transactionUpdate;}
+
+    public void subscribeToReceive() {
+        SocketManager.getInstance().listenEvent(SocketManager.getEventReceive(
+                RealmManager.getSettingsDao().getUserId().getUserId()), args -> updateWallets());
+    }
+
+
 }

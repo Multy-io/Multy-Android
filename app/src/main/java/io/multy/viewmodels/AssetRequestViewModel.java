@@ -13,6 +13,8 @@ import android.arch.lifecycle.OnLifecycleEvent;
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
+import com.google.gson.Gson;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
@@ -22,9 +24,11 @@ import java.util.List;
 
 import io.multy.Multy;
 import io.multy.api.MultyApi;
+import io.multy.api.socket.SocketManager;
 import io.multy.model.entities.wallet.Wallet;
 import io.multy.model.entities.wallet.WalletAddress;
 import io.multy.model.requests.AddWalletAddressRequest;
+import io.multy.model.socket.ReceiveMessage;
 import io.multy.service.BluetoothService;
 import io.multy.storage.RealmManager;
 import io.multy.storage.SettingsDao;
@@ -52,6 +56,8 @@ public class AssetRequestViewModel extends BaseViewModel {
     private MutableLiveData<Wallet> walletLive = new MutableLiveData<>();
     private MutableLiveData<BluetoothService.BluetoothServiceMode> modeChangingLiveData = new MutableLiveData<>();
     private static final char[] HEX_CHARS = "0123456789ABCDEF".toCharArray();
+    private MutableLiveData<String> receiveValue = new MutableLiveData<>();
+    private MutableLiveData<ReceiveMessage> receiveMessage = new MutableLiveData<>();
 
     public AssetRequestViewModel() {
     }
@@ -241,4 +247,22 @@ public class AssetRequestViewModel extends BaseViewModel {
         }
         return new String(chars);
     }
+
+    public void subscribeToReceive(){
+        SocketManager.getInstance().listenEvent(SocketManager.EVENT_RECEIVE, args -> {
+            receiveValue.postValue(args[0].toString());
+        });
+
+        SocketManager.getInstance().listenEvent(SocketManager.getEventReceive(RealmManager.getSettingsDao().getUserId().getUserId()), args -> {
+            receiveMessage.postValue(new Gson().fromJson(args[0].toString(), ReceiveMessage.class));
+
+        });
+
+    }
+
+    public MutableLiveData<String> getReceiveValue(){return this.receiveValue;}
+    public MutableLiveData<ReceiveMessage> getReceiveMessage() {return this.receiveMessage;}
+
+
+
 }

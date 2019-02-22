@@ -32,8 +32,8 @@ public class AssetsViewModel extends BaseViewModel implements LifecycleObserver 
 //    private SocketManager socketManager;
 
     public MutableLiveData<List<Wallet>> wallets = new MutableLiveData<>();
-    public MutableLiveData<CurrenciesRate> rates = new MutableLiveData<>();
-    public SingleLiveEvent<TransactionUpdateEntity> transactionUpdate = new SingleLiveEvent<>();
+//    public MutableLiveData<CurrenciesRate> rates = new MutableLiveData<>();
+//    public SingleLiveEvent<TransactionUpdateEntity> transactionUpdate = new SingleLiveEvent<>();
 
 //    ServiceConnection socketServiceConnection;
 
@@ -81,6 +81,9 @@ public class AssetsViewModel extends BaseViewModel implements LifecycleObserver 
 //            socketManager.disconnect();
 //        }
     }
+
+    public MutableLiveData<CurrenciesRate> getRates(){return this.rates;}
+    public MutableLiveData<TransactionUpdateEntity> getTransactionUpdates(){return this.transactionUpdate;}
 
     public List<Wallet> getWalletsFromDB() {
         return RealmManager.getAssetsDao().getWallets();
