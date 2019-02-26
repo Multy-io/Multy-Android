@@ -35,6 +35,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.multy.R;
 import io.multy.api.socket.CurrenciesRate;
+import io.multy.model.entities.Estimation;
 import io.multy.model.entities.wallet.CurrencyCode;
 import io.multy.model.entities.wallet.EthWallet;
 import io.multy.storage.RealmManager;
@@ -143,8 +144,8 @@ public class EthAmountChooserFragment extends BaseFragment implements BaseActivi
                     transactionPriceEth = EthWallet.getTransactionPrice(viewModel.getFee().getAmount(), Long.parseLong(customGasLimit));
                 }
             });
-        }
 
+        }
     }
 
     @Override

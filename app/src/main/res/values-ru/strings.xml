@@ -321,6 +321,7 @@
     <string name="transaction_history">История транзакций</string>
     <string name="tokens_overview">Токены</string>
     <string name="metamask_phrase">Введите вашу seed-фразу (12 слов), чтобы использовать ваши кошельки Metamask с Multy.</string>
+    <string name="total_balance">Общий Баланс</string>
     <string name="import_meta_mask_description">Мы не храним вашу фразу в виде обычного текста и не передаем его, ни каких-либо частных и публичных ключей ваших кошельков в любом месте, они остаются на устройстве зашифрованными и безопасными и используются только для подписания транзакций, которые вы явно запрашиваете Multy для выполнения.</string>
 
 </resources>

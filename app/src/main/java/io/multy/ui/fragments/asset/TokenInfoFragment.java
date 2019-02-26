@@ -210,9 +210,9 @@ public class TokenInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     }
 
     private void setNotificationsVisibility(int visibility) {
-        imageArrow.setVisibility(visibility);
+//        imageArrow.setVisibility(visibility);
         textEmpty.setVisibility(visibility);
-        textCreate.setVisibility(visibility);
+//        textCreate.setVisibility(visibility);
         containerDummy.setVisibility(visibility);
     }
 

@@ -318,5 +318,6 @@
     <string name="enter_sum_too_much">Ви намагаєтеся ввести суму більшу, ніж у вас є на рахунку</string>
     <string name="import_meta_mask">Увайтi в MetaMask</string>
     <string name="metamask_phrase">Введіть вашу seed-фразу (12 слів), щоб використовувати ваші гаманці Metamask з Multy.</string>
+    <string name="total_balance">Загальний балансs</string>
     <string name="import_meta_mask_description">Ми не зберігаємо вашу фразу у вигляді звичайного тексту і не передаємо його, ні будь-яких приватних і публічних ключів ваших гаманців в будь-якому місці, вони залишаються на пристрої зашифрованими і безпечними і використовуються тільки для підписання транзакцій, які ви явно запитуєте Multy для виконання.</string>
 </resources>

@@ -29,12 +29,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.samwolfand.oneprefs.Prefs;
-
 import net.cachapa.expandablelayout.ExpandableLayout;
-
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -429,9 +425,9 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     }
 
     private void setNotificationsVisibility(int visibility) {
-        imageArrow.setVisibility(visibility);
+//        imageArrow.setVisibility(visibility);
         textEmpty.setVisibility(visibility);
-        textCreate.setVisibility(visibility);
+//        textCreate.setVisibility(visibility);
         containerDummy.setVisibility(visibility);
     }
 
@@ -506,7 +502,8 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_SEND, viewModel.getChainId());
         Wallet wallet = viewModel.getWalletLive().getValue();
         if (wallet != null && wallet.getAvailableBalanceNumeric().compareTo(BigDecimal.ZERO) <= 0) {
-            Toast.makeText(getActivity(), R.string.no_balance, Toast.LENGTH_SHORT).show();
+            viewModel.errorMessage.setValue(getString(R.string.no_balance));
+//            Toast.makeText(getActivity(), , Toast.LENGTH_SHORT).show();
             return;
         }
         if (wallet.isMultisig()) {
