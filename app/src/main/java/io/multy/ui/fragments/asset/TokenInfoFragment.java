@@ -96,12 +96,12 @@ public class TokenInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     @BindView(R.id.appbar_layout)
     AppBarLayout appBarLayout;
 
-    @BindView(R.id.image_arrow)
-    ImageView imageArrow;
+//    @BindView(R.id.image_arrow)
+//    ImageView imageArrow;
     @BindView(R.id.text_operations_empty)
     TextView textEmpty;
-    @BindView(R.id.text_operation_create)
-    TextView textCreate;
+//    @BindView(R.id.text_operation_create)
+//    TextView textCreate;
     @BindView(R.id.button_warn)
     View buttonWarn;
     @BindView(R.id.container_dummy)
