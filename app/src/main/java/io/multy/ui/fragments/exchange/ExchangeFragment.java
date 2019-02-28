@@ -163,13 +163,6 @@ public class ExchangeFragment extends BaseFragment {
         ((ExchangeActivity) getActivity()).setFragment(R.string.exchanging, R.id.container, ChooserExchangePairFragment.newInstance());
     }
 
-//    @BindView(R.id.input_address)
-//    EditText inputAddress;
-//    @BindView(R.id.button_next)
-//    TextView buttonNext;
-//    @BindView(R.id.recycler_view)
-//    RecyclerView recyclerView;
-
     private ExchangeViewModel viewModel;
     private Unbinder unbinder;
     private RecentAddressesAdapter adapter;
