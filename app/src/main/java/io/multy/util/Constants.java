@@ -135,8 +135,8 @@ public final class Constants {
     public static final int REQUEST_CODE_CREATE = 22;
     public static final int REQUEST_CODE_METAMUSK = 911;
 
-    public static final String BLOCKCHAIN_TEST_INFO_PATH = "https://testnet.blockchain.info/tx/";
-    public static final String BLOCKCHAIN_MAIN_INFO_PATH = "https://blockchain.info/tx/";
+    public static final String BLOCKCHAIN_TEST_INFO_PATH = "https://live.blockcypher.com/btc-testnet/tx/";
+    public static final String BLOCKCHAIN_MAIN_INFO_PATH = "https://live.blockcypher.com/btc/tx/";
     public static final String ETHERSCAN_RINKEBY_INFO_PATH = "https://rinkeby.etherscan.io/tx/";
     public static final String ETHERSCAN_MAIN_INFO_PATH = "https://etherscan.io/tx/";
     public static final String PUSH_TOPIC = "TransactionUpdate-";

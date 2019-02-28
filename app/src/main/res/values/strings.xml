@@ -57,9 +57,7 @@
     <string name="wireless_scan">Wireless Scan</string>
     <string name="more_options">More \nOptions</string>
     <string name="slide_to_send">Slide to Send</string>
-    <string name="slide_to_exchange">Slide to Exchange</string>
     <string name="select_to_exchange">Select asset exchange to</string>
-    <string name="exchange_tap">Tap to select asset you want to receive</string>
     <string name="sending_from">Sending From</string>
     <string name="hint_add_note">+ Add Note</string>
     <string name="recent_addresses">Recent Addresses</string>
@@ -402,4 +400,13 @@
     <string name="total_balance">Total Balance</string>
     <string name="metamask_phrase">Enter your seed phrase (12 fancy words) to restore your Metamask wallets</string>
     <string name="import_meta_mask_description">We do not store your seed in plain text and do not transfer it, nor any private and public keys of your wallets anywhere, they stay on the device encrypted and safe and only used to sign transactions you explicitly request Multy to perform</string>
+
+
+    <!--Exchange-->
+    <string name="sending">You are sending</string>
+    <string name="ex_receiving">You will receive</string>
+    <string name="exchange_tap">Tap to select asset you want to receive</string>
+    <string name="slide_to_exchange">Slide to Exchange</string>
+    <string name="ex_send_from">You are sending from</string>
+    <string name="ex_receive_to">You will receive to</string>
 </resources>

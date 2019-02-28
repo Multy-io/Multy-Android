@@ -329,7 +329,8 @@ public class AssetSendViewModel extends BaseViewModel {
         String hexTransaction = TransactionHelper.getInstance().createETHTransaction(
             wallet.getValue(),
             String.valueOf(getFee().getAmount()),
-            estimation.getValue().getSubmitTransaction(),
+//            estimation.getValue().getSubmitTransaction(),
+            estimation.getValue() == null ? gasLimit.getValue() : estimation.getValue().getSubmitTransaction(),
             String.valueOf(amount),
             receiverAddress.getValue(),
             isPayForCommission

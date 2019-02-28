@@ -206,13 +206,19 @@ public class TransactionHelper {
     private static String signETHTransaction(TransactionETHMeta metaTX) {
         try {
             String signAmount;
+            double amountInEth = Double.parseDouble(metaTX.getAmount());
+            double feeRateInEth = EthWallet.getTransactionPrice(Long.parseLong(metaTX.getFeeRate()));
+            double cleanAmount = amountInEth - feeRateInEth;
+
             if (metaTX.getWallet().isMultisig()) {
+                double multiFeeRateInEth = EthWallet.getTransactionMultisigPrice(Long.parseLong(metaTX.getFeeRate()), Long.parseLong(metaTX.getGasLimit()));
+                cleanAmount = amountInEth - multiFeeRateInEth;
                 signAmount = CryptoFormatUtils.ethToWei(String.valueOf(metaTX.isPayingForComission() ?
 //                        metaTX.getAmount() : (metaTX.getAmount() - EthWallet.getTransactionMultisigPrice(metaTX.getFeeRate(), Long.parseLong(estimation.getValue().getSubmitTransaction())))));
-                        metaTX.getAmount() : (Long.parseLong(metaTX.getAmount()) - EthWallet.getTransactionMultisigPrice(Long.parseLong(metaTX.getFeeRate()), Long.parseLong(metaTX.getGasLimit())))));
+                        metaTX.getAmount() : String.valueOf(cleanAmount)));
             } else {
                 signAmount = CryptoFormatUtils.ethToWei(String.valueOf(metaTX.isPayingForComission() ?
-                        metaTX.getAmount() : (Long.parseLong(metaTX.getAmount()) - EthWallet.getTransactionPrice(Long.parseLong(metaTX.getFeeRate())))));
+                        metaTX.getAmount() : String.valueOf(cleanAmount)));
             }
             Log.d(TAG, "SIGN AMOUNT IS:"+signAmount);
             byte[] tx;

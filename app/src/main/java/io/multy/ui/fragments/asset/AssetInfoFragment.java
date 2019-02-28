@@ -29,12 +29,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.samwolfand.oneprefs.Prefs;
-
 import net.cachapa.expandablelayout.ExpandableLayout;
-
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -113,12 +109,12 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     @BindView(R.id.appbar_layout)
     AppBarLayout appBarLayout;
 
-    @BindView(R.id.image_arrow)
-    ImageView imageArrow;
+//    @BindView(R.id.image_arrow)
+//    ImageView imageArrow;
     @BindView(R.id.text_operations_empty)
     TextView textEmpty;
-    @BindView(R.id.text_operation_create)
-    TextView textCreate;
+//    @BindView(R.id.text_operation_create)
+//    TextView textCreate;
     @BindView(R.id.button_warn)
     View buttonWarn;
     @BindView(R.id.container_dummy)
@@ -429,9 +425,9 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     }
 
     private void setNotificationsVisibility(int visibility) {
-        imageArrow.setVisibility(visibility);
+//        imageArrow.setVisibility(visibility);
         textEmpty.setVisibility(visibility);
-        textCreate.setVisibility(visibility);
+//        textCreate.setVisibility(visibility);
         containerDummy.setVisibility(visibility);
     }
 
@@ -506,7 +502,8 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
         Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_SEND, viewModel.getChainId());
         Wallet wallet = viewModel.getWalletLive().getValue();
         if (wallet != null && wallet.getAvailableBalanceNumeric().compareTo(BigDecimal.ZERO) <= 0) {
-            Toast.makeText(getActivity(), R.string.no_balance, Toast.LENGTH_SHORT).show();
+            viewModel.errorMessage.setValue(getString(R.string.no_balance));
+//            Toast.makeText(getActivity(), , Toast.LENGTH_SHORT).show();
             return;
         }
         if (wallet.isMultisig()) {
@@ -555,21 +552,17 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
             return;
         }
 
+
+
+        if ((wallet.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue() && wallet.getNetworkId() != NativeDataHelper.NetworkId.MAIN_NET.getValue()) ||
+                (wallet.getCurrencyId() == NativeDataHelper.Blockchain.ETH.getValue() && wallet.getNetworkId() != NativeDataHelper.NetworkId.ETH_MAIN_NET.getValue())
+                )
+            return;
+
         startActivity(new Intent(getActivity(), ExchangeActivity.class)
                 .addCategory(Constants.EXTRA_SENDER_ADDRESS)
                 .putExtra(Constants.EXTRA_WALLET_ID, getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0)));
 
-
-        //THIS is old implementations
-//        Analytics.getInstance(this).logWallet(AnalyticsConstants.WALLET_EXCHANGE, viewModel.getChainId());
-////        Toast.makeText(this, R.string.not_implemented, Toast.LENGTH_SHORT).show();
-////        DonationActivity.showDonation(this, Constants.DONATE_ADDING_EXCHANGE);
-//        DonateDialog.getInstance(Constants.DONATE_ADDING_EXCHANGE).show(getSupportFragmentManager(), DonateDialog.TAG);
-
-
-        //Old implementation
-//        Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_EXCHANGE, viewModel.getChainId());
-//        DonateDialog.getInstance(Constants.DONATE_ADDING_EXCHANGE).show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
     }
 
     @OnClick(R.id.button_addresses)
@@ -628,7 +621,6 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
 
     @Override
     public void onTokenClick(String name, String address, String balance, String balanceFiat, int decimals, String imageUrl) {
-//    public void onTokenClick(String name, String address, String balance, String balanceFiat, int decimals, String imageUrl, String tokenRate) {
         //TODO check tokenRate value and replace it if needed
         getActivity().getSupportFragmentManager()
                 .beginTransaction()

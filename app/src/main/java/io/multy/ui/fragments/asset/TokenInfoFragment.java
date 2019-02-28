@@ -96,12 +96,12 @@ public class TokenInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     @BindView(R.id.appbar_layout)
     AppBarLayout appBarLayout;
 
-    @BindView(R.id.image_arrow)
-    ImageView imageArrow;
+//    @BindView(R.id.image_arrow)
+//    ImageView imageArrow;
     @BindView(R.id.text_operations_empty)
     TextView textEmpty;
-    @BindView(R.id.text_operation_create)
-    TextView textCreate;
+//    @BindView(R.id.text_operation_create)
+//    TextView textCreate;
     @BindView(R.id.button_warn)
     View buttonWarn;
     @BindView(R.id.container_dummy)
@@ -210,9 +210,9 @@ public class TokenInfoFragment extends BaseFragment implements AppBarLayout.OnOf
     }
 
     private void setNotificationsVisibility(int visibility) {
-        imageArrow.setVisibility(visibility);
+//        imageArrow.setVisibility(visibility);
         textEmpty.setVisibility(visibility);
-        textCreate.setVisibility(visibility);
+//        textCreate.setVisibility(visibility);
         containerDummy.setVisibility(visibility);
     }
 
@@ -365,9 +365,6 @@ public class TokenInfoFragment extends BaseFragment implements AppBarLayout.OnOf
                 .putExtra(Constants.EXTRA_CONTRACT_ADDRESS, textAddress.getText().toString())
                 .putExtra(Constants.EXTRA_WALLET_ID, getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0)));
 
-//        startActivity(new Intent(getActivity(), ExchangeActivity.class)
-//                .addCategory(Constants.EXTRA_SENDER_ADDRESS)
-//                .putExtra(Constants.EXTRA_WALLET_ID, getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0)));
     }
 
     @OnClick(R.id.button_addresses)

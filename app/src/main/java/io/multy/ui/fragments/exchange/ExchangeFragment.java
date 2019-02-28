@@ -84,7 +84,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import timber.log.Timber;
 
-//public class ExchangeFragment extends BaseFragment implements TextWatcher{
 public class ExchangeFragment extends BaseFragment {
 
     public static final String TAG_SEND_SUCCESS = ExchangeFragment.class.getSimpleName();
@@ -163,13 +162,6 @@ public class ExchangeFragment extends BaseFragment {
 //        viewModel.changeFragment(1);
         ((ExchangeActivity) getActivity()).setFragment(R.string.exchanging, R.id.container, ChooserExchangePairFragment.newInstance());
     }
-
-//    @BindView(R.id.input_address)
-//    EditText inputAddress;
-//    @BindView(R.id.button_next)
-//    TextView buttonNext;
-//    @BindView(R.id.recycler_view)
-//    RecyclerView recyclerView;
 
     private ExchangeViewModel viewModel;
     private Unbinder unbinder;
@@ -845,8 +837,17 @@ public class ExchangeFragment extends BaseFragment {
             if (slider.getDrawable() != null && slider.getDrawable() instanceof Animatable &&
                     sliderFinish.getDrawable() != null && sliderFinish.getDrawable() instanceof Animatable) {
                 slider.animate().setStartDelay(2000).withEndAction(() ->
+                {
+                    if (slider!= null && slider.getDrawable() != null){
                         slider.animate().setStartDelay(3000).withEndAction(() ->
-                                slideAnimation((Animatable) slider.getDrawable(), (Animatable) sliderFinish.getDrawable())).start())
+                        {
+                            if (slider!=null && slider.getDrawable() != null) {
+                                slideAnimation((Animatable) slider.getDrawable(), (Animatable) sliderFinish.getDrawable());
+                            }
+                        }).start();
+                    }
+
+                })
                         .start();
             }
         }
