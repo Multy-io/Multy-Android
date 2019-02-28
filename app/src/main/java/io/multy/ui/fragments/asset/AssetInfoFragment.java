@@ -555,7 +555,7 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
 
 
         if ((wallet.getCurrencyId() == NativeDataHelper.Blockchain.BTC.getValue() && wallet.getNetworkId() != NativeDataHelper.NetworkId.MAIN_NET.getValue()) ||
-                (wallet.getNetworkId() == NativeDataHelper.Blockchain.ETH.getValue() && wallet.getNetworkId() != NativeDataHelper.NetworkId.ETH_MAIN_NET.getValue())
+                (wallet.getCurrencyId() == NativeDataHelper.Blockchain.ETH.getValue() && wallet.getNetworkId() != NativeDataHelper.NetworkId.ETH_MAIN_NET.getValue())
                 )
             return;
 
@@ -563,17 +563,6 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
                 .addCategory(Constants.EXTRA_SENDER_ADDRESS)
                 .putExtra(Constants.EXTRA_WALLET_ID, getActivity().getIntent().getLongExtra(Constants.EXTRA_WALLET_ID, 0)));
 
-
-        //THIS is old implementations
-//        Analytics.getInstance(this).logWallet(AnalyticsConstants.WALLET_EXCHANGE, viewModel.getChainId());
-////        Toast.makeText(this, R.string.not_implemented, Toast.LENGTH_SHORT).show();
-////        DonationActivity.showDonation(this, Constants.DONATE_ADDING_EXCHANGE);
-//        DonateDialog.getInstance(Constants.DONATE_ADDING_EXCHANGE).show(getSupportFragmentManager(), DonateDialog.TAG);
-
-
-        //Old implementation
-//        Analytics.getInstance(getActivity()).logWallet(AnalyticsConstants.WALLET_EXCHANGE, viewModel.getChainId());
-//        DonateDialog.getInstance(Constants.DONATE_ADDING_EXCHANGE).show(getActivity().getSupportFragmentManager(), DonateDialog.TAG);
     }
 
     @OnClick(R.id.button_addresses)
@@ -632,7 +621,6 @@ public class AssetInfoFragment extends BaseFragment implements AppBarLayout.OnOf
 
     @Override
     public void onTokenClick(String name, String address, String balance, String balanceFiat, int decimals, String imageUrl) {
-//    public void onTokenClick(String name, String address, String balance, String balanceFiat, int decimals, String imageUrl, String tokenRate) {
         //TODO check tokenRate value and replace it if needed
         getActivity().getSupportFragmentManager()
                 .beginTransaction()
