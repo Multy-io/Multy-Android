@@ -113,7 +113,7 @@ public class ExchangeWalletChooserFragment extends BaseFragment implements MyWal
         if (blockchainId == NO_VALUE || networkId == NO_VALUE) {
             wallets = RealmManager.getAssetsDao().getWallets();
         } else if (blockchainId == NativeDataHelper.Blockchain.ETH.getValue()) {
-            wallets = RealmManager.getAssetsDao().getWallets(blockchainId, false);
+            wallets = RealmManager.getAssetsDao().getWallets(blockchainId, networkId, false);
         } else {
             wallets = RealmManager.getAssetsDao().getWallets(blockchainId, networkId, false);
         }
