@@ -159,7 +159,6 @@ public class ExchangeFragment extends BaseFragment {
     @OnClick(R.id.ib_receive)
     void onClickReceiveLogo(){
         Log.d("EXCHANGE FR", "LOGO TAPPED");
-//        viewModel.changeFragment(1);
         ((ExchangeActivity) getActivity()).setFragment(R.string.exchanging, R.id.container, ChooserExchangePairFragment.newInstance());
     }
 
